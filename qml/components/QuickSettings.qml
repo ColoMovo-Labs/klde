@@ -8,6 +8,7 @@ ShellPopup {
     id: root
     objectName: "quickSettings"
     signal blurRequested
+    signal sceneSettingsRequested
     width: Tokens.panelWidth
     height: Math.min(settingsColumn.implicitHeight + padding * 2, parent ? parent.height - y - Tokens.space24 : Tokens.previewHeight)
     contentItem: ScrollView {
@@ -69,9 +70,9 @@ ShellPopup {
                 ToggleTile {
                     text: qsTr("Quiet motion")
                     iconName: "leaf"
-                    selected: Tokens.reducedMotion
+                    selected: Shell.scenes.current.visual.motion === 0
                     Layout.fillWidth: true
-                    onToggleRequested: Tokens.reducedMotion = !Tokens.reducedMotion
+                    onToggleRequested: Shell.scenes.customize("motion", Tokens.reducedMotion ? 1 : 0)
                 }
             }
             SliderCard {
@@ -88,34 +89,11 @@ ShellPopup {
                 Layout.fillWidth: true
                 onValueRequested: requestedValue => Shell.system.volume = requestedValue
             }
-            RowLayout {
+            PowerSceneCard {
                 Layout.fillWidth: true
-                Label {
-                    text: qsTr("Power profile")
-                    font: Tokens.label
-                    color: Tokens.textPrimary
-                }
-                ComboBox {
-                    Layout.fillWidth: true
-                    model: ["Balanced", "Power saver", "Performance"]
-                    currentIndex: model.indexOf(Shell.system.powerProfile)
-                    Accessible.name: qsTr("Power profile")
-                    onActivated: Shell.system.powerProfile = currentText
-                }
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                Switch {
-                    text: qsTr("Dark")
-                    checked: Tokens.darkMode
-                    onToggled: Tokens.darkMode = checked
-                    font: Tokens.label
-                }
-                Switch {
-                    text: qsTr("Shadows")
-                    checked: Tokens.shadowsEnabled
-                    onToggled: Tokens.shadowsEnabled = checked
-                    font: Tokens.label
+                onCustomizeRequested: {
+                    root.close();
+                    root.sceneSettingsRequested();
                 }
             }
             RowLayout {
@@ -134,7 +112,10 @@ ShellPopup {
                 IconButton {
                     iconName: "settings"
                     text: qsTr("Settings preview")
-                    onClicked: Shell.launch("settings")
+                    onClicked: {
+                        root.close();
+                        root.sceneSettingsRequested();
+                    }
                 }
                 IconButton {
                     iconName: "power"

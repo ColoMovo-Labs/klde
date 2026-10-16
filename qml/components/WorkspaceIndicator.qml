@@ -20,19 +20,25 @@ Surface {
                 required property var modelData
                 readonly property bool selected: modelData.id === Shell.windowManager.activeWorkspace
                 readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? qsTr("Floating") : modelData.layout === WindowManagerBackend.Tiled ? qsTr("Tiled") : modelData.layout === WindowManagerBackend.Mixed ? qsTr("Mixed") : qsTr("Custom")
-                width: Tokens.controlHeight + Tokens.space12
+                width: selected ? Tokens.controlHeight + Tokens.space32 : Tokens.controlHeight
                 height: Tokens.controlHeight
-                text: (selected ? "• " : "") + modelData.name + " " + modeLabel.slice(0, 1)
+                text: (selected ? "• " : "") + modelData.name + (selected ? " " + modeLabel.slice(0, 1) : "")
                 font: Tokens.label
                 Accessible.name: qsTr("Workspace %1, %2%3").arg(modelData.name).arg(modeLabel).arg(selected ? qsTr(", selected") : "")
                 ToolTip.visible: hovered
                 ToolTip.text: modeLabel
                 onClicked: Shell.windowManager.activateWorkspace(modelData.id)
                 background: Rectangle {
-                    radius: workspaceButton.selected ? Tokens.radiusL : Tokens.radiusS
+                    radius: workspaceButton.selected ? Tokens.radiusPill : Tokens.radiusM
                     color: workspaceButton.selected ? Tokens.primaryContainer : "transparent"
                     border.width: workspaceButton.visualFocus ? Tokens.space2 : 0
                     border.color: Tokens.primary
+                }
+                Behavior on width {
+                    NumberAnimation {
+                        duration: Tokens.motionFast
+                        easing.type: Tokens.emphasizedDecelerate
+                    }
                 }
             }
         }

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -34,26 +35,48 @@ ApplicationWindow {
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
+    function applyScene(): void {
+        const visual = Shell.scenes.current.visual;
+        Tokens.darkMode = visual.theme === "auto" ? initialDark : visual.theme === "dark";
+        Tokens.transparencyEnabled = visual.transparency;
+        Tokens.shadowsEnabled = visual.shadows;
+        Tokens.motionLevel = visual.motion;
+        Tokens.reducedMotion = visual.motion === 0;
+    }
+    Connections {
+        target: Shell.scenes
+        function onCurrentChanged(): void {
+            window.applyScene();
+        }
+    }
     Component.onCompleted: {
-        Tokens.darkMode = initialDark;
+        applyScene();
         if (initialView === "quick-settings")
             quickSettings.open();
         else if (initialView === "launcher")
             launcher.open();
         else if (initialView === "blur")
             blurLab.open();
+        else if (initialView === "power-scenes")
+            preferences.open();
+        else if (initialView === "weather")
+            weatherPreferences.open();
     }
 
-    Image {
+    Item {
+        id: wallpaper
         anchors.fill: parent
-        source: "qrc:/assets/wallpapers/first-light.svg"
-        sourceSize: Qt.size(width, height)
-        fillMode: Image.PreserveAspectCrop
-    }
-    Rectangle {
-        anchors.fill: parent
-        color: Tokens.background
-        opacity: Tokens.darkMode ? Tokens.darkWallpaperShade : 0
+        Image {
+            anchors.fill: parent
+            source: "qrc:/assets/wallpapers/first-light.svg"
+            sourceSize: Qt.size(width, height)
+            fillMode: Image.PreserveAspectCrop
+        }
+        Rectangle {
+            anchors.fill: parent
+            color: Tokens.background
+            opacity: Tokens.darkMode ? Tokens.darkWallpaperShade : 0
+        }
     }
     RowLayout {
         x: Tokens.desktopMargin
@@ -80,6 +103,7 @@ ApplicationWindow {
         }
     }
     WorkspaceIndicator {
+        backdropSource: wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         y: Tokens.space24
     }
@@ -102,6 +126,8 @@ ApplicationWindow {
         sourceComponent: Component {
             WeatherWidget {
                 weather: Shell.weather
+                backdropSource: wallpaper
+                onSettingsRequested: weatherPreferences.open()
             }
         }
     }
@@ -116,13 +142,14 @@ ApplicationWindow {
             color: Tokens.textPrimary
         }
         Label {
-            text: qsTr("Ctrl+Space to explore · F2 for your controls")
+            text: qsTr("%1 to explore · %2 for your controls").arg(Shell.shortcuts.launcher).arg(Shell.shortcuts.quickSettings)
             font: Tokens.label
             color: Tokens.textSecondary
         }
     }
     Dock {
         id: dock
+        backdropSource: wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Tokens.space24
@@ -134,28 +161,48 @@ ApplicationWindow {
     }
     Launcher {
         id: launcher
+        backdropSource: wallpaper
         parent: Overlay.overlay
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onClosed: {
-            if (!quickSettings.visible && !blurLab.visible)
+            if (!quickSettings.visible && !blurLab.visible && !preferences.visible && !weatherPreferences.visible)
                 dock.focusLauncher();
         }
     }
     QuickSettings {
         id: quickSettings
+        backdropSource: wallpaper
         parent: Overlay.overlay
         x: parent ? parent.width - width - Tokens.desktopMargin : 0
         y: Tokens.controlHeight + Tokens.space24 * 2
         onBlurRequested: blurLab.open()
+        onSceneSettingsRequested: preferences.open()
         onClosed: {
-            if (!launcher.visible && !blurLab.visible)
+            if (!launcher.visible && !blurLab.visible && !preferences.visible)
                 quickButton.forceActiveFocus();
         }
     }
     BlurLab {
         id: blurLab
+        backdropSource: wallpaper
         parent: Overlay.overlay
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+        onClosed: quickButton.forceActiveFocus()
+    }
+    SceneSettings {
+        id: preferences
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+        onClosed: quickButton.forceActiveFocus()
+    }
+    WeatherSettings {
+        id: weatherPreferences
+        parent: Overlay.overlay
+        backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onClosed: quickButton.forceActiveFocus()
@@ -185,19 +232,31 @@ ApplicationWindow {
         }
     }
     Shortcut {
-        sequence: "Ctrl+Space"
+        sequence: Shell.shortcuts.launcher
+        context: Qt.ApplicationShortcut
+        autoRepeat: false
+        enabled: sequence.length > 0
         onActivated: launcher.opened ? launcher.close() : launcher.open()
     }
     Shortcut {
-        sequence: "F2"
+        sequence: Shell.shortcuts.quickSettings
+        context: Qt.ApplicationShortcut
+        autoRepeat: false
+        enabled: sequence.length > 0
         onActivated: quickSettings.opened ? quickSettings.close() : quickSettings.open()
     }
     Shortcut {
-        sequence: "Ctrl+Alt+B"
+        sequence: Shell.shortcuts.blurLab
+        context: Qt.ApplicationShortcut
+        autoRepeat: false
+        enabled: sequence.length > 0
         onActivated: blurLab.open()
     }
     Shortcut {
-        sequence: "Ctrl+Alt+R"
-        onActivated: Tokens.reducedMotion = !Tokens.reducedMotion
+        sequence: Shell.shortcuts.reducedMotion
+        context: Qt.ApplicationShortcut
+        autoRepeat: false
+        enabled: sequence.length > 0
+        onActivated: Shell.scenes.customize("motion", Tokens.reducedMotion ? 1 : 0)
     }
 }

@@ -10,7 +10,6 @@ ShellPopup {
     modal: true
     width: Tokens.panelWidth + Tokens.space32
     height: contentColumn.implicitHeight + padding * 2
-    onOpened: Shell.blur.quality = BlurBackend.Medium
     contentItem: ColumnLayout {
         id: contentColumn
         spacing: Tokens.space16
@@ -45,7 +44,11 @@ ShellPopup {
             model: [qsTr("Off"), qsTr("Low"), qsTr("Medium"), qsTr("High")]
             currentIndex: Shell.blur.quality
             Accessible.name: qsTr("Owned-content blur quality")
-            onActivated: Shell.blur.quality = currentIndex
+            onActivated: {
+                Shell.scenes.customize("blurEnabled", currentIndex > 0);
+                if (currentIndex > 0)
+                    Shell.scenes.customize("blurQuality", currentIndex);
+            }
         }
         Label {
             text: qsTr("This sample owns its pixels. Native blur behind desktop windows is not connected. Static captures update only when invalidated.")

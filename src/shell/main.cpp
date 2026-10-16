@@ -35,7 +35,8 @@ int main(int argc, char *argv[]) {
                                            QStringLiteral("path"));
     const QCommandLineOption viewOption(
         QStringLiteral("view"),
-        QStringLiteral("Initial preview: desktop, launcher, quick-settings, blur"),
+        QStringLiteral(
+            "Initial preview: desktop, launcher, quick-settings, blur, power-scenes, weather"),
         QStringLiteral("view"), QStringLiteral("desktop"));
     const QCommandLineOption darkOption(QStringLiteral("dark"),
                                         QStringLiteral("Start with dark appearance"));
@@ -48,8 +49,9 @@ int main(int argc, char *argv[]) {
         qCritical() << "--capture and --audit-idle require --smoke-test";
         return EXIT_FAILURE;
     }
-    const QStringList views{QStringLiteral("desktop"), QStringLiteral("launcher"),
-                            QStringLiteral("quick-settings"), QStringLiteral("blur")};
+    const QStringList views{QStringLiteral("desktop"),        QStringLiteral("launcher"),
+                            QStringLiteral("quick-settings"), QStringLiteral("blur"),
+                            QStringLiteral("power-scenes"),   QStringLiteral("weather")};
     if (!views.contains(parser.value(viewOption))) {
         qCritical() << "Unknown preview view";
         return EXIT_FAILURE;

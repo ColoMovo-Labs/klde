@@ -3,14 +3,16 @@ import QtQuick
 import QtQuick.Controls
 
 Popup {
+    id: root
+    property Item backdropSource: null
     padding: Tokens.space24
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    background: Rectangle {
-        radius: Tokens.radiusXL
-        color: Tokens.surfaceElevated
-        border.width: Tokens.space1
-        border.color: Tokens.outline
+    onOpened: popupSurface.refreshCapture()
+    background: Surface {
+        id: popupSurface
+        padding: 0
+        backdropSource: root.backdropSource
     }
     enter: Transition {
         ParallelAnimation {

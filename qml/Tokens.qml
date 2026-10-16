@@ -7,9 +7,11 @@ QtObject {
     property bool darkMode: false
     property bool reducedMotion: false
     property real textScale: 1.0
-    property bool transparencyEnabled: false
+    property bool transparencyEnabled: true
     property bool shadowsEnabled: true
-    property color accent: darkMode ? "#8ed3cd" : "#246c69"
+    property int motionLevel: 1
+    property color userAccent: "transparent"
+    readonly property color accent: userAccent.a > 0 ? userAccent : darkMode ? "#8ed3cd" : "#246c69"
 
     readonly property color background: darkMode ? "#151d22" : "#edf3f5"
     readonly property color surface: darkMode ? "#1e282e" : "#fcfdfd"
@@ -31,6 +33,13 @@ QtObject {
     readonly property real mutedOpacity: 0.35
     readonly property real popupStartScale: 0.96
     readonly property real darkWallpaperShade: 0.72
+    readonly property real frostedSurfaceOpacity: darkMode ? 0.88 : 0.84
+    readonly property real blurScaleLow: 0.25
+    readonly property real blurScaleMedium: 0.50
+    readonly property real blurScaleHigh: 0.75
+    readonly property int blurTextureLimit: 1024
+    readonly property color accentLilac: darkMode ? "#d6b8ed" : "#76518e"
+    readonly property color accentApricot: darkMode ? "#efc29f" : "#885834"
 
     readonly property real surfaceOpacityLow: 0.72
     readonly property real surfaceOpacityMedium: 0.88
@@ -83,9 +92,10 @@ QtObject {
         pixelSize: 12 * textScale
     })
 
-    readonly property int motionFast: reducedMotion ? 0 : 120
-    readonly property int motionNormal: reducedMotion ? 0 : 220
-    readonly property int motionSlow: reducedMotion ? 0 : 360
+    readonly property real motionScale: motionLevel === 2 ? 1.2 : 1.0
+    readonly property int motionFast: reducedMotion ? 0 : 120 * motionScale
+    readonly property int motionNormal: reducedMotion ? 0 : 220 * motionScale
+    readonly property int motionSlow: reducedMotion ? 0 : 360 * motionScale
     readonly property int emphasized: Easing.InOutCubic
     readonly property int emphasizedDecelerate: Easing.OutCubic
     readonly property int emphasizedAccelerate: Easing.InCubic
@@ -104,13 +114,17 @@ QtObject {
     readonly property int iconM: 24
     readonly property int iconL: 40
     readonly property int dockIcon: 34
-    readonly property int dockItem: 56
+    readonly property int dockItem: 56 * densityScale
     readonly property int dockHeight: 80
-    readonly property int controlHeight: 44
+    readonly property int controlHeight: 44 * densityScale
     readonly property int panelWidth: 392
+    readonly property int settingsWidth: 600
+    readonly property int settingsHeight: 664
+    readonly property int sceneCardHeight: 112
+    readonly property real densityScale: 1.0
     readonly property int launcherWidth: 600
     readonly property int launcherHeight: 528
-    readonly property int launcherRow: 64
+    readonly property int launcherRow: 64 * densityScale
     readonly property int widgetSize: 224
     readonly property int desktopMargin: 40
     readonly property int blurSampleWidth: 320
