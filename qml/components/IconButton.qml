@@ -13,12 +13,13 @@ Button {
     ToolTip.text: text
     contentItem: Icon {
         name: root.iconName
+        lightInk: root.emphasized ? !Tokens.darkMode : Tokens.darkMode
         width: Tokens.iconM
         height: Tokens.iconM
     }
     background: Rectangle {
-        radius: root.emphasized ? Tokens.radiusL : Tokens.radiusM
-        color: root.down || root.emphasized ? Tokens.primaryContainer : root.hovered ? Tokens.surfaceContainer : "transparent"
+        radius: root.emphasized ? Tokens.radiusPill : Tokens.radiusM
+        color: root.emphasized ? Tokens.primary : root.down ? Tokens.primaryContainer : root.hovered ? Tokens.surfaceContainer : "transparent"
         border.width: root.visualFocus ? Tokens.space2 : 0
         border.color: Tokens.primary
         Behavior on color {

@@ -9,6 +9,7 @@ import KLDE.Backends
 ShellPopup {
     id: root
     objectName: "sceneSettings"
+    signal languageInputRequested
     modal: true
     width: Tokens.settingsWidth
     height: Math.min(Tokens.settingsHeight, parent ? parent.height - Tokens.space32 * 2 : Tokens.settingsHeight)
@@ -24,33 +25,36 @@ ShellPopup {
                 ColumnLayout {
                     Layout.fillWidth: true
                     Label {
-                        text: qsTr("Make room for your rhythm.")
+                        text: I18n.t("shell.scene.title")
                         font: Tokens.title
                         color: Tokens.textPrimary
                     }
                     Label {
-                        text: qsTr("Scene preferences · this preview session")
+                        text: I18n.t("shell.scene.subtitle")
                         font: Tokens.caption
                         color: Tokens.textSecondary
                     }
                 }
                 IconButton {
                     iconName: "close"
-                    text: qsTr("Close preferences")
+                    text: I18n.t("shell.scene.close")
                     onClicked: root.close()
                 }
             }
-            ComboBox {
+            ChoiceBox {
                 Layout.fillWidth: true
-                model: Shell.scenes.scenes
-                textRole: "name"
-                valueRole: "id"
+                model: [I18n.t("shell.scene.performance"), I18n.t("shell.scene.balanced"), I18n.t("shell.scene.saver")]
                 currentIndex: Shell.scenes.activeId === "performance" ? 0 : Shell.scenes.activeId === "balanced" ? 1 : 2
-                Accessible.name: qsTr("Scene to customize")
-                onActivated: Shell.scenes.select(currentValue)
+                Accessible.name: I18n.t("shell.scene.select")
+                onActivated: Shell.scenes.select(["performance", "balanced", "power-saver"][currentIndex])
+            }
+            ActionButton {
+                text: I18n.t("language.title")
+                Layout.fillWidth: true
+                onClicked: root.languageInputRequested()
             }
             Label {
-                text: qsTr("Visual policy is applied here. System power policy remains mock. Unsupported CPU, GPU and display controls are hidden.")
+                text: I18n.t("shell.scene.disclosure")
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font: Tokens.caption
@@ -62,36 +66,36 @@ ShellPopup {
                 rowSpacing: Tokens.space12
                 Layout.fillWidth: true
                 Label {
-                    text: qsTr("Theme")
+                    text: I18n.t("shell.effects.theme")
                     color: Tokens.textPrimary
                 }
-                ComboBox {
+                ChoiceBox {
                     Layout.fillWidth: true
-                    model: [qsTr("Auto"), qsTr("Light"), qsTr("Dark")]
+                    model: [I18n.t("common.auto"), I18n.t("common.light"), I18n.t("common.dark")]
                     currentIndex: ["auto", "light", "dark"].indexOf(Shell.scenes.current.visual.theme)
-                    Accessible.name: qsTr("Scene theme")
+                    Accessible.name: I18n.t("shell.scene.theme.accessible")
                     onActivated: Shell.scenes.customize("theme", ["auto", "light", "dark"][currentIndex])
                 }
                 Label {
-                    text: qsTr("Blur quality")
+                    text: I18n.t("shell.scene.blur")
                     color: Tokens.textPrimary
                 }
-                ComboBox {
+                ChoiceBox {
                     Layout.fillWidth: true
-                    model: [qsTr("Low"), qsTr("Medium"), qsTr("High")]
+                    model: [I18n.t("common.low"), I18n.t("common.medium"), I18n.t("common.high")]
                     currentIndex: Shell.scenes.current.visual.blurQuality - 1
-                    Accessible.name: qsTr("Scene blur quality")
+                    Accessible.name: I18n.t("shell.scene.blur.accessible")
                     onActivated: Shell.scenes.customize("blurQuality", currentIndex + 1)
                 }
                 Label {
-                    text: qsTr("Motion")
+                    text: I18n.t("shell.effects.motion")
                     color: Tokens.textPrimary
                 }
-                ComboBox {
+                ChoiceBox {
                     Layout.fillWidth: true
-                    model: [qsTr("Reduced"), qsTr("Normal"), qsTr("Expressive")]
+                    model: [I18n.t("common.reduced"), I18n.t("common.normal"), I18n.t("common.expressive")]
                     currentIndex: Shell.scenes.current.visual.motion
-                    Accessible.name: qsTr("Scene motion")
+                    Accessible.name: I18n.t("shell.scene.motion.accessible")
                     onActivated: Shell.scenes.customize("motion", currentIndex)
                 }
             }
@@ -99,55 +103,55 @@ ShellPopup {
                 Layout.fillWidth: true
                 spacing: Tokens.space8
                 Switch {
-                    text: qsTr("Blur")
+                    text: I18n.t("shell.effects.blur")
                     checked: Shell.scenes.current.visual.blurEnabled
                     onToggled: Shell.scenes.customize("blurEnabled", checked)
                 }
                 Switch {
-                    text: qsTr("Transparency")
+                    text: I18n.t("shell.effects.transparency")
                     checked: Shell.scenes.current.visual.transparency
                     onToggled: Shell.scenes.customize("transparency", checked)
                 }
                 Switch {
-                    text: qsTr("Shadows")
+                    text: I18n.t("shell.effects.shadows")
                     checked: Shell.scenes.current.visual.shadows
                     onToggled: Shell.scenes.customize("shadows", checked)
                 }
             }
             Label {
-                text: qsTr("Accent")
+                text: I18n.t("shell.effects.accent")
                 font: Tokens.label
                 color: Tokens.textPrimary
             }
             RowLayout {
-                Button {
-                    text: qsTr("Auto")
+                ActionButton {
+                    text: I18n.t("common.auto")
                     onClicked: Tokens.accentChoice = "auto"
                 }
-                Button {
-                    text: qsTr("Teal")
+                ActionButton {
+                    text: I18n.t("shell.effects.teal")
                     onClicked: Tokens.accentChoice = "teal"
                 }
-                Button {
-                    text: qsTr("Lilac")
+                ActionButton {
+                    text: I18n.t("shell.effects.lilac")
                     onClicked: Tokens.accentChoice = "lilac"
                 }
-                Button {
-                    text: qsTr("Apricot")
+                ActionButton {
+                    text: I18n.t("shell.effects.apricot")
                     onClicked: Tokens.accentChoice = "apricot"
                 }
             }
-            Button {
-                text: qsTr("Reset this scene")
+            ActionButton {
+                text: I18n.t("shell.scene.reset")
                 onClicked: Shell.scenes.resetCurrent()
             }
             Label {
-                text: qsTr("Application shortcuts")
+                text: I18n.t("shell.shortcut.title")
                 font: Tokens.title
                 color: Tokens.textPrimary
             }
             Label {
-                text: qsTr("Edit and press Enter or leave the field. Changes last for this session; global Super shortcuts need compositor integration.")
+                text: I18n.t("shell.shortcut.help")
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font: Tokens.caption
@@ -160,27 +164,27 @@ ShellPopup {
                     required property var modelData
                     Layout.fillWidth: true
                     Label {
-                        text: shortcutRow.modelData.label
+                        text: I18n.s(shortcutRow.modelData.label)
                         color: Tokens.textPrimary
                         Layout.fillWidth: true
                     }
                     TextField {
                         Layout.preferredWidth: Tokens.panelWidth / 2
                         text: shortcutRow.modelData.sequence
-                        Accessible.name: qsTr("Shortcut for %1").arg(shortcutRow.modelData.label)
+                        Accessible.name: I18n.t("shell.shortcut.field").arg(I18n.s(shortcutRow.modelData.label))
                         onEditingFinished: Shell.shortcuts.rebind(shortcutRow.modelData.id, text)
                     }
                 }
             }
             Label {
-                text: Shell.shortcuts.lastError
+                text: I18n.s(Shell.shortcuts.lastError)
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 color: Tokens.error
                 visible: text.length > 0
             }
-            Button {
-                text: qsTr("Reset shortcuts")
+            ActionButton {
+                text: I18n.t("shell.shortcut.reset")
                 onClicked: Shell.shortcuts.resetDefaults()
             }
         }

@@ -27,7 +27,7 @@ Surface {
             width: Tokens.dockItem
             height: Tokens.dockItem
             iconName: "klde"
-            text: qsTr("Open launcher")
+            text: I18n.t("shell.launcher.open")
             emphasized: true
             onClicked: root.launcherRequested()
         }
@@ -49,9 +49,9 @@ Surface {
                 required property bool active
                 width: Tokens.dockItem
                 height: Tokens.dockItem
-                Accessible.name: displayName + (active ? qsTr(", active") : running ? qsTr(", running") : "")
+                Accessible.name: I18n.s(displayName) + (active ? I18n.t("common.active") : running ? I18n.t("common.running") : "")
                 ToolTip.visible: hovered
-                ToolTip.text: displayName
+                ToolTip.text: I18n.s(displayName)
                 onClicked: appId === "settings" ? root.settingsRequested() : Shell.launch(appId)
                 contentItem: Item {
                     Icon {

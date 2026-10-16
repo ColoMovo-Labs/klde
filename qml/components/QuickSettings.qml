@@ -25,19 +25,21 @@ ShellPopup {
                     Layout.fillWidth: true
                     spacing: Tokens.space4
                     Label {
-                        text: qsTr("Your little controls.")
+                        text: I18n.t("shell.quick.title")
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
                         font: Tokens.title
                         color: Tokens.textPrimary
                     }
                     Label {
-                        text: qsTr("Preview · mock system state")
+                        text: I18n.t("shell.quick.provenance")
                         font: Tokens.caption
                         color: Tokens.textSecondary
                     }
                 }
                 IconButton {
                     iconName: "close"
-                    text: qsTr("Close quick settings")
+                    text: I18n.t("shell.quick.close")
                     onClicked: root.close()
                 }
             }
@@ -47,28 +49,28 @@ ShellPopup {
                 rowSpacing: Tokens.space12
                 Layout.fillWidth: true
                 ToggleTile {
-                    text: qsTr("Wi-Fi")
+                    text: I18n.t("shell.network.wifi")
                     iconName: "wifi"
                     selected: Shell.system.wifi
                     Layout.fillWidth: true
                     onToggleRequested: Shell.system.wifi = !Shell.system.wifi
                 }
                 ToggleTile {
-                    text: qsTr("Bluetooth")
+                    text: I18n.t("shell.network.bluetooth")
                     iconName: "bluetooth"
                     selected: Shell.system.bluetooth
                     Layout.fillWidth: true
                     onToggleRequested: Shell.system.bluetooth = !Shell.system.bluetooth
                 }
                 ToggleTile {
-                    text: qsTr("Night light")
+                    text: I18n.t("shell.effects.night")
                     iconName: "moon"
                     selected: Shell.system.nightMode
                     Layout.fillWidth: true
                     onToggleRequested: Shell.system.nightMode = !Shell.system.nightMode
                 }
                 ToggleTile {
-                    text: qsTr("Quiet motion")
+                    text: I18n.t("shell.effects.quiet")
                     iconName: "leaf"
                     selected: Shell.scenes.current.visual.motion === 0
                     Layout.fillWidth: true
@@ -76,14 +78,14 @@ ShellPopup {
                 }
             }
             SliderCard {
-                label: qsTr("Brightness")
+                label: I18n.t("shell.effects.brightness")
                 iconName: "sun"
                 value: Shell.system.brightness
                 Layout.fillWidth: true
                 onValueRequested: requestedValue => Shell.system.brightness = requestedValue
             }
             SliderCard {
-                label: qsTr("Volume")
+                label: I18n.t("shell.effects.volume")
                 iconName: "volume"
                 value: Shell.system.volume
                 Layout.fillWidth: true
@@ -98,8 +100,8 @@ ShellPopup {
             }
             RowLayout {
                 Layout.fillWidth: true
-                Button {
-                    text: qsTr("Blur lab")
+                ActionButton {
+                    text: I18n.t("shell.blur.open")
                     font: Tokens.label
                     onClicked: {
                         root.close();
@@ -111,7 +113,7 @@ ShellPopup {
                 }
                 IconButton {
                     iconName: "settings"
-                    text: qsTr("Settings preview")
+                    text: I18n.t("shell.settings.open")
                     onClicked: {
                         root.close();
                         root.sceneSettingsRequested();
@@ -119,7 +121,7 @@ ShellPopup {
                 }
                 IconButton {
                     iconName: "power"
-                    text: qsTr("Session action preview")
+                    text: I18n.t("destructive.session.preview")
                     onClicked: Shell.system.requestSessionAction("shutdown")
                 }
             }

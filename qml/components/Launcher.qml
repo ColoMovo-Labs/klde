@@ -26,14 +26,14 @@ ShellPopup {
         RowLayout {
             Layout.fillWidth: true
             Label {
-                text: qsTr("Find your next thing.")
+                text: I18n.t("shell.launcher.title")
                 font: Tokens.title
                 color: Tokens.textPrimary
                 Layout.fillWidth: true
             }
             IconButton {
                 iconName: "close"
-                text: qsTr("Close launcher")
+                text: I18n.t("shell.launcher.close")
                 onClicked: root.close()
             }
         }
@@ -42,13 +42,13 @@ ShellPopup {
             objectName: "launcherSearch"
             Layout.fillWidth: true
             implicitHeight: Tokens.controlHeight + Tokens.space8
-            placeholderText: qsTr("Search applications…")
+            placeholderText: I18n.t("shell.launcher.placeholder")
             font: Tokens.body
             color: Tokens.textPrimary
             selectionColor: Tokens.primaryContainer
             selectedTextColor: Tokens.textPrimary
             text: Shell.search.query
-            Accessible.name: qsTr("Search applications")
+            Accessible.name: I18n.t("shell.launcher.search")
             selectByMouse: true
             background: Rectangle {
                 radius: Tokens.radiusM
@@ -101,7 +101,7 @@ ShellPopup {
                 width: results.width
                 height: Tokens.launcherRow * Tokens.textScale
                 highlighted: ListView.isCurrentItem
-                Accessible.name: displayName + ", " + description
+                Accessible.name: I18n.s(displayName) + ", " + I18n.s(description)
                 onClicked: {
                     Shell.launch(appId);
                     root.close();
@@ -117,12 +117,12 @@ ShellPopup {
                         Layout.fillWidth: true
                         spacing: Tokens.space4
                         Label {
-                            text: resultRow.displayName
+                            text: I18n.s(resultRow.displayName)
                             font: Tokens.body
                             color: Tokens.textPrimary
                         }
                         Label {
-                            text: resultRow.description
+                            text: I18n.s(resultRow.description)
                             font: Tokens.caption
                             color: Tokens.textSecondary
                             elide: Text.ElideRight
@@ -140,13 +140,13 @@ ShellPopup {
             Label {
                 anchors.centerIn: parent
                 visible: results.count === 0
-                text: qsTr("No applications found")
+                text: I18n.t("shell.launcher.empty")
                 font: Tokens.body
                 color: Tokens.textSecondary
             }
         }
         Label {
-            text: qsTr("↑ ↓ select     Enter open     Esc close · Preview catalogue")
+            text: I18n.t("shell.launcher.help")
             font: Tokens.caption
             color: Tokens.textSecondary
             wrapMode: Text.WordWrap

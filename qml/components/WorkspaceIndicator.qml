@@ -19,12 +19,12 @@ Surface {
                 id: workspaceButton
                 required property var modelData
                 readonly property bool selected: modelData.id === Shell.windowManager.activeWorkspace
-                readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? qsTr("Floating") : modelData.layout === WindowManagerBackend.Tiled ? qsTr("Tiled") : modelData.layout === WindowManagerBackend.Mixed ? qsTr("Mixed") : qsTr("Custom")
+                readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? I18n.t("shell.workspace.floating") : modelData.layout === WindowManagerBackend.Tiled ? I18n.t("shell.workspace.tiled") : modelData.layout === WindowManagerBackend.Mixed ? I18n.t("shell.workspace.mixed") : I18n.t("shell.workspace.custom")
                 width: selected ? Tokens.controlHeight + Tokens.space32 : Tokens.controlHeight
                 height: Tokens.controlHeight
                 text: (selected ? "• " : "") + modelData.name + (selected ? " " + modeLabel.slice(0, 1) : "")
                 font: Tokens.label
-                Accessible.name: qsTr("Workspace %1, %2%3").arg(modelData.name).arg(modeLabel).arg(selected ? qsTr(", selected") : "")
+                Accessible.name: I18n.t("shell.workspace.accessible").arg(modelData.name).arg(modeLabel).arg(selected ? I18n.t("common.selected") : "")
                 ToolTip.visible: hovered
                 ToolTip.text: modeLabel
                 onClicked: Shell.windowManager.activateWorkspace(modelData.id)

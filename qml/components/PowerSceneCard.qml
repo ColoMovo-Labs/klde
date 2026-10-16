@@ -14,7 +14,7 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitHeight: Tokens.sceneCardHeight
         radius: Tokens.radiusXL
-        color: Tokens.primaryContainer
+        color: Tokens.primary
         RowLayout {
             anchors.fill: parent
             anchors.margins: Tokens.space16
@@ -35,21 +35,21 @@ ColumnLayout {
                 Layout.fillWidth: true
                 spacing: Tokens.space4
                 Label {
-                    text: Shell.scenes.current.name
+                    text: I18n.s(Shell.scenes.current.name)
                     font: Tokens.title
-                    color: Tokens.textPrimary
+                    color: Tokens.onPrimary
                 }
                 Label {
-                    text: Shell.scenes.current.description
+                    text: I18n.s(Shell.scenes.current.description)
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     font: Tokens.caption
-                    color: Tokens.textSecondary
+                    color: Tokens.onPrimary
                 }
                 Label {
-                    text: Shell.scenes.current.customized ? qsTr("Customized · session only") : qsTr("Default scene · mock system policy")
+                    text: Shell.scenes.current.customized ? I18n.t("shell.scene.customized") : I18n.t("shell.scene.default")
                     font: Tokens.caption
-                    color: Tokens.textSecondary
+                    color: Tokens.onPrimary
                 }
             }
         }
@@ -64,22 +64,30 @@ ColumnLayout {
                 required property var modelData
                 readonly property bool selected: modelData.id === Shell.scenes.activeId
                 Layout.fillWidth: true
-                text: (selected ? "✓ " : "") + modelData.name
+                text: (selected ? "✓ " : "") + I18n.s(modelData.name)
                 font: Tokens.caption
-                Accessible.name: modelData.name + (selected ? qsTr(", selected") : "")
+                Accessible.name: I18n.s(modelData.name) + (selected ? I18n.t("common.selected") : "")
                 onClicked: Shell.scenes.select(modelData.id)
+                contentItem: Label {
+                    text: sceneButton.text
+                    font: sceneButton.font
+                    color: sceneButton.selected ? Tokens.onPrimary : Tokens.textPrimary
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                }
                 background: Rectangle {
                     radius: Tokens.radiusPill
-                    color: sceneButton.selected ? Tokens.primaryContainer : Tokens.surfaceContainer
+                    color: sceneButton.selected ? Tokens.primary : Tokens.surfaceContainer
                     border.width: sceneButton.visualFocus ? Tokens.space2 : 0
                     border.color: Tokens.primary
                 }
             }
         }
     }
-    Button {
+    ActionButton {
         Layout.fillWidth: true
-        text: qsTr("Customize scene & appearance…")
+        text: I18n.t("shell.scene.customize")
         font: Tokens.label
         onClicked: root.customizeRequested()
     }

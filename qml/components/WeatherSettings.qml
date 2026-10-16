@@ -21,7 +21,7 @@ ShellPopup {
             RowLayout {
                 Layout.fillWidth: true
                 Label {
-                    text: qsTr("A little sky, with your permission.")
+                    text: I18n.t("privacy.weather.title")
                     font: Tokens.title
                     color: Tokens.textPrimary
                     Layout.fillWidth: true
@@ -29,19 +29,19 @@ ShellPopup {
                 }
                 IconButton {
                     iconName: "close"
-                    text: qsTr("Close weather settings")
+                    text: I18n.t("privacy.weather.close")
                     onClicked: root.close()
                 }
             }
             Label {
-                text: qsTr("Mock weather is the default. Enabling experimental online weather sends the city you enter and your connection's IP address to uapis.cn. No automatic location lookup is used. The provider has its own terms, privacy policy and shared request quota.")
+                text: I18n.t("privacy.weather.disclosure")
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font: Tokens.body
                 color: Tokens.textPrimary
             }
             Label {
-                text: "<a href='https://uapis.cn/docs/getting-started/privacy-policy'>Provider terms &amp; privacy</a>"
+                text: "<a href='https://uapis.cn/docs/getting-started/privacy-policy'>" + I18n.t("privacy.weather.terms") + "</a>"
                 textFormat: Text.RichText
                 onLinkActivated: link => Qt.openUrlExternally(link)
                 color: Tokens.textSecondary
@@ -50,51 +50,51 @@ ShellPopup {
             TextField {
                 id: city
                 Layout.fillWidth: true
-                placeholderText: qsTr("City name")
-                Accessible.name: qsTr("Weather city, entered manually")
+                placeholderText: I18n.t("shell.weather.city")
+                Accessible.name: I18n.t("shell.weather.city.accessible")
                 maximumLength: 128
             }
-            ComboBox {
+            ChoiceBox {
                 id: language
                 model: ["English", "中文"]
                 Layout.fillWidth: true
-                Accessible.name: qsTr("Weather language")
+                Accessible.name: I18n.t("shell.weather.language")
             }
             RowLayout {
                 Layout.fillWidth: true
-                Button {
-                    text: qsTr("Enable online weather")
+                ActionButton {
+                    text: I18n.t("privacy.weather.enable")
                     enabled: city.text.trim().length > 0 && !Shell.weatherService.busy
                     onClicked: Shell.weatherService.enableOnline(city.text, language.currentIndex === 0 ? "en" : "zh")
                 }
-                Button {
-                    text: qsTr("Use mock / disconnect")
+                ActionButton {
+                    text: I18n.t("privacy.weather.disable")
                     enabled: Shell.weatherService.onlineEnabled
                     onClicked: Shell.weatherService.disableOnline()
                 }
             }
             Label {
-                text: Shell.weatherService.attribution + " · " + Shell.weatherService.status + (Shell.weatherService.stale ? qsTr(" · stale") : "")
+                text: I18n.s(Shell.weatherService.attribution) + " · " + I18n.t("weather.status." + Shell.weatherService.status) + (Shell.weatherService.stale ? I18n.t("shell.weather.stale") : "")
                 font: Tokens.label
                 color: Tokens.textPrimary
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
             Label {
-                text: Shell.weatherService.message
+                text: I18n.s(Shell.weatherService.message)
                 visible: text.length > 0
                 font: Tokens.caption
                 color: Tokens.textSecondary
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
-            Button {
-                text: qsTr("Refresh when allowed")
+            ActionButton {
+                text: I18n.t("shell.weather.refresh")
                 enabled: Shell.weatherService.onlineEnabled && !Shell.weatherService.busy
                 onClicked: Shell.weatherService.refresh()
             }
             Label {
-                text: qsTr("The preview keeps an in-memory cache, waits at least 15 minutes between requests and normally refreshes every two hours. Quota exhaustion stops automatic retries. Location and consent are not persisted in this preview.")
+                text: I18n.t("privacy.weather.schedule")
                 font: Tokens.caption
                 color: Tokens.textSecondary
                 Layout.fillWidth: true

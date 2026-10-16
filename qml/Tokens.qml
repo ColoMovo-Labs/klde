@@ -11,33 +11,34 @@ QtObject {
     property bool shadowsEnabled: true
     property int motionLevel: 1
     property string accentChoice: "auto"
-    readonly property color accent: accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#8ed3cd" : "#246c69"
+    readonly property color accent: accentChoice === "teal" ? accentTeal : accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#c6c0ff" : "#4338ff"
 
-    readonly property color background: darkMode ? "#151d22" : "#edf3f5"
-    readonly property color surface: darkMode ? "#1e282e" : "#fcfdfd"
-    readonly property color surfaceContainer: darkMode ? "#28343b" : "#e5edef"
-    readonly property color surfaceElevated: darkMode ? "#303d45" : "#ffffff"
+    readonly property color background: darkMode ? "#15172c" : "#edf2ff"
+    readonly property color surface: darkMode ? "#20243d" : "#f9faff"
+    readonly property color surfaceContainer: darkMode ? "#303555" : "#e8eaff"
+    readonly property color surfaceElevated: darkMode ? "#292e4b" : "#ffffff"
     readonly property color primary: accent
-    readonly property color secondary: darkMode ? "#c4b9eb" : "#6e5b8d"
+    readonly property color secondary: darkMode ? "#dfc0ff" : "#8554bf"
     readonly property color tertiary: darkMode ? "#f0c49e" : "#8a5732"
     readonly property color error: darkMode ? "#ffb4ab" : "#a82d3b"
-    readonly property color outline: darkMode ? "#93a3ad" : "#647780"
-    readonly property color textPrimary: darkMode ? "#edf4f6" : "#24343f"
-    readonly property color textSecondary: darkMode ? "#bccbd2" : "#536975"
+    readonly property color outline: darkMode ? "#a8afd1" : "#747fa6"
+    readonly property color textPrimary: darkMode ? "#f0efff" : "#20264d"
+    readonly property color textSecondary: darkMode ? "#c6c8e7" : "#566287"
     readonly property color textDisabled: darkMode ? "#84949e" : "#75858e"
-    readonly property color onPrimary: darkMode ? "#143c3a" : "#ffffff"
+    readonly property color onPrimary: darkMode ? "#28205e" : "#ffffff"
     readonly property color primaryContainer: Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
-    readonly property color shadow: "#253c4c"
+    readonly property color shadow: "#292e6b"
     readonly property real outlineOpacity: 0.20
-    readonly property real shadowOpacity: 0.10
+    readonly property real shadowOpacity: 0.14
     readonly property real mutedOpacity: 0.35
     readonly property real popupStartScale: 0.96
     readonly property real darkWallpaperShade: 0.72
-    readonly property real frostedSurfaceOpacity: darkMode ? 0.88 : 0.84
+    readonly property real frostedSurfaceOpacity: darkMode ? 0.88 : 0.80
     readonly property real blurScaleLow: 0.25
     readonly property real blurScaleMedium: 0.50
     readonly property real blurScaleHigh: 0.75
     readonly property int blurTextureLimit: 1024
+    readonly property color accentTeal: darkMode ? "#99d1c8" : "#22685d"
     readonly property color accentLilac: darkMode ? "#d6b8ed" : "#76518e"
     readonly property color accentApricot: darkMode ? "#efc29f" : "#885834"
 
@@ -62,7 +63,8 @@ QtObject {
     readonly property int space24: 24
     readonly property int space32: 32
 
-    readonly property string fontFamily: Application.font.family
+    readonly property bool cjk: I18n.locale === "zh_CN"
+    readonly property string fontFamily: cjk ? "Noto Sans CJK SC" : Application.font.family
     readonly property font display: Qt.font({
         family: fontFamily,
         pixelSize: 48 * textScale,
@@ -84,12 +86,12 @@ QtObject {
     })
     readonly property font label: Qt.font({
         family: fontFamily,
-        pixelSize: 14 * textScale,
+        pixelSize: (cjk ? 15 : 14) * textScale,
         weight: Font.Medium
     })
     readonly property font caption: Qt.font({
         family: fontFamily,
-        pixelSize: 12 * textScale
+        pixelSize: (cjk ? 13 : 12) * textScale
     })
 
     readonly property real motionScale: motionLevel === 2 ? 1.2 : 1.0
@@ -117,10 +119,13 @@ QtObject {
     readonly property int dockItem: 56 * densityScale
     readonly property int dockHeight: 80
     readonly property int controlHeight: 44 * densityScale
-    readonly property int panelWidth: 392
+    readonly property int panelWidth: 408
     readonly property int settingsWidth: 600
     readonly property int settingsHeight: 664
     readonly property int sceneCardHeight: 112
+    readonly property int sliderHeight: 52
+    readonly property int toggleHeight: 84
+    readonly property int toggleIcon: 48
     readonly property real densityScale: 1.0
     readonly property int launcherWidth: 600
     readonly property int launcherHeight: 528

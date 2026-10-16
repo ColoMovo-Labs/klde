@@ -10,13 +10,15 @@ ApplicationWindow {
     id: window
     property string initialView: "desktop"
     property bool initialDark: false
+    property string initialLocale: ""
+    property string initialVoice: "standard"
     objectName: "shellWindow"
     width: Tokens.previewWidth
     height: Tokens.previewHeight
     minimumWidth: Tokens.previewMinimumWidth
     minimumHeight: Tokens.previewMinimumHeight
     visible: true
-    title: qsTr("KLDE Shell — Preview")
+    title: I18n.t("shell.title")
     color: Tokens.background
     font: Tokens.body
     palette.window: Tokens.surface
@@ -50,6 +52,9 @@ ApplicationWindow {
         }
     }
     Component.onCompleted: {
+        if (initialLocale.length > 0)
+            Shell.language.setLocale(initialLocale);
+        Shell.language.setVoice(initialVoice);
         applyScene();
         if (initialView === "quick-settings")
             quickSettings.open();
@@ -61,6 +66,10 @@ ApplicationWindow {
             preferences.open();
         else if (initialView === "weather")
             weatherPreferences.open();
+        else if (initialView === "language")
+            languagePreferences.open();
+        else if (initialView === "input")
+            inputPopup.open();
     }
 
     Item {
@@ -96,7 +105,7 @@ ApplicationWindow {
             }
             Label {
                 objectName: "statusLabel"
-                text: qsTr("PREVIEW · MOCK SYSTEM")
+                text: I18n.t("shell.preview")
                 font: Tokens.caption
                 color: Tokens.textSecondary
             }
@@ -113,10 +122,23 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.rightMargin: Tokens.desktopMargin
         y: Tokens.space24
-        text: qsTr("09:41  ·  Controls")
+        text: (window.width < Tokens.previewWidth ? "09:41" : I18n.clock()) + " · " + I18n.t("shell.controls.short")
         font: Tokens.label
-        Accessible.name: qsTr("Open quick settings, preview clock 09:41")
+        Accessible.name: I18n.t("shell.controls.accessible")
         onClicked: quickSettings.opened ? quickSettings.close() : quickSettings.open()
+    }
+    ActionButton {
+        id: inputButton
+        objectName: "inputIndicator"
+        anchors.right: quickButton.left
+        anchors.rightMargin: Tokens.space8
+        y: Tokens.space24
+        text: Shell.input.indicator
+        emphasized: true
+        Accessible.name: I18n.t("input.preview")
+        ToolTip.visible: hovered
+        ToolTip.text: I18n.t("input.preview")
+        onClicked: inputPopup.opened ? inputPopup.close() : inputPopup.open()
     }
     WidgetHost {
         widgetId: "weather"
@@ -137,12 +159,12 @@ ApplicationWindow {
         anchors.bottomMargin: Tokens.space32
         spacing: Tokens.space8
         Label {
-            text: qsTr("A little room\nto make things.")
+            text: I18n.t("shell.welcome")
             font: Tokens.display
             color: Tokens.textPrimary
         }
         Label {
-            text: qsTr("%1 to explore · %2 for your controls").arg(Shell.shortcuts.launcher).arg(Shell.shortcuts.quickSettings)
+            text: I18n.t("shell.shortcuts.hint").arg(Shell.shortcuts.launcher).arg(Shell.shortcuts.quickSettings)
             font: Tokens.label
             color: Tokens.textSecondary
         }
@@ -166,7 +188,7 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onClosed: {
-            if (!quickSettings.visible && !blurLab.visible && !preferences.visible && !weatherPreferences.visible)
+            if (!quickSettings.visible && !blurLab.visible && !preferences.visible && !weatherPreferences.visible && !languagePreferences.visible && !inputPopup.visible)
                 dock.focusLauncher();
         }
     }
@@ -197,7 +219,14 @@ ApplicationWindow {
         backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-        onClosed: quickButton.forceActiveFocus()
+        onClosed: {
+            if (!languagePreferences.visible)
+                quickButton.forceActiveFocus();
+        }
+        onLanguageInputRequested: {
+            preferences.close();
+            languagePreferences.open();
+        }
     }
     WeatherSettings {
         id: weatherPreferences
@@ -206,6 +235,26 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onClosed: quickButton.forceActiveFocus()
+    }
+    LanguageInputSettings {
+        id: languagePreferences
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+        onClosed: inputButton.forceActiveFocus()
+    }
+    InputPopup {
+        id: inputPopup
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? parent.width - width - Tokens.desktopMargin : 0
+        y: Tokens.controlHeight + Tokens.space24 * 2
+        onSettingsRequested: languagePreferences.open()
+        onClosed: {
+            if (!languagePreferences.visible)
+                inputButton.forceActiveFocus();
+        }
     }
     Surface {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -218,7 +267,7 @@ ApplicationWindow {
         Label {
             id: noticeText
             anchors.fill: parent
-            text: Shell.message + (Shell.osdValue >= 0 ? "  " + Shell.osdValue + "%" : "")
+            text: I18n.s(Shell.message) + (Shell.osdValue >= 0 ? "  " + Shell.osdValue + "%" : "")
             font: Tokens.label
             color: Tokens.textPrimary
             horizontalAlignment: Text.AlignHCenter
