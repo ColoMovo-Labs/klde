@@ -2,7 +2,8 @@
 #include "ShellServices.h"
 
 namespace klde {
-ShellServices::ShellServices(QObject *parent) : QObject(parent), m_search(&m_applications) {
+ShellServices::ShellServices(QObject *parent)
+    : QObject(parent), m_search(&m_applications), m_scenes(&m_system, &m_blur), m_shortcuts(this) {
     m_noticeTimer.setSingleShot(true);
     m_noticeTimer.setInterval(2400);
     connect(&m_noticeTimer, &QTimer::timeout, this, [this] {
@@ -14,20 +15,15 @@ ShellServices::ShellServices(QObject *parent) : QObject(parent), m_search(&m_app
     connect(&m_system, &SystemBackend::requestRejected, this, &ShellServices::showNotice);
     connect(&m_windowManager, &WindowManagerBackend::requestRejected, this,
             &ShellServices::showNotice);
+    connect(&m_scenes, &PowerSceneController::requestRejected, this, &ShellServices::showNotice);
+    connect(&m_weather, &WeatherService::changed, this, &ShellServices::weatherChanged);
     connect(&m_system, &SystemBackend::osdRequested, this, [this](const QString &kind, int value) {
         showNotice(kind == "volume" ? tr("Volume") : tr("Brightness"));
         m_osdValue = value;
         emit messageChanged();
     });
 }
-QVariantMap ShellServices::weather() const {
-    return {{"location", "Snowline"},
-            {"temperature", 18},
-            {"condition", "Clouds & sunshine"},
-            {"high", 21},
-            {"low", 12},
-            {"sourceLabel", "Mock weather"}};
-}
+QVariantMap ShellServices::weather() const { return m_weather.reading(); }
 bool ShellServices::launch(const QString &appId) {
     if (!m_applications.activate(appId)) {
         showNotice(tr("That application is unavailable"));
