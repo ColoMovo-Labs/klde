@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QGuiApplication>
 #include <QImage>
+#include <QPointer>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QQuickWindow>
@@ -58,9 +59,11 @@ int main(int argc, char *argv[]) {
         QGuiApplication::styleHints()->setCursorFlashTime(0);
     }
 
-    QQmlApplicationEngine engine;
     bool qmlWarnings = false;
-    QObject::connect(&engine, &QQmlApplicationEngine::warnings, &app,
+    bool frameHandled = false;
+    int idleFrames = 0;
+    QQmlApplicationEngine engine;
+    QObject::connect(&engine, &QQmlApplicationEngine::warnings, &engine,
                      [&qmlWarnings] { qmlWarnings = true; });
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
@@ -77,21 +80,23 @@ int main(int argc, char *argv[]) {
         qCritical() << "The shell window or services could not be created";
         return EXIT_FAILURE;
     }
+    const QPointer<QQuickWindow> guardedWindow(window);
     QObject::connect(
-        window, &QQuickWindow::sceneGraphInitialized, &app,
-        [window, services] {
-            const auto api = window->rendererInterface()->graphicsApi();
+        window, &QQuickWindow::sceneGraphInitialized, services,
+        [guardedWindow, services] {
+            if (!guardedWindow) {
+                return;
+            }
+            const auto api = guardedWindow->rendererInterface()->graphicsApi();
             services->setGraphicsAvailable(
                 api == QSGRendererInterface::OpenGL || api == QSGRendererInterface::Vulkan ||
                 api == QSGRendererInterface::Metal || api == QSGRendererInterface::Direct3D11);
         },
         Qt::QueuedConnection);
     QObject::connect(
-        window, &QQuickWindow::sceneGraphInvalidated, &app,
+        window, &QQuickWindow::sceneGraphInvalidated, services,
         [services] { services->setGraphicsAvailable(false); }, Qt::QueuedConnection);
 
-    bool frameHandled = false;
-    int idleFrames = 0;
     if (parser.isSet(smokeOption)) {
         const auto capturePath = parser.value(captureOption);
         const bool audit = parser.isSet(idleOption);
@@ -124,18 +129,18 @@ int main(int argc, char *argv[]) {
             app.exit(EXIT_SUCCESS);
         };
         QObject::connect(
-            window, &QQuickWindow::frameSwapped, &app,
-            [&app, &frameHandled, &idleFrames, audit, finish] {
+            window, &QQuickWindow::frameSwapped, window,
+            [window, &frameHandled, &idleFrames, audit, finish] {
                 ++idleFrames;
                 if (frameHandled) {
                     return;
                 }
                 frameHandled = true;
-                QTimer::singleShot(700, &app, [&app, &idleFrames, audit, finish] {
+                QTimer::singleShot(700, window, [window, &idleFrames, audit, finish] {
                     if (audit) {
                         idleFrames = 0;
                         qInfo() << "KLDE idle audit begins";
-                        QTimer::singleShot(1000, &app, finish);
+                        QTimer::singleShot(1000, window, finish);
                     } else {
                         finish();
                     }
@@ -143,7 +148,7 @@ int main(int argc, char *argv[]) {
             },
             Qt::QueuedConnection);
         // Diagnostic-only finite timers; ordinary shell startup has no repaint timer.
-        QTimer::singleShot(12000, &app, [&app] {
+        QTimer::singleShot(12000, window, [&app] {
             qCritical() << "KLDE smoke test timed out";
             app.exit(EXIT_FAILURE);
         });
