@@ -26,6 +26,8 @@ ComboBox {
             // No hidden delegates or internal highlight-tracker animations.
             model: control.popup.visible ? control.delegateModel : null
             currentIndex: control.highlightedIndex
+            highlightMoveVelocity: -1
+            highlightResizeVelocity: -1
             highlightMoveDuration: 0
             highlightResizeDuration: 0
         }

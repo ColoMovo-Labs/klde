@@ -49,9 +49,23 @@ RowLayout {
                 anchors.left: parent.left
                 anchors.leftMargin: Tokens.space16
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.value + "%"
+                text: I18n.number(root.value, 0) + "%"
                 font: Tokens.label
-                color: root.value >= 20 ? Tokens.textOnPrimary : Tokens.textPrimary
+                Accessible.ignored: true
+                color: Tokens.textPrimary
+            }
+            Item {
+                width: control.visualPosition * parent.width
+                height: parent.height
+                clip: true
+                Text {
+                    x: Tokens.space16
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: I18n.number(root.value, 0) + "%"
+                    font: Tokens.label
+                    Accessible.ignored: true
+                    color: Tokens.textOnPrimary
+                }
             }
         }
         handle: Rectangle {

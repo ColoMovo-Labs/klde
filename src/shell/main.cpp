@@ -77,6 +77,8 @@ int main(int argc, char *argv[]) {
 
     bool qmlWarnings = false;
     bool frameHandled = false;
+    bool settlingEnabled = false;
+    bool auditStarted = false;
     int idleFrames = 0;
     QQmlApplicationEngine engine;
     QObject::connect(&engine, &QQmlApplicationEngine::warnings, &engine,
@@ -146,23 +148,36 @@ int main(int argc, char *argv[]) {
                     << "frames:" << idleFrames;
             app.exit(EXIT_SUCCESS);
         };
+        // A cold software renderer can take longer than a wall-clock transition
+        // duration. Require an actual quiet interval before measuring idle frames.
+        // Continuous rendering never reaches this gate and still hits the timeout.
+        auto *settleTimer = new QTimer(window);
+        settleTimer->setSingleShot(true);
+        settleTimer->setInterval(300);
+        QObject::connect(settleTimer, &QTimer::timeout, window,
+                         [window, &idleFrames, &auditStarted, audit, finish] {
+                             if (audit) {
+                                 auditStarted = true;
+                                 idleFrames = 0;
+                                 qInfo() << "KLDE scene quiescent; idle audit begins";
+                                 QTimer::singleShot(1000, window, finish);
+                             } else {
+                                 finish();
+                             }
+                         });
         QObject::connect(
             window, &QQuickWindow::frameSwapped, window,
-            [window, &frameHandled, &idleFrames, audit, finish] {
+            [window, settleTimer, &frameHandled, &idleFrames, &settlingEnabled, &auditStarted] {
                 ++idleFrames;
-                if (frameHandled) {
-                    return;
+                if (!frameHandled) {
+                    frameHandled = true;
+                    QTimer::singleShot(700, window, [settleTimer, &settlingEnabled] {
+                        settlingEnabled = true;
+                        settleTimer->start();
+                    });
+                } else if (settlingEnabled && !auditStarted) {
+                    settleTimer->start();
                 }
-                frameHandled = true;
-                QTimer::singleShot(700, window, [window, &idleFrames, audit, finish] {
-                    if (audit) {
-                        idleFrames = 0;
-                        qInfo() << "KLDE idle audit begins";
-                        QTimer::singleShot(1000, window, finish);
-                    } else {
-                        finish();
-                    }
-                });
             },
             Qt::QueuedConnection);
         // Diagnostic-only finite timers; ordinary shell startup has no repaint timer.

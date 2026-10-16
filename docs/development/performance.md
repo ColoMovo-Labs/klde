@@ -74,3 +74,11 @@ traces and an auditable commit-to-result mapping.
 Report failures and inconclusive results as such. Preserve logs and screenshots
 without private desktop contents; use synthetic scenes. Never infer visual polish
 or low power use merely from a successful CI job.
+
+The expanded cold `.deb` runtime check exposed the limits of a fixed 700 ms
+startup wait: the blur view still submitted transition/resource frames afterward.
+The diagnostic now requires at least 700 ms plus a 300 ms quiet interval before
+starting the unchanged one-second audit (maximum two frames). Every settling
+frame restarts the quiet timer; continuous rendering reaches the 12-second
+timeout and fails. Ordinary runtime adds no such timer. This is a correctness
+gate, not a claim that cold-renderer latency or hardware performance is solved.

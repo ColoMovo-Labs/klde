@@ -84,7 +84,10 @@ Xvfb/OpenGL/llvmpipe. Additional captures show launcher, controls, dark controls
 and the owned-content blur laboratory.
 
 In diagnostic mode only, `--audit-idle` counts submitted frames during one second
-after a 700 ms settling interval and rejects more than two. Launcher cursor
+after at least 700 ms and a subsequent 300 ms without a submitted frame, then
+rejects more than two. Continuous rendering cannot reach the quiet gate and
+fails the 12-second overall timeout. This accommodates cold software rendering
+without counting unfinished transitions as idle activity. Launcher cursor
 blinking is disabled for this static-rendering diagnostic. Normal interaction
 uses the platform cursor; the scroll indicator is static. Native list highlight
 tracking also uses the finite motion tokens, including zero duration in reduced motion.

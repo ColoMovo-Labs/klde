@@ -13,7 +13,7 @@ icons = {
     "music": '<path d="M17 27V12L30 9V24M17 16L30 13"/><ellipse cx="13" cy="28" rx="4" ry="3" fill="#477d7a"/><ellipse cx="26" cy="25" rx="4" ry="3" fill="#477d7a"/>',
     "settings": '<circle cx="20" cy="20" r="8"/><circle cx="20" cy="20" r="3"/><path d="M20 7V11M20 29V33M7 20H11M29 20H33M11 11L14 14M26 26L29 29M11 29L14 26M26 14L29 11"/>',
     "wifi": '<path d="M7 15Q20 4 33 15M12 21Q20 14 28 21M17 26Q20 23 23 26"/><circle cx="20" cy="31" r="1.8" fill="#363b87" stroke="none"/>',
-    "bluetooth": '<circle cx="13" cy="14" r="5"/><circle cx="27" cy="26" r="5"/><path d="M17 17L23 23M23 12H31V18M9 22V29H17"/>',
+    "bluetooth": '<path d="M18 7V33L29 24L11 11M18 7L29 16L11 29"/>',
     "moon": '<path d="M29 27A12 12 0 0 1 14 10A12 12 0 1 0 29 27Z" fill="#8f91b9" stroke="none"/>',
     "sun": '<circle cx="20" cy="20" r="7" fill="#edc27f"/><path d="M20 5V9M20 31V35M5 20H9M31 20H35M9 9L12 12M28 28L31 31M9 31L12 28M28 12L31 9"/>',
     "volume": '<path d="M7 16H13L20 10V30L13 24H7ZM26 14Q32 20 26 26M30 9Q40 20 30 31"/>',

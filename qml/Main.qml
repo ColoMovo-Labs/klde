@@ -116,7 +116,7 @@ ApplicationWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         y: Tokens.space24
     }
-    Button {
+    ActionButton {
         id: quickButton
         objectName: "quickSettingsButton"
         anchors.right: parent.right
