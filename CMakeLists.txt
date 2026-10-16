@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2)
+find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui Network Qml Quick QuickControls2)
 qt_standard_project_setup(REQUIRES 6.8)
 include(CTest)
 include(GNUInstallDirs)
@@ -20,8 +20,10 @@ set(klde_qml_files
     qml/components/ShellPopup.qml qml/components/Dock.qml qml/components/Launcher.qml
     qml/components/WorkspaceIndicator.qml qml/components/ToggleTile.qml
     qml/components/SliderCard.qml qml/components/QuickSettings.qml
+    qml/components/PowerSceneCard.qml qml/components/SceneSettings.qml
+    qml/components/WeatherSettings.qml
     qml/widgets/WidgetHost.qml qml/widgets/WeatherWidget.qml
-    qml/effects/OwnedBlurSample.qml qml/effects/BlurLab.qml
+    qml/effects/OwnedBlurSample.qml qml/effects/BlurLab.qml qml/effects/OwnedBackdrop.qml
 )
 foreach(qml_file IN LISTS klde_qml_files)
     get_filename_component(qml_name "${qml_file}" NAME)
@@ -62,3 +64,5 @@ install(FILES packaging/org.klde.shell.preview.desktop
 install(FILES assets/icons/klde.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
 install(FILES LICENSE LICENSES/CC-BY-SA-4.0.txt
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/klde)
+
+include(cmake/Packaging.cmake)

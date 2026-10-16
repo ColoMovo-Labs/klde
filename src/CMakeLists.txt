@@ -11,8 +11,14 @@ qt_add_qml_module(klde_backends STATIC
         backends/MockSystemBackend.h backends/MockSystemBackend.cpp
         backends/BlurBackend.h backends/BlurBackend.cpp
         models/ApplicationModel.h models/ApplicationModel.cpp
+        models/PowerSceneController.h models/PowerSceneController.cpp
+        shortcuts/ShortcutRegistry.h shortcuts/ShortcutRegistry.cpp
+        weather/WeatherProvider.h weather/WeatherProvider.cpp
+        weather/MockWeatherProvider.h weather/MockWeatherProvider.cpp
+        weather/UApisCnWeatherProvider.h weather/UApisCnWeatherProvider.cpp
+        weather/WeatherService.h weather/WeatherService.cpp
         ShellServices.h ShellServices.cpp
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Qml)
+target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Gui Qt6::Network Qt6::Qml)
 target_compile_options(klde_backends PRIVATE -Wall -Wextra -Wpedantic)

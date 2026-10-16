@@ -46,7 +46,7 @@ class PreviewBlurBackend final : public BlurBackend {
     void setGraphicsAvailable(bool available);
 
   private:
-    Quality m_quality = Off;
+    Quality m_quality = Medium;
     bool m_graphicsAvailable = false;
     bool m_renderingAllowed = true;
 };
