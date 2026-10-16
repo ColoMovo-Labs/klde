@@ -35,15 +35,22 @@ int main(int argc, char *argv[]) {
                                            QStringLiteral("path"));
     const QCommandLineOption viewOption(
         QStringLiteral("view"),
-        QStringLiteral(
-            "Initial preview: desktop, launcher, quick-settings, blur, power-scenes, weather"),
+        QStringLiteral("Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
+                       "weather, language, input"),
         QStringLiteral("view"), QStringLiteral("desktop"));
     const QCommandLineOption darkOption(QStringLiteral("dark"),
                                         QStringLiteral("Start with dark appearance"));
     const QCommandLineOption idleOption(
         QStringLiteral("audit-idle"),
         QStringLiteral("Count frames for one settled second in smoke-test mode"));
-    parser.addOptions({smokeOption, captureOption, viewOption, darkOption, idleOption});
+    const QCommandLineOption localeOption(QStringLiteral("locale"),
+                                          QStringLiteral("Preview locale: en or zh_CN"),
+                                          QStringLiteral("locale"));
+    const QCommandLineOption voiceOption(QStringLiteral("voice"),
+                                         QStringLiteral("Preview voice: standard or cute"),
+                                         QStringLiteral("voice"), QStringLiteral("standard"));
+    parser.addOptions({smokeOption, captureOption, viewOption, darkOption, idleOption, localeOption,
+                       voiceOption});
     parser.process(app);
     if ((parser.isSet(captureOption) || parser.isSet(idleOption)) && !parser.isSet(smokeOption)) {
         qCritical() << "--capture and --audit-idle require --smoke-test";
@@ -51,9 +58,16 @@ int main(int argc, char *argv[]) {
     }
     const QStringList views{QStringLiteral("desktop"),        QStringLiteral("launcher"),
                             QStringLiteral("quick-settings"), QStringLiteral("blur"),
-                            QStringLiteral("power-scenes"),   QStringLiteral("weather")};
+                            QStringLiteral("power-scenes"),   QStringLiteral("weather"),
+                            QStringLiteral("language"),       QStringLiteral("input")};
     if (!views.contains(parser.value(viewOption))) {
         qCritical() << "Unknown preview view";
+        return EXIT_FAILURE;
+    }
+    if ((!parser.value(localeOption).isEmpty() && parser.value(localeOption) != "en" &&
+         parser.value(localeOption) != "zh_CN") ||
+        (parser.value(voiceOption) != "standard" && parser.value(voiceOption) != "cute")) {
+        qCritical() << "Unsupported locale or voice";
         return EXIT_FAILURE;
     }
     if (parser.isSet(idleOption)) {
@@ -71,14 +85,16 @@ int main(int argc, char *argv[]) {
         &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
         [] { QCoreApplication::exit(EXIT_FAILURE); }, Qt::QueuedConnection);
     engine.setInitialProperties({{QStringLiteral("initialView"), parser.value(viewOption)},
-                                 {QStringLiteral("initialDark"), parser.isSet(darkOption)}});
+                                 {QStringLiteral("initialDark"), parser.isSet(darkOption)},
+                                 {QStringLiteral("initialLocale"), parser.value(localeOption)},
+                                 {QStringLiteral("initialVoice"), parser.value(voiceOption)}});
     engine.loadFromModule(QStringLiteral("KLDE.Shell"), QStringLiteral("Main"));
     if (engine.rootObjects().size() != 1) {
         return EXIT_FAILURE;
     }
     auto *window = qobject_cast<QQuickWindow *>(engine.rootObjects().constFirst());
     auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
-    if (window == nullptr || services == nullptr) {
+    if (window == nullptr || services == nullptr || !services->language()->ready()) {
         qCritical() << "The shell window or services could not be created";
         return EXIT_FAILURE;
     }

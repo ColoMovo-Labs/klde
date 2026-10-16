@@ -7,6 +7,17 @@
 #include <optional>
 
 namespace klde {
+enum class WeatherCondition : quint8 {
+    Clear,
+    PartlyCloudy,
+    Cloudy,
+    Rain,
+    Snow,
+    Thunderstorm,
+    Fog,
+    Unknown
+};
+WeatherCondition normalizeWeatherCondition(const QString &description);
 struct WeatherQuery {
     QString city;
     QString language = QStringLiteral("en");
@@ -15,6 +26,7 @@ struct WeatherQuery {
 };
 
 struct WeatherReading {
+    WeatherCondition category = WeatherCondition::Unknown;
     QString location;
     QString condition;
     QString iconCode;
@@ -24,6 +36,7 @@ struct WeatherReading {
     std::optional<double> low;
     QDateTime fetchedAt;
     QVariantMap toVariantMap() const;
+    QString conditionId() const;
 };
 
 struct WeatherFailure {

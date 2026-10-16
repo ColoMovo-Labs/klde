@@ -6,7 +6,7 @@
 namespace klde {
 ShortcutRegistry::ShortcutRegistry(QObject *parent) : QObject(parent) {
     m_actions = {
-        {QStringLiteral("shell.launcher"), tr("Launcher"), QStringLiteral("Ctrl+Space"), {}},
+        {QStringLiteral("shell.launcher"), tr("Launcher"), QStringLiteral("Ctrl+Alt+Space"), {}},
         {QStringLiteral("shell.quick-settings"), tr("Quick Settings"), QStringLiteral("F2"), {}},
         {QStringLiteral("preview.blur-lab"),
          tr("Blur laboratory"),

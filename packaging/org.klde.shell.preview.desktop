@@ -1,7 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=KLDE Shell Preview
+Name[zh_CN]=KLDE 桌面外壳预览
 Comment=Experimental Kemono Linux Desktop Environment foundation
+Comment[zh_CN]=兽系 Linux 桌面环境的实验性外壳
 Exec=klde-shell
 Icon=klde
 Terminal=false

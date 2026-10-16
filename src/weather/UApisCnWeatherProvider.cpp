@@ -177,6 +177,7 @@ UApisCnWeatherProvider::parse(const QByteArray &body, const QDateTime &fetchedAt
     WeatherReading result;
     result.location = city;
     result.condition = condition;
+    result.category = normalizeWeatherCondition(condition);
     result.temperature = *current;
     result.fetchedAt = fetchedAt.toUTC();
     result.high = temperature(object.value("temp_max"));
@@ -197,8 +198,8 @@ UApisCnWeatherProvider::parse(const QByteArray &body, const QDateTime &fetchedAt
     }
     const QString observed = object.value("report_time").toString();
     if (safeText(observed, 64))
-        result.observedAt = observed; // The documented timestamp has no timezone;
-                                      // do not invent one.
+        result.observedAt =
+            observed; // The documented timestamp has no timezone; do not invent one.
     if (error)
         error->clear();
     return result;
@@ -223,8 +224,7 @@ WeatherFailure UApisCnWeatherProvider::classifyFailure(int httpStatus, const QBy
             WeatherFailure::Kind::InvalidInput, tr("No weather is available for that city"), {}};
     if (httpStatus >= 300 && httpStatus < 500)
         return {WeatherFailure::Kind::AccessDenied,
-                tr("Weather access was refused; redirects and paid access are not "
-                   "enabled"),
+                tr("Weather access was refused; redirects and paid access are not enabled"),
                 {}};
     return {WeatherFailure::Kind::Unavailable,
             tr("The weather provider is temporarily unavailable"), retryTime(retryAfter, now)};

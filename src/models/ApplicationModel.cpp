@@ -5,13 +5,16 @@
 namespace klde {
 ApplicationModel::ApplicationModel(QObject *parent) : QAbstractListModel(parent) {
     m_applications = {
-        {"files", "Files", "Your everyday places", "folder", "home documents folders", true, false},
-        {"web", "Browser", "A little window to the world", "globe", "internet web search"},
-        {"terminal", "Terminal", "Make something happen", "terminal", "console command shell", true,
-         true},
-        {"notes", "Notes", "Keep a thought close", "note", "write text editor"},
-        {"music", "Music", "Find your rhythm", "music", "audio listen sound"},
-        {"settings", "Settings", "Make this space yours", "settings", "preferences appearance"}};
+        {"files", "Files", "Your everyday places", "folder",
+         "home documents folders 文件 文档 文件夹 wenjian", true, false},
+        {"web", "Browser", "A little window to the world", "globe",
+         "internet web search 浏览器 网页 liulanqi"},
+        {"terminal", "Terminal", "Make something happen", "terminal",
+         "console command shell 终端 命令 zhongduan", true, true},
+        {"notes", "Notes", "Keep a thought close", "note", "write text editor 笔记 文本 biji"},
+        {"music", "Music", "Find your rhythm", "music", "audio listen sound 音乐 yinyue"},
+        {"settings", "Settings", "Make this space yours", "settings",
+         "preferences appearance 设置 shezhi"}};
 }
 int ApplicationModel::rowCount(const QModelIndex &parent) const {
     return parent.isValid() ? 0 : static_cast<int>(m_applications.size());

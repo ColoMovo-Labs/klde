@@ -9,7 +9,7 @@ class ShortcutTest final : public QObject {
     void defaultsAreApplicationScopedAndInstancesAreIsolated() {
         klde::ShortcutRegistry first;
         klde::ShortcutRegistry second;
-        QCOMPARE(first.launcher(), QStringLiteral("Ctrl+Space"));
+        QCOMPARE(first.launcher(), QStringLiteral("Ctrl+Alt+Space"));
         QCOMPARE(first.actions().size(), 4);
         QVERIFY(!first.globalAvailable());
         for (const auto &action : first.actions()) {
@@ -17,7 +17,7 @@ class ShortcutTest final : public QObject {
                      QStringLiteral("application"));
         }
         QVERIFY(first.rebind(QStringLiteral("shell.launcher"), QStringLiteral("Ctrl+Alt+L")));
-        QCOMPARE(second.launcher(), QStringLiteral("Ctrl+Space"));
+        QCOMPARE(second.launcher(), QStringLiteral("Ctrl+Alt+Space"));
     }
     void conflictsAndInvalidBindingsDoNotReplaceWorkingShortcut() {
         klde::ShortcutRegistry registry;
@@ -29,7 +29,7 @@ class ShortcutTest final : public QObject {
             !registry.rebind(QStringLiteral("shell.launcher"), QStringLiteral("Ctrl+X, Ctrl+C")));
         QVERIFY(!registry.rebind(QStringLiteral("shell.launcher"), QStringLiteral("A")));
         QVERIFY(!registry.rebind(QStringLiteral("shell.launcher"), QStringLiteral("Shift+A")));
-        QCOMPARE(registry.launcher(), QStringLiteral("Ctrl+Space"));
+        QCOMPARE(registry.launcher(), QStringLiteral("Ctrl+Alt+Space"));
         QCOMPARE(changed.count(), 0);
         QVERIFY(!registry.lastError().isEmpty());
     }
@@ -46,7 +46,7 @@ class ShortcutTest final : public QObject {
         QCOMPARE(changed.count(), 2);
         registry.resetDefaults();
         QCOMPARE(changed.count(), 3);
-        QCOMPARE(registry.launcher(), QStringLiteral("Ctrl+Space"));
+        QCOMPARE(registry.launcher(), QStringLiteral("Ctrl+Alt+Space"));
         QCOMPARE(registry.quickSettings(), QStringLiteral("F2"));
         registry.resetDefaults();
         QCOMPARE(changed.count(), 3);

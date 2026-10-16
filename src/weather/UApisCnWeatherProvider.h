@@ -8,8 +8,7 @@
 #include <QUrl>
 
 namespace klde {
-// Experimental visitor access only. No API keys, automatic location lookup or
-// redirects.
+// Experimental visitor access only. No API keys, automatic location lookup or redirects.
 class UApisCnWeatherProvider final : public WeatherProvider {
     Q_OBJECT
   public:

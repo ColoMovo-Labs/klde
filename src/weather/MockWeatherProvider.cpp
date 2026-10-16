@@ -10,6 +10,7 @@ void MockWeatherProvider::request(const WeatherQuery &query) {
     WeatherReading reading;
     reading.location = QStringLiteral("Snowline");
     reading.condition = tr("Clouds & sunshine");
+    reading.category = WeatherCondition::PartlyCloudy;
     reading.iconCode = QStringLiteral("101");
     reading.temperature = 18;
     reading.high = 21;

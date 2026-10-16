@@ -7,8 +7,7 @@
 
 namespace {
 // Synthetic fixtures, not redistributed observations from the provider.
-const QByteArray Fixture =
-    R"({"city":"Fixture Harbour","weather":"Passing cloud",
+const QByteArray Fixture = R"({"city":"Fixture Harbour","weather":"Passing cloud",
     "temperature":7.25,"weather_icon":"101","report_time":"2030-01-02 03:04:05"})";
 
 class FakeWeatherProvider final : public klde::WeatherProvider {
@@ -153,8 +152,7 @@ class WeatherTest final : public QObject {
         QCOMPARE(service.status(), QStringLiteral("mock"));
         QCOMPARE(service.reading().value("location").toString(), QStringLiteral("Snowline"));
         QVERIFY(service.enableOnline(QStringLiteral("Another Harbour"), QStringLiteral("en")));
-        QCOMPARE(provider.requests,
-                 1); // Consent/city changes cannot bypass the global cooldown.
+        QCOMPARE(provider.requests, 1); // Consent/city changes cannot bypass the global cooldown.
         QVERIFY(!service.reading().value("available").toBool());
     }
     void serviceKeepsStaleDataAndStopsOnQuotaExhaustion() {
