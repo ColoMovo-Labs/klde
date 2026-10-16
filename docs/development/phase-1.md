@@ -53,7 +53,8 @@ Ctrl+Alt+B opens the blur laboratory, and Ctrl+Alt+R toggles reduced motion.
 These are application shortcuts, not global desktop shortcuts. Escape dismisses
 a popup; closing restores focus to the invoking part of the shell.
 
-The clock and weather are deliberately fixed mock content. Power and application
+The clock is fixed preview content. Weather defaults to synthetic data; explicit
+city/consent can enable the experimental provider. Power and application
 buttons report preview actions; they never shut down the host or start programs.
 
 ## Module and ownership boundaries
@@ -129,7 +130,7 @@ their QObject owners. The latest commit must still pass the same required checks
 
 ## Remaining boundaries
 
-Real service calls, screen-off/suspend integration, layer-shell/session hosting,
+Real audio/network/power services, screen-off/suspend integration, layer-shell/session hosting,
 window management, native compositor blur, installed application discovery and
 persistent configuration remain later work. Qt's software scene graph uses the
 unfiltered source in the laboratory. No Intel UHD 620 performance claim is made.
@@ -159,3 +160,8 @@ resources. CI checks missing/duplicate IDs, placeholders and protected namespace
 Wayland/XCB interaction tests and bilingual captures are correctness evidence;
 manual mixed-application IME, CJK scaling and assistive-technology acceptance
 remain open. See the [input test matrix](../architecture/input-methods.md).
+
+The [expressive bilingual follow-up](expressive-language.md) records the revised
+controls, language/input captures, dual-display interaction suite and clean `.deb`
+runtime evidence at their actual source revision. Historical images above are
+retained rather than relabelled as the new implementation.

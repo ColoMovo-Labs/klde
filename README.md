@@ -41,28 +41,30 @@ Phase 0 provides project documents, contribution templates, a CircleCI configura
 a minimal `klde-shell` test window and initial startup tests. All six CircleCI jobs
 passed for baseline `418ea56`. See [the handoff](docs/development/phase-0.md).
 
-The Phase 1 feature branch adds the dock, search launcher, quick settings,
-weather widget, workspace indicator and a bounded owned-content blur laboratory.
-It uses C++ mock backends. All six CircleCI jobs passed for prototype `46619fc`;
-current feature development is in [PR #1](https://github.com/ColoMovo-Labs/klde/pull/1). See
-[the prototype guide](docs/development/phase-1.md) for controls and validation.
-System controls and window management remain mock. The experimental weather
-adapter is disabled by default and requires an explicitly entered city and
-online consent. There is no telemetry or privileged helper. The expanded
-prototype adds editable Power Scenes, session shortcut bindings and default
-owned-wallpaper blur; current cloud acceptance is tracked in the PR.
+The Phase 1 feature branch adds a coherent shell preview, expressive controls,
+editable Power Scenes, owned-wallpaper blur, session shortcuts and bilingual
+language/voice/input models. Current development and eight-job cloud acceptance
+are tracked in [PR #1](https://github.com/ColoMovo-Labs/klde/pull/1). See the
+[prototype guide](docs/development/phase-1.md) and
+[latest rendering evidence](docs/development/expressive-language.md).
+
+System controls, workspace management and input selection remain mock. The
+experimental weather adapter is disabled by default and requires an explicitly
+entered city and online consent. There is no telemetry or privileged helper.
 
 ## Screenshots / Concept Art
 
-Actual Phase 1 preview rendered by CircleCI with Mesa llvmpipe at `46619fc`.
+Actual expressive preview rendered by CircleCI with Mesa llvmpipe at `833d34a`.
 This is a runnable Qt window using mock data, not concept art or a complete desktop session:
 
-![Phase 1 KLDE desktop preview — actual cloud-rendered window](docs/development/phase-1-desktop.png)
+![KLDE expressive preview — actual cloud-rendered window](docs/development/expressive-controls.png)
 
-[Launcher](docs/development/phase-1-launcher.png) ·
-[Quick settings](docs/development/phase-1-controls.png) ·
-[Dark appearance](docs/development/phase-1-dark.png) ·
-[Owned-content blur laboratory](docs/development/phase-1-blur.png).
+[Chinese Cute](docs/development/expressive-zh-cn-cute.png) ·
+[Language & Input](docs/development/expressive-language.png) ·
+[Launcher](docs/development/expressive-launcher.png) ·
+[Dark appearance](docs/development/expressive-dark.png) ·
+[Source and verification record](docs/development/expressive-language.md).
+Historical `46619fc` captures remain in the [Phase 1 guide](docs/development/phase-1.md).
 
 The owner supplied a colorful desktop screenshot as a visual reference on
 17 October 2026. Its third-party logos and wallpaper are not redistributed here;

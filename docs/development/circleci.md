@@ -16,14 +16,14 @@ builds do not separately verify that minimum version.
 
 | Job | Purpose | Merge policy |
 | --- | --- | --- |
-| configure-build | Ubuntu CMake/Ninja, C++20, warnings, ccache, persist build tree | existing required check |
-| static-analysis | clang-format, qmlformat, qmllint, clang-tidy, REUSE and desktop-file metadata | existing required check |
-| unit-tests | Qt Test backend contracts and packaged QML startup without warnings | existing required check |
-| qml-tests | Qt Quick Test tokens and keyboard interaction | existing required check |
-| integration-smoke | offscreen/software, Weston/Wayland/software, Xvfb/OpenGL/llvmpipe | existing required check |
-| fedora-build | Independent Fedora 44 configure/build, full CTest and offscreen/software startup | require green before claiming Fedora acceptance |
-| packaging-check | CPack `.deb`, generated ELF dependencies and matching source archive | require green before claiming package acceptance |
-| deb-runtime | Clean Ubuntu container, apt dependency resolution, installed binary capture and package purge | require green before claiming package acceptance |
+| configure-build | Ubuntu CMake/Ninja, C++20, warnings, ccache, persist build tree | required |
+| static-analysis | clang-format, qmlformat, qmllint, clang-tidy, REUSE and desktop-file metadata | required |
+| unit-tests | Qt Test backend contracts and packaged QML startup without warnings | required |
+| qml-tests | Qt Quick Test tokens and keyboard interaction | required |
+| integration-smoke | offscreen/software, Weston/Wayland/software, Xvfb/OpenGL/llvmpipe | required |
+| fedora-build | Independent Fedora 44 configure/build, full CTest and offscreen/software startup | required for the expanded foundation |
+| packaging-check | CPack `.deb`, generated ELF dependencies and matching source archive | required for the expanded foundation |
+| deb-runtime | Clean Ubuntu container, apt dependency resolution, installed binary capture and package purge | required for the expanded foundation |
 
 Ubuntu analysis/test/package-build jobs reuse the Ubuntu build workspace.
 The Fedora job builds independently. The runtime package job attaches artifacts
@@ -74,13 +74,17 @@ force pushes/deletion. Do not add nonexistent check names that would deadlock PR
 packaging contexts may be made required after their actual statuses are observed
 green; preserve the original five contexts while extending protection.
 
-Applied after green baseline `418ea56`: `main` requires these exact contexts:
+The original green baseline `418ea56` established five required contexts.
+The expanded merge policy retains those and adds Fedora and both packaging jobs:
 
 - `ci/circleci: configure-build`
 - `ci/circleci: static-analysis`
 - `ci/circleci: unit-tests`
 - `ci/circleci: qml-tests`
 - `ci/circleci: integration-smoke`
+- `ci/circleci: fedora-build`
+- `ci/circleci: packaging-check`
+- `ci/circleci: deb-runtime`
 
 The rule requires an up-to-date branch, applies to administrators, and blocks
 force pushes and deletion. A pull request is required; independent approving
