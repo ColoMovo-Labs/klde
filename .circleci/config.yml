@@ -1,0 +1,145 @@
+version: 2.1
+
+executors:
+  ubuntu-qt:
+    docker:
+      - image: ubuntu:26.04
+    resource_class: medium
+    working_directory: /root/project
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      CCACHE_DIR: /root/.cache/ccache
+      CCACHE_BASEDIR: /root/project
+
+commands:
+  prepare:
+    steps:
+      - run:
+          name: Install checkout tools
+          command: |
+            apt-get update
+            apt-get install -y --no-install-recommends ca-certificates git openssh-client
+      - checkout
+      - restore_cache:
+          keys:
+            - apt-v1-26.04-{{ arch }}-{{ checksum ".circleci/packages.txt" }}
+      - run:
+          name: Install distribution Qt and validation tools
+          command: |
+            rm -f /etc/apt/apt.conf.d/docker-clean
+            xargs -a .circleci/packages.txt apt-get install -y --no-install-recommends
+            mkdir -p artifacts/environment artifacts/tests
+            dpkg-query -W > artifacts/environment/packages.txt
+            cmake --version > artifacts/environment/cmake.txt
+            qmake6 -query > artifacts/environment/qt.txt
+            clang-format --version > artifacts/environment/clang-format.txt
+      - save_cache:
+          key: apt-v1-26.04-{{ arch }}-{{ checksum ".circleci/packages.txt" }}
+          paths:
+            - /var/cache/apt/archives
+  built-tree:
+    steps:
+      - prepare
+      - attach_workspace:
+          at: /root/project
+
+jobs:
+  configure-build:
+    executor: ubuntu-qt
+    steps:
+      - prepare
+      - restore_cache:
+          keys:
+            - ccache-v1-26.04-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - ccache-v1-26.04-{{ arch }}-{{ .Branch }}-
+            - ccache-v1-26.04-{{ arch }}-
+      - run:
+          name: Configure and build
+          command: |
+            cmake --preset ci -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+            cmake --build --preset ci --parallel 2
+            ccache --show-stats > artifacts/environment/ccache.txt
+      - save_cache:
+          key: ccache-v1-26.04-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /root/.cache/ccache
+      - persist_to_workspace:
+          root: /root/project
+          paths:
+            - build/ci
+      - store_artifacts:
+          path: artifacts/environment
+
+  static-analysis:
+    executor: ubuntu-qt
+    steps:
+      - built-tree
+      - run:
+          name: Format, license, QML and C++ analysis
+          command: |
+            bash tools/check-format.sh
+            reuse lint
+            cmake --build build/ci --target all_qmllint --parallel 2
+            clang-tidy -p build/ci src/shell/main.cpp
+            desktop-file-validate packaging/org.klde.shell.preview.desktop
+      - store_artifacts:
+          path: artifacts/environment
+
+  unit-tests:
+    executor: ubuntu-qt
+    steps:
+      - built-tree
+      - run:
+          name: Qt Test startup contract
+          command: ctest --test-dir build/ci -L unit --output-on-failure --output-junit artifacts/tests/unit.xml
+      - store_test_results:
+          path: artifacts/tests
+
+  qml-tests:
+    executor: ubuntu-qt
+    steps:
+      - built-tree
+      - run:
+          name: Qt Quick Test token contract
+          command: ctest --test-dir build/ci -L qml --output-on-failure --output-junit artifacts/tests/qml.xml
+      - store_test_results:
+          path: artifacts/tests
+
+  integration-smoke:
+    executor: ubuntu-qt
+    steps:
+      - built-tree
+      - run:
+          name: Offscreen, nested Wayland and llvmpipe startup
+          command: bash tools/smoke-test.sh build/ci/bin/klde-shell
+      - store_artifacts:
+          path: artifacts/smoke
+
+  packaging-check:
+    executor: ubuntu-qt
+    steps:
+      - built-tree
+      - run:
+          name: Stage install archive
+          command: |
+            DESTDIR="$PWD/artifacts/install" cmake --install build/ci --prefix /usr
+            test -x artifacts/install/usr/bin/klde-shell
+            desktop-file-validate artifacts/install/usr/share/applications/org.klde.shell.preview.desktop
+            tar -C artifacts/install -czf artifacts/klde-install-tree.tar.gz .
+      - store_artifacts:
+          path: artifacts/klde-install-tree.tar.gz
+
+workflows:
+  core:
+    jobs:
+      - configure-build
+      - static-analysis:
+          requires: [configure-build]
+      - unit-tests:
+          requires: [configure-build]
+      - qml-tests:
+          requires: [configure-build]
+      - integration-smoke:
+          requires: [configure-build]
+      - packaging-check:
+          requires: [configure-build]
