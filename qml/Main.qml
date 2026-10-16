@@ -28,7 +28,7 @@ ApplicationWindow {
     palette.button: Tokens.surfaceContainer
     palette.buttonText: Tokens.textPrimary
     palette.highlight: Tokens.primary
-    palette.highlightedText: Tokens.onPrimary
+    palette.highlightedText: Tokens.textOnPrimary
     palette.dark: Tokens.primary
     palette.mid: Tokens.outline
     palette.midlight: Tokens.surfaceContainer

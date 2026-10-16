@@ -11,8 +11,8 @@ manual evaluation copy a selected directory to
 Installation does not enable/restart Fcitx or edit the user's Classic UI config.
 Keep the previous theme selected until the new one has been tested in your session.
 
-SVG backgrounds use the Classic UI image/margin contract; solid colors provide
-the declared fallback roles. There is no animation, live blur or native candidate
+SVG backgrounds use the Classic UI image/margin contract; solid color values document the palette for
+a manual no-image variant; automatic recovery from a missing image is not claimed. There is no animation, live blur or native candidate
 surface implementation. KWin-specific blur is not forced on unknown compositors.
 Automatic dynamic color, Power Scene synchronization and interactive candidate
 latency/IME acceptance remain later work. CI checks syntax and referenced files;

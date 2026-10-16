@@ -51,7 +51,7 @@ RowLayout {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.value + "%"
                 font: Tokens.label
-                color: root.value >= 20 ? Tokens.onPrimary : Tokens.textPrimary
+                color: root.value >= 20 ? Tokens.textOnPrimary : Tokens.textPrimary
             }
         }
         handle: Rectangle {
@@ -60,7 +60,7 @@ RowLayout {
             width: control.pressed ? Tokens.space8 : Tokens.space4
             height: Tokens.space32
             radius: Tokens.radiusPill
-            color: Tokens.onPrimary
+            color: Tokens.textOnPrimary
             border.width: Tokens.space1
             border.color: Tokens.primary
         }

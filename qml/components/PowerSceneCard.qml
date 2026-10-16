@@ -37,19 +37,19 @@ ColumnLayout {
                 Label {
                     text: I18n.s(Shell.scenes.current.name)
                     font: Tokens.title
-                    color: Tokens.onPrimary
+                    color: Tokens.textOnPrimary
                 }
                 Label {
                     text: I18n.s(Shell.scenes.current.description)
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     font: Tokens.caption
-                    color: Tokens.onPrimary
+                    color: Tokens.textOnPrimary
                 }
                 Label {
                     text: Shell.scenes.current.customized ? I18n.t("shell.scene.customized") : I18n.t("shell.scene.default")
                     font: Tokens.caption
-                    color: Tokens.onPrimary
+                    color: Tokens.textOnPrimary
                 }
             }
         }
@@ -71,7 +71,7 @@ ColumnLayout {
                 contentItem: Label {
                     text: sceneButton.text
                     font: sceneButton.font
-                    color: sceneButton.selected ? Tokens.onPrimary : Tokens.textPrimary
+                    color: sceneButton.selected ? Tokens.textOnPrimary : Tokens.textPrimary
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight

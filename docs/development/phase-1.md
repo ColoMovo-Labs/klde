@@ -31,13 +31,15 @@ PR; the historical six-job acceptance below applies only to the stated revision.
   Escape and pointer activation. Selection changes only the mock catalogue.
 - Upper-right quick settings: mock brightness, volume, wireless, Bluetooth,
   night light, power profile and session action; appearance and motion controls.
-- Weather widget: one trusted built-in widget hosted by a Loader; fixed weather
-  data and no network request. No external widget execution is supported.
+- Weather widget: one trusted built-in widget hosted by a Loader; mock data by
+  default, with explicit city/consent for optional online weather. No external
+  widget execution is supported.
 - Workspace indicator: five stable IDs with floating, tiled, mixed and custom
   labels. Selection updates a mock backend, never another application's windows.
 - OSD foundation: an interaction-triggered, finite notice for mock changes.
-- Blur laboratory: a bounded, explicitly owned-content GPU experiment. Ordinary
-  shell panels use opaque surfaces. Native backdrop support is unavailable.
+- Blur laboratory: a bounded, explicitly owned-content GPU experiment. Normal
+  shell panels filter only the owned wallpaper when supported and retain an
+  opaque fallback. Native backdrop support is unavailable.
 
 ```sh
 klde-shell                       # ordinary standalone preview
@@ -130,3 +132,27 @@ persistent configuration remain later work. Qt's software scene graph uses the
 unfiltered source in the laboratory. No Intel UHD 620 performance claim is made.
 Keyboard paths and scalable tokens are present; comprehensive screen-reader,
 contrast, multi-output and 200% text acceptance still require dedicated review.
+
+## Language, voice and input preview
+
+```sh
+klde-shell --locale zh_CN --view quick-settings
+klde-shell --locale en --voice cute --view language
+klde-shell --locale zh_CN --voice cute --view language
+klde-shell --view input
+```
+
+The EN/拼 indicator opens the mock selector and Language & Input settings. Locale
+and voice are independent in-memory preferences; existing labels react to changes.
+Fcitx 5 availability is read-only session-bus detection, not engine installation
+or confirmation of active Pinyin. Selection remains simulated; the text area
+uses the host's normal Qt input context. Theme prototypes are installed but not
+automatically selected. No host locale, IME configuration or global binding is
+changed. The launcher default uses Ctrl+Alt+Space to avoid taking the commonly
+used Ctrl+Space IME binding inside this preview.
+
+Stable English/Chinese JSON catalogs and sparse Cute overrides are embedded
+resources. CI checks missing/duplicate IDs, placeholders and protected namespaces.
+Wayland/XCB interaction tests and bilingual captures are correctness evidence;
+manual mixed-application IME, CJK scaling and assistive-technology acceptance
+remain open. See the [input test matrix](../architecture/input-methods.md).

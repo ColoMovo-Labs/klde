@@ -13,7 +13,7 @@ Button {
     contentItem: Text {
         text: control.text
         font: control.font
-        color: control.emphasized ? Tokens.onPrimary : Tokens.textPrimary
+        color: control.emphasized ? Tokens.textOnPrimary : Tokens.textPrimary
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

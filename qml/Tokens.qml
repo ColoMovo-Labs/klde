@@ -25,7 +25,7 @@ QtObject {
     readonly property color textPrimary: darkMode ? "#f0efff" : "#20264d"
     readonly property color textSecondary: darkMode ? "#c6c8e7" : "#566287"
     readonly property color textDisabled: darkMode ? "#84949e" : "#75858e"
-    readonly property color onPrimary: darkMode ? "#28205e" : "#ffffff"
+    readonly property color textOnPrimary: darkMode ? "#28205e" : "#ffffff"
     readonly property color primaryContainer: Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
     readonly property color shadow: "#292e6b"
     readonly property real outlineOpacity: 0.20
