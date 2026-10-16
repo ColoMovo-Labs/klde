@@ -82,7 +82,7 @@ jobs:
             bash tools/check-format.sh
             reuse lint
             cmake --build build/ci --target all_qmllint --parallel 2
-            clang-tidy -p build/ci src/shell/main.cpp
+            bash tools/check-tidy.sh
             desktop-file-validate packaging/org.klde.shell.preview.desktop
       - store_artifacts:
           path: artifacts/environment

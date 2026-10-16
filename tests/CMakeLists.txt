@@ -1,3 +1,8 @@
+qt_add_executable(klde-backend-test test_backends.cpp)
+target_link_libraries(klde-backend-test PRIVATE klde_backends Qt6::Test)
+add_test(NAME backend-contracts COMMAND klde-backend-test)
+set_tests_properties(backend-contracts PROPERTIES LABELS unit TIMEOUT 30)
+
 qt_add_executable(klde-startup-test test_startup.cpp)
 target_link_libraries(klde-startup-test PRIVATE
     klde_uiplugin Qt6::Quick Qt6::QuickControls2 Qt6::Test)
