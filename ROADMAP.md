@@ -23,5 +23,8 @@ Current state: Phase 0 is published at `ColoMovo-Labs/klde`. All six CircleCI jo
 passed for baseline `418ea56`; the Phase 1 build gate is satisfied.
 See [the phase-0 handoff](docs/development/phase-0.md).
 
-Phase 1 is implemented on a topic branch with mock services. Cloud acceptance
-and visual review are tracked in [phase-1.md](docs/development/phase-1.md).
+Phase 1 is implemented on a topic branch with mock services; all six cloud jobs
+passed for `46619fc`. Captures and bounded idle-rendering results are recorded in
+[phase-1.md](docs/development/phase-1.md). PR review and subsequent current-head
+checks remain part of acceptance; full desktop/hardware accessibility acceptance
+is not implied by a passing headless pipeline.

@@ -1,6 +1,7 @@
 # Design
 
-Status: direction and token contract for Phase 1; not a screenshot of implemented UI.
+Status: Phase 1 implements the seed token system and mock shell components.
+Actual cloud-rendered captures are in the [prototype guide](docs/development/phase-1.md).
 
 ## An independent identity
 
@@ -56,8 +57,9 @@ opaque and translucent backgrounds before accepting a palette.
 Use a distribution-provided sans serif with CJK fallback. Do not bundle a font
 without reviewing its license. Text uses semantic font tokens and user scaling;
 layouts accommodate longer translations, RTL content, and 200% text size.
-Phase 0 uses ordinary Qt Controls and the seed singleton on a minimal window.
-The full component/theme system and visual accessibility validation remain future work.
+Phase 1 maps the seed roles into shell components and the Qt Controls palette,
+with light/dark SVG ink variants. Theme-pack loading, wallpaper-derived accents
+and comprehensive visual accessibility acceptance remain future work.
 
 ## Motion and effects
 

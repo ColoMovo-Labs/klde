@@ -71,16 +71,37 @@ This is a bounded
 regression check, not a desktop idle CPU, wakeup, power or GPU benchmark.
 Ordinary startup has no diagnostic timers or periodic repaint loop.
 
-Pipeline 8 (`472c921`) passed build, static analysis, backend/startup tests,
-launcher/token tests and install validation. Offscreen, nested Wayland and
-llvmpipe desktop rendering worked; desktop and controls each submitted zero
-frames in the settled one-second diagnostic. Launcher submitted 40 frames and
-failed that check. The failure remains active while it is investigated; no
-threshold is relaxed. Its [actual desktop capture](phase-1-desktop.png) was
-visually inspected. Blur/dark captures are pending because the helper stops on
-the first failed scenario.
+All six CircleCI jobs passed for source commit
+`46619fc`: [pipeline 13](https://app.circleci.com/pipelines/circleci/3oxaeukVqAvAfF4HxntS1j/9f38edc2-e2b3-4a5a-b510-656e0f838973/13/details?useNewPipelines=true&workflowId=b9eac2ba-fece-43da-9339-2fc74cf1a24f).
+The actual PR configuration was checked through the CircleCI API, including
+all-source clang-tidy and the launcher interaction step. The environment was
+Ubuntu 26.04, Qt 6.10.2 and Mesa 26.0.8 llvmpipe. Local compilation, tests and
+static analysis were not used as validation.
 
-Status: five checks pass; the full feature gate is pending the rendering fix.
+| Scenario | Evidence | Settled one-second frame count |
+| --- | --- | --- |
+| Offscreen/software | startup and PNG | not audited on this path |
+| Nested Weston/Wayland/software | startup and PNG | not audited on this path |
+| Light desktop / llvmpipe | [actual capture](phase-1-desktop.png) | 0 |
+| Light quick settings | [actual capture](phase-1-controls.png) | 0 |
+| Keyboard-first launcher | [actual capture](phase-1-launcher.png) | 0 |
+| Owned-content GPU blur | [actual capture](phase-1-blur.png) | 0 |
+| Dark quick settings | [actual capture](phase-1-dark.png) | 0 |
+
+All five captures were visually inspected. Dark ink variants and semantic palette
+roles improve icon/control contrast; mock weather attribution remains readable.
+The blur sample visibly filters only the embedded original wallpaper. These
+screenshots represent the identified source revision, not a final desktop design.
+
+The frame check caught a long native ListView highlight-tracker resize transition,
+even though the tracking item itself draws no highlight. Its default speed-based
+animation was not an infinite loop. Move/resize durations now follow the finite
+motion tokens; reduced motion sets them to zero. See
+[the performance note](performance.md#idle-regression-checks).
+
+A later source cleanup ties queued graphics callbacks and diagnostic timers to
+their QObject owners. The latest commit must still pass the same required checks;
+[PR #1](https://github.com/ColoMovo-Labs/klde/pull/1) carries the current-head result.
 
 ## Remaining boundaries
 

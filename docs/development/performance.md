@@ -37,6 +37,19 @@ accidental continuous rendering, but zero client frames alone does not prove zer
 CPU, GPU work, wakeups or compositor activity. Avoid periodic clock/weather updates
 in a controlled idle scenario. Do not disable real lifecycle events to pass a test.
 
+The Phase 1 cloud frame check exposed an invisible ListView highlight-tracking
+item resizing after the popup's own transition had finished. Qt's documented
+[highlight move/resize controls](https://doc.qt.io/qt-6/qml-qtquick-listview.html#highlightResizeDuration-prop)
+default to a velocity of 400 pixels/second and unconstrained duration. The preview
+sets both velocities to -1 and both durations to `Tokens.motionFast`; reduced
+motion makes them zero. Inspect built-in view behavior as well as visible QML
+animations. An observation of extra frames over one second does not by itself
+prove an infinite animation or establish an idle CPU measurement.
+
+The diagnostic disables text-cursor blinking only for the controlled observation.
+Normal input retains the platform cursor. Current captures and exact frame counts
+are in [phase-1.md](phase-1.md).
+
 ## Cloud correctness and later infrastructure
 
 Standard CircleCI containers use a software Qt Quick backend or Mesa llvmpipe.

@@ -89,3 +89,25 @@ and [performance.md](performance.md).
 The packaging artifact is a staged install tree, not a `.deb` or a complete Qt
 runtime bundle. Installing it on an incompatible host is outside the baseline.
 Debian packaging and test sessions arrive in later roadmap phases.
+
+## Public pipeline inspection
+
+For this public project, workflow/job and artifact lists were readable through
+the v2 API without a token. Access requirements can differ for other projects.
+Obtain the workflow ID from the GitHub status target URL and inspect:
+
+```sh
+curl --fail 'https://circleci.com/api/v2/workflow/<workflow-id>/job'
+curl --fail 'https://circleci.com/api/v2/project/circleci/3oxaeukVqAvAfF4HxntS1j/LfN9QA8DUhSreeQV9xNCMg/<job-number>/artifacts'
+```
+
+Use the returned artifact URLs rather than guessing job IDs. Confirm the commit
+and actual pipeline configuration, not just the pipeline number. The feature
+pipeline uses its own all-source analysis and interaction-test configuration.
+
+The current Ubuntu shared-Qt SDK emits CMake import-scan warnings about missing
+static link targets for several distribution plugins. These warnings remain
+visible in build logs. KLDE's embedded plugins are explicitly registered; the
+Basic controls, SVG decoder and Effects runtime paths are exercised by startup
+and rendering checks. Qt plugin bundling and `.deb` dependency generation remain
+packaging work, rather than a claim that every scanned plugin was statically linked.

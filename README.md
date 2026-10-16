@@ -27,17 +27,23 @@ passed for baseline `418ea56`. See [the handoff](docs/development/phase-0.md).
 
 The Phase 1 feature branch adds the dock, search launcher, quick settings,
 weather widget, workspace indicator and a bounded owned-content blur laboratory.
-It uses C++ mock backends; feature cloud validation is pending. See
+It uses C++ mock backends. All six CircleCI jobs passed for prototype `46619fc`;
+current feature development is in [PR #1](https://github.com/ColoMovo-Labs/klde/pull/1). See
 [the prototype guide](docs/development/phase-1.md) for controls and validation.
 There are no real service integrations, desktop-session replacement, telemetry,
 weather requests, or privileged helpers.
 
 ## Screenshots / Concept Art
 
-Actual Phase 1 preview rendered by CircleCI with Mesa llvmpipe at `472c921`.
+Actual Phase 1 preview rendered by CircleCI with Mesa llvmpipe at `46619fc`.
 This is a runnable Qt window using mock data, not concept art or a complete desktop session:
 
 ![Phase 1 KLDE desktop preview — actual cloud-rendered window](docs/development/phase-1-desktop.png)
+
+[Launcher](docs/development/phase-1-launcher.png) ·
+[Quick settings](docs/development/phase-1-controls.png) ·
+[Dark appearance](docs/development/phase-1-dark.png) ·
+[Owned-content blur laboratory](docs/development/phase-1-blur.png).
 
 No concept image was supplied. Future concept images belong under
 `docs/concepts/klde-concept-01.*` and must be labelled “Early concept — not final UI.”
