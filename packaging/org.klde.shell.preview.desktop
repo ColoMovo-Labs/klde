@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=KLDE Shell Preview
+Comment=Experimental Kemono Linux Desktop Environment foundation
+Exec=klde-shell
+Icon=preferences-desktop
+Terminal=false
+Categories=Utility;Development;
+StartupNotify=true
