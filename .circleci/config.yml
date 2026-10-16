@@ -92,7 +92,7 @@ jobs:
     steps:
       - built-tree
       - run:
-          name: Qt Test startup contract
+          name: Qt Test backend and startup contracts
           command: ctest --test-dir build/ci -L unit --output-on-failure --output-junit artifacts/tests/unit.xml
       - store_test_results:
           path: artifacts/tests
@@ -102,7 +102,7 @@ jobs:
     steps:
       - built-tree
       - run:
-          name: Qt Quick Test token contract
+          name: Qt Quick Test tokens and launcher keyboard interaction
           command: ctest --test-dir build/ci -L qml --output-on-failure --output-junit artifacts/tests/qml.xml
       - store_test_results:
           path: artifacts/tests

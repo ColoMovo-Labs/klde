@@ -64,8 +64,9 @@ and the owned-content blur laboratory.
 
 In diagnostic mode only, `--audit-idle` counts submitted frames during one second
 after a 700 ms settling interval and rejects more than two. Launcher cursor
-blinking is disabled for this static-rendering diagnostic. The launcher uses a
-static custom caret and scrollbar so focus remains visible without an idle effect.
+blinking is disabled for this static-rendering diagnostic. Normal interaction
+uses the platform cursor; the scroll indicator is static. Native list highlight
+tracking also uses the finite motion tokens, including zero duration in reduced motion.
 This is a bounded
 regression check, not a desktop idle CPU, wakeup, power or GPU benchmark.
 Ordinary startup has no diagnostic timers or periodic repaint loop.

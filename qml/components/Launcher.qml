@@ -50,10 +50,6 @@ ShellPopup {
             text: Shell.search.query
             Accessible.name: qsTr("Search applications")
             selectByMouse: true
-            cursorDelegate: Rectangle {
-                width: Tokens.space2
-                color: Tokens.primary
-            }
             background: Rectangle {
                 radius: Tokens.radiusM
                 color: Tokens.surface
