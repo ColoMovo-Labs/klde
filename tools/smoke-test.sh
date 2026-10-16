@@ -51,12 +51,24 @@ test -s "$smoke_dir/offscreen.png"
 test -s "$smoke_dir/wayland.png"
 test -s "$smoke_dir/llvmpipe.png"
 
+smoke_status=0
 for view in quick-settings launcher blur; do
-    xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
-        LIBGL_ALWAYS_SOFTWARE=1 QSG_INFO=1 \
+    diagnostic_env=()
+    if [ "$view" = launcher ]; then
+        diagnostic_env=(QT_LOGGING_RULES=qt.quick.dirty.debug=true)
+    fi
+    if ! xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
+        LIBGL_ALWAYS_SOFTWARE=1 QSG_INFO=1 "${diagnostic_env[@]}" \
         "$shell_binary" --smoke-test --view "$view" --audit-idle \
-        --capture "$smoke_dir/$view.png" > "$smoke_dir/$view.log" 2>&1
+        --capture "$smoke_dir/$view.png" > "$smoke_dir/$view.log" 2>&1; then
+        cat "$smoke_dir/$view.log"
+        smoke_status=1
+    fi
 done
-xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
+if ! xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
     LIBGL_ALWAYS_SOFTWARE=1 "$shell_binary" --smoke-test --dark --view quick-settings \
-    --capture "$smoke_dir/dark.png" > "$smoke_dir/dark.log" 2>&1
+    --capture "$smoke_dir/dark.png" > "$smoke_dir/dark.log" 2>&1; then
+    cat "$smoke_dir/dark.log"
+    smoke_status=1
+fi
+exit "$smoke_status"

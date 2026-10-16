@@ -134,6 +134,7 @@ int main(int argc, char *argv[]) {
                 QTimer::singleShot(700, &app, [&app, &idleFrames, audit, finish] {
                     if (audit) {
                         idleFrames = 0;
+                        qInfo() << "KLDE idle audit begins";
                         QTimer::singleShot(1000, &app, finish);
                     } else {
                         finish();
