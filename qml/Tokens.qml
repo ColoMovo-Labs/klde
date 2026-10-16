@@ -43,7 +43,7 @@ QtObject {
     readonly property int space24: 24
     readonly property int space32: 32
 
-    readonly property string fontFamily: Qt.application.font.family
+    readonly property string fontFamily: Application.font.family
     readonly property font display: Qt.font({
         family: fontFamily,
         pixelSize: 48 * textScale,
