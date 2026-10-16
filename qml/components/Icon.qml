@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 
-Image {
+Item {
+    id: root
     property string name: "klde"
     implicitWidth: Tokens.iconM
     implicitHeight: Tokens.iconM
-    source: "qrc:/assets/icons/" + name + ".svg"
-    sourceSize: Qt.size(width, height)
-    fillMode: Image.PreserveAspectFit
-    asynchronous: false
+    Image {
+        anchors.fill: parent
+        source: "qrc:/assets/icons/" + root.name + ".svg"
+        sourceSize: Qt.size(width, height)
+        fillMode: Image.PreserveAspectFit
+        asynchronous: false
+    }
 }

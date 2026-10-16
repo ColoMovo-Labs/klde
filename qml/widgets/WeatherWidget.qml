@@ -17,8 +17,8 @@ Surface {
         Icon {
             name: "weather"
             Layout.alignment: Qt.AlignHCenter
-            width: Tokens.iconL
-            height: Tokens.iconL
+            Layout.preferredWidth: Tokens.iconL
+            Layout.preferredHeight: Tokens.iconL
         }
         Label {
             Layout.alignment: Qt.AlignHCenter

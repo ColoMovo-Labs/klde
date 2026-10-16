@@ -48,7 +48,7 @@ bool MockWindowManagerBackend::activateWorkspace(const QString &id) {
 }
 
 bool MockWindowManagerBackend::setWorkspaceLayout(const QString &id, LayoutMode mode) {
-    if (mode < Floating || mode > Custom || mode == Scrolling) {
+    if (mode > Custom || mode == Scrolling) {
         return reject(QStringLiteral("Layout unsupported by mock backend"));
     }
     for (auto &entry : m_workspaces) {

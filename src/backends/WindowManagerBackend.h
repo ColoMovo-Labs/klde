@@ -26,7 +26,7 @@ class WindowManagerBackend : public QObject {
     Q_PROPERTY(QVariantMap capabilities READ capabilities CONSTANT)
 
   public:
-    enum LayoutMode { Floating, Tiled, Mixed, Scrolling, Custom };
+    enum LayoutMode : quint8 { Floating, Tiled, Mixed, Scrolling, Custom };
     Q_ENUM(LayoutMode)
     using QObject::QObject;
     virtual QVariantList workspaces() const = 0;

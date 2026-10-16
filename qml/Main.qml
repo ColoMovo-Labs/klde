@@ -56,8 +56,8 @@ ApplicationWindow {
         spacing: Tokens.space12
         Icon {
             name: "klde"
-            width: Tokens.iconL
-            height: Tokens.iconL
+            Layout.preferredWidth: Tokens.iconL
+            Layout.preferredHeight: Tokens.iconL
         }
         ColumnLayout {
             spacing: Tokens.space2

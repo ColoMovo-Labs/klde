@@ -3,7 +3,7 @@
 
 namespace klde {
 void PreviewBlurBackend::setQuality(Quality quality) {
-    if (quality >= Off && quality <= High && m_quality != quality) {
+    if (quality <= High && m_quality != quality) {
         m_quality = quality;
         emit policyChanged();
     }

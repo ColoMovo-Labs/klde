@@ -30,8 +30,8 @@ ShellPopup {
         OwnedBlurSample {
             id: sample
             Layout.alignment: Qt.AlignHCenter
-            width: Tokens.blurSampleWidth
-            height: Tokens.blurSampleHeight
+            Layout.preferredWidth: Tokens.blurSampleWidth
+            Layout.preferredHeight: Tokens.blurSampleHeight
         }
         Label {
             text: Shell.blur.quality === BlurBackend.Off ? qsTr("Unfiltered sample") : Shell.blur.ownedContentAvailable ? qsTr("GPU filtering · KLDE-owned image") : qsTr("Opaque fallback · GPU effect unavailable")

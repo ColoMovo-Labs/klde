@@ -16,9 +16,9 @@ class BlurBackend : public QObject {
         bool renderingAllowed READ renderingAllowed WRITE setRenderingAllowed NOTIFY policyChanged)
 
   public:
-    enum Quality { Off, Low, Medium, High };
+    enum Quality : quint8 { Off, Low, Medium, High };
     Q_ENUM(Quality)
-    enum Strategy { OpaqueFallback, OwnedContentGpu, NativeBackdrop };
+    enum Strategy : quint8 { OpaqueFallback, OwnedContentGpu, NativeBackdrop };
     Q_ENUM(Strategy)
     using QObject::QObject;
     virtual Quality quality() const = 0;

@@ -12,11 +12,11 @@ class ShellServices final : public QObject {
     Q_OBJECT
     QML_NAMED_ELEMENT(Shell)
     QML_SINGLETON
-    Q_PROPERTY(SystemBackend *system READ system CONSTANT)
-    Q_PROPERTY(WindowManagerBackend *windowManager READ windowManager CONSTANT)
-    Q_PROPERTY(BlurBackend *blur READ blur CONSTANT)
-    Q_PROPERTY(ApplicationModel *applications READ applications CONSTANT)
-    Q_PROPERTY(ApplicationFilterModel *search READ search CONSTANT)
+    Q_PROPERTY(klde::SystemBackend *system READ system CONSTANT)
+    Q_PROPERTY(klde::WindowManagerBackend *windowManager READ windowManager CONSTANT)
+    Q_PROPERTY(klde::BlurBackend *blur READ blur CONSTANT)
+    Q_PROPERTY(klde::ApplicationModel *applications READ applications CONSTANT)
+    Q_PROPERTY(klde::ApplicationFilterModel *search READ search CONSTANT)
     Q_PROPERTY(QVariantMap weather READ weather CONSTANT)
     Q_PROPERTY(QString message READ message NOTIFY messageChanged)
     Q_PROPERTY(int osdValue READ osdValue NOTIFY messageChanged)

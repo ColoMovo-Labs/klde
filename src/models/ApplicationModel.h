@@ -11,7 +11,7 @@ class ApplicationModel : public QAbstractListModel {
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.applications")
   public:
-    enum Role {
+    enum Role : quint16 {
         AppIdRole = Qt::UserRole + 1,
         NameRole,
         DescriptionRole,

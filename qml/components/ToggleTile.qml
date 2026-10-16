@@ -19,8 +19,8 @@ Button {
         Icon {
             name: root.iconName
             Layout.alignment: Qt.AlignLeft
-            width: Tokens.iconM
-            height: Tokens.iconM
+            Layout.preferredWidth: Tokens.iconM
+            Layout.preferredHeight: Tokens.iconM
         }
         Label {
             text: root.text

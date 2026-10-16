@@ -14,8 +14,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Icon {
             name: root.iconName
-            width: Tokens.iconS
-            height: Tokens.iconS
+            Layout.preferredWidth: Tokens.iconS
+            Layout.preferredHeight: Tokens.iconS
         }
         Label {
             text: root.label
