@@ -215,9 +215,10 @@ jobs:
       - run:
           name: Install the package through apt with only declared runtime dependencies
           command: |
-            # Minimal images can filter documentation; retain this package's notices.
+            # Apply after the image's docker filters (dpkg reads files lexicographically).
+            # Retain this package's directory and all license documents.
             mkdir -p /etc/dpkg/dpkg.cfg.d
-            printf '%s\n' 'path-include=/usr/share/doc/klde-shell-preview' 'path-include=/usr/share/doc/klde-shell-preview/*' > /etc/dpkg/dpkg.cfg.d/99-klde-docs
+            printf '%s\n' 'path-include=/usr/share/doc/klde-shell-preview' 'path-include=/usr/share/doc/klde-shell-preview/*' > /etc/dpkg/dpkg.cfg.d/zz-klde-docs
             apt-get install -y --no-install-recommends ./artifacts/packages/*.deb
       - run:
           name: Exercise the installed shell and verify clean removal
