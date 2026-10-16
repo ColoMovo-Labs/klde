@@ -1,0 +1,25 @@
+name: Bug report
+description: Report reproducible behavior in KLDE
+labels: [bug]
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Describe what you tried and what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include a minimal sequence and affected commit/version.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and evidence
+      description: Distribution, Qt, compositor, X11/Wayland, scale, effects, CircleCI link or redacted logs. Never include credentials or private notifications.
+    validations:
+      required: true

@@ -1,0 +1,25 @@
+name: Performance report
+description: Report a measured runtime problem
+labels: [performance]
+body:
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario and reproduction
+      description: Commit, idle or interaction scenario, effect settings and repeat count.
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware and software
+      description: CPU/GPU/RAM, kernel, Mesa, Qt, compositor, display/scale, power profile and software-renderer status.
+    validations:
+      required: true
+  - type: textarea
+    id: measurement
+    attributes:
+      label: Measurement method and results
+      description: Include baseline and distributions/traces. Identify software CI results separately from real-GPU measurements. Redact private data.
+    validations:
+      required: true

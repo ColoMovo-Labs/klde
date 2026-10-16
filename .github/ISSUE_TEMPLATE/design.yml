@@ -1,0 +1,22 @@
+name: Design discussion
+description: Propose or review KLDE interaction and visual design
+labels: [design, ui]
+body:
+  - type: textarea
+    id: intent
+    attributes:
+      label: Problem and design intent
+    validations:
+      required: true
+  - type: textarea
+    id: interaction
+    attributes:
+      label: Interaction and accessibility
+      description: Keyboard path, focus, scaling, contrast, reduced motion and opaque fallback.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Visual evidence and provenance
+      description: Label concepts separately from running UI. Include source/license for artwork and measurements for performance claims.

@@ -1,0 +1,3 @@
+Checks: '-*,clang-analyzer-*,bugprone-*,performance-*,modernize-use-nullptr'
+WarningsAsErrors: 'clang-analyzer-*,bugprone-*,performance-*'
+HeaderFilterRegex: '.*/src/.*'

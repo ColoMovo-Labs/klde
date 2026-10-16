@@ -1,0 +1,5 @@
+version: 2
+# Current dependencies come from Ubuntu apt, which Dependabot does not manage.
+# Add a supported ecosystem when the repository actually gains its manifest.
+# Review .circleci/packages.txt and the Ubuntu image monthly in the meantime.
+updates: []

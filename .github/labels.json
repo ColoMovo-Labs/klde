@@ -1,0 +1,18 @@
+[
+  {"name":"bug","color":"c64f5b","description":"Reproducible incorrect behavior"},
+  {"name":"enhancement","color":"2d8c87","description":"New or improved behavior"},
+  {"name":"design","color":"af7ecb","description":"Visual and interaction design"},
+  {"name":"ui","color":"b4b0e8","description":"Presentation and components"},
+  {"name":"backend","color":"377ea3","description":"Models and service adapters"},
+  {"name":"wayland","color":"5271b8","description":"Wayland and compositor integration"},
+  {"name":"qt","color":"41a66c","description":"Qt framework and native runtime"},
+  {"name":"qml","color":"6ebc95","description":"QML modules and tooling"},
+  {"name":"performance","color":"dc933c","description":"Measured runtime efficiency"},
+  {"name":"power","color":"c8ac32","description":"Power management and idle behavior"},
+  {"name":"accessibility","color":"6f79c7","description":"Keyboard, scaling and assistive technology"},
+  {"name":"documentation","color":"3e96bb","description":"Project and contributor documentation"},
+  {"name":"good first issue","color":"a2ce8b","description":"Scoped and supported first contribution"},
+  {"name":"help wanted","color":"80beae","description":"Contributions welcome"},
+  {"name":"blocked","color":"b35865","description":"Waiting for a concrete external prerequisite"},
+  {"name":"research","color":"b98cba","description":"Investigation before an implementation decision"}
+]
