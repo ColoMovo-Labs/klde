@@ -6,7 +6,7 @@
 #include <QtQml/qqmlregistration.h>
 
 namespace klde {
-class ApplicationModel final : public QAbstractListModel {
+class ApplicationModel : public QAbstractListModel {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.applications")
@@ -41,7 +41,7 @@ class ApplicationModel final : public QAbstractListModel {
     QList<Application> m_applications;
 };
 
-class ApplicationFilterModel final : public QSortFilterProxyModel {
+class ApplicationFilterModel : public QSortFilterProxyModel {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.search")

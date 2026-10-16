@@ -10,7 +10,7 @@ artwork, icons, fonts, mascot or concept image is included.
 | --- | --- | --- |
 | Original C++/QML, CMake, CI, tooling and metadata | GPL-3.0-or-later | KLDE contributors; preserve individual notices |
 | Original documentation | CC-BY-SA-4.0 | KLDE contributors, file path and revision; identify modifications |
-| Future original artwork | CC-BY-SA-4.0 unless individually marked | author, title, source revision and modifications recorded per asset |
+| Original icons and First Light wallpaper | CC-BY-SA-4.0 | KLDE contributors; [asset manifest](../../assets/README.md) and source revision |
 
 `REUSE.toml` supplies per-path SPDX metadata. Full license texts live in
 `LICENSES`; `LICENSE` repeats the project code license for repository discovery.
