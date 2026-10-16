@@ -29,7 +29,7 @@ editing, review and lightweight C++/QML formatting were used.
 - [x] Initial Qt Test / Qt Quick Test and three smoke-rendering paths defined.
 - [x] Public remote creation, twelve topics and all sixteen requested labels configured.
 - [x] Five initial commits pushed to `main`.
-- [ ] CircleCI connected and first pipeline execution observed.
+- [x] CircleCI connected and first pipeline execution observed.
 - [ ] Core jobs green for an identified commit; runtime captures reviewed.
 - [ ] Required remote checks and review protection enabled after check names exist.
 - [x] Private security reporting enabled and verified through the GitHub API.
@@ -60,7 +60,16 @@ CircleCI and GitHub browser login were completed by the account owner. The `klde
 project has been created in the existing CircleCI organization `LoloVerse-Lab`
 and connected to `ColoMovo-Labs/klde` using the GitHub App integration. It uses
 the existing `.circleci/config.yml` on `main`, with PR-open/update, default-branch
-push and tag-push triggers. The first cloud run is the next validation gate.
+push and tag-push triggers. The first cloud run has completed; the next gate is
+a fully green baseline.
+
+Pipeline 1 (`b68a017`, Qt 6.10.2 on Ubuntu 26.04) passed configure/build, static
+analysis, Qt startup tests, all three rendering smoke paths and the install check.
+Its QML suite failed the theme-change comparison. The follow-up test snapshots
+color values as strings before mutation, rather than retaining a QML value reference.
+That fix must pass the next cloud run before Phase 1 starts.
+
+[First workflow](https://app.circleci.com/pipelines/circleci/3oxaeukVqAvAfF4HxntS1j/LfN9QA8DUhSreeQV9xNCMg/1/details?workflowId=70ad82ab-4a30-4347-9514-2ae6ff7d9e1a).
 
 No CircleCI credential is stored in the repository. A GitHub CLI token is not
 substituted for a CircleCI session.

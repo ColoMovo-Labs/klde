@@ -13,10 +13,10 @@ TestCase {
     }
 
     function test_themeChangesPropagate() {
-        const initialBackground = Tokens.background;
+        const initialBackground = Tokens.background.toString();
         Tokens.darkMode = true;
-        verify(Tokens.background !== initialBackground);
-        verify(Tokens.textPrimary !== Tokens.background);
+        verify(Tokens.background.toString() !== initialBackground);
+        verify(Tokens.textPrimary.toString() !== Tokens.background.toString());
     }
 
     function test_textScalePropagates() {
