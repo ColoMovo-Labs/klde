@@ -50,7 +50,7 @@ ShellPopup {
             TextField {
                 id: city
                 Layout.fillWidth: true
-                placeholderText: qsTr("City name or administrative code")
+                placeholderText: qsTr("City name")
                 Accessible.name: qsTr("Weather city, entered manually")
                 maximumLength: 128
             }

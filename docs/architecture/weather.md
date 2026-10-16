@@ -34,7 +34,8 @@ provider even when KLDE supplies the city explicitly.
 The [official weather reference](https://uapis.cn/docs/api-reference/get-misc-weather)
 documents `GET https://uapis.cn/api/v1/misc/weather`. It accepts a city name or
 administrative code; omitting both activates IP location. KLDE sends an explicit
-`city` and `lang=en` or `lang=zh` and does not enable optional forecast modules.
+`city` as an explicitly entered city name and `lang=en` or `lang=zh`. The current
+UI does not expose the separate `adcode` parameter or optional forecast modules.
 The example success payload is a root JSON object with `city`, `weather`,
 numeric Celsius `temperature` and `report_time`. High/low temperatures are
 optional forecast fields, so their absence is not zero degrees. The timestamp

@@ -20,7 +20,7 @@ class UApisCnWeatherProvider final : public WeatherProvider {
     void cancel() override;
     bool busy() const { return !m_reply.isNull(); }
 
-    static constexpr qsizetype MaximumResponseBytes = 256 * 1024;
+    static constexpr qsizetype MaximumResponseBytes = qsizetype{256} * 1024;
     static QUrl requestUrl(const WeatherQuery &query);
     static std::optional<WeatherReading> parse(const QByteArray &body, const QDateTime &fetchedAt,
                                                QString *error = nullptr);

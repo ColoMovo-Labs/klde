@@ -5,6 +5,7 @@ clang-tidy
 cmake
 desktop-file-utils
 dpkg-dev
+file
 fonts-dejavu-core
 g++
 libegl-mesa0
