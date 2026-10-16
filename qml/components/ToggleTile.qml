@@ -22,20 +22,20 @@ Button {
             Layout.preferredWidth: Tokens.iconM
             Layout.preferredHeight: Tokens.iconM
         }
-        Label {
+        Text {
             text: root.text
             font: Tokens.label
-            color: root.checked ? Tokens.onPrimary : Tokens.textPrimary
+            color: Tokens.textPrimary
         }
-        Label {
+        Text {
             text: root.detail
             font: Tokens.caption
-            color: root.checked ? Tokens.onPrimary : Tokens.textSecondary
+            color: Tokens.textSecondary
         }
     }
     background: Rectangle {
         radius: root.checked ? Tokens.radiusL : Tokens.radiusM
-        color: root.checked ? Tokens.primary : root.hovered ? Tokens.primaryContainer : Tokens.surfaceContainer
+        color: root.checked || root.hovered ? Tokens.primaryContainer : Tokens.surfaceContainer
         border.width: root.visualFocus ? Tokens.space2 : 0
         border.color: Tokens.outline
         Behavior on color {

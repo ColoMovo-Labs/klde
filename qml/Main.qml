@@ -133,7 +133,7 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onClosed: {
-            if (!quickSettings.opened && !blurLab.opened)
+            if (!quickSettings.visible && !blurLab.visible)
                 dock.focusLauncher();
         }
     }
@@ -144,7 +144,7 @@ ApplicationWindow {
         y: Tokens.controlHeight + Tokens.space24 * 2
         onBlurRequested: blurLab.open()
         onClosed: {
-            if (!launcher.opened && !blurLab.opened)
+            if (!launcher.visible && !blurLab.visible)
                 quickButton.forceActiveFocus();
         }
     }

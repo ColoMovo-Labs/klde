@@ -96,12 +96,6 @@ int main(int argc, char *argv[]) {
         const auto capturePath = parser.value(captureOption);
         const bool audit = parser.isSet(idleOption);
         const auto finish = [window, &app, &qmlWarnings, &idleFrames, capturePath, audit] {
-            if (qmlWarnings || (audit && idleFrames > 2)) {
-                qCritical() << "Smoke validation failed; QML warnings:" << qmlWarnings
-                            << "idle frames:" << idleFrames;
-                app.exit(EXIT_FAILURE);
-                return;
-            }
             if (!capturePath.isEmpty()) {
                 const QImage capture = window->grabWindow();
                 if (capture.isNull() || !capture.save(capturePath, "PNG")) {
@@ -109,6 +103,21 @@ int main(int argc, char *argv[]) {
                     app.exit(EXIT_FAILURE);
                     return;
                 }
+            }
+            if (qmlWarnings || (audit && idleFrames > 2)) {
+                for (const auto *object : window->findChildren<QObject *>()) {
+                    if (object->property("running").toBool()) {
+                        qWarning()
+                            << "Active animation:" << object->metaObject()->className()
+                            << object->objectName() << "duration:" << object->property("duration")
+                            << "loops:" << object->property("loops");
+                    }
+                }
+                qCritical() << "Smoke validation failed; QML warnings:" << qmlWarnings
+                            << "idle frames:" << idleFrames << "cursor flash interval:"
+                            << QGuiApplication::styleHints()->cursorFlashTime();
+                app.exit(EXIT_FAILURE);
+                return;
             }
             qInfo() << "KLDE smoke test: settled frame rendered; idle audit:" << audit
                     << "frames:" << idleFrames;
