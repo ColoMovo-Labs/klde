@@ -24,11 +24,22 @@ icons = {
     "weather": '<circle cx="25" cy="13" r="9" fill="#e9bd78" stroke="none"/><path d="M9 30C0 29 2 18 10 19C12 10 25 12 27 21C37 19 40 31 30 32H10Z" fill="#f5fcfc" stroke="#a0c0ca"/>',
 }
 for name, content in icons.items():
-    target = root / "icons" / f"{name}.svg"
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">\n'
-                      '<g fill="none" stroke="#315965" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
-                      + content + '</g>\n</svg>\n')
+    for suffix in ("", "-light"):
+        ink = "#315965"
+        artwork = content
+        if suffix:
+            if name not in ("folder", "note", "terminal", "weather"):
+                ink = "#c1deda"
+            artwork = (content.replace("#315965", "#c1deda")
+                       .replace("#2f716e", "#8ed3cd")
+                       .replace("#477d7a", "#b6dcd6"))
+            if name == "klde":
+                artwork = artwork.replace('fill="white"', 'fill="#143c3a"')
+        target = root / "icons" / f"{name}{suffix}.svg"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">\n'
+                          f'<g fill="none" stroke="{ink}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+                          + artwork + '</g>\n</svg>\n')
 
 wallpaper = root / "wallpapers" / "first-light.svg"
 wallpaper.parent.mkdir(parents=True, exist_ok=True)

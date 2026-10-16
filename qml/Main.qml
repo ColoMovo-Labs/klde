@@ -26,6 +26,11 @@ ApplicationWindow {
     palette.buttonText: Tokens.textPrimary
     palette.highlight: Tokens.primary
     palette.highlightedText: Tokens.onPrimary
+    palette.dark: Tokens.primary
+    palette.mid: Tokens.outline
+    palette.midlight: Tokens.surfaceContainer
+    palette.light: Tokens.surfaceElevated
+    palette.shadow: Tokens.shadow
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed

@@ -22,7 +22,7 @@ Surface {
                 readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? qsTr("Floating") : modelData.layout === WindowManagerBackend.Tiled ? qsTr("Tiled") : modelData.layout === WindowManagerBackend.Mixed ? qsTr("Mixed") : qsTr("Custom")
                 width: Tokens.controlHeight + Tokens.space12
                 height: Tokens.controlHeight
-                text: modelData.name + " " + modeLabel.slice(0, 1)
+                text: (selected ? "• " : "") + modelData.name + " " + modeLabel.slice(0, 1)
                 font: Tokens.label
                 Accessible.name: qsTr("Workspace %1, %2%3").arg(modelData.name).arg(modeLabel).arg(selected ? qsTr(", selected") : "")
                 ToolTip.visible: hovered

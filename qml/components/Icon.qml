@@ -8,7 +8,7 @@ Item {
     implicitHeight: Tokens.iconM
     Image {
         anchors.fill: parent
-        source: "qrc:/assets/icons/" + root.name + ".svg"
+        source: "qrc:/assets/icons/" + root.name + (Tokens.darkMode ? "-light" : "") + ".svg"
         sourceSize: Qt.size(width, height)
         fillMode: Image.PreserveAspectFit
         asynchronous: false

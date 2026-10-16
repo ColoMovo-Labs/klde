@@ -43,7 +43,7 @@ Surface {
             Layout.alignment: Qt.AlignHCenter
             text: root.weather.sourceLabel
             font: Tokens.caption
-            color: Tokens.textDisabled
+            color: Tokens.textSecondary
         }
     }
 }

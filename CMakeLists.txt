@@ -42,6 +42,7 @@ target_link_libraries(klde_ui PUBLIC klde_backends klde_backendsplugin Qt6::Quic
 set(klde_assets assets/wallpapers/first-light.svg)
 foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather)
     list(APPEND klde_assets "assets/icons/${icon}.svg")
+    list(APPEND klde_assets "assets/icons/${icon}-light.svg")
 endforeach()
 qt_add_resources(klde_ui klde_assets PREFIX / FILES ${klde_assets})
 
