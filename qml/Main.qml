@@ -96,7 +96,7 @@ ApplicationWindow {
             }
             Label {
                 objectName: "statusLabel"
-                text: qsTr("PREVIEW · MOCK SERVICES")
+                text: qsTr("PREVIEW · MOCK SYSTEM")
                 font: Tokens.caption
                 color: Tokens.textSecondary
             }

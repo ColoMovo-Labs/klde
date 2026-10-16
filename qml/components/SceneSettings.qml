@@ -122,19 +122,19 @@ ShellPopup {
             RowLayout {
                 Button {
                     text: qsTr("Auto")
-                    onClicked: Tokens.userAccent = "transparent"
+                    onClicked: Tokens.accentChoice = "auto"
                 }
                 Button {
                     text: qsTr("Teal")
-                    onClicked: Tokens.userAccent = Tokens.darkMode ? "#8ed3cd" : "#246c69"
+                    onClicked: Tokens.accentChoice = "teal"
                 }
                 Button {
                     text: qsTr("Lilac")
-                    onClicked: Tokens.userAccent = Tokens.accentLilac
+                    onClicked: Tokens.accentChoice = "lilac"
                 }
                 Button {
                     text: qsTr("Apricot")
-                    onClicked: Tokens.userAccent = Tokens.accentApricot
+                    onClicked: Tokens.accentChoice = "apricot"
                 }
             }
             Button {

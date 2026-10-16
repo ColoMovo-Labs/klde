@@ -10,8 +10,8 @@ QtObject {
     property bool transparencyEnabled: true
     property bool shadowsEnabled: true
     property int motionLevel: 1
-    property color userAccent: "transparent"
-    readonly property color accent: userAccent.a > 0 ? userAccent : darkMode ? "#8ed3cd" : "#246c69"
+    property string accentChoice: "auto"
+    readonly property color accent: accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#8ed3cd" : "#246c69"
 
     readonly property color background: darkMode ? "#151d22" : "#edf3f5"
     readonly property color surface: darkMode ? "#1e282e" : "#fcfdfd"
@@ -26,7 +26,7 @@ QtObject {
     readonly property color textSecondary: darkMode ? "#bccbd2" : "#536975"
     readonly property color textDisabled: darkMode ? "#84949e" : "#75858e"
     readonly property color onPrimary: darkMode ? "#143c3a" : "#ffffff"
-    readonly property color primaryContainer: darkMode ? "#284b4b" : "#d6eae5"
+    readonly property color primaryContainer: Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
     readonly property color shadow: "#253c4c"
     readonly property real outlineOpacity: 0.20
     readonly property real shadowOpacity: 0.10

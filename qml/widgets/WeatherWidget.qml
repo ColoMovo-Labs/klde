@@ -49,6 +49,7 @@ Surface {
         Label {
             Layout.alignment: Qt.AlignHCenter
             text: root.weather.sourceLabel + (root.weather.stale ? qsTr(" · stale") : "")
+            textFormat: Text.PlainText
             Layout.maximumWidth: Tokens.widgetSize - Tokens.space32
             elide: Text.ElideRight
             font: Tokens.caption
