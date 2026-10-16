@@ -64,12 +64,22 @@ and the owned-content blur laboratory.
 
 In diagnostic mode only, `--audit-idle` counts submitted frames during one second
 after a 700 ms settling interval and rejects more than two. Launcher cursor
-blinking must be disabled for this static-rendering diagnostic. This is a bounded
+blinking is disabled for this static-rendering diagnostic. The launcher uses a
+static custom caret and scrollbar so focus remains visible without an idle effect.
+This is a bounded
 regression check, not a desktop idle CPU, wakeup, power or GPU benchmark.
 Ordinary startup has no diagnostic timers or periodic repaint loop.
 
-Status: implementation prepared; the feature pipeline and capture review are
-pending. Do not infer successful validation from this document's existence.
+Pipeline 8 (`472c921`) passed build, static analysis, backend/startup tests,
+launcher/token tests and install validation. Offscreen, nested Wayland and
+llvmpipe desktop rendering worked; desktop and controls each submitted zero
+frames in the settled one-second diagnostic. Launcher submitted 40 frames and
+failed that check. The failure remains active while it is investigated; no
+threshold is relaxed. Its [actual desktop capture](phase-1-desktop.png) was
+visually inspected. Blur/dark captures are pending because the helper stops on
+the first failed scenario.
+
+Status: five checks pass; the full feature gate is pending the rendering fix.
 
 ## Remaining boundaries
 

@@ -34,15 +34,17 @@ weather requests, or privileged helpers.
 
 ## Screenshots / Concept Art
 
-No concept image was supplied. This is an actual CircleCI/Mesa llvmpipe capture
-of the Phase 0 foundation window at `b68a017`, not a desktop concept or final UI:
+Actual Phase 1 preview rendered by CircleCI with Mesa llvmpipe at `472c921`.
+This is a runnable Qt window using mock data, not concept art or a complete desktop session:
 
-![Phase 0 foundation — actual cloud-rendered window](docs/development/foundation-llvmpipe.png)
+![Phase 1 KLDE desktop preview — actual cloud-rendered window](docs/development/phase-1-desktop.png)
 
-We do not publish generated images as application screenshots. When a concept
-is supplied, store it under `docs/concepts/klde-concept-01.*` and label it
-“Early concept — not final UI.” CI smoke captures will be correctness artifacts,
-not evidence of final visual quality or GPU performance.
+No concept image was supplied. Future concept images belong under
+`docs/concepts/klde-concept-01.*` and must be labelled “Early concept — not final UI.”
+The earlier [Phase 0 capture](docs/development/foundation-llvmpipe.png) is retained
+with its [baseline validation record](docs/development/phase-0.md). Software CI
+captures verify rendering correctness; representative GPU performance is measured
+separately on real hardware.
 
 ## Architecture
 

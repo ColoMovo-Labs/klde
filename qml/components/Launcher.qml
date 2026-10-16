@@ -44,9 +44,22 @@ ShellPopup {
             implicitHeight: Tokens.controlHeight + Tokens.space8
             placeholderText: qsTr("Search applications…")
             font: Tokens.body
+            color: Tokens.textPrimary
+            selectionColor: Tokens.primaryContainer
+            selectedTextColor: Tokens.textPrimary
             text: Shell.search.query
             Accessible.name: qsTr("Search applications")
             selectByMouse: true
+            cursorDelegate: Rectangle {
+                width: Tokens.space2
+                color: Tokens.primary
+            }
+            background: Rectangle {
+                radius: Tokens.radiusM
+                color: Tokens.surface
+                border.width: searchField.activeFocus ? Tokens.space2 : Tokens.space1
+                border.color: searchField.activeFocus ? Tokens.primary : Tokens.outline
+            }
             onTextEdited: Shell.search.query = text
             onAccepted: root.activateSelected()
             Keys.onDownPressed: event => {
@@ -68,7 +81,15 @@ ShellPopup {
             currentIndex: 0
             spacing: Tokens.space4
             boundsBehavior: Flickable.StopAtBounds
-            ScrollBar.vertical: ScrollBar {}
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AlwaysOn
+                contentItem: Rectangle {
+                    implicitWidth: Tokens.space6
+                    implicitHeight: Tokens.space6
+                    radius: Tokens.radiusPill
+                    color: Tokens.outline
+                }
+            }
             delegate: ItemDelegate {
                 id: resultRow
                 required property int index
