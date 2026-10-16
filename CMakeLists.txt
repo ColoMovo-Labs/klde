@@ -37,7 +37,7 @@ qt_add_qml_module(klde_ui STATIC
     DEPENDENCIES KLDE.Backends
     QML_FILES ${klde_qml_files}
 )
-target_link_libraries(klde_ui PUBLIC klde_backendsplugin Qt6::Quick Qt6::QuickControls2)
+target_link_libraries(klde_ui PUBLIC klde_backends klde_backendsplugin Qt6::Quick Qt6::QuickControls2)
 
 set(klde_assets assets/wallpapers/first-light.svg)
 foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather)
