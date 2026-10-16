@@ -154,7 +154,7 @@ void WeatherService::failed(const WeatherFailure &failure) {
                        : QStringLiteral("unavailable");
         const int exponent = std::min(m_failures, 3);
         m_failures = std::min(m_failures + 1, 4);
-        const QDateTime backoff = m_clock().addSecs(MinimumFetchSeconds * (1 << exponent));
+        const QDateTime backoff = m_clock().addSecs(MinimumFetchSeconds * (qint64{1} << exponent));
         m_notBefore = std::max(m_notBefore, backoff);
         if (failure.retryAt.isValid())
             m_notBefore = std::max(m_notBefore, failure.retryAt);
