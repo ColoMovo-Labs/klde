@@ -41,7 +41,11 @@ QString ShortcutRegistry::sequence(const QString &actionId) const {
     return {};
 }
 
-bool ShortcutRegistry::rebind(const QString &actionId, const QString &portableSequence) {
+bool ShortcutRegistry::rebind(const QString &actionId, const QVariant &portableSequence) {
+    if (portableSequence.metaType().id() != QMetaType::QString) {
+        setError(tr("Enter a shortcut as text."));
+        return false;
+    }
     auto action = m_actions.begin();
     while (action != m_actions.end() && action->id != actionId) {
         ++action;
@@ -51,12 +55,12 @@ bool ShortcutRegistry::rebind(const QString &actionId, const QString &portableSe
         return false;
     }
 
-    const QString input = portableSequence.trimmed();
+    const QString input = portableSequence.toString().trimmed();
     QString normalized;
     if (!input.isEmpty()) {
         const auto parsed = QKeySequence::fromString(input, QKeySequence::PortableText);
         if (parsed.count() != 1 || parsed[0].key() == Qt::Key_unknown ||
-            parsed[0].key() == Qt::Key(0)) {
+            static_cast<int>(parsed[0].key()) == 0) {
             setError(tr("Enter one valid shortcut using PortableText, such as Ctrl+Alt+L."));
             return false;
         }

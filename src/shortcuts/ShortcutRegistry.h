@@ -28,7 +28,7 @@ class ShortcutRegistry : public QObject {
     QString lastError() const { return m_lastError; }
     bool globalAvailable() const { return false; }
     Q_INVOKABLE QString sequence(const QString &actionId) const;
-    Q_INVOKABLE bool rebind(const QString &actionId, const QString &portableSequence);
+    Q_INVOKABLE bool rebind(const QString &actionId, const QVariant &portableSequence);
     Q_INVOKABLE void resetDefaults();
   signals:
     void bindingsChanged();

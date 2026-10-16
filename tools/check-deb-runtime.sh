@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -euo pipefail
+trap 'printf "Package runtime check failed at line %s\n" "$LINENO" >&2' ERR
 
 # This helper runs only in a fresh CircleCI Ubuntu runtime job, after apt has
 # resolved the package dependencies. Do not run it on a developer's desktop.
