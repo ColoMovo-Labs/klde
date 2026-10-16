@@ -11,6 +11,7 @@ find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2)
 qt_standard_project_setup(REQUIRES 6.8)
 include(CTest)
 include(GNUInstallDirs)
+add_subdirectory(src)
 
 set_source_files_properties(qml/Tokens.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set_source_files_properties(qml/Main.qml PROPERTIES QT_RESOURCE_ALIAS Main.qml)
@@ -23,7 +24,7 @@ qt_add_qml_module(klde_ui STATIC
     OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml/KLDE/Shell"
     QML_FILES qml/Main.qml qml/Tokens.qml
 )
-target_link_libraries(klde_ui PUBLIC Qt6::Quick Qt6::QuickControls2)
+target_link_libraries(klde_ui PUBLIC klde_backendsplugin Qt6::Quick Qt6::QuickControls2)
 
 qt_add_executable(klde-shell src/shell/main.cpp)
 target_link_libraries(klde-shell PRIVATE klde_uiplugin Qt6::Quick Qt6::QuickControls2)
