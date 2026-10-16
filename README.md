@@ -25,10 +25,12 @@ Phase 0 provides project documents, contribution templates, a CircleCI configura
 a minimal `klde-shell` test window and initial startup tests. All six CircleCI jobs
 passed for baseline `418ea56`. See [the handoff](docs/development/phase-0.md).
 
-Phase 1 starts only after the minimal project passes CircleCI. Dock, launcher,
-quick settings, weather and workspace UI are planned, not implemented here.
+The Phase 1 feature branch adds the dock, search launcher, quick settings,
+weather widget, workspace indicator and a bounded owned-content blur laboratory.
+It uses C++ mock backends; feature cloud validation is pending. See
+[the prototype guide](docs/development/phase-1.md) for controls and validation.
 There are no real service integrations, desktop-session replacement, telemetry,
-weather requests, or privileged helpers in this baseline.
+weather requests, or privileged helpers.
 
 ## Screenshots / Concept Art
 
@@ -89,7 +91,7 @@ and measurements on real hardware.
 ## License
 
 Original code and build/tooling configuration: **GPL-3.0-or-later**.
-Documentation and future original artwork: **CC BY-SA 4.0**, unless individually
+Documentation and original artwork: **CC BY-SA 4.0**, unless individually
 marked otherwise. See [LICENSE](LICENSE), [REUSE.toml](REUSE.toml),
 [license texts](LICENSES/) and [dependency provenance](docs/legal/third-party.md).
 Third-party dependencies keep their own licenses.

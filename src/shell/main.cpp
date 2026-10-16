@@ -8,6 +8,7 @@
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
+#include <QStyleHints>
 #include <QTimer>
 #include <QtQml/QQmlExtensionPlugin>
 #include <cstdlib>
@@ -51,6 +52,10 @@ int main(int argc, char *argv[]) {
     if (!views.contains(parser.value(viewOption))) {
         qCritical() << "Unknown preview view";
         return EXIT_FAILURE;
+    }
+    if (parser.isSet(idleOption)) {
+        // A focused search cursor is useful during interaction, not an idle effect.
+        QGuiApplication::styleHints()->setCursorFlashTime(0);
     }
 
     QQmlApplicationEngine engine;

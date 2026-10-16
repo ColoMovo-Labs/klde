@@ -1,7 +1,7 @@
 # Blur architecture
 
-Status: researched design. Phase 0 does not implement blur. Phase 1 may add a
-small owned-content experiment after its cloud-build gate passes. Native desktop
+Status: researched design with a bounded Phase 1 owned-content experiment.
+The experiment follows the green Phase 0 cloud-build gate. Native desktop
 blur is a later compositor integration, not a property we can enable on every window.
 
 ## Ownership and capability
@@ -12,8 +12,9 @@ real desktop windows. Do not introduce screen capture, portals or screenshots to
 simulate continuous desktop blur. This boundary follows the
 [Wayland surface model](https://wayland.freedesktop.org/docs/book/Protocol.html).
 
-The future `BlurBackend` reports native-backdrop, owned-content-GPU and transparency
-capabilities separately. A request contains an opaque shell-surface ID, logical
+The current `BlurBackend` reports native-backdrop and owned-content-GPU support
+separately, plus quality and rendering policy. A future native request contract
+will include transparency and surface lifecycle state. A request contains an opaque shell-surface ID, logical
 region, corner mask, quality, output scale and content revision. The adapter owns
 native handles and invalidates them on surface destruction or compositor reconnect.
 No QML component passes raw Wayland pointers.
@@ -121,3 +122,18 @@ Screen-off and reconnect tests arrive with those real adapters. Compare actual
 Intel UHD 620 GPU activity, memory and frame times separately using the
 [performance protocol](../development/performance.md). llvmpipe results do not
 establish real GPU efficiency. No performance result is claimed by this document.
+
+## Current controlled prototype
+
+`OwnedBlurSample.qml` captures a 320×180 logical-pixel original wallpaper swatch
+at half resolution with `ShaderEffectSource`, `live: false`, and explicit
+`scheduleUpdate()` on creation, texture-size change or user refresh. Public
+`MultiEffect` applies the selected preset with a maximum blur token of 24.
+The loader releases the effect when hidden, disabled or graphics-unavailable.
+No shell panel samples desktop content. The native backend always reports
+unavailable; the software scene graph shows the unfiltered source.
+
+The feature pipeline checks the laboratory after settling and records a real
+llvmpipe capture. That verifies the public GPU API path and finite rendering,
+not Intel GPU speed, native backdrop correctness or memory budgets. Detailed
+pass/memory profiling and native surface request lifecycle remain future work.

@@ -1,6 +1,7 @@
 # Architecture
 
-Status: initial design; only the minimal Qt window exists in Phase 0.
+Status: Phase 0 passed its cloud gate; Phase 1 implements an ordinary preview
+window and mock service contracts. See [the prototype guide](docs/development/phase-1.md).
 
 ## Boundaries and process model
 
@@ -39,11 +40,13 @@ are built. The table below defines their contracts now.
 
 Current directories have concrete consumers: `.circleci`, `.github`, `docs`,
 `qml`, `src/shell`, `tests`, `tools`, `packaging`, and `LICENSES`.
-There are no empty placeholder trees. Phase 0 has one executable and one embedded
-`KLDE.Shell` QML module, built using `qt_add_qml_module`. QML tests import that
-same module. Qt runtime libraries remain dynamically linked to distribution packages.
+There are no empty placeholder trees. The process has one executable and two
+embedded QML modules, `KLDE.Shell` for presentation and `KLDE.Backends` for the
+per-engine facade and C++ models/contracts, built using `qt_add_qml_module`.
+QML tests import these same modules. Qt runtime libraries remain dynamically
+linked to distribution packages.
 
-Later, `src/models` and `src/backends` hold their actual implementations;
+`src/models` and `src/backends` hold application models and mock contracts;
 reusable UI components stay within a small shell QML module until a real second
 consumer warrants another module. No plugin framework, scripting language or
 multi-process bus is introduced merely for possible future use.

@@ -44,7 +44,7 @@ env QT_QPA_PLATFORM=wayland WAYLAND_DISPLAY=wayland-klde QT_QUICK_BACKEND=softwa
 xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 glxinfo -B > "$smoke_dir/glxinfo.txt"
 xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
     LIBGL_ALWAYS_SOFTWARE=1 QSG_INFO=1 \
-    "$shell_binary" --smoke-test --capture "$smoke_dir/llvmpipe.png" \
+    "$shell_binary" --smoke-test --audit-idle --capture "$smoke_dir/llvmpipe.png" \
     > "$smoke_dir/llvmpipe.log" 2>&1
 
 test -s "$smoke_dir/offscreen.png"

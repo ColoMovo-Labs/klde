@@ -31,7 +31,7 @@ editing, review and lightweight C++/QML formatting were used.
 - [x] Five initial commits pushed to `main`.
 - [x] CircleCI connected and first pipeline execution observed.
 - [x] All six jobs green for `418ea56`; foundation runtime capture reviewed.
-- [ ] Required remote checks and review protection enabled after check names exist.
+- [x] Five required core checks and pull-request protection enabled on `main`.
 - [x] Private security reporting enabled and verified through the GitHub API.
 - [ ] A dedicated conduct contact established and verified.
 
@@ -46,9 +46,11 @@ release was deleted or force-pushed.
 
 Before CircleCI activation, GitHub reported no check runs and an empty commit-status list.
 The combined-status API returns `pending` for that empty list; this is **not**
-evidence of a running CircleCI build. Required-check protection is not configured
-until actual CircleCI check names are observed. Those names have now been observed
-on the green baseline; the protection setup is the next administrative action.
+evidence of a running CircleCI build. The five actual CircleCI status names were observed on the green baseline.
+Protection now requires them, requires the branch to be current, enforces rules
+for administrators and blocks force pushes/deletion. A pull request is required;
+independent approving-review count is zero during sole-maintainer bootstrap.
+See [circleci.md](circleci.md) for the exact contexts and review limitation.
 
 ## Validation history
 

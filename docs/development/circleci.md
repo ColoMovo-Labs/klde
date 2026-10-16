@@ -18,8 +18,8 @@ separately verified by this one-platform pipeline.
 | --- | --- | --- |
 | configure-build | CMake/Ninja, C++20, warnings, ccache, persist build tree | required |
 | static-analysis | clang-format, qmlformat, qmllint, clang-tidy, REUSE and desktop-file metadata | required |
-| unit-tests | Qt Test loads the packaged QML module and rejects QML warnings | required |
-| qml-tests | Qt Quick Test checks live theme, scaling and reduced-motion token behavior | required |
+| unit-tests | Qt Test backend contracts and packaged QML startup without warnings | required |
+| qml-tests | Qt Quick Test checks tokens and launcher keyboard interaction | required |
 | integration-smoke | first rendered frame and capture on offscreen/software, Weston/Wayland/software, Xvfb/OpenGL/llvmpipe | required |
 | packaging-check | staged CMake install and tar archive | informational until packaging matures |
 
@@ -63,9 +63,19 @@ review and the five core checks. Preserve any existing protection; do not disabl
 it or replace organization rules. Require checks for the current head and block
 force pushes/deletion. Do not add nonexistent check names that would deadlock PRs.
 
-Until this is applied remotely, “CI required before merge” is documented policy,
-not verified technical enforcement. Record what is actually enabled in
-[phase-0.md](phase-0.md).
+Applied after green baseline `418ea56`: `main` requires these exact contexts:
+
+- `ci/circleci: configure-build`
+- `ci/circleci: static-analysis`
+- `ci/circleci: unit-tests`
+- `ci/circleci: qml-tests`
+- `ci/circleci: integration-smoke`
+
+The rule requires an up-to-date branch, applies to administrators, and blocks
+force pushes and deletion. A pull request is required; independent approving
+review count is **zero** during sole-maintainer bootstrap. CODEOWNERS identifies
+ownership but code-owner approval is not enforced. Raise the review count when
+a second active maintainer can review; do not claim independent review occurred.
 
 ## Rendering evidence
 

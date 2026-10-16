@@ -22,3 +22,6 @@ capabilities rather than appearing as a collection of disconnected demonstration
 Current state: Phase 0 is published at `ColoMovo-Labs/klde`. All six CircleCI jobs
 passed for baseline `418ea56`; the Phase 1 build gate is satisfied.
 See [the phase-0 handoff](docs/development/phase-0.md).
+
+Phase 1 is implemented on a topic branch with mock services. Cloud acceptance
+and visual review are tracked in [phase-1.md](docs/development/phase-1.md).
