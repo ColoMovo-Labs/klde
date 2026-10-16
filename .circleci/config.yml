@@ -212,7 +212,11 @@ jobs:
           at: /root/project
       - run:
           name: Install the package through apt with only declared runtime dependencies
-          command: apt-get install -y --no-install-recommends ./artifacts/packages/*.deb
+          command: |
+            # Minimal images can filter documentation; retain this package's notices.
+            mkdir -p /etc/dpkg/dpkg.cfg.d
+            printf '%s\n' 'path-include=/usr/share/doc/klde-shell-preview/*' > /etc/dpkg/dpkg.cfg.d/99-klde-docs
+            apt-get install -y --no-install-recommends ./artifacts/packages/*.deb
       - run:
           name: Exercise the installed shell and verify clean removal
           command: bash tools/check-deb-runtime.sh
