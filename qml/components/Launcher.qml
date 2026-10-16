@@ -79,6 +79,11 @@ ShellPopup {
             clip: true
             model: Shell.search
             currentIndex: 0
+            // Qt's internal highlight tracker also animates when no highlight is drawn.
+            highlightMoveVelocity: -1
+            highlightResizeVelocity: -1
+            highlightMoveDuration: Tokens.motionFast
+            highlightResizeDuration: Tokens.motionFast
             spacing: Tokens.space4
             boundsBehavior: Flickable.StopAtBounds
             ScrollBar.vertical: ScrollBar {
