@@ -1,7 +1,7 @@
 # Blur architecture
 
-Status: researched design. Phase 0 does not implement blur. Phase 1 may add a
-small owned-content experiment after its cloud-build gate passes. Native desktop
+Status: researched design with a bounded Phase 1 owned-content experiment.
+The experiment follows the green Phase 0 cloud-build gate. Native desktop
 blur is a later compositor integration, not a property we can enable on every window.
 
 ## Ownership and capability
@@ -12,8 +12,9 @@ real desktop windows. Do not introduce screen capture, portals or screenshots to
 simulate continuous desktop blur. This boundary follows the
 [Wayland surface model](https://wayland.freedesktop.org/docs/book/Protocol.html).
 
-The future `BlurBackend` reports native-backdrop, owned-content-GPU and transparency
-capabilities separately. A request contains an opaque shell-surface ID, logical
+The current `BlurBackend` reports native-backdrop and owned-content-GPU support
+separately, plus quality and rendering policy. A future native request contract
+will include transparency and surface lifecycle state. A request contains an opaque shell-surface ID, logical
 region, corner mask, quality, output scale and content revision. The adapter owns
 native handles and invalidates them on surface destruction or compositor reconnect.
 No QML component passes raw Wayland pointers.
@@ -51,7 +52,9 @@ may be disabled by the user's global performance or accessibility policy.
 Use public Qt Quick texture/effect APIs first. A Phase 1 laboratory can display
 an original static swatch next to its filtered version. It must say that the source
 is KLDE-owned content, use a fixed bounded area and expose Off/Low/Medium/High.
-It is not used behind every shell panel by default.
+The separate laboratory is an explicit diagnostic. Normal preview panels now
+filter a bounded region of the KLDE-owned wallpaper by default, using Low
+quality in Performance and Power Saver. Neither path samples host windows.
 
 [ShaderEffectSource](https://doc.qt.io/qt-6.8/qml-qtquick-shadereffectsource.html)
 can capture an owned item at a reduced texture size. With `live: false`, content
@@ -121,3 +124,45 @@ Screen-off and reconnect tests arrive with those real adapters. Compare actual
 Intel UHD 620 GPU activity, memory and frame times separately using the
 [performance protocol](../development/performance.md). llvmpipe results do not
 establish real GPU efficiency. No performance result is claimed by this document.
+
+## Current controlled prototype
+
+`OwnedBlurSample.qml` captures a 320×180 logical-pixel original wallpaper swatch
+at half resolution with `ShaderEffectSource`, `live: false`, and explicit
+`scheduleUpdate()` on creation, texture-size change or user refresh. Public
+`MultiEffect` applies the selected preset with a maximum blur token of 24.
+The loader releases the effect when hidden, disabled or graphics-unavailable.
+No shell panel samples desktop content. The native backend always reports
+unavailable; the software scene graph shows the unfiltered source.
+
+## Default preview surfaces
+
+The expanded preview enables blur in every default Power Scene. Performance and
+Power Saver select Low, Balanced selects Medium, and explicit Off remains usable.
+`OwnedBackdrop.qml` filters only the wallpaper item owned by this same preview
+window, behind its dock, widget, workspace pill and popup surfaces. It never
+reads another client's surface. This is a controlled owned-content approximation
+of the desired desktop identity, not native compositor backdrop support.
+
+Each visible surface captures its bounded wallpaper region with `live: false`.
+Low/Medium/High use 0.25/0.50/0.75 resolution, capped at 1024 texture pixels per
+dimension, and public MultiEffect with a rounded alpha mask. Geometry, scene
+policy, appearance and popup-open events invalidate captures with coalesced finite
+updates. Hidden/minimized or unsupported effects unload; opaque fallback remains
+complete. The initial experiment clamps capture edges; padded regions, shared
+caches, scratch-memory budgets and hardware profiling need later measurement.
+No timer or live recursive capture drives these surfaces.
+
+The feature pipeline checks the laboratory after settling and records a real
+llvmpipe capture. That verifies the public GPU API path and finite rendering,
+not Intel GPU speed, native backdrop correctness or memory budgets. Detailed
+pass/memory profiling and native surface request lifecycle remain future work.
+
+## Wayland and X11
+
+The public Qt owned-texture path is shared across QPA backends. Native compositor
+blur must have separate Wayland/X11 adapters and runtime capabilities; X11 access
+does not justify a screen-scraping fallback. Unsupported effects remain usable
+with translucency or opaque surfaces. Future Fcitx candidate synchronization is
+a separate integration: the static theme currently requests no blur and has no
+animation or Power Scene coupling. Input latency takes priority.

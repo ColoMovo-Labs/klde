@@ -13,6 +13,17 @@ executors:
       CCACHE_DIR: /root/.cache/ccache
       CCACHE_BASEDIR: /root/project
 
+  fedora-qt:
+    docker:
+      - image: fedora:44
+    resource_class: medium
+    working_directory: /root/project
+    environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      CCACHE_DIR: /root/.cache/ccache
+      CCACHE_BASEDIR: /root/project
+
 commands:
   prepare:
     steps:
@@ -81,8 +92,10 @@ jobs:
           command: |
             bash tools/check-format.sh
             reuse lint
+            python3 tools/check-translations.py
+            python3 tools/check-fcitx-theme.py
             cmake --build build/ci --target all_qmllint --parallel 2
-            clang-tidy -p build/ci src/shell/main.cpp
+            bash tools/check-tidy.sh
             desktop-file-validate packaging/org.klde.shell.preview.desktop
       - store_artifacts:
           path: artifacts/environment
@@ -92,7 +105,7 @@ jobs:
     steps:
       - built-tree
       - run:
-          name: Qt Test startup contract
+          name: Qt Test backend and startup contracts
           command: ctest --test-dir build/ci -L unit --output-on-failure --output-junit artifacts/tests/unit.xml
       - store_test_results:
           path: artifacts/tests
@@ -102,7 +115,7 @@ jobs:
     steps:
       - built-tree
       - run:
-          name: Qt Quick Test token contract
+          name: Qt Quick Test tokens and launcher keyboard interaction
           command: ctest --test-dir build/ci -L qml --output-on-failure --output-junit artifacts/tests/qml.xml
       - store_test_results:
           path: artifacts/tests
@@ -117,24 +130,107 @@ jobs:
       - store_artifacts:
           path: artifacts/smoke
 
+  fedora-build:
+    executor: fedora-qt
+    steps:
+      - run:
+          name: Install Fedora checkout tools
+          command: dnf install -y --setopt=install_weak_deps=False ca-certificates git openssh-clients tar gzip findutils
+      - checkout
+      - restore_cache:
+          keys:
+            - dnf-v1-fedora44-{{ arch }}-{{ checksum ".circleci/fedora-packages.txt" }}
+      - run:
+          name: Install Fedora Qt development and runtime modules
+          command: |
+            xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False --setopt=keepcache=True
+            mkdir -p artifacts/environment artifacts/tests artifacts/fedora-smoke
+            rpm -qa | sort > artifacts/environment/packages.txt
+            cmake --version > artifacts/environment/cmake.txt
+            qmake6 -query > artifacts/environment/qt.txt
+      - save_cache:
+          key: dnf-v1-fedora44-{{ arch }}-{{ checksum ".circleci/fedora-packages.txt" }}
+          paths:
+            - /var/cache/libdnf5
+      - restore_cache:
+          keys:
+            - ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-
+            - ccache-v1-fedora44-{{ arch }}-
+      - run:
+          name: Independently configure and build on Fedora
+          command: |
+            cmake --preset ci -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+            cmake --build --preset ci --parallel 2
+            ccache --show-stats > artifacts/environment/ccache.txt
+      - run:
+          name: Fedora unit, QML and offscreen startup tests
+          command: |
+            ctest --test-dir build/ci --output-on-failure --output-junit artifacts/tests/fedora.xml
+            runtime_dir="$(mktemp -d)"
+            chmod 700 "$runtime_dir"
+            trap 'rm -rf "$runtime_dir"' EXIT
+            env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+              build/ci/bin/klde-shell --smoke-test --view quick-settings \
+              --capture "$PWD/artifacts/fedora-smoke/offscreen.png" \
+              > artifacts/fedora-smoke/offscreen.log 2>&1
+            test -s artifacts/fedora-smoke/offscreen.png
+            desktop-file-validate packaging/org.klde.shell.preview.desktop
+      - save_cache:
+          key: ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /root/.cache/ccache
+      - store_test_results:
+          path: artifacts/tests
+      - store_artifacts:
+          path: artifacts/environment
+      - store_artifacts:
+          path: artifacts/fedora-smoke
+
   packaging-check:
     executor: ubuntu-qt
     steps:
       - built-tree
       - run:
-          name: Stage install archive
-          command: |
-            DESTDIR="$PWD/artifacts/install" cmake --install build/ci --prefix /usr
-            test -x artifacts/install/usr/bin/klde-shell
-            desktop-file-validate artifacts/install/usr/share/applications/org.klde.shell.preview.desktop
-            tar -C artifacts/install -czf artifacts/klde-install-tree.tar.gz .
+          name: Build the experimental Debian package and matching source archive
+          command: bash tools/package-deb.sh build/ci
+      - persist_to_workspace:
+          root: /root/project
+          paths:
+            - artifacts/packages
       - store_artifacts:
-          path: artifacts/klde-install-tree.tar.gz
+          path: artifacts/packages
+
+  deb-runtime:
+    executor: ubuntu-qt
+    steps:
+      - run:
+          name: Prepare a clean Ubuntu runtime container
+          command: |
+            apt-get update
+            apt-get install -y --no-install-recommends ca-certificates git openssh-client desktop-file-utils xvfb xauth mesa-utils libegl-mesa0 libgl1-mesa-dri libglx-mesa0
+      - checkout
+      - attach_workspace:
+          at: /root/project
+      - run:
+          name: Install the package through apt with only declared runtime dependencies
+          command: |
+            # Apply after the image's docker filters (dpkg reads files lexicographically).
+            # Retain this package's directory and all license documents.
+            mkdir -p /etc/dpkg/dpkg.cfg.d
+            printf '%s\n' 'path-include=/usr/share/doc/klde-shell-preview' 'path-include=/usr/share/doc/klde-shell-preview/*' > /etc/dpkg/dpkg.cfg.d/zz-klde-docs
+            apt-get install -y --no-install-recommends ./artifacts/packages/*.deb
+      - run:
+          name: Exercise the installed shell and verify clean removal
+          command: bash tools/check-deb-runtime.sh
+      - store_artifacts:
+          path: artifacts/package-runtime
 
 workflows:
   core:
     jobs:
       - configure-build
+      - fedora-build
       - static-analysis:
           requires: [configure-build]
       - unit-tests:
@@ -145,3 +241,5 @@ workflows:
           requires: [configure-build]
       - packaging-check:
           requires: [configure-build]
+      - deb-runtime:
+          requires: [packaging-check]

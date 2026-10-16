@@ -1,6 +1,7 @@
 # Architecture
 
-Status: initial design; only the minimal Qt window exists in Phase 0.
+Status: Phase 0 passed its cloud gate; Phase 1 implements an ordinary preview
+window and mock service contracts. See [the prototype guide](docs/development/phase-1.md).
 
 ## Boundaries and process model
 
@@ -39,14 +40,31 @@ are built. The table below defines their contracts now.
 
 Current directories have concrete consumers: `.circleci`, `.github`, `docs`,
 `qml`, `src/shell`, `tests`, `tools`, `packaging`, and `LICENSES`.
-There are no empty placeholder trees. Phase 0 has one executable and one embedded
-`KLDE.Shell` QML module, built using `qt_add_qml_module`. QML tests import that
-same module. Qt runtime libraries remain dynamically linked to distribution packages.
+There are no empty placeholder trees. The process has one executable and two
+embedded QML modules, `KLDE.Shell` for presentation and `KLDE.Backends` for the
+per-engine facade and C++ models/contracts, built using `qt_add_qml_module`.
+QML tests import these same modules. Qt runtime libraries remain dynamically
+linked to distribution packages.
 
-Later, `src/models` and `src/backends` hold their actual implementations;
+`src/models` and `src/backends` hold application models and mock contracts;
 reusable UI components stay within a small shell QML module until a real second
 consumer warrants another module. No plugin framework, scripting language or
 multi-process bus is introduced merely for possible future use.
+
+## Upstream and distribution boundaries
+
+The upstream KLDE desktop is independent of a future Ubuntu LTS-based distribution.
+Ubuntu/Kylin receives first-class integration and Debian packages; Fedora receives
+its own cloud source-build gate and eventually RPM packaging. Other distributions
+remain source portability targets, with community packages distinguished from
+officially tested combinations. Distribution defaults belong in downstream
+packages, not hardcoded service paths in shell presentation.
+
+Capabilities are discovered per service and output. Do not assume Intel graphics,
+a battery, a discrete GPU, writable brightness, refresh-rate switching or
+power-profiles-daemon. Intel/AMD/NVIDIA, hybrid graphics, desktop/laptop,
+multiple outputs, scaling and high refresh rates belong in the hardware acceptance
+matrix. U939-class hardware is a low-end sanity baseline, not the product boundary.
 
 ## System state and D-Bus
 
@@ -67,7 +85,31 @@ Split audio, network and power into their own adapters when real connections
 give them independent lifetimes. QML consumes a stable facade, with mock/real
 provenance visible in diagnostics rather than branching inside visual controls.
 
-## Compositor independence and Wayland
+## Display, language and input boundaries
+
+KLDE is Wayland first and X11 compatible. Qt QPA supplies the ordinary application
+window path; QML does not call Xlib/XCB or raw Wayland APIs. DisplayServerBackend
+reports the active QPA path and explicit unsupported session capabilities. Native
+adapters stay under `src/platform`; no empty Wayland/X11 implementation is created.
+See [display-protocols.md](docs/architecture/display-protocols.md). KWin as a future
+engine remains possible without adopting Plasma UI. No compositor is selected.
+
+LocaleVoiceModel owns embedded ID catalogs, `en`/`zh_CN`, Standard/Cute fallback
+and tone locks. It changes shell presentation in memory, not the system locale.
+InputMethodBackend is separate: Fcitx5Backend performs asynchronous read-only
+D-Bus owner detection, with simulated method choices and no host switching.
+The shell indicator and Language & Input page use these contracts. Fcitx owns
+preedit, dictionaries and candidate compatibility; the original light/dark theme
+prototype is manually selectable. Native candidate surfaces, global IME control
+and Power Scene synchronization require later integration and interactive tests.
+See [i18n](docs/architecture/i18n.md) and [input methods](docs/architecture/input-methods.md).
+
+GlobalShortcutBackend, ScreenBackend, ClipboardBackend and ScreenshotBackend are
+reserved responsibilities, not implemented services. Add them when real consumers
+and supported APIs exist. Platform-specific handles never cross into presentation.
+
+## Compositor independence
+
 
 The standalone preview is an ordinary top-level application. It cannot promise
 desktop-layer placement, exclusive zones, global Super-key handling, reliable
@@ -84,6 +126,13 @@ No final compositor is selected. UKUI/KWin, wlroots-based and other Wayland
 adapters remain candidates. A future KLDE compositor requires its own decision
 record and maintenance argument. See [window management](docs/architecture/window-management.md).
 
+Shortcut actions have stable IDs and configurable application-local bindings;
+global shortcuts require a later compositor/portal adapter. See
+[shortcut policy](docs/architecture/shortcuts.md). Power Scenes coordinate
+capability-based system policy with visual preferences, while weather has a
+provider boundary and explicit online consent. See [power scenes](docs/architecture/power-scenes.md)
+and [weather](docs/architecture/weather.md).
+
 ## UKUI dependency strategy
 
 First inspect actual Ubuntu Kylin 26.04 packages, API documentation and licensing.
@@ -98,6 +147,12 @@ notification daemons, policy agents, network applets or power managers while
 testing alongside the host desktop. Selective source reuse needs a documented
 reason and provenance review; none is included in Phase 0.
 
+UKUI and LingmoOS are the first app ecosystems to evaluate, not mandatory runtime
+dependencies. Each candidate records direct use, theming, adaptation/fork or
+behavior-only reference, with exact license and dependency evidence in
+[the application framework](docs/architecture/apps.md). Shell UI and app branding
+remain independent.
+
 ## Security and privacy
 
 The shell runs as the logged-in user and never as root. Use logind and polkit
@@ -111,8 +166,9 @@ launch APIs, not interpolated shell commands. Application launching and credenti
 handling are outside this baseline. Future widgets start as trusted built-ins;
 third-party executable plugins need a separate trust and isolation design.
 
-There is no telemetry or hidden network traffic. Weather remains mock data in
-Phase 1. A shell surface is not a secure lock screen: any future lock UI must use
+There is no telemetry or hidden network traffic. Weather defaults to mock data;
+the experimental online provider requires explicit consent and a city, with
+attribution, cooldown and failure state. A shell surface is not a secure lock screen: any future lock UI must use
 a compositor/session locking protocol and a separately reviewed authentication path.
 
 ## Rendering and lifecycle

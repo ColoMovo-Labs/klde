@@ -3,4 +3,5 @@
 #include <QtQuickTest/quicktest.h>
 
 Q_IMPORT_QML_PLUGIN(KldeShellPlugin)
+Q_IMPORT_QML_PLUGIN(KldeBackendsPlugin)
 QUICK_TEST_MAIN(klde_tokens)

@@ -3,14 +3,14 @@
 ## Original material
 
 This baseline is newly authored for KLDE. No UKUI, KWin, GNOME, Quickshell,
-end-4 or other shell source code has been copied or derived. No third-party
+end-4, LingmoOS or other shell source code has been copied or derived. No third-party
 artwork, icons, fonts, mascot or concept image is included.
 
 | Material | License | Attribution |
 | --- | --- | --- |
 | Original C++/QML, CMake, CI, tooling and metadata | GPL-3.0-or-later | KLDE contributors; preserve individual notices |
 | Original documentation | CC-BY-SA-4.0 | KLDE contributors, file path and revision; identify modifications |
-| Future original artwork | CC-BY-SA-4.0 unless individually marked | author, title, source revision and modifications recorded per asset |
+| Original icons and First Light wallpaper | CC-BY-SA-4.0 | KLDE contributors; [asset manifest](../../assets/README.md) and source revision |
 
 `REUSE.toml` supplies per-path SPDX metadata. Full license texts live in
 `LICENSES`; `LICENSE` repeats the project code license for repository discovery.
@@ -18,7 +18,7 @@ These license texts are legal notices, not imported implementation code.
 
 ## External runtime and build dependencies
 
-Qt Core, Gui, Qml, Quick, Quick Controls and their plugins are consumed as Ubuntu
+Qt Core, Gui, DBus, Network, Qml, Quick, Quick Controls and their plugins are consumed as Ubuntu
 packages. Qt Test and Quick Test are development dependencies. Qt libraries and
 plugins retain their upstream licenses and third-party notices; KLDE's license
 does not relicense them. We dynamically link distribution Qt. Our own QML module
@@ -38,6 +38,14 @@ in CI artifacts. Future distribution or code vendoring requires its own review.
 
 ## New reuse checklist
 
+The [application assessment](../architecture/apps.md) and
+[shortcut study](../architecture/shortcuts.md) record pinned research references;
+they import no implementation or assets. Qt Network is used for the optional
+[uapis.cn adapter](../architecture/weather.md). Provider observations and data
+rights are separate from KLDE's code and artwork licenses; no real responses
+are included in test fixtures. Distribution of an enabled service still requires
+review of the current provider terms and source-data rights.
+
 For each reused file or asset, record upstream URL, exact revision, author,
 SPDX license, modifications and notice location. Confirm compatibility with
 GPL-3.0-or-later before adding derived code. GPL-2.0-only code needs particular
@@ -48,3 +56,18 @@ Project inspiration grants no trademark or artwork rights. KLDE has no affiliati
 with Canonical, Ubuntu Kylin, Kylinsoft, Google, KDE, GNOME, Apple or Microsoft.
 The KLDE name is a working project identity; this document does not claim a
 trademark clearance search has been completed.
+
+## Language and input additions
+
+The embedded English/Chinese catalogs are original GPL-licensed UI data. Sparse
+Cute catalogs contain no executable code. Original Fcitx light/dark theme assets
+are CC BY-SA 4.0 under the asset metadata; theme syntax was studied from upstream
+documentation/schema without copying its implementation or artwork. See
+[the theme manifest](../../assets/fcitx5/README.md). The theme is installed with
+the preview but not automatically enabled. Fcitx itself is not vendored or linked;
+only read-only session-bus service availability is observed.
+
+Ubuntu/Fedora runtime font dependencies remain separate distribution packages:
+Noto CJK (OFL-1.1) and Noto Color Emoji (upstream notices include OFL-1.1 and
+Apache-2.0). No font files are in this source tree or embedded binary. Record exact
+package notices when producing a complete distribution image.

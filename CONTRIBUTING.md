@@ -16,8 +16,9 @@ design proposals and performance reports. Keep discussion respectful and evidenc
 CircleCI is authoritative. Local build/test runs are optional and never a substitute
 for the cloud result. Do not request that every contributor compile locally.
 The exact job policy and initial protection setup are in
-[circleci.md](docs/development/circleci.md). Until remote required checks are
-enabled, the same rule is a maintainer policy, not claimed technical enforcement.
+[circleci.md](docs/development/circleci.md). Five core checks are enforced on
+`main`; independent approving-review count is zero during sole-maintainer
+bootstrap. Maintainer acceptance remains policy until a second reviewer joins.
 
 ## Code and UI
 

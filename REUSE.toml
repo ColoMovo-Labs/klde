@@ -11,3 +11,9 @@ path = ["*.md", "docs/**"]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 KLDE contributors"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = ["assets/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 KLDE contributors"
+SPDX-License-Identifier = "CC-BY-SA-4.0"

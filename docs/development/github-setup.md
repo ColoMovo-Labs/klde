@@ -50,9 +50,10 @@ in `.github/labels.json`; no speculative issue backlog is automatically opened.
 ## Review and reporting setup
 
 `CODEOWNERS` initially names `@ColoMovo`, the verified organization administrator.
-Establish real maintainer teams before expanding it. Enable required review/core
-checks after the first CircleCI run reports their actual names; see
-[circleci.md](circleci.md). Do not enable destructive settings or rewrite history.
+Establish real maintainer teams before expanding it. The green baseline supplied
+the actual check contexts; `main` now requires all five core checks and a pull
+request, with zero independent approving reviews during sole-maintainer bootstrap.
+See [circleci.md](circleci.md). Do not enable destructive settings or rewrite history.
 
 Verify a private security-reporting channel and a separate conduct contact before
 claiming those channels are monitored. GitHub private vulnerability reporting can
