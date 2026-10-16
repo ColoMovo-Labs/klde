@@ -7,6 +7,8 @@ desktop-file-utils
 dpkg-dev
 file
 fonts-dejavu-core
+fonts-noto-cjk
+fonts-noto-color-emoji
 g++
 libegl-mesa0
 libgl1-mesa-dri

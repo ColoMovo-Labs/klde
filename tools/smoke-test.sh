@@ -40,6 +40,14 @@ env QT_QPA_PLATFORM=wayland WAYLAND_DISPLAY=wayland-klde QT_QUICK_BACKEND=softwa
     "$shell_binary" --smoke-test --capture "$smoke_dir/wayland.png" \
     > "$smoke_dir/wayland.log" 2>&1
 
+# Exercise the same focus/typing/token suite through each real QPA path.
+qml_test_binary="$(dirname "$shell_binary")/klde-qml-tests"
+env QT_QPA_PLATFORM=wayland WAYLAND_DISPLAY=wayland-klde QT_QUICK_BACKEND=software \
+    QT_QUICK_CONTROLS_STYLE=Basic "$qml_test_binary" \
+    > "$smoke_dir/wayland-interaction.log" 2>&1
+xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic \
+    "$qml_test_binary" > "$smoke_dir/xcb-interaction.log" 2>&1
+
 # llvmpipe checks the OpenGL path. It is not an Intel GPU benchmark.
 xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 glxinfo -B > "$smoke_dir/glxinfo.txt"
 xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
@@ -52,7 +60,7 @@ test -s "$smoke_dir/wayland.png"
 test -s "$smoke_dir/llvmpipe.png"
 
 smoke_status=0
-for view in quick-settings launcher blur power-scenes weather; do
+for view in quick-settings launcher blur power-scenes weather language input; do
     if ! xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
         LIBGL_ALWAYS_SOFTWARE=1 QSG_INFO=1 \
         "$shell_binary" --smoke-test --view "$view" --audit-idle \
@@ -67,4 +75,19 @@ if ! xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=ope
     cat "$smoke_dir/dark.log"
     smoke_status=1
 fi
+for variant in zh_CN zh_CN-cute en-cute; do
+    locale="${variant%%-*}"
+    voice=standard
+    if [[ "$variant" == *-cute ]]; then voice=cute; fi
+    if ! xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
+        LIBGL_ALWAYS_SOFTWARE=1 "$shell_binary" --smoke-test --audit-idle \
+        --view quick-settings --locale "$locale" --voice "$voice" \
+        --capture "$smoke_dir/$variant.png" > "$smoke_dir/$variant.log" 2>&1; then
+        cat "$smoke_dir/$variant.log"
+        smoke_status=1
+    fi
+done
+xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
+    LIBGL_ALWAYS_SOFTWARE=1 "$shell_binary" --smoke-test --locale zh_CN --voice cute --view language \
+    --capture "$smoke_dir/language-zh_CN.png" > "$smoke_dir/language-zh_CN.log" 2>&1
 exit "$smoke_status"

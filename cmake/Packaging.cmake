@@ -18,7 +18,7 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 # These imports/plugins are loaded at runtime and cannot all be inferred from ELF.
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-    "qml6-module-qtqml, qml6-module-qtqml-models, qml6-module-qtqml-workerscript, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-effects, qml6-module-qtquick-layouts, qml6-module-qtquick-templates, qml6-module-qtquick-window, qt6-qpa-plugins, qt6-svg-plugins, qt6-wayland, fonts-dejavu-core")
+    "qml6-module-qtqml, qml6-module-qtqml-models, qml6-module-qtqml-workerscript, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-effects, qml6-module-qtquick-layouts, qml6-module-qtquick-templates, qml6-module-qtquick-window, qt6-qpa-plugins, qt6-svg-plugins, qt6-wayland, fonts-dejavu-core, fonts-noto-cjk, fonts-noto-color-emoji")
 
 install(FILES "${CMAKE_SOURCE_DIR}/packaging/debian/copyright"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/klde-shell-preview")

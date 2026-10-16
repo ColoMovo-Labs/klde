@@ -92,6 +92,8 @@ jobs:
           command: |
             bash tools/check-format.sh
             reuse lint
+            python3 tools/check-translations.py
+            python3 tools/check-fcitx-theme.py
             cmake --build build/ci --target all_qmllint --parallel 2
             bash tools/check-tidy.sh
             desktop-file-validate packaging/org.klde.shell.preview.desktop

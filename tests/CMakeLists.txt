@@ -5,6 +5,11 @@ set_tests_properties(backend-contracts PROPERTIES LABELS unit TIMEOUT 30)
 
 qt_add_executable(klde-startup-test test_startup.cpp)
 
+qt_add_executable(klde-locale-input-test test_locale_input.cpp)
+target_link_libraries(klde-locale-input-test PRIVATE klde_backends Qt6::Test)
+add_test(NAME locale-input-contracts COMMAND klde-locale-input-test)
+set_tests_properties(locale-input-contracts PROPERTIES LABELS unit TIMEOUT 30)
+
 qt_add_executable(klde-power-scene-test test_power_scenes.cpp)
 target_link_libraries(klde-power-scene-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME power-scene-contracts COMMAND klde-power-scene-test)
@@ -20,7 +25,7 @@ target_link_libraries(klde-weather-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME weather-contracts COMMAND klde-weather-test)
 set_tests_properties(weather-contracts PROPERTIES LABELS unit TIMEOUT 30)
 target_link_libraries(klde-startup-test PRIVATE
-    klde_uiplugin Qt6::Quick Qt6::QuickControls2 Qt6::Test)
+    klde_ui klde_uiplugin Qt6::Quick Qt6::QuickControls2 Qt6::Test)
 add_test(NAME shell-startup COMMAND klde-startup-test)
 set_tests_properties(shell-startup PROPERTIES
     LABELS unit TIMEOUT 30

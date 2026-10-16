@@ -40,6 +40,14 @@ xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
 test -s artifacts/package-runtime/offscreen.png
 test -s artifacts/package-runtime/blur.png
 
+env QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+    /usr/bin/klde-shell --smoke-test --locale zh_CN --voice cute --view language \
+    --capture "$PWD/artifacts/package-runtime/language-zh_CN.png" \
+    > artifacts/package-runtime/language-zh_CN.log 2>&1
+test -s artifacts/package-runtime/language-zh_CN.png
+test -s /usr/share/fcitx5/themes/klde-expressive-light/theme.conf
+test -s /usr/share/fcitx5/themes/klde-expressive-dark/theme.conf
+
 apt-get purge -y klde-shell-preview
 if command -v klde-shell; then
     echo 'Shell executable survived package removal' >&2
