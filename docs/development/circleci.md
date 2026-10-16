@@ -125,3 +125,17 @@ Basic controls, SVG decoder and Effects runtime paths are exercised by startup
 and rendering checks. The `.deb` uses generated ELF dependencies plus explicit runtime QML/plugin
 dependencies, checked in a clean container. It does not claim that every scanned
 Qt plugin was statically linked or bundled.
+
+## Language and display checks
+
+Static analysis validates the embedded English/Chinese catalogs, duplicate IDs,
+required strings, placeholders and sparse Cute overrides with protected namespaces.
+The original Fcitx theme configuration and referenced SVG files receive structural
+checks; native candidate rendering is not exercised by that check.
+
+Integration runs the same Qt Quick interaction suite under Weston/Wayland and
+Xvfb/XCB in addition to offscreen CTest. Captures include Chinese, English, Cute,
+input and language settings. Distribution Noto CJK/emoji packages are declared
+for Ubuntu and Fedora; startup tests verify a Chinese glyph. This does not replace
+interactive IME validation, XWayland integration, text-scale or hardware profiling.
+No real Fcitx engine is required or launched by these mock cloud tests.

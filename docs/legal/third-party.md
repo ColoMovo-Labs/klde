@@ -18,7 +18,7 @@ These license texts are legal notices, not imported implementation code.
 
 ## External runtime and build dependencies
 
-Qt Core, Gui, Qml, Quick, Quick Controls and their plugins are consumed as Ubuntu
+Qt Core, Gui, DBus, Network, Qml, Quick, Quick Controls and their plugins are consumed as Ubuntu
 packages. Qt Test and Quick Test are development dependencies. Qt libraries and
 plugins retain their upstream licenses and third-party notices; KLDE's license
 does not relicense them. We dynamically link distribution Qt. Our own QML module
@@ -56,3 +56,18 @@ Project inspiration grants no trademark or artwork rights. KLDE has no affiliati
 with Canonical, Ubuntu Kylin, Kylinsoft, Google, KDE, GNOME, Apple or Microsoft.
 The KLDE name is a working project identity; this document does not claim a
 trademark clearance search has been completed.
+
+## Language and input additions
+
+The embedded English/Chinese catalogs are original GPL-licensed UI data. Sparse
+Cute catalogs contain no executable code. Original Fcitx light/dark theme assets
+are CC BY-SA 4.0 under the asset metadata; theme syntax was studied from upstream
+documentation/schema without copying its implementation or artwork. See
+[the theme manifest](../../assets/fcitx5/README.md). The theme is installed with
+the preview but not automatically enabled. Fcitx itself is not vendored or linked;
+only read-only session-bus service availability is observed.
+
+Ubuntu/Fedora runtime font dependencies remain separate distribution packages:
+Noto CJK (OFL-1.1) and Noto Color Emoji (upstream notices include OFL-1.1 and
+Apache-2.0). No font files are in this source tree or embedded binary. Record exact
+package notices when producing a complete distribution image.

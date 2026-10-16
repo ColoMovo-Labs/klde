@@ -46,7 +46,7 @@ klde-shell --view quick-settings --dark
 klde-shell --view blur
 ```
 
-Within the preview, Ctrl+Space opens the launcher, F2 opens quick settings,
+Within the preview, Ctrl+Alt+Space opens the launcher, F2 opens quick settings,
 Ctrl+Alt+B opens the blur laboratory, and Ctrl+Alt+R toggles reduced motion.
 These are application shortcuts, not global desktop shortcuts. Escape dismisses
 a popup; closing restores focus to the invoking part of the shell.

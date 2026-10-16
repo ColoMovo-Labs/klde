@@ -32,3 +32,19 @@ The expanded foundation adds Fedora CI, real `.deb` validation, optional weather
 Power Scenes and configurable shortcuts. Source preparation is not cloud
 acceptance; the current PR records each new job's result. RPM packages, Arch CI,
 global shortcuts, native compositor blur and a distribution image remain future work.
+
+## KLDE 0.3 — Language, Voice & Input
+
+[GitHub milestone](https://github.com/ColoMovo-Labs/klde/milestone/1) groups cross-cutting shell work; it is not a release date or a
+version bump. Initial scope: stable bilingual IDs, independent locale/voice state,
+sparse Cute fallback and protected namespaces; selector and Language & Input
+prototypes; Fcitx 5 read-only detection, mock indicator and original light/dark
+theme; nested Wayland and Xvfb/XCB correctness checks.
+
+Later acceptance requires real Fcitx switching, Pinyin/Rime setup guidance,
+interactive mixed-app preedit/candidate/punctuation testing, persistent preferences
+and optional appearance synchronization. Native candidate surfaces are excluded.
+See [display](docs/architecture/display-protocols.md),
+[i18n](docs/architecture/i18n.md), [input](docs/architecture/input-methods.md) and
+ADRs 0011–0015. ADRs 0009–0010 already record weather and shortcuts and retain
+their historical identifiers. Chinese and English are both primary product paths.

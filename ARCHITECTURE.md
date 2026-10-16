@@ -85,7 +85,31 @@ Split audio, network and power into their own adapters when real connections
 give them independent lifetimes. QML consumes a stable facade, with mock/real
 provenance visible in diagnostics rather than branching inside visual controls.
 
-## Compositor independence and Wayland
+## Display, language and input boundaries
+
+KLDE is Wayland first and X11 compatible. Qt QPA supplies the ordinary application
+window path; QML does not call Xlib/XCB or raw Wayland APIs. DisplayServerBackend
+reports the active QPA path and explicit unsupported session capabilities. Native
+adapters stay under `src/platform`; no empty Wayland/X11 implementation is created.
+See [display-protocols.md](docs/architecture/display-protocols.md). KWin as a future
+engine remains possible without adopting Plasma UI. No compositor is selected.
+
+LocaleVoiceModel owns embedded ID catalogs, `en`/`zh_CN`, Standard/Cute fallback
+and tone locks. It changes shell presentation in memory, not the system locale.
+InputMethodBackend is separate: Fcitx5Backend performs asynchronous read-only
+D-Bus owner detection, with simulated method choices and no host switching.
+The shell indicator and Language & Input page use these contracts. Fcitx owns
+preedit, dictionaries and candidate compatibility; the original light/dark theme
+prototype is manually selectable. Native candidate surfaces, global IME control
+and Power Scene synchronization require later integration and interactive tests.
+See [i18n](docs/architecture/i18n.md) and [input methods](docs/architecture/input-methods.md).
+
+GlobalShortcutBackend, ScreenBackend, ClipboardBackend and ScreenshotBackend are
+reserved responsibilities, not implemented services. Add them when real consumers
+and supported APIs exist. Platform-specific handles never cross into presentation.
+
+## Compositor independence
+
 
 The standalone preview is an ordinary top-level application. It cannot promise
 desktop-layer placement, exclusive zones, global Super-key handling, reliable

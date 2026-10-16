@@ -64,10 +64,10 @@ This is a runnable Qt window using mock data, not concept art or a complete desk
 [Dark appearance](docs/development/phase-1-dark.png) ·
 [Owned-content blur laboratory](docs/development/phase-1-blur.png).
 
-No concept image was supplied. Future concept images belong under
-`docs/concepts/klde-concept-01.*` and must be labelled “Early concept — not final UI.”
-The existing snow-mountain capture is the early KLDE shell preview reference;
-the separately described colorful concept's original image is not available.
+The owner supplied a colorful desktop screenshot as a visual reference on
+17 October 2026. Its third-party logos and wallpaper are not redistributed here;
+[the reference study](docs/design/reference-study.md) records the design direction.
+Published preview captures use original KLDE assets and identify the tested revision.
 The earlier [Phase 0 capture](docs/development/foundation-llvmpipe.png) is retained
 with its [baseline validation record](docs/development/phase-0.md). Software CI
 captures verify rendering correctness; representative GPU performance is measured
@@ -80,6 +80,13 @@ The shell owns its UI; existing system services and compositors retain their
 responsibilities. Start with [ARCHITECTURE.md](ARCHITECTURE.md),
 [DESIGN.md](DESIGN.md), [ROADMAP.md](ROADMAP.md) and the
 [decision records](docs/decisions/).
+
+The display strategy is **Wayland first, X11 compatible**, using Qt QPA for the
+ordinary preview window. English and Simplified Chinese have separate Standard
+and optional Cute voice layers. The input prototype detects Fcitx 5 availability
+and offers a clearly labelled mock selector; it does not control the host IME.
+See [display protocols](docs/architecture/display-protocols.md),
+[localization](docs/architecture/i18n.md) and [input methods](docs/architecture/input-methods.md).
 
 ## Development
 
@@ -105,7 +112,9 @@ See [development setup](docs/development/circleci.md).
 ## CircleCI
 
 [`.circleci/config.yml`](.circleci/config.yml) defines configure/build, static
-analysis, Qt Test, QML tests, nested/headless smoke tests and a packaging check.
+analysis, Qt Test, QML tests, Wayland/XCB smoke tests, an independent Fedora build,
+actual Debian packaging and clean runtime install/removal checks. Catalog and
+voice validation run with static analysis.
 No GitHub Actions build is used. Connecting the repository and enabling triggers
 are separate administrative steps; a configuration file alone does not activate CI.
 See [cloud setup and required checks](docs/development/circleci.md).

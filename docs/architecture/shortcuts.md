@@ -14,7 +14,7 @@ keys globally or close host windows.
 
 | Stable action ID | Default | Action |
 | --- | --- | --- |
-| `shell.launcher` | `Ctrl+Space` | Toggle the search-first launcher |
+| `shell.launcher` | `Ctrl+Alt+Space` | Toggle the search-first launcher |
 | `shell.quick-settings` | `F2` | Toggle Quick Settings |
 | `preview.blur-lab` | `Ctrl+Alt+B` | Toggle the owned-content blur laboratory |
 | `effects.reduced-motion` | `Ctrl+Alt+R` | Toggle reduced motion |

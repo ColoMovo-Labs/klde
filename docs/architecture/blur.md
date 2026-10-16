@@ -52,7 +52,9 @@ may be disabled by the user's global performance or accessibility policy.
 Use public Qt Quick texture/effect APIs first. A Phase 1 laboratory can display
 an original static swatch next to its filtered version. It must say that the source
 is KLDE-owned content, use a fixed bounded area and expose Off/Low/Medium/High.
-It is not used behind every shell panel by default.
+The separate laboratory is an explicit diagnostic. Normal preview panels now
+filter a bounded region of the KLDE-owned wallpaper by default, using Low
+quality in Performance and Power Saver. Neither path samples host windows.
 
 [ShaderEffectSource](https://doc.qt.io/qt-6.8/qml-qtquick-shadereffectsource.html)
 can capture an owned item at a reduced texture size. With `live: false`, content
@@ -155,3 +157,12 @@ The feature pipeline checks the laboratory after settling and records a real
 llvmpipe capture. That verifies the public GPU API path and finite rendering,
 not Intel GPU speed, native backdrop correctness or memory budgets. Detailed
 pass/memory profiling and native surface request lifecycle remain future work.
+
+## Wayland and X11
+
+The public Qt owned-texture path is shared across QPA backends. Native compositor
+blur must have separate Wayland/X11 adapters and runtime capabilities; X11 access
+does not justify a screen-scraping fallback. Unsupported effects remain usable
+with translucency or opaque surfaces. Future Fcitx candidate synchronization is
+a separate integration: the static theme currently requests no blur and has no
+animation or Power Scene coupling. Input latency takes priority.

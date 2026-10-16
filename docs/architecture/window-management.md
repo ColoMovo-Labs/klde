@@ -64,3 +64,13 @@ Contract tests should cover invalid IDs, rejected policies, delayed confirmation
 workspace deletion, output loss and reconnect reconciliation. Real integration
 tests must verify actual host windows; changing mock model fields is not evidence
 of tiling support.
+
+## Display compatibility
+
+Wayland is the future default; X11/XCB remains a compatibility path. Backend
+capabilities, not the display name alone, determine supported operations. A KWin
+engine does not require Plasma presentation. Native Wayland and XWayland client
+behavior need separate interactive verification; an Xvfb startup is not proof of
+window management or IME integration. See [display-protocols.md](display-protocols.md).
+All workspace names and notices use the locale/voice model; layout IDs remain
+stable and language independent.

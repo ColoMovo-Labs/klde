@@ -25,12 +25,13 @@ with immediate text focus. A round weather widget demonstrates a built-in widget
 contract. Workspace indicators communicate both position and layout mode.
 No permanent full-width bottom panel is required.
 
-The accessible snow-mountain preview is the direct composition reference: left
-circular weather, centered workspace pill, right controls and a compact bottom
-dock. The owner also describes a colorful UKUI-inspired concept as a broader
-reference for vibrant controls, windows and wallpaper; its original image is not
-present in this checkout, so no fabricated image or imported asset is attributed
-to it. Original screenshots remain labelled as actual previews at exact revisions.
+The snow-mountain preview establishes left circular weather, centered workspace
+pill, right controls and a compact bottom dock. The supplied colorful screenshot
+adds a concrete emphasis reference: saturated blue/purple, thick filled sliders,
+circular active icons and soft tinted floating surfaces. KLDE implements these
+principles with original assets and component geometry. No reference wallpaper,
+application logo or application window is copied. See the
+[reference study](docs/design/reference-study.md). Captures identify real preview revisions.
 
 Shape hierarchy has a purpose: the weather circle feels ambient, active workspace
 pills expand beside compact inactive chips, primary scene cards have a strong
@@ -62,14 +63,25 @@ The following are seed values to evaluate visually, not tested accessibility cla
 | Blur | blurNone, blurLow, blurMedium, blurHigh; policy presets, not compositor-independent pixel guarantees |
 | Density and icons | shared iconS/M/L, dockIcon, densityScale and component metrics |
 
-Suggested light seed: cool ivory background, white elevated surfaces, deep blue-green
-primary, muted lilac secondary and warm apricot tertiary. Dark mode needs its own
+The revised light seed uses pale blue surfaces, a saturated indigo primary,
+lilac secondary and warm apricot tertiary. Thick value bars, circular active
+icon discs, selected scene surfaces and finite pressed-shape transitions make
+emphasis visible beyond corner rounding. Dark mode needs its own
 surface and text roles, not a global color inversion. Evaluate contrast on both
 opaque and translucent backgrounds before accepting a palette.
 
+Use distribution-provided Noto Sans CJK SC for Chinese and sans serif for English,
+with separately adjusted Chinese label/caption density and user scaling. See
+[CJK typography](docs/design/typography-cjk.md) and
+[voice and microcopy](docs/design/voice-and-microcopy.md). Locale and voice are
+independent; Cute changes selected friendly messages and never precise security,
+privacy, legal or destructive text.
+
 Use a distribution-provided sans serif with CJK fallback. Do not bundle a font
 without reviewing its license. Text uses semantic font tokens and user scaling;
-layouts accommodate longer translations, RTL content, and 200% text size.
+layouts must eventually accommodate longer translations, RTL content and 200%
+text size. Current bilingual captures and glyph checks are narrower evidence;
+comprehensive scaling, RTL and screen-reader acceptance is still pending.
 Phase 1 maps the seed roles into shell components and the Qt Controls palette,
 with light/dark SVG ink variants. Theme-pack loading, wallpaper-derived accents
 and comprehensive visual accessibility acceptance remain future work.
