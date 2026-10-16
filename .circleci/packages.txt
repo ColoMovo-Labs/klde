@@ -4,6 +4,7 @@ clang-format
 clang-tidy
 cmake
 desktop-file-utils
+dpkg-dev
 fonts-dejavu-core
 g++
 libegl-mesa0

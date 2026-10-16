@@ -1,0 +1,26 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Kemono Linux Desktop Environment
+Source: https://github.com/ColoMovo-Labs/klde
+
+Files: *
+Copyright: 2026 KLDE contributors
+License: GPL-3+
+
+Files: assets/* docs/* *.md
+Copyright: 2026 KLDE contributors
+License: CC-BY-SA-4.0
+
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the Free
+ Software Foundation, either version 3 of the License, or (at your option)
+ any later version.
+ .
+ The complete license text is installed alongside this file as LICENSE.
+ On Debian systems, it is also available at /usr/share/common-licenses/GPL-3.
+
+License: CC-BY-SA-4.0
+ This work is licensed under the Creative Commons Attribution-ShareAlike
+ 4.0 International license.
+ .
+ The complete license text is installed alongside this file as CC-BY-SA-4.0.txt.

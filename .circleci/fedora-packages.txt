@@ -1,0 +1,10 @@
+ccache
+cmake
+dejavu-sans-fonts
+desktop-file-utils
+gcc-c++
+git
+ninja-build
+qt6-qtbase-devel
+qt6-qtdeclarative-devel
+qt6-qtsvg
