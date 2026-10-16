@@ -46,7 +46,7 @@ endforeach()
 qt_add_resources(klde_ui klde_assets PREFIX / FILES ${klde_assets})
 
 qt_add_executable(klde-shell src/shell/main.cpp)
-target_link_libraries(klde-shell PRIVATE klde_uiplugin Qt6::Quick Qt6::QuickControls2)
+target_link_libraries(klde-shell PRIVATE klde_ui klde_uiplugin Qt6::Quick Qt6::QuickControls2)
 target_compile_definitions(klde-shell PRIVATE KLDE_VERSION="${PROJECT_VERSION}")
 target_compile_options(klde-shell PRIVATE -Wall -Wextra -Wpedantic)
 

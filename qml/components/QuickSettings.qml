@@ -9,7 +9,7 @@ ShellPopup {
     objectName: "quickSettings"
     signal blurRequested
     width: Tokens.panelWidth
-    height: Math.min(settingsColumn.implicitHeight + padding * 2, parent ? parent.height - Tokens.space32 : Tokens.previewHeight)
+    height: Math.min(settingsColumn.implicitHeight + padding * 2, parent ? parent.height - y - Tokens.space24 : Tokens.previewHeight)
     contentItem: ScrollView {
         id: scroller
         clip: true
