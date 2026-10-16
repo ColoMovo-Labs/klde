@@ -56,9 +56,14 @@ The initial sandbox network errors falsely resembled invalid GitHub authenticati
 Read-only checks outside the network-restricted sandbox confirmed working GitHub
 credentials and organization access. No reauthentication is required for `gh`.
 
-CircleCI has no authenticated browser session and no CircleCI API credential was
-provided. Its GitHub sign-in page requires user login. A GitHub CLI token is not
-substituted for a CircleCI session or written into the repository.
+CircleCI and GitHub browser login were completed by the account owner. The `klde`
+project has been created in the existing CircleCI organization `LoloVerse-Lab`
+and connected to `ColoMovo-Labs/klde` using the GitHub App integration. It uses
+the existing `.circleci/config.yml` on `main`, with PR-open/update, default-branch
+push and tag-push triggers. The first cloud run is the next validation gate.
+
+No CircleCI credential is stored in the repository. A GitHub CLI token is not
+substituted for a CircleCI session.
 
 ## Gate
 

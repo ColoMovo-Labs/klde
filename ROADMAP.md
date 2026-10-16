@@ -19,6 +19,6 @@ floating/tiling adapter works. They must not dictate a premature compositor fork
 Notification center, OSD, desktop widgets and session UI grow with actual service
 capabilities rather than appearing as a collection of disconnected demonstrations.
 
-Current state: Phase 0 files are published at `ColoMovo-Labs/klde`; first CircleCI
-activation/execution awaits an authenticated CircleCI session. Phase 1 is gated on a green baseline.
+Current state: Phase 0 files are published at `ColoMovo-Labs/klde`; CircleCI is
+connected and awaiting its first validated cloud run. Phase 1 is gated on a green baseline.
 See [the phase-0 handoff](docs/development/phase-0.md).
