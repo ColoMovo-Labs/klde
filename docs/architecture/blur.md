@@ -133,6 +133,24 @@ The loader releases the effect when hidden, disabled or graphics-unavailable.
 No shell panel samples desktop content. The native backend always reports
 unavailable; the software scene graph shows the unfiltered source.
 
+## Default preview surfaces
+
+The expanded preview enables blur in every default Power Scene. Performance and
+Power Saver select Low, Balanced selects Medium, and explicit Off remains usable.
+`OwnedBackdrop.qml` filters only the wallpaper item owned by this same preview
+window, behind its dock, widget, workspace pill and popup surfaces. It never
+reads another client's surface. This is a controlled owned-content approximation
+of the desired desktop identity, not native compositor backdrop support.
+
+Each visible surface captures its bounded wallpaper region with `live: false`.
+Low/Medium/High use 0.25/0.50/0.75 resolution, capped at 1024 texture pixels per
+dimension, and public MultiEffect with a rounded alpha mask. Geometry, scene
+policy, appearance and popup-open events invalidate captures with coalesced finite
+updates. Hidden/minimized or unsupported effects unload; opaque fallback remains
+complete. The initial experiment clamps capture edges; padded regions, shared
+caches, scratch-memory budgets and hardware profiling need later measurement.
+No timer or live recursive capture drives these surfaces.
+
 The feature pipeline checks the laboratory after settling and records a real
 llvmpipe capture. That verifies the public GPU API path and finite rendering,
 not Intel GPU speed, native backdrop correctness or memory budgets. Detailed

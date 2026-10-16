@@ -25,6 +25,18 @@ with immediate text focus. A round weather widget demonstrates a built-in widget
 contract. Workspace indicators communicate both position and layout mode.
 No permanent full-width bottom panel is required.
 
+The accessible snow-mountain preview is the direct composition reference: left
+circular weather, centered workspace pill, right controls and a compact bottom
+dock. The owner also describes a colorful UKUI-inspired concept as a broader
+reference for vibrant controls, windows and wallpaper; its original image is not
+present in this checkout, so no fabricated image or imported asset is attributed
+to it. Original screenshots remain labelled as actual previews at exact revisions.
+
+Shape hierarchy has a purpose: the weather circle feels ambient, active workspace
+pills expand beside compact inactive chips, primary scene cards have a strong
+soft silhouette, and secondary controls use smaller corners. A colorful accent
+must not flatten every component into an identical rounded rectangle.
+
 Surface hierarchy follows purpose: wallpaper, low-emphasis widget, active panel,
 focused control. Corners can vary between an outer panel and an emphasized
 control, while spacing and alignment stay systematic. App windows shown in a
@@ -48,6 +60,7 @@ The following are seed values to evaluate visually, not tested accessibility cla
 | Easing | emphasized, emphasizedDecelerate, emphasizedAccelerate, standard, bounded spring-like approximation |
 | Elevation | flat, low, medium, high; map to border/tone first and optional cached shadow |
 | Blur | blurNone, blurLow, blurMedium, blurHigh; policy presets, not compositor-independent pixel guarantees |
+| Density and icons | shared iconS/M/L, dockIcon, densityScale and component metrics |
 
 Suggested light seed: cool ivory background, white elevated surfaces, deep blue-green
 primary, muted lilac secondary and warm apricot tertiary. Dark mode needs its own
@@ -73,6 +86,14 @@ Native compositor blur is preferred when supported; owned-content GPU blur stays
 bounded and cached. See [blur architecture](docs/architecture/blur.md). No panel
 may require expensive blur to look complete.
 
+Blur is enabled in normal default policy, including Performance and Power Saver
+at Low quality. In this standalone preview the dock, widget and panels can filter
+only the KLDE-owned wallpaper; this is not native blur behind other applications.
+Unsupported rendering and an explicit user Off choice retain a complete opaque
+appearance. [Power Scenes](docs/architecture/power-scenes.md) pair the selected
+system intent with editable theme, effect and motion choices. Scene cards show
+an icon, description and customization state rather than a bare dropdown.
+
 ## Accessibility and input
 
 Keyboard focus is always visible and independent of color. Launcher search accepts
@@ -93,3 +114,7 @@ only after contrast correction, deterministic extraction and an override are
 specified. Theme packs are data with validated bounds; arbitrary QML execution
 must not be silently accepted as a color theme. Their file format and loader are
 future work.
+
+The preview offers user-selected accent presets; they remain session choices.
+Wallpaper extraction, arbitrary theme packs, persistent settings and complete
+contrast/accessibility acceptance are separate work.

@@ -3,7 +3,7 @@
 ## Original material
 
 This baseline is newly authored for KLDE. No UKUI, KWin, GNOME, Quickshell,
-end-4 or other shell source code has been copied or derived. No third-party
+end-4, LingmoOS or other shell source code has been copied or derived. No third-party
 artwork, icons, fonts, mascot or concept image is included.
 
 | Material | License | Attribution |
@@ -37,6 +37,14 @@ are build or test tools/services, not copied into the shell. Record their versio
 in CI artifacts. Future distribution or code vendoring requires its own review.
 
 ## New reuse checklist
+
+The [application assessment](../architecture/apps.md) and
+[shortcut study](../architecture/shortcuts.md) record pinned research references;
+they import no implementation or assets. Qt Network is used for the optional
+[uapis.cn adapter](../architecture/weather.md). Provider observations and data
+rights are separate from KLDE's code and artwork licenses; no real responses
+are included in test fixtures. Distribution of an enabled service still requires
+review of the current provider terms and source-data rights.
 
 For each reused file or asset, record upstream URL, exact revision, author,
 SPDX license, modifications and notice location. Confirm compatibility with

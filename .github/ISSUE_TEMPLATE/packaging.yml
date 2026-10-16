@@ -1,0 +1,30 @@
+name: Packaging or source portability
+description: Report package installation, runtime dependency or cross-distribution build issues
+title: "[Packaging]: "
+labels: [packaging]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: KLDE commit or package version
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Distribution, release, architecture and Qt version
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Installation or build steps and expected result
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Actual failure and relevant logs
+      description: Remove tokens, private paths, locations and personal data. Include the CircleCI link when available.
+    validations:
+      required: true

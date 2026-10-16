@@ -51,6 +51,21 @@ reusable UI components stay within a small shell QML module until a real second
 consumer warrants another module. No plugin framework, scripting language or
 multi-process bus is introduced merely for possible future use.
 
+## Upstream and distribution boundaries
+
+The upstream KLDE desktop is independent of a future Ubuntu LTS-based distribution.
+Ubuntu/Kylin receives first-class integration and Debian packages; Fedora receives
+its own cloud source-build gate and eventually RPM packaging. Other distributions
+remain source portability targets, with community packages distinguished from
+officially tested combinations. Distribution defaults belong in downstream
+packages, not hardcoded service paths in shell presentation.
+
+Capabilities are discovered per service and output. Do not assume Intel graphics,
+a battery, a discrete GPU, writable brightness, refresh-rate switching or
+power-profiles-daemon. Intel/AMD/NVIDIA, hybrid graphics, desktop/laptop,
+multiple outputs, scaling and high refresh rates belong in the hardware acceptance
+matrix. U939-class hardware is a low-end sanity baseline, not the product boundary.
+
 ## System state and D-Bus
 
 Adapters use standard interfaces first: NetworkManager, BlueZ, UPower,
@@ -87,6 +102,13 @@ No final compositor is selected. UKUI/KWin, wlroots-based and other Wayland
 adapters remain candidates. A future KLDE compositor requires its own decision
 record and maintenance argument. See [window management](docs/architecture/window-management.md).
 
+Shortcut actions have stable IDs and configurable application-local bindings;
+global shortcuts require a later compositor/portal adapter. See
+[shortcut policy](docs/architecture/shortcuts.md). Power Scenes coordinate
+capability-based system policy with visual preferences, while weather has a
+provider boundary and explicit online consent. See [power scenes](docs/architecture/power-scenes.md)
+and [weather](docs/architecture/weather.md).
+
 ## UKUI dependency strategy
 
 First inspect actual Ubuntu Kylin 26.04 packages, API documentation and licensing.
@@ -101,6 +123,12 @@ notification daemons, policy agents, network applets or power managers while
 testing alongside the host desktop. Selective source reuse needs a documented
 reason and provenance review; none is included in Phase 0.
 
+UKUI and LingmoOS are the first app ecosystems to evaluate, not mandatory runtime
+dependencies. Each candidate records direct use, theming, adaptation/fork or
+behavior-only reference, with exact license and dependency evidence in
+[the application framework](docs/architecture/apps.md). Shell UI and app branding
+remain independent.
+
 ## Security and privacy
 
 The shell runs as the logged-in user and never as root. Use logind and polkit
@@ -114,8 +142,9 @@ launch APIs, not interpolated shell commands. Application launching and credenti
 handling are outside this baseline. Future widgets start as trusted built-ins;
 third-party executable plugins need a separate trust and isolation design.
 
-There is no telemetry or hidden network traffic. Weather remains mock data in
-Phase 1. A shell surface is not a secure lock screen: any future lock UI must use
+There is no telemetry or hidden network traffic. Weather defaults to mock data;
+the experimental online provider requires explicit consent and a city, with
+attribution, cooldown and failure state. A shell surface is not a secure lock screen: any future lock UI must use
 a compositor/session locking protocol and a separately reviewed authentication path.
 
 ## Rendering and lifecycle

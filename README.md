@@ -9,6 +9,22 @@ Kylin / Ubuntu 26.04 LTS. The shell uses Qt 6, QML / Qt Quick, C++20 and CMake.
 
 ## Vision
 
+We started KLDE because we wanted a beautiful, expressive and comfortable Linux
+desktop and could not find exactly the combination we wanted. The name is
+**Kemono Linux Desktop Environment**. Why not “Kemono Desktop Environment”?
+That would abbreviate to KDE and create unnecessary confusion with KDE Plasma
+and KDE e.V.; this independent project deliberately uses **KLDE**.
+
+Ubuntu Kylin / Ubuntu 26.04 LTS is the first-class target. Fedora is a serious
+secondary platform, with source portability and future RPM support. Arch,
+EndeavourOS, CachyOS and other distributions may build from source; official
+packages and support are not implied. See the [platform policy](docs/development/platforms.md).
+
+An eventual Ubuntu LTS-based distribution may select KLDE, applications and
+opinionated defaults. That distribution is a downstream product: KLDE must remain
+independently installable and must not depend on its ISO, branding or update policy.
+The future distribution's name is not settled.
+
 What if the bright, soft desktop atmosphere of Kylin around 2020–2021 had
 evolved along its own path? KLDE explores that direction through calm floating
 surfaces, expressive interactions, restrained Kemono character and a desktop
@@ -30,8 +46,11 @@ weather widget, workspace indicator and a bounded owned-content blur laboratory.
 It uses C++ mock backends. All six CircleCI jobs passed for prototype `46619fc`;
 current feature development is in [PR #1](https://github.com/ColoMovo-Labs/klde/pull/1). See
 [the prototype guide](docs/development/phase-1.md) for controls and validation.
-There are no real service integrations, desktop-session replacement, telemetry,
-weather requests, or privileged helpers.
+System controls and window management remain mock. The experimental weather
+adapter is disabled by default and requires an explicitly entered city and
+online consent. There is no telemetry or privileged helper. The expanded
+prototype adds editable Power Scenes, session shortcut bindings and default
+owned-wallpaper blur; current cloud acceptance is tracked in the PR.
 
 ## Screenshots / Concept Art
 
@@ -47,6 +66,8 @@ This is a runnable Qt window using mock data, not concept art or a complete desk
 
 No concept image was supplied. Future concept images belong under
 `docs/concepts/klde-concept-01.*` and must be labelled “Early concept — not final UI.”
+The existing snow-mountain capture is the early KLDE shell preview reference;
+the separately described colorful concept's original image is not available.
 The earlier [Phase 0 capture](docs/development/foundation-llvmpipe.png) is retained
 with its [baseline validation record](docs/development/phase-0.md). Software CI
 captures verify rendering correctness; representative GPU performance is measured

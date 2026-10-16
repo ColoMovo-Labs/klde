@@ -4,6 +4,25 @@ Phase 1 follows the green minimal baseline `418ea56`. This is an ordinary Qt
 application window with mock services, not an installed desktop session. Cloud
 validation for this feature is recorded below when results are available.
 
+## Expanded foundation
+
+The expanded prototype adds editable Power Scenes, session-rebindable application
+shortcuts, default blur of KLDE-owned wallpaper regions and opt-in weather through
+a provider abstraction. Quick settings opens scene preferences; the round weather
+widget opens privacy/provider settings. `--view power-scenes` and `--view weather`
+open those views for cloud capture without enabling online weather.
+
+All three default scenes retain blur; the Performance and Power Saver defaults
+use Low quality. Preferences support per-scene theme, blur, transparency, shadows,
+motion and reset, with shared user accent presets. No CPU/GPU/refresh-rate control
+is shown without a real capability. Shortcuts validate conflicts and remain
+application-local/session-only. Weather has explicit city/consent, offline/stale
+state and bounded requests; no live provider check is claimed by fixture tests.
+
+CircleCI now also defines an independent Fedora build and a real Debian-package
+runtime test in a fresh container. Their current-head results are tracked in the
+PR; the historical six-job acceptance below applies only to the stated revision.
+
 ## Components and controls
 
 - Centered floating dock: six pinned mock applications, active/running indicators,

@@ -52,6 +52,14 @@ are in [phase-1.md](phase-1.md).
 
 ## Cloud correctness and later infrastructure
 
+U939-class Intel integrated graphics is a low-end reference, not a product limit.
+Hardware acceptance must include Intel/AMD integrated graphics, AMD/NVIDIA
+discrete and hybrid systems, desktops without batteries, multiple monitors,
+fractional/high DPI and 60/120/144 Hz displays where supported. Record available
+brightness, power-profile, GPU and output capabilities; unsupported controls are
+absent rather than silently simulated. Compare default scene costs with blur
+enabled at the selected quality, and separately measure the explicit Off fallback.
+
 Standard CircleCI containers use a software Qt Quick backend or Mesa llvmpipe.
 Nested Weston tests protocol/startup behavior; Xvfb/llvmpipe exercises the OpenGL
 rendering path. Neither is an Intel GPU benchmark or a replacement for output,
