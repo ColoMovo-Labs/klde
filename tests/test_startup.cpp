@@ -6,6 +6,7 @@
 #include <QtTest>
 
 Q_IMPORT_QML_PLUGIN(KldeShellPlugin)
+Q_IMPORT_QML_PLUGIN(KldeBackendsPlugin)
 
 class ShellStartupTest final : public QObject {
     Q_OBJECT

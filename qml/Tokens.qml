@@ -7,6 +7,8 @@ QtObject {
     property bool darkMode: false
     property bool reducedMotion: false
     property real textScale: 1.0
+    property bool transparencyEnabled: false
+    property bool shadowsEnabled: true
     property color accent: darkMode ? "#8ed3cd" : "#246c69"
 
     readonly property color background: darkMode ? "#151d22" : "#edf3f5"
@@ -21,6 +23,14 @@ QtObject {
     readonly property color textPrimary: darkMode ? "#edf4f6" : "#24343f"
     readonly property color textSecondary: darkMode ? "#bccbd2" : "#536975"
     readonly property color textDisabled: darkMode ? "#84949e" : "#75858e"
+    readonly property color onPrimary: darkMode ? "#143c3a" : "#ffffff"
+    readonly property color primaryContainer: darkMode ? "#284b4b" : "#d6eae5"
+    readonly property color shadow: "#253c4c"
+    readonly property real outlineOpacity: 0.20
+    readonly property real shadowOpacity: 0.10
+    readonly property real mutedOpacity: 0.35
+    readonly property real popupStartScale: 0.96
+    readonly property real darkWallpaperShade: 0.72
 
     readonly property real surfaceOpacityLow: 0.72
     readonly property real surfaceOpacityMedium: 0.88
@@ -90,8 +100,23 @@ QtObject {
     readonly property int blurMedium: 16
     readonly property int blurHigh: 24
 
-    readonly property int previewWidth: 960
-    readonly property int previewHeight: 600
-    readonly property int previewMinimumWidth: 640
-    readonly property int previewMinimumHeight: 400
+    readonly property int iconS: 18
+    readonly property int iconM: 24
+    readonly property int iconL: 40
+    readonly property int dockIcon: 34
+    readonly property int dockItem: 56
+    readonly property int dockHeight: 80
+    readonly property int controlHeight: 44
+    readonly property int panelWidth: 392
+    readonly property int launcherWidth: 600
+    readonly property int launcherHeight: 528
+    readonly property int launcherRow: 64
+    readonly property int widgetSize: 224
+    readonly property int desktopMargin: 40
+    readonly property int blurSampleWidth: 320
+    readonly property int blurSampleHeight: 180
+    readonly property int previewWidth: 1440
+    readonly property int previewHeight: 900
+    readonly property int previewMinimumWidth: 960
+    readonly property int previewMinimumHeight: 720
 }
