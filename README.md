@@ -22,8 +22,8 @@ targets. We are not building or forking a compositor in this phase.
 ## Status
 
 Phase 0 provides project documents, contribution templates, a CircleCI configuration,
-a minimal `klde-shell` test window and initial startup tests. The initial cloud
-build has **not yet been run**. See [the handoff](docs/development/phase-0.md).
+a minimal `klde-shell` test window and initial startup tests. All six CircleCI jobs
+passed for baseline `418ea56`. See [the handoff](docs/development/phase-0.md).
 
 Phase 1 starts only after the minimal project passes CircleCI. Dock, launcher,
 quick settings, weather and workspace UI are planned, not implemented here.
@@ -32,7 +32,11 @@ weather requests, or privileged helpers in this baseline.
 
 ## Screenshots / Concept Art
 
-No concept image was supplied, and no verified runtime screenshot is available.
+No concept image was supplied. This is an actual CircleCI/Mesa llvmpipe capture
+of the Phase 0 foundation window at `b68a017`, not a desktop concept or final UI:
+
+![Phase 0 foundation — actual cloud-rendered window](docs/development/foundation-llvmpipe.png)
+
 We do not publish generated images as application screenshots. When a concept
 is supplied, store it under `docs/concepts/klde-concept-01.*` and label it
 “Early concept — not final UI.” CI smoke captures will be correctness artifacts,
