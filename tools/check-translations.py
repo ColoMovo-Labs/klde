@@ -57,6 +57,8 @@ def main():
     # expose message IDs. Ensure every legacy tr() source has a bilingual base.
     sources = set(english.values())
     for path in (ROOT / "src").rglob("*.cpp"):
+        if re.search(r"\b(?:reject|requestRejected|showNotice|actionReported)\(\s*QStringLiteral\(", path.read_text()):
+            raise ValueError(f"Route owned user-facing backend notices through cataloged tr(): {path}")
         for value in re.findall(r'\btr\("((?:\\.|[^"\\])*)"\)', path.read_text()):
             if json.loads('"' + value + '"') not in sources:
                 raise ValueError(f"Missing base for C++ message in {path}: {value}")

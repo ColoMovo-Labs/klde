@@ -187,5 +187,10 @@
   "weather.status.ready": "Updated",
   "weather.status.unavailable": "Unavailable",
   "weather.status.rate-limited": "Paused",
-  "weather.status.quota-exhausted": "Quota exhausted"
+  "weather.status.quota-exhausted": "Quota exhausted",
+  "shell.window.unknown-workspace": "Unknown workspace",
+  "shell.window.layout-unsupported": "Layout unsupported by mock backend",
+  "shell.window.unknown": "Unknown window",
+  "shell.window.destination-unknown": "Unknown destination workspace",
+  "shell.window.rules-unavailable": "Persistent application rules are a future adapter capability"
 }

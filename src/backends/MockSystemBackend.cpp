@@ -39,7 +39,7 @@ void MockSystemBackend::setNightMode(bool value) {
 }
 void MockSystemBackend::setPowerProfile(const QString &profile) {
     if (profile != "Balanced" && profile != "Power saver" && profile != "Performance") {
-        emit requestRejected(QStringLiteral("Unknown power profile"));
+        emit requestRejected(tr("Unknown power profile"));
         return;
     }
     if (m_powerProfile != profile) {
@@ -49,11 +49,10 @@ void MockSystemBackend::setPowerProfile(const QString &profile) {
 }
 bool MockSystemBackend::requestSessionAction(const QString &action) {
     if (action != "shutdown" && action != "logout" && action != "suspend") {
-        emit requestRejected(QStringLiteral("Unknown session action"));
+        emit requestRejected(tr("Unknown session action"));
         return false;
     }
-    emit actionReported(
-        QStringLiteral("Preview: %1 requested. Your session is unchanged.").arg(action));
+    emit actionReported(tr("Preview: %1 requested. Your session is unchanged.").arg(action));
     return true;
 }
 } // namespace klde

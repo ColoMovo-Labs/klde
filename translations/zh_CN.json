@@ -187,5 +187,10 @@
   "weather.status.ready": "已更新",
   "weather.status.unavailable": "不可用",
   "weather.status.rate-limited": "已暂停",
-  "weather.status.quota-exhausted": "额度已耗尽"
+  "weather.status.quota-exhausted": "额度已耗尽",
+  "shell.window.unknown-workspace": "未知工作区",
+  "shell.window.layout-unsupported": "模拟后端不支持此布局",
+  "shell.window.unknown": "未知窗口",
+  "shell.window.destination-unknown": "未知目标工作区",
+  "shell.window.rules-unavailable": "持久化应用规则将在后续后端中提供"
 }

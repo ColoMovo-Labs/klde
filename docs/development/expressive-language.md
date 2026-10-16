@@ -23,7 +23,7 @@ capsule actions and finite shape transitions. Wallpaper/icons are original KLDE
 SVG assets. The supplied desktop reference informed hierarchy and control weight;
 none of its wallpaper, application logos or windows are redistributed.
 
-The preview has 189 bilingual stable message IDs and four optional Cute overrides
+The current catalogs provide 194 bilingual stable message IDs and four optional Cute overrides
 per locale. Locale and voice are independent session choices; no OS locale is
 created or changed. Missing Cute entries use Standard. Runtime and CI prevent
 voice overrides in security/privacy/legal/destructive and other protected

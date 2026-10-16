@@ -38,7 +38,7 @@ bool MockWindowManagerBackend::reject(const QString &reason) {
 
 bool MockWindowManagerBackend::activateWorkspace(const QString &id) {
     if (!hasWorkspace(id)) {
-        return reject(QStringLiteral("Unknown workspace"));
+        return reject(tr("Unknown workspace"));
     }
     if (m_activeWorkspace != id) {
         m_activeWorkspace = id;
@@ -49,7 +49,7 @@ bool MockWindowManagerBackend::activateWorkspace(const QString &id) {
 
 bool MockWindowManagerBackend::setWorkspaceLayout(const QString &id, LayoutMode mode) {
     if (mode > Custom || mode == Scrolling) {
-        return reject(QStringLiteral("Layout unsupported by mock backend"));
+        return reject(tr("Layout unsupported by mock backend"));
     }
     for (auto &entry : m_workspaces) {
         auto workspace = entry.toMap();
@@ -62,7 +62,7 @@ bool MockWindowManagerBackend::setWorkspaceLayout(const QString &id, LayoutMode 
             return true;
         }
     }
-    return reject(QStringLiteral("Unknown workspace"));
+    return reject(tr("Unknown workspace"));
 }
 
 bool MockWindowManagerBackend::setWindowFloating(const QString &id, bool floating) {
@@ -77,12 +77,12 @@ bool MockWindowManagerBackend::setWindowFloating(const QString &id, bool floatin
             return true;
         }
     }
-    return reject(QStringLiteral("Unknown window"));
+    return reject(tr("Unknown window"));
 }
 
 bool MockWindowManagerBackend::moveWindow(const QString &id, const QString &workspaceId) {
     if (!hasWorkspace(workspaceId)) {
-        return reject(QStringLiteral("Unknown destination workspace"));
+        return reject(tr("Unknown destination workspace"));
     }
     for (auto &entry : m_windows) {
         auto window = entry.toMap();
@@ -95,10 +95,10 @@ bool MockWindowManagerBackend::moveWindow(const QString &id, const QString &work
             return true;
         }
     }
-    return reject(QStringLiteral("Unknown window"));
+    return reject(tr("Unknown window"));
 }
 
 bool MockWindowManagerBackend::applyWindowRule(const WindowRule &) {
-    return reject(QStringLiteral("Persistent application rules are a future adapter capability"));
+    return reject(tr("Persistent application rules are a future adapter capability"));
 }
 } // namespace klde
