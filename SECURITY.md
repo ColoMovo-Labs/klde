@@ -5,10 +5,10 @@ Fixes target the development branch. A version number is not a production securi
 or compatibility guarantee.
 
 Do not disclose exploit details, credentials or private user content in a public
-issue. Once the repository is public, use its **Security → Report a vulnerability**
-feature if private reporting is enabled. Availability of that feature must be
-confirmed; it is not enabled by adding this file. Otherwise contact an organization
-owner through a public contact method they have designated for private reports.
+issue. Use [GitHub private vulnerability reporting](https://github.com/ColoMovo-Labs/klde/security/advisories/new)
+or **Security → Report a vulnerability**. Private reporting was enabled and verified
+through the GitHub API on 2026-10-16. If the feature is unavailable, contact an
+organization owner through a public contact method designated for private reports.
 A dedicated security address and response SLA have not yet been established.
 
 Include affected commit/version, host distribution, session type, relevant service

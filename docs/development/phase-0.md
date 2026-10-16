@@ -27,11 +27,28 @@ editing, review and lightweight C++/QML formatting were used.
 - [x] Six-job CircleCI configuration, dependency/cache strategy and artifact reporting.
 - [x] Minimal Qt 6/C++20/CMake application, embedded QML module and seed tokens.
 - [x] Initial Qt Test / Qt Quick Test and three smoke-rendering paths defined.
-- [ ] Public remote creation, topic/label configuration and push verified.
+- [x] Public remote creation, twelve topics and all sixteen requested labels configured.
+- [x] Five initial commits pushed to `main`.
 - [ ] CircleCI connected and first pipeline execution observed.
 - [ ] Core jobs green for an identified commit; runtime captures reviewed.
 - [ ] Required remote checks and review protection enabled after check names exist.
-- [ ] Private security reporting and a conduct contact verified.
+- [x] Private security reporting enabled and verified through the GitHub API.
+- [ ] A dedicated conduct contact established and verified.
+
+## Published state
+
+Repository: <https://github.com/ColoMovo-Labs/klde>, verified public, default branch
+`main`. Initial source/test head: `d7b25e0`. Commits separate repository metadata,
+project documents, CI, the minimal Qt build and the initial tests. A follow-up
+documentation commit records publication evidence. Existing default labels were
+preserved; only missing requested labels were created. No repository, branch or
+release was deleted or force-pushed.
+
+GitHub reported no check runs and an empty commit-status list at inspection time.
+The combined-status API returns `pending` for that empty list; this is **not**
+evidence of a running CircleCI build. Required-check protection is not configured
+until actual CircleCI check names are observed. The documented merge policy is
+not yet technically enforced.
 
 ## Current blockers
 

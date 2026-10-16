@@ -21,7 +21,7 @@ targets. We are not building or forking a compositor in this phase.
 
 ## Status
 
-Phase 0 provides project documents, contribution templates, a CircleCI pipeline,
+Phase 0 provides project documents, contribution templates, a CircleCI configuration,
 a minimal `klde-shell` test window and initial startup tests. The initial cloud
 build has **not yet been run**. See [the handoff](docs/development/phase-0.md).
 
