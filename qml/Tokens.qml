@@ -38,7 +38,6 @@ QtObject {
     readonly property real shadowOpacity: darkMode ? 0.30 : 0.14
     readonly property real mutedOpacity: 0.35
     readonly property real popupStartScale: 0.96
-    readonly property real darkWallpaperShade: 0.72
     readonly property real frostedSurfaceOpacity: darkMode ? 0.88 : 0.80
     readonly property real blurScaleLow: 0.25
     readonly property real blurScaleMedium: 0.50
@@ -151,11 +150,9 @@ QtObject {
     readonly property real displayClockColonWidth: 0.28
     readonly property int ambientClockSize: 224
     readonly property int workingClockSize: 56
-    readonly property int ambientCompactThreshold: 560
     readonly property int ambientMediaThreshold: 420
-    readonly property int ambientDetailsBudget: 360
-    readonly property int ambientCompactBudget: 240
-    readonly property int ambientMinimalBudget: 64
+    // Keep the lower media affordance out of the central clock's short-surface budget.
+    readonly property int ambientMediaMinimumHeight: 520
     readonly property int ribbonGroupGap: densityMode === 2 ? space12 : space16
     readonly property int ribbonInnerGap: space2
     readonly property int ribbonGroupPadding: space4
@@ -193,10 +190,6 @@ QtObject {
     readonly property int temporalStudyWidth: 1160
     readonly property int temporalStudyCardHeight: 144
     readonly property int ribbonBandHeight: Math.max(temporalHeight, ribbonHeight + ribbonGroupPadding * 2, telemetryCellHeight * 2 + space2 + ribbonGroupPadding * 2)
-    readonly property int temporalSceneSize: 44
-    readonly property int temporalRichWidth: 320
-    readonly property int temporalRichHeight: 84
-    readonly property int temporalDot: 4
     readonly property int ribbonStackThreshold: 880
     readonly property real depthLow: 0.015
     readonly property real depthMedium: 0.025

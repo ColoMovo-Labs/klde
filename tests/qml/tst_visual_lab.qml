@@ -93,6 +93,16 @@ Item {
                 wait(0);
                 verify(composition.height <= height + 1, "Ambient height: " + height);
                 verify(composition.y >= -1);
+                const media = findChild(ambient, "ambientMediaCard");
+                verify(media !== null);
+                if (height < Tokens.ambientMediaMinimumHeight) {
+                    compare(media.visible, false);
+                } else {
+                    compare(media.visible, true);
+                    const mediaPosition = media.mapToItem(ambient, 0, 0);
+                    const compositionBottom = composition.y + composition.height;
+                    verify(compositionBottom <= mediaPosition.y - Tokens.space8, "Central clock avoids media at height " + height);
+                }
             }
         }
         function test_temporalStateAndCacheControls(): void {
@@ -185,7 +195,9 @@ Item {
         function test_ribbonWrapsAndRemainsBounded(): void {
             const ribbon = createTemporaryObject(ribbonComponent, testRoot);
             verify(ribbon !== null);
-            for (const width of [640, 1024, 1366, 1600, 1920, 2560, 3440]) {
+            for (const screenWidth of [640, 1024, 1366, 1600, 1920, 2560, 3440]) {
+                const width = screenWidth - 2 * Shell.ribbon.margin;
+                ribbon.x = Shell.ribbon.margin;
                 ribbon.width = width;
                 for (const density of [0, 1, 2]) {
                     Tokens.densityMode = density;
@@ -215,7 +227,7 @@ Item {
                             }
                         }
                     }
-                    console.info("axis-geometry", width, density, center.x + center.width / 2 - width / 2, "right-edge", right.x + right.width);
+                    console.info("axis-geometry", screenWidth, density, ribbon.x + center.x + center.width / 2 - screenWidth / 2, "right-edge", right.x + right.width);
                     verify(right !== null);
                     verify(Math.abs(right.x + right.width - width) < 1);
                     verify(Math.abs(center.x + center.width / 2 - width / 2) < 1);

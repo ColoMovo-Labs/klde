@@ -38,6 +38,9 @@ class ShellStartupTest final : public QObject {
                     .supportsCharacter(0x4e2dU));
         auto *center = window->findChild<QQuickItem *>(QStringLiteral("ribbonCenter"));
         QVERIFY(center != nullptr);
+        const auto centerPoint =
+            center->mapToScene(QPointF(center->width() / 2, center->height() / 2));
+        QVERIFY(qAbs(centerPoint.x() - window->width() / 2.0) <= 1.0);
         QTest::mouseClick(
             window, Qt::LeftButton, Qt::NoModifier,
             center->mapToScene(QPointF(center->width() / 2, center->height() / 2)).toPoint());

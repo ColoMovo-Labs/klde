@@ -70,6 +70,11 @@ for path in list(p.glob('*-land.svg')):
             points=clip(polygon(d))
             return '<path d="M'+'L'.join(f'{x:.2f} {y:.2f}' for x,y in points)+'Z"'
         result=re.sub(r'<path d="([^"]+)"',replace,original)
-        result=re.sub(r'<defs>.*?</defs>','',result).replace('<g clip-path="url(#pill)">','<g>')
+        # Keep a size-specific clip path around every layer.  The previous
+        # generator only clipped mountain paths whose data started with M0;
+        # clouds and rain lines could therefore escape the rounded capsule.
+        radius = 480 * height / width / 2
+        defs = f'<defs><clipPath id="pill"><rect width="480" height="120" rx="{radius:.2f}"/></clipPath></defs>'
+        result = re.sub(r'<defs>.*?</defs>', defs, result)
         (p/(path.stem+'-'+size+'.svg')).write_text(result)
     path.unlink()

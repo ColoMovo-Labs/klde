@@ -8,7 +8,7 @@ Item {
     id: root
     readonly property var snapshot: Shell.state.snapshot
     readonly property bool focusMode: snapshot.appearance.focus
-    readonly property bool detailsVisible: !focusMode && height >= Tokens.ambientMediaThreshold
+    readonly property bool detailsVisible: !focusMode && height >= Tokens.ambientMediaThreshold && height >= Tokens.ambientMediaMinimumHeight
     ColumnLayout {
         objectName: "ambientComposition"
         anchors.horizontalCenter: parent.horizontalCenter
@@ -41,6 +41,7 @@ Item {
         wrapMode: Text.WordWrap
     }
     Rectangle {
+        objectName: "ambientMediaCard"
         visible: root.detailsVisible
         anchors.right: parent.right
         anchors.bottom: parent.bottom

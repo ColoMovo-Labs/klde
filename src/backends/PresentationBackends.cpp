@@ -12,14 +12,17 @@ QVariantMap MockTimeBackend::reading() const {
     auto phase = m_state->value("temporal.phase").toString();
     const auto weather = m_state->value("weather.condition").toString();
     if (phase == "auto") {
+        const bool wetWeather = weather == "rain" || weather == "thunderstorm" || weather == "snow";
+        const bool overcastWeather =
+            weather == "partly-cloudy" || weather == "cloudy" || weather == "fog";
         if (hour < 6 || hour >= 19)
             phase = weather == "clear" ? "starry-night" : "moonlit-night";
         else if (hour < 11)
-            phase = "clear-morning";
+            phase = wetWeather ? "rainy-evening" : overcastWeather ? "cloudy-day" : "clear-morning";
         else if (hour < 17)
-            phase = "cloudy-day";
+            phase = wetWeather ? "rainy-evening" : "cloudy-day";
         else
-            phase = weather == "rain" || weather == "thunderstorm" ? "rainy-evening" : "sunset";
+            phase = wetWeather ? "rainy-evening" : "sunset";
     }
     // Synthetic ephemeris: separate moon visibility, never inferred merely from night.
     const QTime sunrise(6, 20), sunset(18, 10), moonrise(23, 10), moonset(10, 40);

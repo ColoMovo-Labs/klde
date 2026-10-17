@@ -51,6 +51,27 @@ class VisualLabTest final : public QObject {
         QCOMPARE(shell.applications()->rowCount(), linuxApps);
         QCOMPARE(shell.applications()->activeId(), QStringLiteral("desktop"));
     }
+    void temporalAutoPhaseFollowsWeatherLayer() {
+        klde::ShellServices shell;
+        QVERIFY(
+            shell.state()->requestValue(QStringLiteral("temporal.phase"), QStringLiteral("auto")));
+        QVERIFY(shell.state()->requestValue(QStringLiteral("time"),
+                                            QStringLiteral("2026-07-10T14:30:00")));
+        QVERIFY(shell.state()->requestValue(QStringLiteral("weather.condition"),
+                                            QStringLiteral("rain")));
+        QCOMPARE(shell.time()->reading().value("phase").toString(),
+                 QStringLiteral("rainy-evening"));
+        QVERIFY(shell.state()->requestValue(QStringLiteral("weather.condition"),
+                                            QStringLiteral("snow")));
+        QCOMPARE(shell.time()->reading().value("phase").toString(),
+                 QStringLiteral("rainy-evening"));
+        QVERIFY(shell.state()->requestValue(QStringLiteral("weather.condition"),
+                                            QStringLiteral("fog")));
+        QCOMPARE(shell.time()->reading().value("phase").toString(), QStringLiteral("cloudy-day"));
+        QVERIFY(shell.state()->requestValue(QStringLiteral("weather.condition"),
+                                            QStringLiteral("clear")));
+        QCOMPARE(shell.time()->reading().value("phase").toString(), QStringLiteral("cloudy-day"));
+    }
     void scenarioProjectionAndEditsStayCoherent() {
         klde::ShellServices shell;
         QVERIFY(shell.mockScenarios()->apply("offline"));
