@@ -52,7 +52,7 @@ test -s "$smoke_dir/wayland.png"
 test -s "$smoke_dir/llvmpipe.png"
 
 smoke_status=0
-for view in quick-settings launcher blur power-scenes weather language input notifications ribbon ribbon-settings input-candidate mock-lab app-suite; do
+for view in temporal wallpaper-effects lock-preview waydroid quick-settings launcher blur power-scenes weather language input notifications ribbon ribbon-settings input-candidate mock-lab app-suite; do
     if ! xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
         LIBGL_ALWAYS_SOFTWARE=1 QSG_INFO=1 \
         "$shell_binary" --smoke-test --view "$view" --audit-idle \

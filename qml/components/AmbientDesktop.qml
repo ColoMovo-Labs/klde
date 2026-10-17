@@ -11,12 +11,10 @@ Item {
         anchors.centerIn: parent
         width: Math.min(parent.width - Tokens.space32, Tokens.settingsWidth)
         spacing: Tokens.space16
-        Label {
-            text: Qt.formatTime(new Date(root.snapshot.time), "hh:mm")
-            font.family: Tokens.fontFamily
-            font.pixelSize: Math.min(root.width / 3.5, Tokens.ambientClockSize) * Tokens.textScale
-            font.weight: Font.Medium
-            color: Tokens.primary
+        DisplayClock {
+            pixelSize: Math.min((root.width - Tokens.space32) / 3.10, Tokens.ambientClockSize * Tokens.textScale)
+            Layout.preferredWidth: implicitWidth
+            Layout.preferredHeight: implicitHeight
             Layout.alignment: Qt.AlignHCenter
         }
         Label {
@@ -30,6 +28,11 @@ Item {
             text: root.snapshot.weather.available ? root.snapshot.weather.city + " · " + I18n.t("weather.condition." + root.snapshot.weather.condition) + "  " + I18n.number(root.snapshot.weather.temperature, 0) + "°" : I18n.t("friendly.weather.unavailable")
             font: Tokens.label
             color: Tokens.textSecondary
+            Layout.alignment: Qt.AlignHCenter
+        }
+        TemporalCapsule {
+            compact: false
+            showTime: false
             Layout.alignment: Qt.AlignHCenter
         }
         Rectangle {

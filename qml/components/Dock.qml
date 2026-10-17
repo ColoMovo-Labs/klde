@@ -26,7 +26,7 @@ Surface {
             objectName: "launcherButton"
             width: Tokens.dockItem
             height: Tokens.dockItem
-            iconName: "klde"
+            iconName: Branding.iconName
             text: I18n.t("shell.launcher.open")
             emphasized: true
             onClicked: root.launcherRequested()

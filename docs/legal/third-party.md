@@ -81,3 +81,8 @@ copyright 2020 Celestial Phineas, licensed under SIL OFL 1.1. The complete
 notice is in `assets/fonts/glow-sans/OFL.txt`, also installed with the application.
 See [font provenance](../../assets/fonts/README.md) for source commit and hashes.
 No MIT-licensed upstream font-building code is copied. No MiSans is bundled.
+
+Comfortaa Bold: unmodified Fedora 3.105 package asset, OFL-1.1; original notices,
+reserved name and FONTLOG retained. See [font provenance](../../assets/fonts/README.md).
+The project bundles no proprietary Google display font. New wallpaper layer
+studies are original vectors, not output copied from a segmentation model.

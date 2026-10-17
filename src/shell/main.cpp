@@ -36,8 +36,9 @@ int main(int argc, char *argv[]) {
                                            QStringLiteral("path"));
     const QCommandLineOption viewOption(
         QStringLiteral("view"),
-        QStringLiteral("Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
-                       "weather, language, input"),
+        QStringLiteral(
+            "Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
+            "weather, language, input, temporal, wallpaper-effects, lock-preview, waydroid"),
         QStringLiteral("view"), QStringLiteral("desktop"));
     const QCommandLineOption darkOption(QStringLiteral("dark"),
                                         QStringLiteral("Start with dark appearance"));
@@ -77,6 +78,10 @@ int main(int argc, char *argv[]) {
                             QStringLiteral("weather"),
                             QStringLiteral("language"),
                             QStringLiteral("input"),
+                            "temporal",
+                            "wallpaper-effects",
+                            "lock-preview",
+                            "waydroid",
                             "weather-preview",
                             "quick-settings-expanded",
                             "notifications",

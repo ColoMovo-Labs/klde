@@ -7,10 +7,10 @@ QtObject {
     readonly property string locale: Shell.language.locale
     readonly property string voice: Shell.language.voice
     function t(id: string): string {
-        return Shell.language.text(id, Shell.language.revision);
+        return Shell.language.text(id, Shell.language.revision).replace(/\{brand\}/g, Branding.displayName);
     }
     function s(source: string): string {
-        return Shell.language.sourceText(source, Shell.language.revision);
+        return Shell.language.sourceText(source, Shell.language.revision).replace(/\{brand\}/g, Branding.displayName);
     }
     function number(value: real, precision: int): string {
         return value.toLocaleString(Qt.locale(locale), "f", precision);

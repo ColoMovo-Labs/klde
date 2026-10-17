@@ -141,11 +141,37 @@ QtObject {
     readonly property real densityScale: densityMode === 0 ? 1.12 : densityMode === 2 ? 0.92 : 1.0
     readonly property int ribbonHeight: densityMode === 0 ? 48 : densityMode === 2 ? 40 : 44
     readonly property int rowGap: densityMode === 0 ? space16 : densityMode === 2 ? space8 : space12
-    readonly property int ambientClockSize: 168
+    readonly property FontLoader clockFace: FontLoader {
+        source: "qrc:/assets/fonts/comfortaa/Comfortaa-Bold.otf"
+    }
+    readonly property string displayClockFont: clockFace.status === FontLoader.Ready ? clockFace.name : "Sans Serif"
+    readonly property int displayClockWeight: Font.Bold
+    readonly property real displayClockTracking: -2 * textScale
+    readonly property real displayClockDigitWidth: 0.70
+    readonly property real displayClockColonWidth: 0.30
+    readonly property int ambientClockSize: 184
+    readonly property int workingClockSize: 56
+    readonly property int ribbonGroupGap: densityMode === 2 ? space12 : space16
+    readonly property int ribbonInnerGap: space2
+    readonly property int ribbonGroupPadding: space4
+    readonly property int telemetryCellWidth: densityMode === 0 ? 92 : 82
+    readonly property int telemetryCellHeight: densityMode === 0 ? 32 : 28
+    readonly property int temporalWidth: densityMode === 0 ? 192 : 176
+    readonly property int temporalHeight: 66
+    readonly property int temporalSceneSize: 44
+    readonly property int temporalRichWidth: 320
+    readonly property int temporalRichHeight: 84
+    readonly property int temporalDot: 4
+    readonly property int ribbonStackThreshold: 1000
+    readonly property real depthLow: 0.015
+    readonly property real depthMedium: 0.025
+    readonly property real depthHigh: 0.035
+    readonly property real displayClockLineHeight: 1.30
+    readonly property real displayClockColonDot: 0.085
+    readonly property real displayClockColonGap: 0.18
+    readonly property real wallpaperDim: 0.16
     readonly property int ribbonIcon: 22
     readonly property int ribbonPadding: densityMode === 2 ? space6 : space8
-    readonly property real ribbonCenterShare: 0.38
-    readonly property real ribbonLeftShare: 0.24
     readonly property int launcherWidth: 600
     readonly property int launcherHeight: 528
     readonly property int launcherRow: 64 * densityScale

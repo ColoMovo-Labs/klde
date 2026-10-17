@@ -10,7 +10,7 @@ StatusCapsule {
     readonly property string moduleId: module.id
     signal invoked(string moduleId)
     label: I18n.t(module.titleId)
-    iconName: moduleId === "weather" ? "weather-" + snapshot.weather.condition : module.icon
+    iconName: moduleId === "weather" ? "weather-" + snapshot.weather.condition : module.icon === "klde" ? Branding.iconName : module.icon
     prominent: moduleId === "time"
     detailed: !Shell.ribbon.compact && Tokens.densityMode === 0
     valueText: {

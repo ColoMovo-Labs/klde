@@ -6,7 +6,8 @@
     "section": 0,
     "priority": 0,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "context"
   },
   {
     "id": "overview",
@@ -15,7 +16,8 @@
     "section": 0,
     "priority": 1,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": false,
+    "group": "context"
   },
   {
     "id": "weather",
@@ -24,7 +26,8 @@
     "section": 0,
     "priority": 3,
     "widthUnits": 2,
-    "enabled": true
+    "enabled": false,
+    "group": "context"
   },
   {
     "id": "context",
@@ -33,25 +36,28 @@
     "section": 0,
     "priority": 4,
     "widthUnits": 2,
-    "enabled": true
+    "enabled": true,
+    "group": "context"
   },
   {
     "id": "date",
     "titleId": "lab.module.date",
     "icon": "info",
-    "section": 1,
+    "section": 0,
     "priority": 2,
     "widthUnits": 2,
-    "enabled": true
+    "enabled": true,
+    "group": "date"
   },
   {
     "id": "workspaces",
     "titleId": "lab.module.workspaces",
     "icon": "overview",
-    "section": 1,
+    "section": 0,
     "priority": 0,
     "widthUnits": 4,
-    "enabled": true
+    "enabled": true,
+    "group": "workspaces"
   },
   {
     "id": "time",
@@ -60,7 +66,8 @@
     "section": 1,
     "priority": 0,
     "widthUnits": 2,
-    "enabled": true
+    "enabled": true,
+    "group": "temporal"
   },
   {
     "id": "cpu",
@@ -69,7 +76,8 @@
     "section": 2,
     "priority": 3,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "telemetry"
   },
   {
     "id": "memory",
@@ -78,7 +86,8 @@
     "section": 2,
     "priority": 4,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "telemetry"
   },
   {
     "id": "temperature",
@@ -87,7 +96,8 @@
     "section": 2,
     "priority": 5,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "telemetry"
   },
   {
     "id": "battery",
@@ -96,7 +106,8 @@
     "section": 2,
     "priority": 0,
     "widthUnits": 2,
-    "enabled": true
+    "enabled": true,
+    "group": "telemetry"
   },
   {
     "id": "scene",
@@ -105,7 +116,8 @@
     "section": 2,
     "priority": 6,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": false,
+    "group": "extras"
   },
   {
     "id": "network",
@@ -114,7 +126,8 @@
     "section": 2,
     "priority": 1,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "connectivity"
   },
   {
     "id": "bluetooth",
@@ -123,7 +136,8 @@
     "section": 2,
     "priority": 7,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "connectivity"
   },
   {
     "id": "audio",
@@ -132,7 +146,8 @@
     "section": 2,
     "priority": 4,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "connectivity"
   },
   {
     "id": "microphone",
@@ -141,7 +156,8 @@
     "section": 2,
     "priority": 8,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "connectivity"
   },
   {
     "id": "input",
@@ -150,7 +166,8 @@
     "section": 2,
     "priority": 1,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "session"
   },
   {
     "id": "notifications",
@@ -159,7 +176,8 @@
     "section": 2,
     "priority": 0,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "session"
   },
   {
     "id": "settings",
@@ -168,7 +186,8 @@
     "section": 2,
     "priority": 1,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "session"
   },
   {
     "id": "power",
@@ -177,6 +196,7 @@
     "section": 2,
     "priority": 2,
     "widthUnits": 1,
-    "enabled": true
+    "enabled": true,
+    "group": "session"
   }
 ]

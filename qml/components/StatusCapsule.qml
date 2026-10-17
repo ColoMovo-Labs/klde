@@ -14,6 +14,7 @@ Button {
     property bool unavailable: false
     property real meter: -1
     property bool detailed: false
+    property bool grouped: false
     readonly property color ink: prominent ? Tokens.textOnPrimary : severity === 2 ? Tokens.error : severity === 1 ? Tokens.warning : active ? Tokens.primary : Tokens.textPrimary
     implicitWidth: Math.max(Tokens.controlHeight, contentRow.implicitWidth + Tokens.ribbonPadding * 2)
     implicitHeight: Tokens.ribbonHeight
@@ -75,9 +76,9 @@ Button {
     }
     background: Rectangle {
         radius: root.active || root.prominent ? Tokens.radiusPill : root.hovered ? Tokens.radiusL : Tokens.radiusM
-        color: root.prominent ? Tokens.primary : root.severity === 2 ? Qt.tint(Tokens.surface, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.14)) : root.active || root.hovered ? Tokens.primaryContainer : Tokens.surface
+        color: root.grouped && !root.hovered && !root.visualFocus && root.severity === 0 ? "transparent" : root.prominent ? Tokens.primary : root.severity === 2 ? Qt.tint(Tokens.surface, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.14)) : root.active || root.hovered ? Tokens.primaryContainer : Tokens.surface
         opacity: root.unavailable ? Tokens.surfaceOpacityLow : Tokens.transparencyEnabled ? Tokens.surfaceOpacityMedium : 1
-        border.width: root.visualFocus || root.severity === 2 ? Tokens.space2 : Tokens.space1
+        border.width: root.visualFocus || root.severity === 2 ? Tokens.space2 : root.grouped ? 0 : Tokens.space1
         border.color: root.visualFocus || root.severity > 0 ? root.ink : Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
         Behavior on radius {
             NumberAnimation {

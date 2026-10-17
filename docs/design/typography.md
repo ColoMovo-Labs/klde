@@ -15,7 +15,18 @@ content retains the system monospace family.
 
 Chinese labels use 15 px, captions 13 px, body 16 px. Latin labels use 14 px,
 captions 12 px. Density adjusts control geometry, never shrinks caption text.
-Display clocks use the shared family with medium weight; every row must
+Ordinary UI remains on Glow Sans; every row must
 permit elision or wrapping under text scaling. Only two weights (~18 MB) are
 embedded. This increases source/package size but avoids runtime downloads.
 Full provenance and OFL notices: [font assets](../../assets/fonts/README.md).
+
+## Dedicated display clock
+
+Large desktop and future lock-screen numerals use unmodified **Comfortaa Bold**,
+OFL-1.1, through `displayClockFont`, `displayClockWeight` and
+`displayClockTracking`. This rounded display face is not applied to menus, body
+text or the compact ribbon. Fixed digit slots balance numeral widths; the colon
+uses two aligned discs and never blinks. A working clock uses the same family at
+smaller emphasis; Ambient uses the display scale. No Google Sans/Product Sans is
+bundled. Final weight, numeral proportions and colon alignment require cloud
+captures and visual review; a font choice alone is not acceptance.

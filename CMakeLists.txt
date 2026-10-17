@@ -14,9 +14,15 @@ include(GNUInstallDirs)
 add_subdirectory(src)
 
 set_source_files_properties(qml/Tokens.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(qml/Branding.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set_source_files_properties(qml/I18n.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set(klde_qml_files
-    qml/Main.qml qml/Tokens.qml qml/I18n.qml
+    qml/Main.qml qml/Tokens.qml qml/I18n.qml qml/Branding.qml
+    qml/components/RibbonGroup.qml qml/components/TelemetryCell.qml
+    qml/components/TemporalCapsule.qml qml/components/DisplayClock.qml
+    qml/components/TemporalSettings.qml qml/components/WallpaperLayers.qml
+    qml/components/WallpaperEffectsSettings.qml qml/components/LockScreenPreview.qml
+    qml/components/WaydroidSettings.qml
     qml/components/StateSlider.qml
     qml/components/StateChoice.qml
     qml/components/PolicyControls.qml
@@ -68,6 +74,8 @@ qt_add_resources(klde_backends klde_mock_data PREFIX / FILES
     src/mock/scenarios.json src/status/modules.json)
 
 set(klde_assets assets/wallpapers/first-light.svg
+    assets/wallpapers/depth-foreground.svg assets/wallpapers/soft-cache-study.svg
+    assets/wallpapers/lock-cache-study.svg assets/fonts/comfortaa/Comfortaa-Bold.otf
     assets/wallpapers/abstract.svg assets/wallpapers/quiet.svg assets/wallpapers/kemono.svg
     assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf
     assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf)

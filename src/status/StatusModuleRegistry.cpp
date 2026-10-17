@@ -49,6 +49,8 @@ void StatusModuleRegistry::setSpacing(int spacing) {
     }
 }
 bool StatusModuleRegistry::setVisible(const QString &id, bool visible) {
+    if (id == "time" && !visible)
+        return false;
     for (auto &item : m_modules) {
         auto entry = item.toMap();
         if (entry.value("id").toString() == id) {
@@ -61,7 +63,7 @@ bool StatusModuleRegistry::setVisible(const QString &id, bool visible) {
     return false;
 }
 bool StatusModuleRegistry::setSection(const QString &id, int section) {
-    if (section < 0 || section > 2)
+    if (section < 0 || section > 2 || (id == "time" ? section != 1 : section == 1))
         return false;
     for (auto &item : m_modules) {
         auto entry = item.toMap();
@@ -80,8 +82,10 @@ bool StatusModuleRegistry::move(const QString &id, int delta) {
     for (qsizetype i = 0; i < m_modules.size(); ++i)
         if (m_modules.at(i).toMap().value("id").toString() == id) {
             const auto section = m_modules.at(i).toMap().value("section");
+            const auto group = m_modules.at(i).toMap().value("group");
             for (qsizetype j = i + delta; j >= 0 && j < m_modules.size(); j += delta)
-                if (m_modules.at(j).toMap().value("section") == section) {
+                if (m_modules.at(j).toMap().value("section") == section &&
+                    m_modules.at(j).toMap().value("group") == group) {
                     m_modules.swapItemsAt(i, j);
                     emit changed();
                     return true;

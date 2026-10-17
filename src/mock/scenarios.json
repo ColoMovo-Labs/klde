@@ -96,7 +96,26 @@
     "presentationMode": false,
     "sessionError": false,
     "updateAvailable": false,
-    "scratchpad": false
+    "scratchpad": false,
+    "temporal": {
+      "phase": "auto"
+    },
+    "wallpaperEffects": {
+      "mode": "normal",
+      "cacheState": "empty",
+      "cachedWallpaper": "snow",
+      "lockLinked": true,
+      "autoCache": false,
+      "foreground": true,
+      "blurStrength": 1,
+      "lockBlurStrength": 3,
+      "quality": "standard"
+    },
+    "waydroid": {
+      "available": false,
+      "running": false,
+      "indexApps": true
+    }
   },
   "scenarios": [
     {
@@ -365,6 +384,112 @@
       "overrides": {
         "weather.condition": "extreme-heat",
         "weather.temperature": 42
+      }
+    },
+    {
+      "id": "clear-morning",
+      "titleId": "temporal.scenario.clear-morning",
+      "overrides": {
+        "time": "2026-04-12T07:15:00",
+        "weather.condition": "clear",
+        "temporal.phase": "clear-morning"
+      }
+    },
+    {
+      "id": "cloudy-day",
+      "titleId": "temporal.scenario.cloudy-day",
+      "overrides": {
+        "time": "2026-07-10T14:30:00",
+        "weather.condition": "cloudy",
+        "temporal.phase": "cloudy-day"
+      }
+    },
+    {
+      "id": "sunset",
+      "titleId": "temporal.scenario.sunset",
+      "overrides": {
+        "time": "2026-10-17T18:10:00",
+        "temporal.phase": "sunset"
+      }
+    },
+    {
+      "id": "rainy-evening",
+      "titleId": "temporal.scenario.rainy-evening",
+      "overrides": {
+        "time": "2026-10-17T18:35:00",
+        "weather.condition": "rain",
+        "temporal.phase": "rainy-evening"
+      }
+    },
+    {
+      "id": "starry-night",
+      "titleId": "temporal.scenario.starry-night",
+      "overrides": {
+        "time": "2026-12-10T22:20:00",
+        "weather.condition": "clear",
+        "temporal.phase": "starry-night",
+        "nightMode": true,
+        "appearance.ambient": true
+      }
+    },
+    {
+      "id": "moonlit-night",
+      "titleId": "temporal.scenario.moonlit-night",
+      "overrides": {
+        "time": "2026-10-17T21:40:00",
+        "temporal.phase": "moonlit-night",
+        "nightMode": true,
+        "appearance.ambient": true
+      }
+    },
+    {
+      "id": "power-saver",
+      "titleId": "temporal.scenario.power-saver",
+      "overrides": {
+        "powerScene": "power-saver",
+        "battery.percent": 23
+      }
+    },
+    {
+      "id": "no-battery-desktop",
+      "titleId": "temporal.scenario.no-battery-desktop",
+      "overrides": {
+        "capabilities.battery": false,
+        "capabilities.brightness": false
+      }
+    },
+    {
+      "id": "wallpaper-depth-enabled",
+      "titleId": "temporal.scenario.wallpaper-depth-enabled",
+      "overrides": {
+        "wallpaperEffects.mode": "depth",
+        "wallpaperEffects.cacheState": "ready",
+        "appearance.ambient": true
+      }
+    },
+    {
+      "id": "segmentation-failed",
+      "titleId": "temporal.scenario.segmentation-failed",
+      "overrides": {
+        "wallpaperEffects.mode": "depth",
+        "wallpaperEffects.cacheState": "failed",
+        "appearance.ambient": true
+      }
+    },
+    {
+      "id": "lock-screen-blur-enabled",
+      "titleId": "temporal.scenario.lock-screen-blur-enabled",
+      "overrides": {
+        "wallpaperEffects.cacheState": "ready",
+        "wallpaperEffects.lockLinked": true
+      }
+    },
+    {
+      "id": "waydroid-ready",
+      "titleId": "temporal.scenario.waydroid-ready",
+      "overrides": {
+        "waydroid.available": true,
+        "waydroid.running": true
       }
     },
     {

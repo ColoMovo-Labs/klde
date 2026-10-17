@@ -5,6 +5,7 @@ qt_add_qml_module(klde_backends STATIC
     RESOURCE_PREFIX /qt/qml
     OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml/KLDE/Backends"
     SOURCES
+        backends/PresentationBackends.h backends/PresentationBackends.cpp
         backends/WindowManagerBackend.h
         backends/MockWindowManagerBackend.h backends/MockWindowManagerBackend.cpp
         backends/SystemBackend.h

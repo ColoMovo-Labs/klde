@@ -4,6 +4,7 @@
 #include "backends/BlurBackend.h"
 #include "backends/MockSystemBackend.h"
 #include "backends/MockWindowManagerBackend.h"
+#include "backends/PresentationBackends.h"
 #include "i18n/LocaleVoiceModel.h"
 #include "input/Fcitx5Backend.h"
 #include "mock/SystemStateModel.h"
@@ -37,6 +38,10 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
     Q_PROPERTY(klde::NotificationModel *notifications READ notifications CONSTANT)
     Q_PROPERTY(klde::StatusModuleRegistry *ribbon READ ribbon CONSTANT)
+    Q_PROPERTY(klde::TimeBackend *time READ time CONSTANT)
+    Q_PROPERTY(klde::TelemetryBackend *telemetry READ telemetry CONSTANT)
+    Q_PROPERTY(klde::WallpaperEffectsBackend *wallpaperEffects READ wallpaperEffects CONSTANT)
+    Q_PROPERTY(klde::WaydroidBackend *waydroid READ waydroid CONSTANT)
     Q_PROPERTY(QString message READ message NOTIFY messageChanged)
     Q_PROPERTY(int osdValue READ osdValue NOTIFY messageChanged)
   public:
@@ -58,6 +63,10 @@ class ShellServices final : public QObject {
     StatusModuleRegistry *ribbon() { return &m_ribbon; }
     Q_INVOKABLE bool previewAction(const QString &action);
     QVariantMap weather() const;
+    TimeBackend *time() { return &m_time; }
+    TelemetryBackend *telemetry() { return &m_telemetry; }
+    WallpaperEffectsBackend *wallpaperEffects() { return &m_wallpaperEffects; }
+    WaydroidBackend *waydroid() { return &m_waydroid; }
     QString message() const { return m_message; }
     int osdValue() const { return m_osdValue; }
     Q_INVOKABLE bool launch(const QString &appId);
@@ -87,6 +96,10 @@ class ShellServices final : public QObject {
     DisplayServerBackend m_displayServer;
     SystemStateModel m_state;
     MockScenarioManager m_mockScenarios;
+    MockTimeBackend m_time;
+    MockTelemetryBackend m_telemetry;
+    MockWallpaperEffectsBackend m_wallpaperEffects;
+    MockWaydroidBackend m_waydroid;
     NotificationModel m_notifications;
     StatusModuleRegistry m_ribbon;
     bool m_syncing = false;

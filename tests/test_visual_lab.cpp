@@ -8,6 +8,47 @@
 class VisualLabTest final : public QObject {
     Q_OBJECT
   private slots:
+    void temporalCacheAndOptionalAppContracts() {
+        klde::ShellServices shell;
+        QVERIFY(shell.mockScenarios()->apply("starry-night"));
+        QCOMPARE(shell.time()->reading().value("phase").toString(), QStringLiteral("starry-night"));
+        QCOMPARE(shell.time()->reading().value("season").toString(), QStringLiteral("winter"));
+        QVERIFY(shell.state()->advanceMinutes(1));
+        QCOMPARE(shell.time()->reading().value("timeText").toString(), QStringLiteral("22:21"));
+        QVERIFY(shell.mockScenarios()->apply("wallpaper-depth-enabled"));
+        QCOMPARE(shell.wallpaperEffects()->state().value("effectiveMode").toString(),
+                 QStringLiteral("depth"));
+        QVERIFY(shell.state()->requestValue("powerScene", QStringLiteral("power-saver")));
+        QCOMPARE(shell.wallpaperEffects()->state().value("effectiveMode").toString(),
+                 QStringLiteral("normal"));
+        QCOMPARE(shell.state()->value("wallpaperEffects.mode").toString(), QStringLiteral("depth"));
+        QVERIFY(shell.state()->requestValue("powerScene", QStringLiteral("balanced")));
+        QCOMPARE(shell.wallpaperEffects()->state().value("effectiveMode").toString(),
+                 QStringLiteral("depth"));
+        QVERIFY(shell.state()->requestValue("appearance.wallpaper", QStringLiteral("abstract")));
+        QVERIFY(!shell.wallpaperEffects()->state().value("cacheValid").toBool());
+        QVERIFY(!shell.wallpaperEffects()->regeneratePreview());
+        QVERIFY(shell.wallpaperEffects()->state().value("foregroundAsset").toString().isEmpty());
+        QVERIFY(shell.mockScenarios()->apply("segmentation-failed"));
+        QCOMPARE(shell.wallpaperEffects()->state().value("effectiveMode").toString(),
+                 QStringLiteral("normal"));
+        QVERIFY(!shell.state()->requestValue("wallpaperEffects.blurStrength", 4));
+        QVERIFY(!shell.waydroid()->setRunning(true));
+        const int linuxApps = shell.applications()->rowCount();
+        QVERIFY(shell.mockScenarios()->apply("waydroid-ready"));
+        QCOMPARE(shell.applications()->rowCount(), linuxApps + 1);
+        QCOMPARE(
+            shell.applications()
+                ->data(shell.applications()->index(linuxApps), klde::ApplicationModel::OriginRole)
+                .toString(),
+            QStringLiteral("android"));
+        QVERIFY(shell.launch(QStringLiteral("android-sketch")));
+        QVERIFY(shell.waydroid()->setRunning(false));
+        QVERIFY(!shell.launch(QStringLiteral("android-sketch")));
+        QVERIFY(shell.state()->requestValue("waydroid.available", false));
+        QCOMPARE(shell.applications()->rowCount(), linuxApps);
+        QCOMPARE(shell.applications()->activeId(), QStringLiteral("desktop"));
+    }
     void scenarioProjectionAndEditsStayCoherent() {
         klde::ShellServices shell;
         QVERIFY(shell.mockScenarios()->apply("offline"));
@@ -91,7 +132,10 @@ class VisualLabTest final : public QObject {
         klde::StatusModuleRegistry modules;
         QCOMPARE(modules.modules().size(), 20);
         QVERIFY(modules.setSection(QStringLiteral("cpu"), 0));
-        QVERIFY(modules.move(QStringLiteral("cpu"), -1));
+        QVERIFY(modules.setSection(QStringLiteral("memory"), 0));
+        QVERIFY(modules.move(QStringLiteral("memory"), -1));
+        QVERIFY(!modules.setSection(QStringLiteral("cpu"), 1));
+        QVERIFY(!modules.setVisible(QStringLiteral("time"), false));
         QVERIFY(!modules.setSection(QStringLiteral("cpu"), 5));
         QVERIFY(!modules.setVisible(QStringLiteral("unknown"), false));
         modules.setMargin(-1);

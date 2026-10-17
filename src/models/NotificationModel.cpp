@@ -39,7 +39,7 @@ void NotificationModel::seedDemo(int requestedCount, const QString &context) {
         const bool critical = key == "battery" || key == "temperature" || key == "session";
         const auto prefix = critical ? QStringLiteral("critical.notification.")
                                      : QStringLiteral("lab.notification.");
-        m_records.append({QStringLiteral("fixture-%1").arg(i), QStringLiteral("KLDE Studio"),
+        m_records.append({QStringLiteral("fixture-%1").arg(i), QStringLiteral("Preview Studio"),
                           prefix + key + ".title", prefix + key + ".body", critical ? 2 : 0});
     }
     endResetModel();

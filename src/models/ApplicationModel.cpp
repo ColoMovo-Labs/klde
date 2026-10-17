@@ -40,6 +40,8 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const {
         return app.running;
     case ActiveRole:
         return app.active;
+    case OriginRole:
+        return app.origin;
     default:
         return {};
     }
@@ -47,7 +49,7 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const {
 QHash<int, QByteArray> ApplicationModel::roleNames() const {
     return {{AppIdRole, "appId"},   {NameRole, "displayName"},  {DescriptionRole, "description"},
             {IconRole, "iconName"}, {KeywordsRole, "keywords"}, {RunningRole, "running"},
-            {ActiveRole, "active"}};
+            {ActiveRole, "active"}, {OriginRole, "origin"}};
 }
 QString ApplicationModel::nameFor(const QString &appId) const {
     const auto found = std::find_if(m_applications.cbegin(), m_applications.cend(),
@@ -68,6 +70,26 @@ void ApplicationModel::resetPreview(const QString &appId) {
     emit dataChanged(index(0), index(rowCount() - 1), {RunningRole, ActiveRole});
     emit activeChanged();
 }
+void ApplicationModel::setAndroidSource(bool enabled) {
+    const bool present = !m_applications.isEmpty() && m_applications.last().origin == "android";
+    if (present == enabled)
+        return;
+    const int row = static_cast<int>(m_applications.size());
+    if (enabled) {
+        beginInsertRows({}, row, row);
+        m_applications.append({"android-sketch", tr("Android Sketch"),
+                               tr("Optional Android app preview"), "note",
+                               "android waydroid drawing 安卓 绘画", false, false, "android"});
+        endInsertRows();
+    } else {
+        const bool active = m_applications.last().active;
+        beginRemoveRows({}, row - 1, row - 1);
+        m_applications.removeLast();
+        endRemoveRows();
+        if (active)
+            emit activeChanged();
+    }
+}
 bool ApplicationModel::activate(const QString &appId) {
     if (nameFor(appId).isEmpty()) {
         return false;
@@ -85,6 +107,8 @@ ApplicationFilterModel::ApplicationFilterModel(ApplicationModel *source, QObject
     : QSortFilterProxyModel(parent) {
     setSourceModel(source);
     setDynamicSortFilter(true);
+    connect(this, &QAbstractItemModel::rowsInserted, this, [this] { emit countChanged(); });
+    connect(this, &QAbstractItemModel::rowsRemoved, this, [this] { emit countChanged(); });
 }
 void ApplicationFilterModel::setQuery(const QString &query) {
     const auto normalized = query.simplified();

@@ -44,7 +44,7 @@ LabPanel {
                 }
                 ColumnLayout {
                     Label {
-                        text: "Mori · KLDE Studio"
+                        text: "Mori · " + Branding.displayName + " Studio"
                         font: Tokens.title
                         color: Tokens.textPrimary
                     }

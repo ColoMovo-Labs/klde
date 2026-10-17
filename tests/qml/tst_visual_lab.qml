@@ -34,6 +34,14 @@ Item {
             height: implicitHeight
         }
     }
+    Component {
+        id: temporalComponent
+        TemporalCapsule {}
+    }
+    Component {
+        id: wallpaperComponent
+        WallpaperEffectsSettings {}
+    }
     TestCase {
         name: "VisualLabInteraction"
         when: windowShown
@@ -46,6 +54,24 @@ Item {
             Shell.mockScenarios.apply("laptop-balanced");
             Tokens.reducedMotion = false;
             Tokens.densityMode = 1;
+        }
+        function test_temporalStateAndCacheControls(): void {
+            const capsule = createTemporaryObject(temporalComponent, testRoot);
+            verify(capsule !== null);
+            verify(Shell.mockScenarios.apply("rainy-evening"));
+            compare(capsule.reading.phase, "rainy-evening");
+            verify(capsule.rainy);
+            verify(Shell.mockScenarios.apply("wallpaper-depth-enabled"));
+            compare(Shell.wallpaperEffects.state.effectiveMode, "depth");
+            Shell.wallpaperEffects.clearPreview();
+            compare(Shell.wallpaperEffects.state.effectiveMode, "normal");
+            const panel = createTemporaryObject(wallpaperComponent, testRoot, {
+                parent: testRoot
+            });
+            verify(panel !== null);
+            panel.open();
+            tryCompare(panel, "opened", true);
+            panel.close();
         }
         function test_ambientWeatherHonorsUnavailableState(): void {
             const ambient = createTemporaryObject(ambientComponent, testRoot);

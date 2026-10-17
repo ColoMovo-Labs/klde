@@ -76,6 +76,7 @@ LabPanel {
                 Layout.fillWidth: true
                 Switch {
                     text: I18n.t(moduleRow.modelData.titleId)
+                    enabled: moduleRow.modelData.id !== "time"
                     checked: moduleRow.modelData.enabled
                     Layout.fillWidth: true
                     onToggled: Shell.ribbon.setVisible(moduleRow.modelData.id, checked)
@@ -93,10 +94,11 @@ LabPanel {
             }
             ChoiceBox {
                 Layout.fillWidth: true
-                model: [I18n.t("lab.ribbon.left"), I18n.t("lab.ribbon.center"), I18n.t("lab.ribbon.right")]
-                currentIndex: moduleRow.modelData.section
+                model: moduleRow.modelData.id === "time" ? [I18n.t("lab.ribbon.center")] : [I18n.t("lab.ribbon.left"), I18n.t("lab.ribbon.right")]
+                enabled: moduleRow.modelData.id !== "time"
+                currentIndex: moduleRow.modelData.id === "time" ? 0 : moduleRow.modelData.section === 0 ? 0 : 1
                 Accessible.name: I18n.t(moduleRow.modelData.titleId)
-                onActivated: Shell.ribbon.setSection(moduleRow.modelData.id, currentIndex)
+                onActivated: Shell.ribbon.setSection(moduleRow.modelData.id, currentIndex === 0 ? 0 : 2)
             }
         }
     }

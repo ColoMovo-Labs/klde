@@ -138,6 +138,24 @@ ShellPopup {
                     onClicked: root.viewRequested("ribbon-settings")
                 }
             }
+            Flow {
+                visible: root.expanded
+                Layout.fillWidth: true
+                implicitHeight: childrenRect.height
+                spacing: Tokens.space8
+                ActionButton {
+                    text: I18n.t("temporal.title")
+                    onClicked: root.viewRequested("temporal")
+                }
+                ActionButton {
+                    text: I18n.t("wallpaper.title")
+                    onClicked: root.viewRequested("wallpaper-effects")
+                }
+                ActionButton {
+                    text: I18n.t("android.title")
+                    onClicked: root.viewRequested("waydroid")
+                }
+            }
             ChoiceBox {
                 visible: root.expanded
                 Layout.fillWidth: true

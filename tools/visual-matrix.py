@@ -31,6 +31,11 @@ def main():
         cases.append(dict(id='ambient-'+wallpaper, wallpaper=wallpaper, ambient=True, density='dense'))
     cases.append(dict(id="reference-composition", ambient=True, wallpaper="abstract", view="notifications", density="dense"))
     cases.append(dict(id="expanded-controls", view="quick-settings-expanded", dark=True, voice="cute"))
+    for scenario in ('clear-morning', 'cloudy-day', 'sunset', 'rainy-evening', 'starry-night', 'moonlit-night', 'wallpaper-depth-enabled', 'segmentation-failed', 'lock-screen-blur-enabled', 'waydroid-ready'):
+        cases.append(dict(id='temporal-'+scenario, scenario=scenario, ambient=True,
+                          view='lock-preview' if scenario == 'lock-screen-blur-enabled' else 'launcher' if scenario == 'waydroid-ready' else 'desktop'))
+    cases.append(dict(id='working-desktop', scenario='laptop-balanced', view='desktop'))
+    cases.append(dict(id='temporal-expanded', scenario='sunset', view='temporal'))
     records=[]
     for case in cases:
         options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False)

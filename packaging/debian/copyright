@@ -14,8 +14,13 @@ Files: assets/fonts/glow-sans/*
 Copyright: 2020 Celestial Phineas
 License: OFL-1.1
 
+Files: assets/fonts/comfortaa/*
+Copyright: 2011 The Comfortaa Project Authors
 License: OFL-1.1
- The complete SIL Open Font License 1.1 and original copyright notice are
+
+License: OFL-1.1
+ The Comfortaa-specific copyright and reserved name notice is installed as
+ Comfortaa-OFL.txt. The complete SIL Open Font License 1.1 and original copyright notice are
  installed alongside this file as OFL-1.1.txt.
 
 License: GPL-3+
