@@ -12,6 +12,69 @@
     "decision": "Reference surfaces; avoid wholesale runtime dependency: GuiPrivate and X11 blur helper."
   },
   {
+    "repository": "LingmoOS/lingmo-kwin",
+    "revision": "ba9b87a689751c60feb1723c0480685b02360c68",
+    "files": [
+      "LICENSES",
+      "CMakeLists.txt",
+      "README.md",
+      "src",
+      "kdecoration",
+      "themes"
+    ],
+    "decision": "Deepin-KWin lineage with Qt 6/KF 6 work, not upstream KWin 6 ABI; candidate engine profile only, with version/protocol probing."
+  },
+  {
+    "repository": "LingmoOS/lingmo-kwin-plugins",
+    "revision": "988697004e2828d48e6a970d8516671a3387a677",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "README.md",
+      "plugins",
+      "scripts",
+      "tabbox",
+      "config"
+    ],
+    "decision": "GPL-3.0 plugin package with older Qt5/KDecoration5/KWin assumptions; behavior and UX reference only, not a binary KLDE dependency."
+  },
+  {
+    "repository": "LingmoOS/lingmo-kwin-plugins-roundedwindow",
+    "revision": "3044b16533e355824d97df60191cd77c6d94c3d5",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "README.md",
+      "src"
+    ],
+    "decision": "GPL-3.0 rounded-window plugin study; exact KWin ABI and build profile required before any adaptation."
+  },
+  {
+    "repository": "LingmoOS/lingmo-kwin-scripts",
+    "revision": "23f25604b7f24516b436addb20bd8cbc3ba0b83e",
+    "files": [
+      "LICENSES",
+      "REUSE.toml",
+      "CMakeLists.txt",
+      "README.md",
+      "scripts"
+    ],
+    "decision": "Script behavior/reference source; inspect REUSE and per-file headers before copying, and never enable Lingmo global defaults in KLDE."
+  },
+  {
+    "repository": "LingmoOS/lingmo-lockerserver",
+    "revision": "bb2f9fb7d4d9ebe500afd3b7e6384c5147827430",
+    "files": [
+      "COPYING",
+      "LICENSES",
+      "CMakeLists.txt",
+      "waylandlocker.cpp",
+      "x11locker.cpp",
+      "greeter"
+    ],
+    "decision": "GPL-2.0 KScreenLocker lineage; security/session reference only. Do not treat its X11/PAM paths as a KLDE Wayland lock implementation."
+  },
+  {
     "repository": "LingmoOS/album",
     "revision": "a3af12a290f5e919c9fddda851bbf61db2b22d10",
     "files": [

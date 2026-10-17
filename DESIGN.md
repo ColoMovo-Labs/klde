@@ -25,6 +25,13 @@ with immediate text focus. A round weather widget demonstrates a built-in widget
 contract. Workspace indicators communicate both position and layout mode.
 No permanent full-width bottom panel is required.
 
+The future workspace language uses four neutral modes: Floating, Classic Tiling,
+Scrolling Tiling and Mixed. The shell presents the policy and effective state;
+KWin-specific scripts, tile trees or effects remain behind the backend boundary.
+“Classic” and “Scrolling” describe interaction models, not clones of Hyprland or
+niri. A KWin decoration/effect may supply compositor cooperation, but the KLDE
+surface must remain complete when that capability is absent.
+
 The snow-mountain preview establishes left circular weather, centered workspace
 pill, right controls and a compact bottom dock. The supplied colorful screenshot
 adds a concrete emphasis reference: saturated blue/purple, thick filled sliders,

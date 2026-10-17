@@ -8,6 +8,8 @@ other distributions to choose different applications.
 This is a source assessment dated 2026-10-16, not a package certification. No
 source, artwork, branding or icon from these projects is included in KLDE.
 Building or running these candidates has not yet been validated in KLDE CI.
+The KWin/session-specific reuse boundary is tracked separately in
+[the LingmoOS/Cutefish audit](../reuse/lingmo-cutefish.md).
 
 ## Decision framework
 

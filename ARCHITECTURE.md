@@ -91,8 +91,9 @@ KLDE is Wayland first and X11 compatible. Qt QPA supplies the ordinary applicati
 window path; QML does not call Xlib/XCB or raw Wayland APIs. DisplayServerBackend
 reports the active QPA path and explicit unsupported session capabilities. Native
 adapters stay under `src/platform`; no empty Wayland/X11 implementation is created.
-See [display-protocols.md](docs/architecture/display-protocols.md). KWin as a future
-engine remains possible without adopting Plasma UI. No compositor is selected.
+See [display-protocols.md](docs/architecture/display-protocols.md). KWin is the
+first engine candidate without adopting Plasma UI; the adapter must distinguish
+upstream KWin 6 from the deepin/Lingmo KWin lineage and probe capabilities.
 
 LocaleVoiceModel owns embedded ID catalogs, `en`/`zh_CN`, Standard/Cute fallback
 and tone locks. It changes shell presentation in memory, not the system locale.
@@ -122,9 +123,11 @@ Evaluate a compositor-supported public layer-shell integration, output tracking,
 fractional scaling, input regions, activation and keyboard interactivity together.
 Never pass native pointers through QML. Protocol availability is detected at runtime.
 
-No final compositor is selected. UKUI/KWin, wlroots-based and other Wayland
-adapters remain candidates. A future KLDE compositor requires its own decision
-record and maintenance argument. See [window management](docs/architecture/window-management.md).
+KWin is the first real adapter target. Upstream KWin 6, deepin/Lingmo KWin and
+other Wayland engines remain separate capability profiles. A new KLDE compositor
+is deferred unless a measured KWin blocker survives the adapter prototype. See
+[window management](docs/architecture/window-management.md) and the
+[KWin adapter boundary](docs/architecture/kwin-adapter.md).
 
 Shortcut actions have stable IDs and configurable application-local bindings;
 global shortcuts require a later compositor/portal adapter. See

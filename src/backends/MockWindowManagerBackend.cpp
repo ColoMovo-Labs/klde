@@ -5,7 +5,7 @@
 
 namespace klde {
 MockWindowManagerBackend::MockWindowManagerBackend(QObject *parent) : WindowManagerBackend(parent) {
-    const QList<LayoutMode> modes{Floating, Floating, Tiled, Mixed, Custom};
+    const QList<LayoutMode> modes{Floating, Floating, ClassicTiling, Mixed, Custom};
     for (int i = 0; i < modes.size(); ++i) {
         m_workspaces.append(QVariantMap{{"id", QStringLiteral("workspace-%1").arg(i + 1)},
                                         {"name", QString::number(i + 1)},

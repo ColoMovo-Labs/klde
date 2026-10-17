@@ -29,6 +29,8 @@ would require a separate scope/maintenance decision; it is not promised. Legacy 
 issues justify compatibility testing. X11 support has no perpetual guarantee;
 removal needs published evidence, migration options and a new decision review.
 
-No compositor is chosen. KWin as an engine does not imply Plasma presentation;
-wlroots and other existing engines remain candidates. A compositor fork requires
-its own maintenance argument. Headless correctness is separate from GPU speed.
+KWin is the first engine candidate and does not imply Plasma presentation. The
+adapter must distinguish upstream KWin 6 from the deepin/Lingmo KWin lineage;
+wlroots and other existing engines remain later profiles. A compositor fork
+requires its own maintenance argument. Headless correctness is separate from GPU
+speed. See [the KWin adapter boundary](kwin-adapter.md).
