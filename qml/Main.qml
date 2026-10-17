@@ -17,6 +17,8 @@ ApplicationWindow {
     property string initialWallpaper: "snow"
     property bool initialAmbient: false
     property bool initialFocus: false
+    property string initialLockState: "ambient"
+    property bool initialDebugGeometry: false
     property bool developerTools: false
     objectName: "shellWindow"
     width: Tokens.previewWidth
@@ -42,6 +44,7 @@ ApplicationWindow {
     palette.shadow: Tokens.shadow
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
+    readonly property bool lockSurfaceMode: initialView === "lock-screen"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: ribbon.y + ribbon.height + Tokens.space16
     readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings]
@@ -172,6 +175,7 @@ ApplicationWindow {
             Shell.state.requestValue("appearance.ambient", true);
         if (initialFocus)
             Shell.state.requestValue("appearance.focus", true);
+        Tokens.debugGeometry = initialDebugGeometry;
         applyScene();
         showView(developerTools ? "mock-lab" : initialView);
     }
@@ -405,6 +409,13 @@ ApplicationWindow {
         backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
+    }
+    LockScreenSurface {
+        id: lockSurface
+        anchors.fill: parent
+        visible: window.lockSurfaceMode
+        z: 1000
+        stateName: window.initialLockState
     }
     WaydroidSettings {
         id: waydroidSettings

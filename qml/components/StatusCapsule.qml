@@ -16,18 +16,21 @@ Button {
     property bool detailed: false
     property bool grouped: false
     readonly property color ink: prominent ? Tokens.textOnPrimary : severity === 2 ? Tokens.error : severity === 1 ? Tokens.warning : active ? Tokens.primary : Tokens.textPrimary
-    implicitWidth: Math.max(Tokens.controlHeight, contentRow.implicitWidth + Tokens.ribbonPadding * 2)
+    implicitWidth: Math.max(Tokens.controlHeight, contentRow.implicitWidth + Tokens.capsuleHorizontalPadding * 2)
     implicitHeight: Tokens.ribbonHeight
-    padding: Tokens.ribbonPadding
+    leftPadding: Tokens.capsuleHorizontalPadding
+    rightPadding: Tokens.capsuleHorizontalPadding
+    topPadding: Tokens.capsuleVerticalPadding
+    bottomPadding: Tokens.capsuleVerticalPadding
     Accessible.name: label + ", " + valueText + (unavailable ? ", " + I18n.t("lab.unavailable") : "")
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
     contentItem: RowLayout {
         id: contentRow
-        spacing: Tokens.space4
+        spacing: Tokens.capsuleIconTextGap
         Item {
-            implicitWidth: Tokens.ribbonIcon + Tokens.space4
-            implicitHeight: Tokens.ribbonIcon + Tokens.space4
+            implicitWidth: Tokens.capsuleIconSize + Tokens.capsuleIconTextGap
+            implicitHeight: Tokens.capsuleIconSize + Tokens.capsuleIconTextGap
             Canvas {
                 id: ring
                 anchors.fill: parent
@@ -61,7 +64,7 @@ Button {
                 anchors.centerIn: parent
                 name: root.iconName
                 lightInk: root.prominent ? !Tokens.darkMode : Tokens.darkMode
-                width: root.meter >= 0 ? Tokens.iconS : Tokens.ribbonIcon
+                width: root.meter >= 0 ? Tokens.iconS : Tokens.capsuleIconSize
                 height: width
             }
         }
@@ -71,6 +74,7 @@ Button {
             color: root.ink
             font: Tokens.label
             elide: Text.ElideRight
+            verticalAlignment: Text.AlignVCenter
             Layout.maximumWidth: root.detailed ? Tokens.widgetSize : Tokens.widgetSize / 2
         }
     }
@@ -78,7 +82,7 @@ Button {
         radius: root.active || root.prominent ? Tokens.radiusPill : root.hovered ? Tokens.radiusL : Tokens.radiusM
         color: root.grouped && !root.hovered && !root.visualFocus && root.severity === 0 ? "transparent" : root.prominent ? Tokens.primary : root.severity === 2 ? Qt.tint(Tokens.surface, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.14)) : root.active || root.hovered ? Tokens.primaryContainer : Tokens.surface
         opacity: root.unavailable ? Tokens.surfaceOpacityLow : Tokens.transparencyEnabled ? Tokens.surfaceOpacityMedium : 1
-        border.width: root.visualFocus || root.severity === 2 ? Tokens.space2 : root.grouped ? 0 : Tokens.space1
+        border.width: root.visualFocus || root.severity === 2 ? Tokens.space2 : root.grouped ? 0 : Tokens.capsuleBorderWidth
         border.color: root.visualFocus || root.severity > 0 ? root.ink : Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
         Behavior on radius {
             NumberAnimation {

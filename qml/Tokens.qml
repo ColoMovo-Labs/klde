@@ -12,6 +12,7 @@ QtObject {
     property int motionLevel: 2
     property int densityMode: 1
     property int shadowLevel: 1
+    property bool debugGeometry: false
     property string wallpaperChoice: "snow"
     property string accentChoice: "auto"
     readonly property color accent: accentChoice === "teal" ? accentTeal : accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#99d1c8" : wallpaperChoice === "abstract" ? "#5545ad" : wallpaperChoice === "kemono" ? "#76518e" : "#07679e"
@@ -186,7 +187,8 @@ QtObject {
     readonly property color temporalDayOrb: "#fff0bb"
     readonly property color temporalSunsetOrb: "#ffcd88"
     readonly property color temporalText: "#ffffff"
-    readonly property color temporalInkVeil: "#df14243c"
+    // A quiet contrast wash; the clock remains light text without a halo/outline.
+    readonly property color temporalInkVeil: "#a614243c"
     readonly property color temporalEdge: "#507f94b6"
     readonly property color surfaceEdge: Qt.rgba(outline.r, outline.g, outline.b, outlineOpacity)
     readonly property int temporalStudyWidth: 1160
@@ -202,6 +204,13 @@ QtObject {
     readonly property real wallpaperDim: 0.16
     readonly property int ribbonIcon: 22
     readonly property int ribbonPadding: densityMode === 2 ? space6 : space8
+    readonly property int capsuleBorderWidth: 1
+    readonly property int capsuleHorizontalPadding: space8
+    readonly property int capsuleVerticalPadding: space4
+    readonly property int capsuleIconSize: 22
+    readonly property int capsuleIconTextGap: space4
+    readonly property int lockScreenEdgeMargin: 48
+    readonly property int lockScreenContentWidth: 360
     readonly property int launcherWidth: 600
     readonly property int launcherHeight: 528
     readonly property int launcherRow: 64 * densityScale

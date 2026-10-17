@@ -38,6 +38,18 @@ def main():
     cases.append(dict(id='temporal-expanded', scenario='sunset', view='temporal'))
     cases.append(dict(id='ambient-laptop', size='1366x768', ambient=True, density='dense'))
     cases.append(dict(id='lock-screen-dark', scenario='lock-screen-blur-enabled', view='lock-preview', dark=True, ambient=True))
+    cases.extend([
+        dict(id='lock-day-ambient', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='ambient'),
+        dict(id='lock-night-ambient', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='ambient', dark=True),
+        dict(id='lock-auth', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='auth'),
+        dict(id='lock-error', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='error'),
+        dict(id='lock-reduced', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='reduced'),
+        dict(id='lock-depth', scenario='wallpaper-depth-enabled', view='lock-screen', lock_state='depth'),
+        dict(id='lock-fallback', scenario='segmentation-failed', view='lock-screen', lock_state='fallback'),
+        dict(id='lock-debug', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='auth', debug_geometry=True),
+        dict(id='ribbon-debug', view='desktop', debug_geometry=True),
+        dict(id='lock-compact-auth', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='auth', size='1366x768'),
+    ])
     cases.append(dict(id='temporal-study', view='temporal-study', size='1440x1000'))
     for name, size in [('hdplus','1600x900'), ('fhd','1920x1080'), ('qhd','2560x1440'), ('narrow','1366x768')]:
         cases.append(dict(id='axis-'+name, size=size))
@@ -47,15 +59,17 @@ def main():
                   dict(id='ribbon-narrow-detail', size='1366x768', region='ribbon')])
     records=[]
     for case in cases:
-        options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False, focus=False, region='full')
+        options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False, focus=False, region='full', lock_state='ambient', debug_geometry=False)
         options.update(case)
         stem=output / options['id']
         command=[str(binary), '--smoke-test', '--audit-idle', '--capture', str(stem)+'.png']
-        for key in ('locale','voice','scenario','density','size','wallpaper','view'):
-            command.extend(['--'+key,options[key]])
+        for key in ('locale','voice','scenario','density','size','wallpaper','view','lock_state'):
+            command.extend(['--'+key.replace('_', '-'),options[key]])
         command.extend(['--capture-region',options['region']])
         for key in ('dark','ambient','focus'):
             if options[key]: command.append('--'+key)
+        if options['debug_geometry']:
+            command.append('--debug-geometry')
         env=dict(os.environ,QT_SCALE_FACTOR=str(options['scale']))
         with Path(str(stem)+'.log').open('w') as log:
             result=subprocess.run(command,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=25,check=False)

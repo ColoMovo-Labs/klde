@@ -3,7 +3,7 @@
 Depth is optional enhancement. It must never become a continuous inference or
 blur job. The shell runtime is a consumer of completed assets. This pass provides
 an interface, settings, failure scenarios and pre-authored resource studies;
-**no segmentation model, disk-cache generator or real lock service is implemented**.
+**no segmentation model, disk-cache generator or real lock service is implemented; the lock surface is a visual/mock consumer only**.
 
 ## Production pipeline contract
 
@@ -89,5 +89,5 @@ that fixture; other wallpapers simulate failure. It does not generate files.
 The soft/lock studies are original smooth SVG gradients, not calculated Gaussian
 blur or extracted layers. Tier controls blend those sample assets; they are not
 performance or image-quality benchmarks. The foreground is pre-authored original
-vector geometry. The lock page clearly states that it cannot lock/authenticate a
-session. Real secure locking belongs to an audited Wayland/session implementation.
+vector geometry. The lock surface clearly states that it cannot lock/authenticate a
+session; its prepared assets are visual fixtures, not a security boundary. Real secure locking belongs to an audited Wayland/session implementation.

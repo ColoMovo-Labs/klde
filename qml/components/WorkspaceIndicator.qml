@@ -13,7 +13,7 @@ Surface {
     width: implicitWidth
     implicitHeight: compact ? Tokens.ribbonHeight : Tokens.controlHeight + Tokens.space16
     height: implicitHeight
-    padding: Tokens.space8
+    padding: Tokens.capsuleHorizontalPadding
     cornerRadius: Tokens.radiusPill
 
     Row {

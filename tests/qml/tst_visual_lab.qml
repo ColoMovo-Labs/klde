@@ -46,6 +46,14 @@ Item {
         id: temporalPanelComponent
         TemporalSettings {}
     }
+    Component {
+        id: lockSurfaceComponent
+        LockScreenSurface {
+            width: 1920
+            height: 1080
+            stateName: "ambient"
+        }
+    }
     TestCase {
         name: "VisualLabInteraction"
         when: windowShown
@@ -122,6 +130,32 @@ Item {
             panel.open();
             tryCompare(panel, "opened", true);
             panel.close();
+        }
+        function test_lockSurfaceStatesKeepStableGeometry(): void {
+            const surface = createTemporaryObject(lockSurfaceComponent, testRoot, {
+                parent: testRoot,
+                width: 1920,
+                height: 1080
+            });
+            verify(surface !== null);
+            const ambientClock = findChild(surface, "lockAmbientClock");
+            verify(ambientClock !== null);
+            surface.stateName = "auth";
+            wait(0);
+            const authPanel = findChild(surface, "lockAuthenticationPanel");
+            verify(authPanel !== null);
+            compare(authPanel.visible, true);
+            const password = findChild(surface, "lockPasswordField");
+            verify(password !== null);
+            surface.stateName = "error";
+            wait(0);
+            const error = findChild(surface, "lockError");
+            verify(error !== null);
+            compare(error.visible, true);
+            surface.stateName = "fallback";
+            wait(0);
+            compare(authPanel.visible, false);
+            compare(ambientClock.visible, true);
         }
         function test_temporalCapsuleContentIsOpticallyCentered(): void {
             const capsule = createTemporaryObject(temporalComponent, testRoot, {

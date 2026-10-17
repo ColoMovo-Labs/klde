@@ -39,4 +39,11 @@ Item {
         height: implicitHeight
         onAction: moduleId => root.action(moduleId)
     }
+    GeometryDebugOverlay {
+        anchors.fill: parent
+        enabled: Tokens.debugGeometry
+        targetItems: [center, left, right]
+        contentItems: [center.debugContentItem]
+        textItems: [center.debugTextItem]
+    }
 }

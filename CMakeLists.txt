@@ -21,8 +21,10 @@ set(klde_qml_files
     qml/components/RibbonGroup.qml qml/components/TelemetryCell.qml
     qml/components/TemporalCapsule.qml qml/components/TemporalLandscape.qml
     qml/components/TemporalStudy.qml qml/components/DisplayClock.qml
+    qml/components/GeometryDebugOverlay.qml
     qml/components/TemporalSettings.qml qml/components/WallpaperLayers.qml
     qml/components/WallpaperEffectsSettings.qml qml/components/LockScreenPreview.qml
+    qml/components/LockScreenSurface.qml
     qml/components/WaydroidSettings.qml
     qml/components/StateSlider.qml
     qml/components/StateChoice.qml

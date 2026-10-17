@@ -57,6 +57,5 @@ physical size. Canvas offers no advantage for these fixed curves and is unused.
 
 Default: only the ribbon time entry. Clock: opt into the large centered time and
 date, with weather and media in separate lower side regions. Focus: time/date
-with secondary content and Dock hidden. The existing lock preview uses the same
-display face, date and a disclosed mock surface; it cannot authenticate or lock.
+with secondary content and Dock hidden. The lock visual surface uses the same display face and date plus explicit ambient/auth/error states; it cannot authenticate or lock.
 No automatic idle mode switch is implemented.

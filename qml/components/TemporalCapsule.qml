@@ -14,6 +14,8 @@ Button {
     readonly property bool rainy: reading.phase === "rainy-evening"
     readonly property bool expanded: sizeMode === "expanded"
     readonly property int contentInset: expanded ? Tokens.temporalExpandedInset : sizeMode === "compact" ? Tokens.temporalCompactInset : Tokens.temporalInset
+    readonly property Item debugContentItem: textColumn
+    readonly property Item debugTextItem: timeLabel
     implicitWidth: expanded ? Tokens.temporalExpandedWidth : sizeMode === "compact" ? Tokens.temporalCompactWidth : Tokens.temporalWidth
     implicitHeight: expanded ? Tokens.temporalExpandedHeight : sizeMode === "compact" ? Tokens.temporalCompactHeight : Tokens.temporalHeight
     padding: 0
@@ -33,7 +35,9 @@ Button {
             width: parent.width - root.contentInset * 2
             spacing: Tokens.space4
             Label {
+                id: timeLabel
                 visible: root.showTime
+                objectName: "temporalTimeText"
                 width: parent.width
                 text: root.reading.timeText
                 color: Tokens.temporalText
@@ -43,7 +47,9 @@ Button {
                 font.pixelSize: (root.expanded ? Tokens.temporalExpandedFont : root.sizeMode === "compact" ? Tokens.temporalCompactFont : Tokens.temporalFont) * Tokens.textScale
             }
             Label {
+                id: phaseLabel
                 visible: root.expanded
+                objectName: "temporalPhaseText"
                 width: parent.width
                 text: I18n.t("temporal.phase." + root.reading.phase)
                 color: Tokens.temporalText
@@ -57,6 +63,13 @@ Button {
             color: "transparent"
             border.width: root.visualFocus ? Tokens.space2 : Tokens.space1
             border.color: root.visualFocus ? Tokens.primary : root.hovered ? Tokens.temporalText : Tokens.temporalEdge
+        }
+        GeometryDebugOverlay {
+            anchors.fill: parent
+            enabled: Tokens.debugGeometry
+            targetItems: [root]
+            contentItems: [textColumn]
+            textItems: [timeLabel, phaseLabel]
         }
     }
 }

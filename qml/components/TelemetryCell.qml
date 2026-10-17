@@ -21,7 +21,7 @@ Button {
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
     contentItem: RowLayout {
-        spacing: Tokens.space4
+        spacing: Tokens.capsuleIconTextGap
         Icon {
             name: root.moduleId === "temperature" ? "thermometer" : root.moduleId
             Layout.preferredWidth: Tokens.telemetryIcon
@@ -31,6 +31,7 @@ Button {
             text: (root.reading.severity > 0 ? "! " : "") + root.reading.value
             font: Tokens.caption
             color: root.reading.severity === 2 ? Tokens.error : root.reading.severity === 1 ? Tokens.warning : Tokens.textPrimary
+            verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true
         }
     }

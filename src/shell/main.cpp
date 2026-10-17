@@ -38,11 +38,16 @@ int main(int argc, char *argv[]) {
     const QCommandLineOption cropOption("capture-region", "Smoke capture: full or ribbon", "region",
                                         "full");
     const QCommandLineOption focusOption("focus", "Preview the focus desktop composition");
+    const QCommandLineOption lockStateOption(
+        "lock-state", "Lock-screen visual state: ambient, auth, error, reduced, depth or fallback",
+        "state", "ambient");
+    const QCommandLineOption debugGeometryOption("debug-geometry",
+                                                 "Show the development-only alignment overlay");
     const QCommandLineOption viewOption(
         QStringLiteral("view"),
-        QStringLiteral(
-            "Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
-            "weather, language, input, temporal, wallpaper-effects, lock-preview, waydroid"),
+        QStringLiteral("Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
+                       "weather, language, input, temporal, wallpaper-effects, lock-preview, "
+                       "lock-screen, waydroid"),
         QStringLiteral("view"), QStringLiteral("desktop"));
     const QCommandLineOption darkOption(QStringLiteral("dark"),
                                         QStringLiteral("Start with dark appearance"));
@@ -67,8 +72,9 @@ int main(int argc, char *argv[]) {
     const QCommandLineOption developerOption("dev-tools", "Open the session-only Mock Lab");
     parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
                        developerOption});
-    parser.addOptions({cropOption, focusOption, smokeOption, captureOption, viewOption, darkOption,
-                       idleOption, localeOption, voiceOption});
+    parser.addOptions({cropOption, focusOption, lockStateOption, debugGeometryOption, smokeOption,
+                       captureOption, viewOption, darkOption, idleOption, localeOption,
+                       voiceOption});
     parser.process(app);
     if ((parser.isSet(captureOption) || parser.isSet(idleOption)) && !parser.isSet(smokeOption)) {
         qCritical() << "--capture and --audit-idle require --smoke-test";
@@ -90,6 +96,7 @@ int main(int argc, char *argv[]) {
                             "temporal",
                             "wallpaper-effects",
                             "lock-preview",
+                            "lock-screen",
                             "waydroid",
                             "weather-preview",
                             "quick-settings-expanded",
@@ -101,6 +108,13 @@ int main(int argc, char *argv[]) {
                             "app-suite"};
     if (!views.contains(parser.value(viewOption))) {
         qCritical() << "Unknown preview view";
+        return EXIT_FAILURE;
+    }
+    const QStringList lockStates{QStringLiteral("ambient"), QStringLiteral("auth"),
+                                 QStringLiteral("error"),   QStringLiteral("reduced"),
+                                 QStringLiteral("depth"),   QStringLiteral("fallback")};
+    if (!lockStates.contains(parser.value(lockStateOption))) {
+        qCritical() << "Unsupported lock-screen state";
         return EXIT_FAILURE;
     }
     if ((!parser.value(localeOption).isEmpty() && parser.value(localeOption) != "en" &&
@@ -148,6 +162,8 @@ int main(int argc, char *argv[]) {
          {"initialWallpaper", parser.value(wallpaperOption)},
          {"initialAmbient", parser.isSet(ambientOption) || parser.isSet(focusOption)},
          {"initialFocus", parser.isSet(focusOption)},
+         {"initialLockState", parser.value(lockStateOption)},
+         {"initialDebugGeometry", parser.isSet(debugGeometryOption)},
          {"developerTools", parser.isSet(developerOption)},
          {"width", logicalWidth},
          {"height", logicalHeight}});

@@ -17,7 +17,7 @@ Rectangle {
     radius: height / 2
     color: Tokens.surface
     opacity: Tokens.transparencyEnabled ? Tokens.surfaceOpacityHigh : 1
-    border.width: Tokens.space1
+    border.width: Tokens.capsuleBorderWidth
     border.color: Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
     Grid {
         id: telemetry
