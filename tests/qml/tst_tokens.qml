@@ -20,6 +20,12 @@ TestCase {
         return 0.2126 * linear(color.r) + 0.7152 * linear(color.g) + 0.0722 * linear(color.b);
     }
 
+    function test_embeddedGlowFontIsLoaded() {
+        tryCompare(Tokens.glowRegular, "status", FontLoader.Ready);
+        tryCompare(Tokens.glowMedium, "status", FontLoader.Ready);
+        verify(Tokens.fontFamily.indexOf("Glow") >= 0);
+    }
+
     function test_primaryTextContrast() {
         for (const dark of [false, true]) {
             Tokens.darkMode = dark;

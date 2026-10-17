@@ -7,6 +7,7 @@ class MockWindowManagerBackend final : public WindowManagerBackend {
     Q_OBJECT
   public:
     explicit MockWindowManagerBackend(QObject *parent = nullptr);
+    void resetPreview(const QVariantList &layouts, int active);
     QVariantList workspaces() const override;
     QVariantList windows() const override;
     QString activeWorkspace() const override;

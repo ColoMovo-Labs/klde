@@ -1,12 +1,11 @@
 # CJK typography
 
-Use distribution fonts, not copied font binaries. Noto Sans CJK SC is the initial
-Simplified Chinese preference; Qt/fontconfig supplies fallback for Latin, other
-CJK and symbols. English keeps the system sans. Noto CJK is available under
-OFL-1.1: [upstream](https://github.com/notofonts/noto-cjk) and
-[Fedora's variable package](https://packages.fedoraproject.org/pkgs/google-noto-sans-cjk-vf-fonts/google-noto-sans-cjk-vf-fonts/fedora-44.html).
-Ubuntu CI/package runtime uses fonts-noto-cjk; Fedora uses
- google-noto-sans-cjk-vf-fonts. No font is bundled or relicensed by KLDE.
+The Visual Lab evaluates bundled Wêlai Glow Sans SC Regular/Medium as the primary
+family; see [typography and provenance](typography.md). Distribution Noto Sans
+CJK SC / Source Han Sans SC provide fallback through Qt/fontconfig. Noto CJK is
+available under OFL-1.1: [upstream](https://github.com/notofonts/noto-cjk).
+Ubuntu CI/package runtime keeps fonts-noto-cjk; Fedora keeps
+google-noto-sans-cjk-vf-fonts. No fallback font is relicensed by KLDE.
 
 Chinese glyph density needs its own caption/label sizing and comfortable line
 height. Prefer real Medium/DemiBold weights when available; test variable-font

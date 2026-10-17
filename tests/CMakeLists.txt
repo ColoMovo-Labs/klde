@@ -40,3 +40,8 @@ add_test(NAME qml-tokens COMMAND klde-qml-tests)
 set_tests_properties(qml-tokens PROPERTIES
     LABELS qml TIMEOUT 30
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;QT_QUICK_CONTROLS_STYLE=Basic")
+
+qt_add_executable(klde-visual-lab-test test_visual_lab.cpp)
+target_link_libraries(klde-visual-lab-test PRIVATE klde_backends Qt6::Test)
+add_test(NAME visual-lab-contracts COMMAND klde-visual-lab-test)
+set_tests_properties(visual-lab-contracts PROPERTIES LABELS unit TIMEOUT 30)

@@ -8,6 +8,9 @@ RowLayout {
     required property string label
     required property string iconName
     property int value: 0
+    property string unit: "%"
+    property int maximumValue: 100
+    property int minimumValue: 0
     signal valueRequested(int requestedValue)
     spacing: Tokens.space12
     Icon {
@@ -19,8 +22,8 @@ RowLayout {
         id: control
         Layout.fillWidth: true
         implicitHeight: Tokens.sliderHeight
-        from: 0
-        to: 100
+        from: root.minimumValue
+        to: root.maximumValue
         stepSize: 1
         value: root.value
         leftPadding: 0
@@ -49,7 +52,7 @@ RowLayout {
                 anchors.left: parent.left
                 anchors.leftMargin: Tokens.space16
                 anchors.verticalCenter: parent.verticalCenter
-                text: I18n.number(root.value, 0) + "%"
+                text: I18n.number(root.value, 0) + root.unit
                 font: Tokens.label
                 Accessible.ignored: true
                 color: Tokens.textPrimary
@@ -61,7 +64,7 @@ RowLayout {
                 Text {
                     x: Tokens.space16
                     anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.number(root.value, 0) + "%"
+                    text: I18n.number(root.value, 0) + root.unit
                     font: Tokens.label
                     Accessible.ignored: true
                     color: Tokens.textOnPrimary

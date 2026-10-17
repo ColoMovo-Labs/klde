@@ -20,8 +20,14 @@ qt_add_qml_module(klde_backends STATIC
         i18n/LocaleVoiceModel.h i18n/LocaleVoiceModel.cpp
         input/InputMethodBackend.h input/Fcitx5Backend.h input/Fcitx5Backend.cpp
         platform/common/DisplayServerBackend.h platform/common/DisplayServerBackend.cpp
+        mock/SystemStateModel.h mock/SystemStateModel.cpp
+        models/NotificationModel.h models/NotificationModel.cpp
+        status/StatusModuleRegistry.h status/StatusModuleRegistry.cpp
         ShellServices.h ShellServices.cpp
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Gui Qt6::DBus Qt6::Network Qt6::Qml)
+# qmltyperegistrar emits conditional includes by header basename.
+target_include_directories(klde_backends PRIVATE
+    backends models i18n input mock platform/common shortcuts status weather)
 target_compile_options(klde_backends PRIVATE -Wall -Wextra -Wpedantic)

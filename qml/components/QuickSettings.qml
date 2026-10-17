@@ -9,7 +9,10 @@ ShellPopup {
     objectName: "quickSettings"
     signal blurRequested
     signal sceneSettingsRequested
-    width: Tokens.panelWidth
+    signal viewRequested(string view)
+    property bool expanded: false
+    readonly property var snapshot: Shell.state.snapshot
+    width: Math.min(Tokens.panelWidth + (expanded ? Tokens.space32 : 0), parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
     height: Math.min(settingsColumn.implicitHeight + padding * 2, parent ? parent.height - y - Tokens.space24 : Tokens.previewHeight)
     contentItem: ScrollView {
         id: scroller
@@ -18,7 +21,7 @@ ShellPopup {
         ColumnLayout {
             id: settingsColumn
             width: scroller.availableWidth
-            spacing: Tokens.space16
+            spacing: Tokens.rowGap
             RowLayout {
                 Layout.fillWidth: true
                 ColumnLayout {
@@ -43,6 +46,11 @@ ShellPopup {
                     onClicked: root.close()
                 }
             }
+            ActionButton {
+                text: I18n.t(root.expanded ? "lab.quick.compact" : "lab.quick.expand")
+                Layout.fillWidth: true
+                onClicked: root.expanded = !root.expanded
+            }
             GridLayout {
                 columns: 2
                 columnSpacing: Tokens.space12
@@ -51,14 +59,17 @@ ShellPopup {
                 ToggleTile {
                     text: I18n.t("shell.network.wifi")
                     iconName: "wifi"
-                    selected: Shell.system.wifi
+                    detail: root.snapshot.network.connected ? root.snapshot.network.ssid : I18n.t("lab.network.offline")
+                    selected: root.snapshot.network.enabled
                     Layout.fillWidth: true
                     onToggleRequested: Shell.system.wifi = !Shell.system.wifi
                 }
                 ToggleTile {
                     text: I18n.t("shell.network.bluetooth")
                     iconName: "bluetooth"
-                    selected: Shell.system.bluetooth
+                    enabled: root.snapshot.capabilities.bluetooth
+                    detail: !enabled ? I18n.t("lab.unavailable") : I18n.t(root.snapshot.bluetooth.enabled ? "common.on" : "common.off")
+                    selected: root.snapshot.bluetooth.enabled
                     Layout.fillWidth: true
                     onToggleRequested: Shell.system.bluetooth = !Shell.system.bluetooth
                 }
@@ -78,6 +89,7 @@ ShellPopup {
                 }
             }
             SliderCard {
+                visible: root.snapshot.capabilities.brightness
                 label: I18n.t("shell.effects.brightness")
                 iconName: "sun"
                 value: Shell.system.brightness
@@ -90,6 +102,49 @@ ShellPopup {
                 value: Shell.system.volume
                 Layout.fillWidth: true
                 onValueRequested: requestedValue => Shell.system.volume = requestedValue
+            }
+            StateSlider {
+                visible: root.expanded && root.snapshot.capabilities.microphone
+                path: "audio.microphone"
+                label: I18n.t("lab.module.microphone")
+                iconName: "microphone"
+            }
+            StateChoice {
+                visible: root.expanded
+                label: I18n.t("lab.audio.output")
+                path: "audio.output"
+                values: ["speakers", "headphones", "bluetooth"]
+                labels: [I18n.t("lab.audio.speakers"), I18n.t("lab.audio.headphones"), I18n.t("shell.network.bluetooth")]
+            }
+            Switch {
+                text: I18n.t("lab.dnd")
+                checked: root.snapshot.notifications.dnd
+                onToggled: Shell.state.requestValue("notifications.dnd", checked)
+            }
+            Flow {
+                visible: root.expanded
+                Layout.fillWidth: true
+                spacing: Tokens.space8
+                ActionButton {
+                    text: I18n.t("language.title")
+                    onClicked: root.viewRequested("language")
+                }
+                ActionButton {
+                    text: I18n.t("lab.center.title")
+                    onClicked: root.viewRequested("notifications")
+                }
+                ActionButton {
+                    text: I18n.t("lab.ribbon.customize")
+                    onClicked: root.viewRequested("ribbon-settings")
+                }
+            }
+            ChoiceBox {
+                visible: root.expanded
+                Layout.fillWidth: true
+                model: [I18n.t("lab.density.comfortable"), I18n.t("lab.density.balanced"), I18n.t("lab.density.dense")]
+                currentIndex: Tokens.densityMode
+                Accessible.name: I18n.t("lab.density")
+                onActivated: Shell.scenes.customize("density", currentIndex)
             }
             PowerSceneCard {
                 Layout.fillWidth: true

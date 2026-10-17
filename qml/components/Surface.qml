@@ -23,6 +23,9 @@ Item {
         function onDarkModeChanged(): void {
             Qt.callLater(root.refreshCapture);
         }
+        function onWallpaperChoiceChanged(): void {
+            Qt.callLater(root.refreshCapture);
+        }
     }
 
     Loader {
@@ -42,7 +45,7 @@ Item {
         anchors.bottomMargin: -Tokens.elevationLow
         radius: root.cornerRadius
         color: Tokens.shadow
-        opacity: Tokens.shadowsEnabled ? Tokens.shadowOpacity : 0
+        opacity: Tokens.shadowsEnabled ? Tokens.shadowOpacity * (Tokens.shadowLevel === 0 ? 0.6 : Tokens.shadowLevel === 2 ? 1.4 : 1) : 0
     }
     Rectangle {
         anchors.fill: parent

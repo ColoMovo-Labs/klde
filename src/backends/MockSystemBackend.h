@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 #include "SystemBackend.h"
+#include <QVariantMap>
 
 namespace klde {
 class MockSystemBackend final : public SystemBackend {
@@ -14,6 +15,7 @@ class MockSystemBackend final : public SystemBackend {
     bool nightMode() const override { return m_nightMode; }
     QString powerProfile() const override { return m_powerProfile; }
     bool mock() const override { return true; }
+    void applyPreviewState(const QVariantMap &snapshot);
     void setVolume(int value) override;
     void setBrightness(int value) override;
     void setWifi(bool value) override;

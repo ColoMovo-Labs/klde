@@ -26,6 +26,7 @@ class WeatherService : public QObject {
     // Injected provider/clock support deterministic offline CI. The provider must outlive this
     // service.
     WeatherService(WeatherProvider *provider, Clock clock, QObject *parent = nullptr);
+    void applyPreview(const WeatherReading &reading, bool available);
     QVariantMap reading() const;
     QString status() const { return m_status; }
     bool onlineEnabled() const { return m_enabled; }

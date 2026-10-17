@@ -25,6 +25,6 @@ install(FILES "${CMAKE_SOURCE_DIR}/packaging/debian/copyright"
 install(FILES "${CMAKE_SOURCE_DIR}/packaging/README.md"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/klde-shell-preview"
     RENAME README.md)
-install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" "${CMAKE_SOURCE_DIR}/LICENSES/CC-BY-SA-4.0.txt"
+install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" "${CMAKE_SOURCE_DIR}/LICENSES/CC-BY-SA-4.0.txt" "${CMAKE_SOURCE_DIR}/LICENSES/OFL-1.1.txt"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/klde-shell-preview")
 include(CPack)

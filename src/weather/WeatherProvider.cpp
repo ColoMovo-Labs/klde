@@ -19,6 +19,10 @@ WeatherCondition normalizeWeatherCondition(const QString &description) {
         return WeatherCondition::Thunderstorm;
     if (value == "fog" || value == "mist" || value == "雾")
         return WeatherCondition::Fog;
+    if (value == "extreme heat")
+        return WeatherCondition::ExtremeHeat;
+    if (value == "extreme cold")
+        return WeatherCondition::ExtremeCold;
     return WeatherCondition::Unknown;
 }
 QString WeatherReading::conditionId() const {
@@ -37,6 +41,10 @@ QString WeatherReading::conditionId() const {
         return QStringLiteral("weather.condition.thunderstorm");
     case WeatherCondition::Fog:
         return QStringLiteral("weather.condition.fog");
+    case WeatherCondition::ExtremeHeat:
+        return QStringLiteral("weather.condition.extreme-heat");
+    case WeatherCondition::ExtremeCold:
+        return QStringLiteral("weather.condition.extreme-cold");
     case WeatherCondition::Unknown:
         return QStringLiteral("weather.condition.unknown");
     }

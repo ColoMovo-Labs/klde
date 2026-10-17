@@ -9,7 +9,7 @@ ShellPopup {
     id: root
     objectName: "inputPopup"
     signal settingsRequested
-    width: Tokens.panelWidth
+    width: Math.min(Tokens.panelWidth, parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
     height: column.implicitHeight + padding * 2
     contentItem: ColumnLayout {
         id: column

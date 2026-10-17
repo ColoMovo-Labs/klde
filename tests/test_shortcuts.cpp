@@ -10,7 +10,7 @@ class ShortcutTest final : public QObject {
         klde::ShortcutRegistry first;
         klde::ShortcutRegistry second;
         QCOMPARE(first.launcher(), QStringLiteral("Ctrl+Alt+Space"));
-        QCOMPARE(first.actions().size(), 4);
+        QCOMPARE(first.actions().size(), 29);
         QVERIFY(!first.globalAvailable());
         for (const auto &action : first.actions()) {
             QCOMPARE(action.toMap().value(QStringLiteral("scope")).toString(),

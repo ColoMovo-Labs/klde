@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+  "circlePipeline": 38,
+  "captureJob": 272,
+  "workflow": "6f262d05-ad85-42b2-b335-4c19c5d39b24",
+  "matrixCases": 72,
+  "renderer": "Qt Quick OpenGL / Mesa llvmpipe (software correctness)",
+  "baselines": [
+    {
+      "name": "baseline-light-zh-standard",
+      "file": "baseline-light-zh-standard.png",
+      "description": "Light / Chinese / Standard",
+      "sourceArtifact": "light-zh_CN-standard.png",
+      "sha256": "d6bef7bc1db69420431aa740f9d08bb8fc54b8588046c0db9de0b44a15b204a2",
+      "configuration": {
+        "locale": "zh_CN",
+        "voice": "standard",
+        "scenario": "laptop-balanced",
+        "density": "balanced",
+        "size": "1920x1080",
+        "scale": 1,
+        "dark": false,
+        "wallpaper": "snow",
+        "view": "quick-settings",
+        "ambient": false,
+        "id": "light-zh_CN-standard",
+        "revision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+        "exitCode": 0,
+        "physicalSize": [
+          1920,
+          1080
+        ]
+      }
+    },
+    {
+      "name": "baseline-light-zh-cute",
+      "file": "baseline-light-zh-cute.png",
+      "description": "Light / Chinese / Cute",
+      "sourceArtifact": "light-zh_CN-cute.png",
+      "sha256": "e4ab8ba736a69ac52421bb659fc5312ef6d8bdd9194ea9cf2198aecb6f285f07",
+      "configuration": {
+        "locale": "zh_CN",
+        "voice": "cute",
+        "scenario": "laptop-balanced",
+        "density": "balanced",
+        "size": "1920x1080",
+        "scale": 1,
+        "dark": false,
+        "wallpaper": "snow",
+        "view": "quick-settings",
+        "ambient": false,
+        "id": "light-zh_CN-cute",
+        "revision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+        "exitCode": 0,
+        "physicalSize": [
+          1920,
+          1080
+        ]
+      }
+    },
+    {
+      "name": "baseline-dark-zh-cute",
+      "file": "baseline-dark-zh-cute.png",
+      "description": "Dark / Chinese / Cute",
+      "sourceArtifact": "dark-zh_CN-cute.png",
+      "sha256": "af57d84aa279f2a9a9dbf0bddd809764a045e79c2589c69e163273eeeee22976",
+      "configuration": {
+        "locale": "zh_CN",
+        "voice": "cute",
+        "scenario": "laptop-balanced",
+        "density": "balanced",
+        "size": "1920x1080",
+        "scale": 1,
+        "dark": true,
+        "wallpaper": "snow",
+        "view": "quick-settings",
+        "ambient": false,
+        "id": "dark-zh_CN-cute",
+        "revision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+        "exitCode": 0,
+        "physicalSize": [
+          1920,
+          1080
+        ]
+      }
+    },
+    {
+      "name": "baseline-dense-ribbon",
+      "file": "baseline-dense-ribbon.png",
+      "description": "Dense ribbon / ambient workspace",
+      "sourceArtifact": "ambient-snow.png",
+      "sha256": "656c343af45105f38eb9f356118801c941507917422d60d567745f69df761a60",
+      "configuration": {
+        "locale": "zh_CN",
+        "voice": "standard",
+        "scenario": "laptop-balanced",
+        "density": "dense",
+        "size": "1920x1080",
+        "scale": 1,
+        "dark": false,
+        "wallpaper": "snow",
+        "view": "desktop",
+        "ambient": true,
+        "id": "ambient-snow",
+        "revision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+        "exitCode": 0,
+        "physicalSize": [
+          1920,
+          1080
+        ]
+      }
+    },
+    {
+      "name": "baseline-quick-settings",
+      "file": "baseline-quick-settings.png",
+      "description": "Compact Quick Settings",
+      "sourceArtifact": "quick-settings.png",
+      "sha256": "ce135cbd644e4926a3e531c464534c13730d3fd9839208a2c9d403918488eaaf",
+      "configuration": {
+        "locale": "zh_CN",
+        "voice": "standard",
+        "scenario": "laptop-balanced",
+        "density": "balanced",
+        "size": "1440x900",
+        "scale": 1,
+        "dark": false,
+        "wallpaper": "snow",
+        "view": "quick-settings",
+        "ambient": false,
+        "revision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+        "exitCode": 0,
+        "physicalSize": [
+          1440,
+          900
+        ]
+      }
+    },
+    {
+      "name": "baseline-notification-center",
+      "file": "baseline-notification-center.png",
+      "description": "Notification center / original abstract wallpaper / ambient",
+      "sourceArtifact": "reference-composition.png",
+      "sha256": "1374294d0637ef943d844fbfbf3997c14a948f73ca8093ec84ee641e1d275197",
+      "configuration": {
+        "locale": "zh_CN",
+        "voice": "standard",
+        "scenario": "laptop-balanced",
+        "density": "dense",
+        "size": "1920x1080",
+        "scale": 1,
+        "dark": false,
+        "wallpaper": "abstract",
+        "view": "notifications",
+        "ambient": true,
+        "id": "reference-composition",
+        "revision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+        "exitCode": 0,
+        "physicalSize": [
+          1920,
+          1080
+        ]
+      }
+    },
+    {
+      "name": "baseline-language-input",
+      "file": "baseline-language-input.png",
+      "description": "Language & Input / Chinese Cute",
+      "sourceArtifact": "language-zh_CN.png",
+      "sha256": "5085ba0fe9d1cd9353d7d9368568db053fe90ea8c27779745ffb68ee645e24bf",
+      "configuration": {
+        "locale": "zh_CN",
+        "voice": "cute",
+        "scenario": "laptop-balanced",
+        "density": "balanced",
+        "size": "1440x900",
+        "scale": 1,
+        "dark": false,
+        "wallpaper": "snow",
+        "view": "language",
+        "ambient": false,
+        "revision": "752af8c8f36b9f6c8272188831e51876c8192b11",
+        "exitCode": 0,
+        "physicalSize": [
+          1440,
+          900
+        ]
+      }
+    }
+  ]
+}

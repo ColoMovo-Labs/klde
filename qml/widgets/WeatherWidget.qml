@@ -17,7 +17,7 @@ Surface {
         anchors.centerIn: parent
         spacing: Tokens.space4
         Icon {
-            name: "weather"
+            name: root.weather.available && root.weather.conditionId !== "weather.condition.unknown" ? "weather-" + root.weather.conditionId.split(".").pop() : "weather"
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredWidth: Tokens.iconL
             Layout.preferredHeight: Tokens.iconL
