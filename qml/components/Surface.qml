@@ -23,6 +23,9 @@ Item {
         function onDarkModeChanged(): void {
             Qt.callLater(root.refreshCapture);
         }
+        function onWallpaperChoiceChanged(): void {
+            Qt.callLater(root.refreshCapture);
+        }
     }
 
     Loader {
