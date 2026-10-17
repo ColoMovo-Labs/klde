@@ -14,13 +14,20 @@ Item {
     visible: enabled
     z: 10000
     clip: false
+    function localPosition(item: Item): point {
+        if (!item)
+            return Qt.point(0, 0);
+        const scene = item.mapToItem(null, 0, 0);
+        const overlayScene = root.mapToItem(null, 0, 0);
+        return Qt.point(scene.x - overlayScene.x, scene.y - overlayScene.y);
+    }
 
     Repeater {
         model: root.targetItems
         delegate: Item {
             required property var modelData
             readonly property Item targetItem: modelData
-            readonly property var targetPosition: targetItem ? targetItem.mapToItem(root, 0, 0) : Qt.point(0, 0)
+            readonly property var targetPosition: root.localPosition(targetItem)
             x: targetPosition.x
             y: targetPosition.y
             width: targetItem ? targetItem.width : 0
@@ -66,7 +73,7 @@ Item {
         delegate: Rectangle {
             required property var modelData
             readonly property Item contentItem: modelData
-            readonly property var contentPosition: contentItem ? contentItem.mapToItem(root, 0, 0) : Qt.point(0, 0)
+            readonly property var contentPosition: root.localPosition(contentItem)
             x: contentPosition.x
             y: contentPosition.y
             width: contentItem ? contentItem.width : 0
@@ -82,7 +89,7 @@ Item {
         delegate: Item {
             required property var modelData
             readonly property Item textItem: modelData
-            readonly property var textPosition: textItem ? textItem.mapToItem(root, 0, 0) : Qt.point(0, 0)
+            readonly property var textPosition: root.localPosition(textItem)
             x: textPosition.x
             y: textPosition.y
             width: textItem ? textItem.width : 0
@@ -108,7 +115,7 @@ Item {
         delegate: Rectangle {
             required property var modelData
             readonly property Item iconItem: modelData
-            readonly property var iconPosition: iconItem ? iconItem.mapToItem(root, 0, 0) : Qt.point(0, 0)
+            readonly property var iconPosition: root.localPosition(iconItem)
             x: iconPosition.x
             y: iconPosition.y
             width: iconItem ? iconItem.width : 0
