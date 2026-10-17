@@ -79,7 +79,7 @@ Rectangle {
             Repeater {
                 model: ["compact", "standard", "expanded"]
                 delegate: ColumnLayout {
-                    id: sceneCell
+                    id: sizeCell
                     required property string modelData
                     Layout.fillWidth: true
                     spacing: Tokens.space16
