@@ -208,9 +208,10 @@ Item {
                         for (const id of ["context", "date", "workspaces", "telemetry", "connectivity", "session", "extras"]) {
                             const group = findChild(section, "ribbonGroup-" + id);
                             if (group && group.entries.length > 0) {
-                                const position = group.mapToItem(ribbon, 0, 0);
-                                verify(position.x >= section.x - 1, id + " starts inside lane");
-                                verify(position.x + group.width <= section.x + section.width + 1, id + " ends inside lane");
+                                tryVerify(() => {
+                                    const position = group.mapToItem(ribbon, 0, 0);
+                                    return position.x >= section.x - 1 && position.x + group.width <= section.x + section.width + 1;
+                                }, 1000, id + " stays inside lane after positioner polish");
                             }
                         }
                     }

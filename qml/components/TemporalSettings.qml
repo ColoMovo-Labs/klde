@@ -45,8 +45,9 @@ LabPanel {
         currentIndex: !Shell.state.snapshot.appearance.ambient ? 0 : Shell.state.snapshot.appearance.focus ? 2 : 1
         Accessible.name: I18n.t("temporal.desktop-mode")
         onActivated: {
-            Shell.state.requestValue("appearance.focus", currentIndex === 2);
-            Shell.state.requestValue("appearance.ambient", currentIndex > 0);
+            const selected = currentIndex;
+            Shell.state.requestValue("appearance.focus", selected === 2);
+            Shell.state.requestValue("appearance.ambient", selected > 0);
         }
     }
     ActionButton {
