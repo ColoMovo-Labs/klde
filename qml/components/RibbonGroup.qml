@@ -9,6 +9,10 @@ Rectangle {
     property int degradation: 0
     required property string groupId
     signal action(string moduleId)
+    // The ink weight of icon/text combinations is not symmetrical even when
+    // their layout bounds are.  These tiny optical corrections keep the
+    // visible group centered without changing its measured width.
+    readonly property real opticalCenterOffset: groupId === "context" || groupId === "connectivity" ? -Tokens.space2 : groupId === "session" ? Tokens.space2 : 0
     readonly property bool batteryAvailable: Shell.state.snapshot.capabilities.battery
     readonly property var entries: Shell.ribbon.modules.filter(m => m.id !== "time" && m.enabled && m.section === root.section && m.group === root.groupId && (m.id !== "battery" || root.batteryAvailable) && !(root.degradation >= 1 && ["microphone", "scene", "weather", "overview"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && ["bluetooth", "date", "input"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && root.groupId === "telemetry"))
     width: groupId === "telemetry" ? telemetry.implicitWidth + Tokens.ribbonGroupPadding * 2 : row.implicitWidth + Tokens.ribbonGroupPadding * 2
@@ -25,6 +29,7 @@ Rectangle {
         id: telemetry
         visible: root.groupId === "telemetry"
         anchors.centerIn: parent
+        anchors.horizontalCenterOffset: root.opticalCenterOffset
         columns: 2
         spacing: Tokens.space2
         Repeater {
@@ -41,6 +46,7 @@ Rectangle {
         id: row
         visible: root.groupId !== "telemetry"
         anchors.centerIn: parent
+        anchors.horizontalCenterOffset: root.opticalCenterOffset
         spacing: Tokens.ribbonInnerGap
         Repeater {
             model: root.groupId === "telemetry" ? [] : root.entries
