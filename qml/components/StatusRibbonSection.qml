@@ -27,6 +27,7 @@ Flow {
         onItemAdded: root.layoutRevision += 1
         onItemRemoved: root.layoutRevision += 1
         delegate: Item {
+            id: groupCell
             required property string modelData
             width: group.width
             height: Tokens.ribbonBandHeight
@@ -34,7 +35,7 @@ Flow {
             RibbonGroup {
                 id: group
                 section: root.section
-                groupId: parent.modelData
+                groupId: groupCell.modelData
                 y: (parent.height - height) / 2
                 onAction: moduleId => root.action(moduleId)
             }
