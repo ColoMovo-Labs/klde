@@ -24,7 +24,7 @@ astronomy, blur, particle system or image generation. Mock celestial data is
 explicitly simulated; a future real provider must supply independent nullable
 rise/set data, moon visibility, phase, season and weather provenance.
 
-Validation and preview provenance will be filled from CircleCI, not local builds.
+Validation and preview provenance are filled from CircleCI, not local builds.
 
 ## Implementation record
 
@@ -63,3 +63,16 @@ cloud and rain layers could escape the pill. The offline generator now keeps a
 size-specific SVG `clipPath` around every layer and still bakes convex terrain
 intersection into vector paths. It adds no runtime mask/FBO. The generator is
 `tools/generate-temporal-assets.py`.
+
+## Cloud evidence
+
+Pipeline 50, source `775d728`, passed the eight required jobs: Fedora build,
+configure/build, static analysis, unit tests, QML tests, Wayland/XCB integration,
+packaging and clean Debian runtime installation. The integration manifest contains
+95 matrix records, all with exit code 0. Both interaction logs report 26 QML tests
+passed and 0 failed; ribbon center deviation is 0 at widths 640 through 3440 and
+all three density modes. The llvmpipe audit settled with 0 idle frames, which is
+an idle-rendering check rather than a hardware performance result.
+
+The reviewed captures and their SHA-256 values are in
+[`docs/previews/temporal-v2/README.md`](../previews/temporal-v2/README.md).
