@@ -90,7 +90,7 @@ void ApplicationFilterModel::setQuery(const QString &query) {
     const auto normalized = query.simplified();
     if (normalized != m_query) {
         m_query = normalized;
-        invalidate();
+        invalidateRowsFilter();
         emit queryChanged();
         emit countChanged();
     }

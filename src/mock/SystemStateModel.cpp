@@ -2,6 +2,7 @@
 #include "SystemStateModel.h"
 #include <QDateTime>
 #include <QFile>
+#include <QJSValue>
 #include <QJsonDocument>
 #include <QResource>
 #include <cmath>
@@ -87,11 +88,14 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
     if (path == "workspaces.layouts") {
         if (value.metaType().id() != QMetaType::QVariantList || value.toList().size() != 5)
             return false;
-        for (const auto &layout : value.toList())
-            if (layout.metaType().id() == QMetaType::Bool ||
-                layout.metaType().id() == QMetaType::QString || layout.toInt() < 0 ||
-                layout.toInt() > 3 || layout.toDouble() != layout.toInt())
+        for (const auto &layout : value.toList()) {
+            const auto type = layout.metaType().id();
+            const auto number = layout.toDouble();
+            if ((type != QMetaType::Int && type != QMetaType::Double &&
+                 type != QMetaType::LongLong) ||
+                !std::isfinite(number) || std::floor(number) != number || number < 0 || number > 3)
                 return false;
+        }
         return true;
     }
     if (original.metaType().id() == QMetaType::Bool)
@@ -114,7 +118,12 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
     }
     return value.metaType().id() == QMetaType::QString && value.toString().size() <= 128;
 }
-bool SystemStateModel::requestValue(const QString &path, const QVariant &newValue) {
+bool SystemStateModel::requestValue(const QString &path, const QVariant &input) {
+    // QML arrays arrive inside QJSValue when an invokable accepts QVariant.
+    // Convert the value, then apply the same strict schema as native callers.
+    const QVariant newValue = input.metaType() == QMetaType::fromType<QJSValue>()
+                                  ? input.value<QJSValue>().toVariant()
+                                  : input;
     if (!valid(path, newValue))
         return false;
     const QMap<QString, QString> needs{

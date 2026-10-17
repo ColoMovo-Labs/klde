@@ -43,6 +43,10 @@ Item {
         function test_layoutRequestsCrossTheQmlModelBoundary(): void {
             verify(Shell.state.requestValue("workspaces.layouts", [0, 1, 2, 3, 0]));
             compare(Shell.windowManager.workspaces[3].layout, 3);
+            verify(!Shell.state.requestValue("workspaces.layouts", [false, 1, 2, 3, 0]));
+            verify(!Shell.state.requestValue("workspaces.layouts", [null, 1, 2, 3, 0]));
+            verify(!Shell.state.requestValue("workspaces.layouts", [0.5, 1, 2, 3, 0]));
+            compare(Shell.windowManager.workspaces[0].layout, 0);
             verify(Shell.state.requestValue("workspaces.active", 4));
             compare(Shell.windowManager.activeWorkspace, "workspace-4");
         }
