@@ -74,6 +74,21 @@ revision and pipeline. Manual inspection must check composition, clipping, focus
 CJK punctuation, light/dark contrast and clear state indication. A green build
 alone cannot establish visual quality.
 
+## Frozen capture evidence
+
+Rendering source `752af8c8f36b9f6c8272188831e51876c8192b11` passed all eight
+CircleCI jobs in [pipeline 38](https://app.circleci.com/pipelines/circleci/3oxaeukVqAvAfF4HxntS1j/9f38edc2-e2b3-4a5a-b510-656e0f838973/38/details?workflowId=6f262d05-ad85-42b2-b335-4c19c5d39b24).
+Its 72 matrix cases completed successfully; individual panels and Wayland/XCB
+interaction suites also passed. The Debian runtime job installed, exercised and
+removed the package in a clean Ubuntu container.
+
+[Seven selected captures](../previews/README.md) were inspected for composition,
+text and clipping, including the Dense full-HD ribbon's single-row fit. The six
+size configurations were reviewed during this pass. Narrow layouts wrap; long
+control pages deliberately scroll inside bounded panels. This is an engineering
+visual review, not owner design acceptance or assistive-technology verification.
+The rendering revision stays pinned when later documentation commits are added.
+
 ## Mock phase exit review
 
 Do not infer readiness for real system integration from this implementation.

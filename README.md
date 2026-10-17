@@ -60,21 +60,27 @@ entered city and online consent. There is no telemetry or privileged helper.
 
 ## Screenshots / Concept Art
 
-Actual expressive preview rendered by CircleCI with Mesa llvmpipe at `833d34a`.
-This is a runnable Qt window using mock data, not concept art or a complete desktop session:
+Actual Visual System Lab window rendered in CircleCI at `752af8c8f36b` using
+Mesa llvmpipe. All system state is mock; this is a runnable Qt preview.
 
-![KLDE expressive preview — actual cloud-rendered window](docs/development/expressive-controls.png)
+![KLDE Visual System Lab — actual Qt capture](docs/previews/baseline-notification-center.png)
 
-[Chinese Cute](docs/development/expressive-zh-cn-cute.png) ·
-[Language & Input](docs/development/expressive-language.png) ·
-[Launcher](docs/development/expressive-launcher.png) ·
-[Dark appearance](docs/development/expressive-dark.png) ·
-[Source and verification record](docs/development/expressive-language.md).
-Historical `46619fc` captures remain in the [Phase 1 guide](docs/development/phase-1.md).
+[Light / Chinese Standard](docs/previews/baseline-light-zh-standard.png) ·
+[Light / Chinese Cute](docs/previews/baseline-light-zh-cute.png) ·
+[Dark / Chinese Cute](docs/previews/baseline-dark-zh-cute.png) ·
+[Dense ribbon](docs/previews/baseline-dense-ribbon.png) ·
+[Quick Settings](docs/previews/baseline-quick-settings.png) ·
+[Language & Input](docs/previews/baseline-language-input.png) ·
+[Rendering provenance and review procedure](docs/previews/README.md).
+
+Earlier Phase 1 captures remain in the [expressive preview record](docs/development/expressive-language.md)
+and [prototype guide](docs/development/phase-1.md).
 
 The owner supplied a colorful desktop screenshot as a visual reference on
 17 October 2026. Its third-party logos and wallpaper are not redistributed here;
-[the reference study](docs/design/reference-study.md) records the design direction.
+[the Expressive study](docs/design/reference-study.md) and
+[the dense desktop study](docs/design/reference-study-visual-lab.md) record the
+design direction.
 Published preview captures use original KLDE assets and identify the tested revision.
 The earlier [Phase 0 capture](docs/development/foundation-llvmpipe.png) is retained
 with its [baseline validation record](docs/development/phase-0.md). Software CI
