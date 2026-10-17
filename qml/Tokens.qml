@@ -143,6 +143,8 @@ QtObject {
     readonly property int rowGap: densityMode === 0 ? space16 : densityMode === 2 ? space8 : space12
     readonly property int ambientClockSize: 168
     readonly property int ribbonIcon: 22
+    readonly property real ribbonCenterShare: 0.38
+    readonly property real ribbonLeftShare: 0.24
     readonly property int launcherWidth: 600
     readonly property int launcherHeight: 528
     readonly property int launcherRow: 64 * densityScale

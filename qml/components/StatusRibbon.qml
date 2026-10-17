@@ -11,15 +11,16 @@ Item {
     StatusRibbonSection {
         id: left
         section: 0
-        width: Math.max(Tokens.controlHeight, (parent.width - root.gap * 2) * 0.22)
+        width: Math.max(Tokens.controlHeight, Math.min(naturalWidth, parent.width * Tokens.ribbonLeftShare))
         height: childrenRect.height
         onAction: moduleId => root.action(moduleId)
     }
     StatusRibbonSection {
         id: center
+        objectName: "ribbonCenter"
         section: 1
-        x: left.width + root.gap
-        width: (parent.width - root.gap * 2) * 0.32
+        width: Math.max(Tokens.controlHeight, Math.min(naturalWidth, parent.width * Tokens.ribbonCenterShare))
+        x: (parent.width - width) / 2
         height: childrenRect.height
         onAction: moduleId => root.action(moduleId)
     }
