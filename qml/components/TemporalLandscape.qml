@@ -5,6 +5,7 @@ import KLDE.Backends
 
 Item {
     id: root
+    clip: true
     required property var reading
     property string sizeMode: "standard"
     readonly property string phase: reading.phase
@@ -87,16 +88,20 @@ Item {
                 color: "transparent"
             }
             GradientStop {
-                position: 0.42
+                position: 0.28
                 color: "transparent"
             }
             GradientStop {
-                position: 0.65
+                position: 0.42
                 color: Tokens.temporalInkVeil
             }
             GradientStop {
-                position: 1
+                position: 0.82
                 color: Tokens.temporalInkVeil
+            }
+            GradientStop {
+                position: 0.96
+                color: "transparent"
             }
         }
     }

@@ -13,6 +13,7 @@ Button {
     readonly property var reading: readingOverride || Shell.time.reading
     readonly property bool rainy: reading.phase === "rainy-evening"
     readonly property bool expanded: sizeMode === "expanded"
+    readonly property int contentInset: expanded ? Tokens.temporalExpandedInset : sizeMode === "compact" ? Tokens.temporalCompactInset : Tokens.temporalInset
     implicitWidth: expanded ? Tokens.temporalExpandedWidth : sizeMode === "compact" ? Tokens.temporalCompactWidth : Tokens.temporalWidth
     implicitHeight: expanded ? Tokens.temporalExpandedHeight : sizeMode === "compact" ? Tokens.temporalCompactHeight : Tokens.temporalHeight
     padding: 0
@@ -25,10 +26,11 @@ Button {
     }
     contentItem: Item {
         Column {
+            id: textColumn
+            objectName: "temporalTextColumn"
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: root.expanded ? Tokens.space32 : Tokens.space16
-            width: parent.width * Tokens.temporalTextRatio
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width - root.contentInset * 2
             spacing: Tokens.space4
             Label {
                 visible: root.showTime

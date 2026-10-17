@@ -171,8 +171,10 @@ QtObject {
     readonly property int temporalFont: 28
     readonly property int temporalCompactFont: 23
     readonly property int temporalExpandedFont: 48
+    readonly property int temporalCompactInset: 12
+    readonly property int temporalInset: 16
+    readonly property int temporalExpandedInset: 24
     readonly property real temporalOrbRatio: 0.40
-    readonly property real temporalTextRatio: 0.55
     readonly property var temporalPalettes: ({
             "clear-morning": ["#aaa1dc", "#f5d7b4"],
             "cloudy-day": ["#8dc6eb", "#d9eff6"],

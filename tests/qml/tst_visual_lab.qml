@@ -123,6 +123,20 @@ Item {
             tryCompare(panel, "opened", true);
             panel.close();
         }
+        function test_temporalCapsuleContentIsOpticallyCentered(): void {
+            const capsule = createTemporaryObject(temporalComponent, testRoot, {
+                parent: testRoot,
+                sizeMode: "standard",
+                width: Tokens.temporalWidth,
+                height: Tokens.temporalHeight
+            });
+            verify(capsule !== null);
+            const content = findChild(capsule, "temporalTextColumn");
+            verify(content !== null);
+            const position = content.mapToItem(capsule, 0, 0);
+            compare(Math.round(position.x + content.width / 2), Math.round(capsule.width / 2));
+            verify(Math.abs(position.x - (capsule.width - position.x - content.width)) <= 1, "Temporal text insets stay symmetric");
+        }
         function test_ambientWeatherHonorsUnavailableState(): void {
             const ambient = createTemporaryObject(ambientComponent, testRoot);
             verify(Shell.mockScenarios.apply("weather-provider-error"));
