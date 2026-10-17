@@ -88,19 +88,19 @@ Item {
                 color: "transparent"
             }
             GradientStop {
-                position: 0.28
+                position: 0.24
                 color: "transparent"
             }
             GradientStop {
-                position: 0.42
+                position: 0.34
+                color: Tokens.temporalInkVeil
+            }
+            GradientStop {
+                position: 0.70
                 color: Tokens.temporalInkVeil
             }
             GradientStop {
                 position: 0.82
-                color: Tokens.temporalInkVeil
-            }
-            GradientStop {
-                position: 0.96
                 color: "transparent"
             }
         }
