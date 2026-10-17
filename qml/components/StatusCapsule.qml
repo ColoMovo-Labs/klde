@@ -29,8 +29,11 @@ Button {
         id: contentRow
         spacing: Tokens.capsuleIconTextGap
         Item {
-            implicitWidth: Tokens.capsuleIconSize + Tokens.capsuleIconTextGap
-            implicitHeight: Tokens.capsuleIconSize + Tokens.capsuleIconTextGap
+            // The row already owns the icon/text gap.  Keeping the slot at the
+            // icon size prevents a second invisible gap from pulling labels
+            // outward and makes icon-only capsules optically centered.
+            implicitWidth: Tokens.capsuleIconSize
+            implicitHeight: Tokens.capsuleIconSize
             Canvas {
                 id: ring
                 anchors.fill: parent

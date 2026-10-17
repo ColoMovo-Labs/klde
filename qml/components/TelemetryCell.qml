@@ -20,19 +20,23 @@ Button {
     Accessible.name: I18n.t("lab.preview") + ", " + I18n.t("lab.module." + moduleId) + ", " + reading.value + (reading.available ? "" : ", " + I18n.t("lab.unavailable"))
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
-    contentItem: RowLayout {
+    // Keep each telemetry pair centered inside its fixed cell.  A fill-width
+    // label made the pair start at the cell edge, which was especially visible
+    // in the two-column monitoring capsule beside the clock.
+    contentItem: Row {
+        anchors.centerIn: parent
         spacing: Tokens.capsuleIconTextGap
         Icon {
             name: root.moduleId === "temperature" ? "thermometer" : root.moduleId
-            Layout.preferredWidth: Tokens.telemetryIcon
-            Layout.preferredHeight: Tokens.telemetryIcon
+            width: Tokens.telemetryIcon
+            height: Tokens.telemetryIcon
         }
         Label {
             text: (root.reading.severity > 0 ? "! " : "") + root.reading.value
             font: Tokens.caption
             color: root.reading.severity === 2 ? Tokens.error : root.reading.severity === 1 ? Tokens.warning : Tokens.textPrimary
             verticalAlignment: Text.AlignVCenter
-            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
         }
     }
     background: Rectangle {

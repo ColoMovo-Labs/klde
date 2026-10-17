@@ -12,7 +12,9 @@ Rectangle {
     readonly property bool batteryAvailable: Shell.state.snapshot.capabilities.battery
     readonly property var entries: Shell.ribbon.modules.filter(m => m.id !== "time" && m.enabled && m.section === root.section && m.group === root.groupId && (m.id !== "battery" || root.batteryAvailable) && !(root.degradation >= 1 && ["microphone", "scene", "weather", "overview"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && ["bluetooth", "date", "input"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && root.groupId === "telemetry"))
     width: groupId === "telemetry" ? telemetry.implicitWidth + Tokens.ribbonGroupPadding * 2 : row.implicitWidth + Tokens.ribbonGroupPadding * 2
-    height: groupId === "telemetry" ? telemetry.implicitHeight + Tokens.ribbonGroupPadding * 2 : Tokens.ribbonHeight + Tokens.ribbonGroupPadding * 2
+    // All top-ribbon groups share one optical band.  The telemetry grid is
+    // centered inside it instead of producing a two-pixel-short capsule.
+    height: Tokens.ribbonBandHeight
     objectName: "ribbonGroup-" + groupId
     radius: height / 2
     color: Tokens.surface
