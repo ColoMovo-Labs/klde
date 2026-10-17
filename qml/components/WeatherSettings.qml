@@ -8,7 +8,7 @@ ShellPopup {
     id: root
     objectName: "weatherSettings"
     modal: true
-    width: Tokens.settingsWidth
+    width: Math.min(Tokens.settingsWidth, parent ? parent.width - Tokens.space32 : Tokens.settingsWidth)
     height: Math.min(contentColumn.implicitHeight + padding * 2, parent ? parent.height - Tokens.space32 * 2 : Tokens.settingsHeight)
     contentItem: ScrollView {
         id: scroll

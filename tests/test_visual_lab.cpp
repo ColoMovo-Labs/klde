@@ -20,7 +20,7 @@ class VisualLabTest final : public QObject {
         QCOMPARE(shell.state()->value("audio.volume").toInt(), 46);
         QVERIFY(shell.mockScenarios()->apply("critical-battery"));
         QCOMPARE(shell.state()->alerts().value("battery").toInt(), 2);
-        shell.notifications()->clear();
+        shell.notifications()->clearAll();
         QCOMPARE(shell.state()->value("notifications.count").toInt(), 0);
         QVERIFY(shell.mockScenarios()->apply("dark-night"));
         QCOMPARE(shell.scenes()->current().value("visual").toMap().value("theme").toString(),

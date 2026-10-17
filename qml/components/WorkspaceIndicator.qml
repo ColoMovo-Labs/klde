@@ -4,8 +4,12 @@ import QtQuick.Controls
 import KLDE.Backends
 
 Surface {
-    width: workspaceRow.implicitWidth + Tokens.space24
-    height: Tokens.controlHeight + Tokens.space16
+    id: root
+    property bool compact: false
+    implicitWidth: workspaceRow.implicitWidth + Tokens.space16
+    width: implicitWidth
+    implicitHeight: compact ? Tokens.ribbonHeight : Tokens.controlHeight + Tokens.space16
+    height: implicitHeight
     padding: Tokens.space8
     cornerRadius: Tokens.radiusPill
 
@@ -20,9 +24,9 @@ Surface {
                 required property var modelData
                 readonly property bool selected: modelData.id === Shell.windowManager.activeWorkspace
                 readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? I18n.t("shell.workspace.floating") : modelData.layout === WindowManagerBackend.Tiled ? I18n.t("shell.workspace.tiled") : modelData.layout === WindowManagerBackend.Mixed ? I18n.t("shell.workspace.mixed") : I18n.t("shell.workspace.custom")
-                width: selected ? Tokens.controlHeight + Tokens.space32 : Tokens.controlHeight
-                height: Tokens.controlHeight
-                text: (selected ? "• " : "") + modelData.name + (selected ? " " + modeLabel.slice(0, 1) : "")
+                width: selected ? Tokens.controlHeight + Tokens.space12 : Tokens.densityMode === 2 ? Tokens.space16 : Tokens.space24
+                height: root.compact ? Tokens.ribbonHeight - Tokens.space8 : Tokens.controlHeight
+                text: selected ? modelData.name + " " + ["F", "T", "M", "S"][Math.min(modelData.layout, 3)] : Tokens.densityMode === 2 ? "•" : modelData.name
                 font: Tokens.label
                 Accessible.name: I18n.t("shell.workspace.accessible").arg(modelData.name).arg(modeLabel).arg(selected ? I18n.t("common.selected") : "")
                 ToolTip.visible: hovered

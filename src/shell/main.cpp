@@ -8,6 +8,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QQuickWindow>
+#include <QRegularExpression>
 #include <QSGRendererInterface>
 #include <QStyleHints>
 #include <QTimer>
@@ -48,7 +49,19 @@ int main(int argc, char *argv[]) {
                                           QStringLiteral("locale"));
     const QCommandLineOption voiceOption(QStringLiteral("voice"),
                                          QStringLiteral("Preview voice: standard or cute"),
-                                         QStringLiteral("voice"), QStringLiteral("standard"));
+                                         QStringLiteral("voice"));
+    const QCommandLineOption scenarioOption("scenario", "Mock fixture ID", "scenario",
+                                            "laptop-balanced");
+    const QCommandLineOption densityOption("density", "Density: comfortable, balanced, dense",
+                                           "density", "balanced");
+    const QCommandLineOption wallpaperOption(
+        "wallpaper", "Original wallpaper: snow, abstract, quiet, kemono", "wallpaper", "snow");
+    const QCommandLineOption sizeOption("size", "Logical preview size, e.g. 1920x1080", "size",
+                                        "1440x900");
+    const QCommandLineOption ambientOption("ambient", "Preview the ambient workspace layout");
+    const QCommandLineOption developerOption("dev-tools", "Open the session-only Mock Lab");
+    parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
+                       developerOption});
     parser.addOptions({smokeOption, captureOption, viewOption, darkOption, idleOption, localeOption,
                        voiceOption});
     parser.process(app);
@@ -56,17 +69,28 @@ int main(int argc, char *argv[]) {
         qCritical() << "--capture and --audit-idle require --smoke-test";
         return EXIT_FAILURE;
     }
-    const QStringList views{QStringLiteral("desktop"),        QStringLiteral("launcher"),
-                            QStringLiteral("quick-settings"), QStringLiteral("blur"),
-                            QStringLiteral("power-scenes"),   QStringLiteral("weather"),
-                            QStringLiteral("language"),       QStringLiteral("input")};
+    const QStringList views{QStringLiteral("desktop"),
+                            QStringLiteral("launcher"),
+                            QStringLiteral("quick-settings"),
+                            QStringLiteral("blur"),
+                            QStringLiteral("power-scenes"),
+                            QStringLiteral("weather"),
+                            QStringLiteral("language"),
+                            QStringLiteral("input"),
+                            "notifications",
+                            "ribbon",
+                            "ribbon-settings",
+                            "input-candidate",
+                            "mock-lab",
+                            "app-suite"};
     if (!views.contains(parser.value(viewOption))) {
         qCritical() << "Unknown preview view";
         return EXIT_FAILURE;
     }
     if ((!parser.value(localeOption).isEmpty() && parser.value(localeOption) != "en" &&
          parser.value(localeOption) != "zh_CN") ||
-        (parser.value(voiceOption) != "standard" && parser.value(voiceOption) != "cute")) {
+        (!parser.value(voiceOption).isEmpty() && parser.value(voiceOption) != "standard" &&
+         parser.value(voiceOption) != "cute")) {
         qCritical() << "Unsupported locale or voice";
         return EXIT_FAILURE;
     }
@@ -75,6 +99,18 @@ int main(int argc, char *argv[]) {
         QGuiApplication::styleHints()->setCursorFlashTime(0);
     }
 
+    const QStringList densities{"comfortable", "balanced", "dense"};
+    const QStringList wallpapers{"snow", "abstract", "quiet", "kemono"};
+    const auto sizeMatch =
+        QRegularExpression("^(\\d{3,4})x(\\d{3,4})$").match(parser.value(sizeOption));
+    const int logicalWidth = sizeMatch.captured(1).toInt(),
+              logicalHeight = sizeMatch.captured(2).toInt();
+    if (!sizeMatch.hasMatch() || logicalWidth < 640 || logicalHeight < 640 || logicalWidth > 7680 ||
+        logicalHeight > 4320 || !densities.contains(parser.value(densityOption)) ||
+        !wallpapers.contains(parser.value(wallpaperOption))) {
+        qCritical() << "Invalid preview size, density or wallpaper";
+        return EXIT_FAILURE;
+    }
     bool qmlWarnings = false;
     bool frameHandled = false;
     bool settlingEnabled = false;
@@ -89,7 +125,14 @@ int main(int argc, char *argv[]) {
     engine.setInitialProperties({{QStringLiteral("initialView"), parser.value(viewOption)},
                                  {QStringLiteral("initialDark"), parser.isSet(darkOption)},
                                  {QStringLiteral("initialLocale"), parser.value(localeOption)},
-                                 {QStringLiteral("initialVoice"), parser.value(voiceOption)}});
+                                 {QStringLiteral("initialVoice"), parser.value(voiceOption)},
+                                 {"initialScenario", parser.value(scenarioOption)},
+                                 {"initialDensity", densities.indexOf(parser.value(densityOption))},
+                                 {"initialWallpaper", parser.value(wallpaperOption)},
+                                 {"initialAmbient", parser.isSet(ambientOption)},
+                                 {"developerTools", parser.isSet(developerOption)},
+                                 {"width", logicalWidth},
+                                 {"height", logicalHeight}});
     engine.loadFromModule(QStringLiteral("KLDE.Shell"), QStringLiteral("Main"));
     if (engine.rootObjects().size() != 1) {
         return EXIT_FAILURE;
@@ -98,6 +141,10 @@ int main(int argc, char *argv[]) {
     auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
     if (window == nullptr || services == nullptr || !services->language()->ready()) {
         qCritical() << "The shell window or services could not be created";
+        return EXIT_FAILURE;
+    }
+    if (services->mockScenarios()->activeId() != parser.value(scenarioOption)) {
+        qCritical() << "Unknown or invalid mock scenario";
         return EXIT_FAILURE;
     }
     const QPointer<QQuickWindow> guardedWindow(window);

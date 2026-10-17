@@ -11,7 +11,7 @@ ShellPopup {
     objectName: "sceneSettings"
     signal languageInputRequested
     modal: true
-    width: Tokens.settingsWidth
+    width: Math.min(Tokens.settingsWidth, parent ? parent.width - Tokens.space32 : Tokens.settingsWidth)
     height: Math.min(Tokens.settingsHeight, parent ? parent.height - Tokens.space32 * 2 : Tokens.settingsHeight)
     contentItem: ScrollView {
         id: scroll
@@ -93,7 +93,7 @@ ShellPopup {
                 }
                 ChoiceBox {
                     Layout.fillWidth: true
-                    model: [I18n.t("common.reduced"), I18n.t("common.normal"), I18n.t("common.expressive")]
+                    model: [I18n.t("common.reduced"), I18n.t("common.normal"), I18n.t("common.expressive"), I18n.t("lab.motion.fast")]
                     currentIndex: Shell.scenes.current.visual.motion
                     Accessible.name: I18n.t("shell.scene.motion.accessible")
                     onActivated: Shell.scenes.customize("motion", currentIndex)
@@ -144,6 +144,9 @@ ShellPopup {
             ActionButton {
                 text: I18n.t("shell.scene.reset")
                 onClicked: Shell.scenes.resetCurrent()
+            }
+            PolicyControls {
+                Layout.fillWidth: true
             }
             Label {
                 text: I18n.t("shell.shortcut.title")

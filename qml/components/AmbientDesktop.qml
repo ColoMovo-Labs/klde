@@ -1,0 +1,76 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import KLDE.Backends
+
+Item {
+    id: root
+    readonly property var state: Shell.state.snapshot
+    ColumnLayout {
+        anchors.centerIn: parent
+        width: Math.min(parent.width - Tokens.space32, Tokens.settingsWidth)
+        spacing: Tokens.space16
+        Label {
+            text: Qt.formatTime(new Date(root.state.time), "hh:mm")
+            font.family: Tokens.fontFamily
+            font.pixelSize: Math.min(root.width / 3.5, Tokens.ambientClockSize) * Tokens.textScale
+            font.weight: Font.Medium
+            color: Tokens.primary
+            Layout.alignment: Qt.AlignHCenter
+        }
+        Label {
+            text: Qt.formatDate(new Date(root.state.time), Qt.locale(I18n.locale).dateFormat(Locale.LongFormat))
+            font: Tokens.title
+            color: Tokens.textPrimary
+            Layout.alignment: Qt.AlignHCenter
+        }
+        Label {
+            text: root.state.weather.city + " · " + I18n.t("weather.condition." + root.state.weather.condition) + "  " + I18n.number(root.state.weather.temperature, 0) + "°"
+            font: Tokens.label
+            color: Tokens.textSecondary
+            Layout.alignment: Qt.AlignHCenter
+        }
+        Rectangle {
+            Layout.topMargin: Tokens.space24
+            Layout.fillWidth: true
+            implicitHeight: Tokens.sceneCardHeight + Tokens.space16
+            color: Tokens.primaryContainer
+            radius: Tokens.radiusXL
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: Tokens.space16
+                Label {
+                    text: I18n.t("lab.media.track")
+                    color: Tokens.textPrimary
+                    font: Tokens.title
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                Label {
+                    text: root.state.media.artist
+                    color: Tokens.textSecondary
+                    font: Tokens.caption
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                RowLayout {
+                    Layout.alignment: Qt.AlignHCenter
+                    ActionButton {
+                        text: "◀"
+                        Accessible.name: I18n.t("lab.media.previous")
+                        onClicked: Shell.showNotice(I18n.t("lab.media.track"))
+                    }
+                    ActionButton {
+                        text: I18n.t(root.state.media.playing ? "lab.media.pause" : "lab.media.play")
+                        emphasized: true
+                        onClicked: Shell.previewAction("shell.media")
+                    }
+                    ActionButton {
+                        text: "▶"
+                        Accessible.name: I18n.t("lab.media.next")
+                        onClicked: Shell.showNotice(I18n.t("lab.media.track"))
+                    }
+                }
+            }
+        }
+    }
+}

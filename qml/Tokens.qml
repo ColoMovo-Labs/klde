@@ -70,8 +70,12 @@ QtObject {
     readonly property int space32: 32
 
     readonly property bool cjk: I18n.locale === "zh_CN"
-    readonly property FontLoader glowRegular: FontLoader { source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf" }
-    readonly property FontLoader glowMedium: FontLoader { source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf" }
+    readonly property FontLoader glowRegular: FontLoader {
+        source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf"
+    }
+    readonly property FontLoader glowMedium: FontLoader {
+        source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf"
+    }
     readonly property string fontFamily: glowRegular.status === FontLoader.Ready ? glowRegular.name : cjk ? "Noto Sans CJK SC" : Application.font.family
     readonly property font display: Qt.font({
         family: fontFamily,

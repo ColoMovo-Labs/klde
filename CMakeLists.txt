@@ -17,6 +17,22 @@ set_source_files_properties(qml/Tokens.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 set_source_files_properties(qml/I18n.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set(klde_qml_files
     qml/Main.qml qml/Tokens.qml qml/I18n.qml
+    qml/components/StateSlider.qml
+    qml/components/StateChoice.qml
+    qml/components/PolicyControls.qml
+    qml/components/NotificationCenter.qml
+    qml/components/RibbonSettings.qml
+    qml/components/MockLab.qml
+    qml/components/AppSuitePreview.qml
+    qml/components/StatusCapsule.qml
+    qml/components/StatusModule.qml
+    qml/components/StatusRibbonSection.qml
+    qml/components/StatusRibbon.qml
+    qml/components/LabPanel.qml
+    qml/components/CandidatePreview.qml
+    qml/components/StatusDashboard.qml
+    qml/components/AmbientDesktop.qml
+    qml/components/ApplicationShortcuts.qml
     qml/components/Icon.qml qml/components/Surface.qml qml/components/IconButton.qml
     qml/components/ShellPopup.qml qml/components/Dock.qml qml/components/Launcher.qml
     qml/components/WorkspaceIndicator.qml qml/components/ToggleTile.qml
@@ -52,9 +68,10 @@ qt_add_resources(klde_backends klde_mock_data PREFIX / FILES
     src/mock/scenarios.json src/status/modules.json)
 
 set(klde_assets assets/wallpapers/first-light.svg
+    assets/wallpapers/abstract.svg assets/wallpapers/quiet.svg assets/wallpapers/kemono.svg
     assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf
     assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf)
-foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather)
+foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather cpu memory microphone battery bell overview display info previous next thermometer)
     list(APPEND klde_assets "assets/icons/${icon}.svg")
     list(APPEND klde_assets "assets/icons/${icon}-light.svg")
 endforeach()

@@ -23,6 +23,7 @@ icons = {
     "close": '<path d="M12 12L28 28M12 28L28 12"/>',
     "weather": '<circle cx="25" cy="13" r="9" fill="#e9bd78" stroke="none"/><path d="M9 30C0 29 2 18 10 19C12 10 25 12 27 21C37 19 40 31 30 32H10Z" fill="#f5fcfc" stroke="#a0c0ca"/>',
 }
+icons.update({'cpu': '<rect x="11" y="11" width="18" height="18" rx="4"/><path d="M16 6V11M24 6V11M16 29V34M24 29V34M6 16H11M6 24H11M29 16H34M29 24H34"/>', 'memory': '<rect x="8" y="12" width="24" height="17" rx="3"/><path d="M13 17V23M20 17V23M27 17V23M13 29V33M20 29V33M27 29V33"/>', 'microphone': '<rect x="16" y="6" width="8" height="18" rx="4"/><path d="M11 19Q11 30 20 30Q29 30 29 19M20 30V35M15 35H25"/>', 'battery': '<rect x="6" y="12" width="26" height="16" rx="4"/><path d="M35 17V23M11 17V23M16 17V23M21 17V23"/>', 'bell': '<path d="M9 28L12 22V16Q12 7 20 7Q28 7 28 16V22L31 28ZM16 33Q20 37 24 33"/>', 'overview': '<rect x="7" y="7" width="10" height="10" rx="2"/><rect x="23" y="7" width="10" height="10" rx="2"/><rect x="7" y="23" width="10" height="10" rx="2"/><rect x="23" y="23" width="10" height="10" rx="2"/>', 'display': '<rect x="5" y="8" width="30" height="21" rx="3"/><path d="M20 29V35M13 35H27"/>', 'info': '<circle cx="20" cy="20" r="13"/><path d="M20 18V27M20 12V13"/>', 'previous': '<path d="M25 9L13 20L25 31"/>', 'next': '<path d="M15 9L27 20L15 31"/>', 'thermometer': '<path d="M16 24V9Q16 4 21 4Q26 4 26 9V24A8 8 0 1 1 16 24ZM21 13V29M30 10H34M30 17H34"/>'})
 for name, content in icons.items():
     for suffix in ("", "-light"):
         ink = "#363b87"
@@ -60,3 +61,12 @@ wallpaper.write_text('''<svg xmlns="http://www.w3.org/2000/svg" width="1440" hei
 <path d="M0 838Q249 715 516 831Q837 951 1111 817Q1318 736 1440 787V900H0Z" fill="#d4dcfa"/>
 </svg>
 ''')
+
+# Original vector compositions, not traced OS wallpapers.
+wallpapers = {
+    "quiet": '<rect width="1440" height="900" fill="url(#sky)"/><ellipse cx="900" cy="900" rx="1100" ry="510" fill="#accfda" opacity=".35"/>',
+    "abstract": '<rect width="1440" height="900" fill="url(#sky)"/><path d="M-160 600C150-250 1050-100 980 430S620 1050 1600 600" fill="none" stroke="url(#flow)" stroke-width="260"/><path d="M-100 610C220-190 1050-90 970 420S700 1010 1600 640" fill="none" stroke="#eaf3ff" opacity=".35" stroke-width="12"/><path d="M-120 640C300-160 1100 10 1020 450S700 1050 1600 710" fill="none" stroke="#b5f1dc" opacity=".35" stroke-width="28"/>',
+    "kemono": '<rect width="1440" height="900" fill="url(#sky)"/><path d="M270 900Q40 400 420 170Q440 340 650 470Q840 300 1080 190Q1310 570 1070 900" fill="#b7bfde" opacity=".5"/><path d="M470 900Q1050 510 1190 690Q1280 820 780 950" fill="#cdb9de" opacity=".8"/>'
+}
+for name, art in wallpapers.items():
+    (root / "wallpapers" / (name+".svg")).write_text('<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900"><defs><linearGradient id="sky" x2=".7" y2="1"><stop stop-color="#cce7f3"/><stop offset="1" stop-color="#ebdcf1"/></linearGradient><linearGradient id="flow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#55bdd4"/><stop offset=".45" stop-color="#7885e2"/><stop offset=".8" stop-color="#c195df"/><stop offset="1" stop-color="#edbbaf"/></linearGradient></defs>'+art+'</svg>\n')

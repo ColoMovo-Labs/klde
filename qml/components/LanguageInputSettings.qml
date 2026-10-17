@@ -8,8 +8,9 @@ import KLDE.Backends
 ShellPopup {
     id: root
     objectName: "languageInputSettings"
+    signal candidateRequested
     modal: true
-    width: Tokens.settingsWidth
+    width: Math.min(Tokens.settingsWidth, parent ? parent.width - Tokens.space32 : Tokens.settingsWidth)
     height: Math.min(Tokens.settingsHeight, parent ? parent.height - Tokens.space32 * 2 : Tokens.settingsHeight)
     contentItem: ScrollView {
         id: scroll
@@ -111,6 +112,15 @@ ShellPopup {
                         onClicked: Shell.input.selectPreview(modelData.id)
                     }
                 }
+            }
+            Switch {
+                text: I18n.t("lab.input.simplified")
+                checked: Shell.state.snapshot.input.simplified
+                onToggled: Shell.state.requestValue("input.simplified", checked)
+            }
+            ActionButton {
+                text: I18n.t("lab.candidate.title")
+                onClicked: root.candidateRequested()
             }
             TextArea {
                 Layout.fillWidth: true

@@ -11,7 +11,12 @@ ApplicationWindow {
     property string initialView: "desktop"
     property bool initialDark: false
     property string initialLocale: ""
-    property string initialVoice: "standard"
+    property string initialVoice: ""
+    property string initialScenario: "laptop-balanced"
+    property int initialDensity: 1
+    property string initialWallpaper: "snow"
+    property bool initialAmbient: false
+    property bool developerTools: false
     objectName: "shellWindow"
     width: Tokens.previewWidth
     height: Tokens.previewHeight
@@ -36,14 +41,87 @@ ApplicationWindow {
     palette.shadow: Tokens.shadow
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
+    readonly property var state: Shell.state.snapshot
+    readonly property real popupTop: ribbon.y + ribbon.height + Tokens.space16
+    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function applyScene(): void {
         const visual = Shell.scenes.current.visual;
         Tokens.darkMode = visual.theme === "auto" ? initialDark : visual.theme === "dark";
         Tokens.transparencyEnabled = visual.transparency;
         Tokens.shadowsEnabled = visual.shadows;
+        Tokens.shadowLevel = visual.shadowLevel;
         Tokens.motionLevel = visual.motion;
         Tokens.reducedMotion = visual.motion === 0;
+        Tokens.densityMode = visual.density;
+    }
+    function showView(view: string): void {
+        let target = null;
+        switch (view) {
+        case "launcher":
+            target = launcher;
+            break;
+        case "quick-settings":
+            target = quickSettings;
+            break;
+        case "blur":
+            target = blurLab;
+            break;
+        case "power-scenes":
+            target = preferences;
+            break;
+        case "weather":
+            target = weatherPreferences;
+            break;
+        case "language":
+            target = languagePreferences;
+            break;
+        case "input":
+            target = inputPopup;
+            break;
+        case "notifications":
+            target = notificationCenter;
+            break;
+        case "ribbon":
+            target = statusDashboard;
+            break;
+        case "ribbon-settings":
+            target = ribbonSettings;
+            break;
+        case "input-candidate":
+            target = candidate;
+            break;
+        case "mock-lab":
+            target = mockLab;
+            break;
+        case "app-suite":
+            target = appSuite;
+            break;
+        }
+        const close = target && target.opened;
+        for (const panel of panels)
+            if (panel !== target)
+                panel.close();
+        if (target)
+            close ? target.close() : target.open();
+    }
+    function moduleAction(id: string): void {
+        if (id === "launcher")
+            showView("launcher");
+        else if (id === "overview" || id === "context" || id === "notifications" || id === "date")
+            showView("notifications");
+        else if (id === "weather")
+            showView("weather");
+        else if (id === "input")
+            showView("input");
+        else if (id === "scene")
+            showView("power-scenes");
+        else if (id === "cpu" || id === "memory" || id === "temperature" || id === "battery" || id === "time")
+            showView("ribbon");
+        else if (id === "power")
+            Shell.system.requestSessionAction("shutdown");
+        else
+            showView("quick-settings");
     }
     Connections {
         target: Shell.scenes
@@ -51,33 +129,37 @@ ApplicationWindow {
             window.applyScene();
         }
     }
+    Connections {
+        target: Shell
+        function onLauncherRequested(): void {
+            if (!launcher.opened)
+                window.showView("launcher");
+        }
+    }
     Component.onCompleted: {
+        Shell.mockScenarios.apply(initialScenario);
         if (initialLocale.length > 0)
             Shell.language.setLocale(initialLocale);
-        Shell.language.setVoice(initialVoice);
+        if (initialVoice.length > 0)
+            Shell.language.setVoice(initialVoice);
+        Shell.scenes.customize("density", initialDensity);
+        Shell.state.requestValue("appearance.wallpaper", initialWallpaper);
+        if (initialAmbient)
+            Shell.state.requestValue("appearance.ambient", true);
         applyScene();
-        if (initialView === "quick-settings")
-            quickSettings.open();
-        else if (initialView === "launcher")
-            launcher.open();
-        else if (initialView === "blur")
-            blurLab.open();
-        else if (initialView === "power-scenes")
-            preferences.open();
-        else if (initialView === "weather")
-            weatherPreferences.open();
-        else if (initialView === "language")
-            languagePreferences.open();
-        else if (initialView === "input")
-            inputPopup.open();
+        showView(developerTools ? "mock-lab" : initialView);
     }
-
+    Binding {
+        target: Tokens
+        property: "wallpaperChoice"
+        value: window.state.appearance.wallpaper
+    }
     Item {
         id: wallpaper
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "qrc:/assets/wallpapers/first-light.svg"
+            source: "qrc:/assets/wallpapers/" + (window.state.appearance.wallpaper === "snow" ? "first-light" : window.state.appearance.wallpaper) + ".svg"
             sourceSize: Qt.size(width, height)
             fillMode: Image.PreserveAspectCrop
         }
@@ -87,86 +169,86 @@ ApplicationWindow {
             opacity: Tokens.darkMode ? Tokens.darkWallpaperShade : 0
         }
     }
-    RowLayout {
+    StatusRibbon {
+        id: ribbon
+        objectName: "statusRibbon"
+        x: Shell.ribbon.margin
+        y: Shell.ribbon.margin
+        width: parent.width - x * 2
+        height: implicitHeight
+        onAction: moduleId => window.moduleAction(moduleId)
+    }
+    Label {
+        objectName: "statusLabel"
         x: Tokens.desktopMargin
-        y: Tokens.space24
-        spacing: Tokens.space12
-        Icon {
-            name: "klde"
-            Layout.preferredWidth: Tokens.iconL
-            Layout.preferredHeight: Tokens.iconL
-        }
-        ColumnLayout {
-            spacing: Tokens.space2
-            Label {
-                text: "KLDE"
-                font: Tokens.title
-                color: Tokens.textPrimary
-            }
-            Label {
-                objectName: "statusLabel"
-                text: I18n.t("shell.preview")
-                font: Tokens.caption
-                color: Tokens.textSecondary
-            }
-        }
-    }
-    WorkspaceIndicator {
-        backdropSource: wallpaper
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: Tokens.space24
-    }
-    ActionButton {
-        id: quickButton
-        objectName: "quickSettingsButton"
-        anchors.right: parent.right
-        anchors.rightMargin: Tokens.desktopMargin
-        y: Tokens.space24
-        text: (window.width < Tokens.previewWidth ? "09:41" : I18n.clock()) + " · " + I18n.t("shell.controls.short")
-        font: Tokens.label
-        Accessible.name: I18n.t("shell.controls.accessible")
-        onClicked: quickSettings.opened ? quickSettings.close() : quickSettings.open()
-    }
-    ActionButton {
-        id: inputButton
-        objectName: "inputIndicator"
-        anchors.right: quickButton.left
-        anchors.rightMargin: Tokens.space8
-        y: Tokens.space24
-        text: Shell.input.indicator
-        emphasized: true
-        Accessible.name: I18n.t("input.preview")
-        ToolTip.visible: hovered
-        ToolTip.text: I18n.t("input.preview")
-        onClicked: inputPopup.opened ? inputPopup.close() : inputPopup.open()
+        y: window.popupTop
+        text: I18n.t("lab.preview")
+        color: Tokens.textSecondary
+        font: Tokens.caption
     }
     WidgetHost {
         widgetId: "weather"
+        visible: !window.state.appearance.ambient
         x: Tokens.desktopMargin
-        y: Tokens.controlHeight + Tokens.space32 * 3
+        y: window.popupTop + Tokens.controlHeight
         renderingAllowed: window.renderingAllowed
         sourceComponent: Component {
             WeatherWidget {
                 weather: Shell.weather
                 backdropSource: wallpaper
-                onSettingsRequested: weatherPreferences.open()
+                onSettingsRequested: window.showView("weather")
             }
         }
     }
     ColumnLayout {
+        visible: !window.state.appearance.ambient
         x: Tokens.desktopMargin
         anchors.bottom: dock.top
         anchors.bottomMargin: Tokens.space32
+        width: parent.width - Tokens.desktopMargin * 2
         spacing: Tokens.space8
         Label {
             text: I18n.t("shell.welcome")
             font: Tokens.display
             color: Tokens.textPrimary
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
         }
         Label {
-            text: I18n.t("shell.shortcuts.hint").arg(Shell.shortcuts.launcher).arg(Shell.shortcuts.quickSettings)
+            text: I18n.t("lab.desktop.hint")
             font: Tokens.label
             color: Tokens.textSecondary
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+    }
+    AmbientDesktop {
+        visible: window.state.appearance.ambient
+        x: Tokens.desktopMargin
+        y: window.popupTop + Tokens.space24
+        width: parent.width - Tokens.desktopMargin * 2
+        height: dock.y - y - Tokens.space24
+    }
+    Surface {
+        visible: window.state.scratchpad
+        anchors.centerIn: parent
+        width: Math.min(Tokens.panelWidth, parent.width - Tokens.space32)
+        height: Tokens.widgetSize
+        ColumnLayout {
+            anchors.fill: parent
+            Label {
+                text: I18n.t("lab.scratchpad.title")
+                font: Tokens.title
+                color: Tokens.textPrimary
+            }
+            TextArea {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                placeholderText: I18n.t("lab.scratchpad.hint")
+                font: Tokens.body
+                wrapMode: TextEdit.Wrap
+                Accessible.name: I18n.t("lab.scratchpad.title")
+            }
         }
     }
     Dock {
@@ -175,43 +257,33 @@ ApplicationWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Tokens.space24
-        onLauncherRequested: launcher.open()
-        onSettingsRequested: {
-            Shell.launch("settings");
-            quickSettings.open();
-        }
+        onLauncherRequested: window.showView("launcher")
+        onSettingsRequested: window.showView("quick-settings")
     }
     Launcher {
         id: launcher
-        backdropSource: wallpaper
         parent: Overlay.overlay
+        backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-        onClosed: {
-            if (!quickSettings.visible && !blurLab.visible && !preferences.visible && !weatherPreferences.visible && !languagePreferences.visible && !inputPopup.visible)
-                dock.focusLauncher();
-        }
+        onClosed: dock.focusLauncher()
     }
     QuickSettings {
         id: quickSettings
-        backdropSource: wallpaper
         parent: Overlay.overlay
-        x: parent ? parent.width - width - Tokens.desktopMargin : 0
-        y: Tokens.controlHeight + Tokens.space24 * 2
-        onBlurRequested: blurLab.open()
-        onSceneSettingsRequested: preferences.open()
-        onClosed: {
-            if (!launcher.visible && !blurLab.visible && !preferences.visible)
-                quickButton.forceActiveFocus();
-        }
+        backdropSource: wallpaper
+        x: parent ? parent.width - width - Shell.ribbon.margin : 0
+        y: window.popupTop
+        onBlurRequested: window.showView("blur")
+        onSceneSettingsRequested: window.showView("power-scenes")
+        onViewRequested: view => window.showView(view)
     }
     BlurLab {
         id: blurLab
-        backdropSource: wallpaper
         parent: Overlay.overlay
+        backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-        onClosed: quickButton.forceActiveFocus()
     }
     SceneSettings {
         id: preferences
@@ -219,14 +291,7 @@ ApplicationWindow {
         backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-        onClosed: {
-            if (!languagePreferences.visible)
-                quickButton.forceActiveFocus();
-        }
-        onLanguageInputRequested: {
-            preferences.close();
-            languagePreferences.open();
-        }
+        onLanguageInputRequested: window.showView("language")
     }
     WeatherSettings {
         id: weatherPreferences
@@ -234,7 +299,6 @@ ApplicationWindow {
         backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-        onClosed: quickButton.forceActiveFocus()
     }
     LanguageInputSettings {
         id: languagePreferences
@@ -242,25 +306,67 @@ ApplicationWindow {
         backdropSource: wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-        onClosed: inputButton.forceActiveFocus()
+        onCandidateRequested: window.showView("input-candidate")
     }
     InputPopup {
         id: inputPopup
         parent: Overlay.overlay
         backdropSource: wallpaper
-        x: parent ? parent.width - width - Tokens.desktopMargin : 0
-        y: Tokens.controlHeight + Tokens.space24 * 2
-        onSettingsRequested: languagePreferences.open()
-        onClosed: {
-            if (!languagePreferences.visible)
-                inputButton.forceActiveFocus();
-        }
+        x: parent ? parent.width - width - Shell.ribbon.margin : 0
+        y: window.popupTop
+        onSettingsRequested: window.showView("language")
+    }
+    NotificationCenter {
+        id: notificationCenter
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: Shell.ribbon.margin
+        y: window.popupTop
+        height: parent ? parent.height - y - Tokens.space24 : Tokens.settingsHeight
+        onWeatherRequested: window.showView("weather")
+    }
+    StatusDashboard {
+        id: statusDashboard
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: window.popupTop
+        onCustomizeRequested: window.showView("ribbon-settings")
+    }
+    RibbonSettings {
+        id: ribbonSettings
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    CandidatePreview {
+        id: candidate
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    MockLab {
+        id: mockLab
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+        onViewRequested: view => window.showView(view)
+    }
+    AppSuitePreview {
+        id: appSuite
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
     }
     Surface {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: dock.top
         anchors.bottomMargin: Tokens.space16
-        width: Tokens.panelWidth
+        width: Math.min(Tokens.panelWidth, parent.width - Tokens.space32)
         height: noticeText.implicitHeight + Tokens.space32
         opacity: Shell.message.length > 0 ? 1 : 0
         visible: opacity > 0
@@ -280,32 +386,22 @@ ApplicationWindow {
             }
         }
     }
-    Shortcut {
-        sequence: Shell.shortcuts.launcher
-        context: Qt.ApplicationShortcut
-        autoRepeat: false
-        enabled: sequence.length > 0
-        onActivated: launcher.opened ? launcher.close() : launcher.open()
-    }
-    Shortcut {
-        sequence: Shell.shortcuts.quickSettings
-        context: Qt.ApplicationShortcut
-        autoRepeat: false
-        enabled: sequence.length > 0
-        onActivated: quickSettings.opened ? quickSettings.close() : quickSettings.open()
-    }
-    Shortcut {
-        sequence: Shell.shortcuts.blurLab
-        context: Qt.ApplicationShortcut
-        autoRepeat: false
-        enabled: sequence.length > 0
-        onActivated: blurLab.open()
-    }
-    Shortcut {
-        sequence: Shell.shortcuts.reducedMotion
-        context: Qt.ApplicationShortcut
-        autoRepeat: false
-        enabled: sequence.length > 0
-        onActivated: Shell.scenes.customize("motion", Tokens.reducedMotion ? 1 : 0)
+    ApplicationShortcuts {
+        onAction: id => {
+            if (id === "shell.launcher" || id === "shell.super-launcher")
+                window.showView("launcher");
+            else if (id === "shell.quick-settings")
+                window.showView("quick-settings");
+            else if (id === "preview.blur-lab")
+                window.showView("blur");
+            else if (id === "shell.mock-lab")
+                window.showView("mock-lab");
+            else if (id === "shell.notifications")
+                window.showView("notifications");
+            else if (id === "effects.reduced-motion")
+                Shell.scenes.customize("motion", Tokens.reducedMotion ? 2 : 0);
+            else
+                Shell.previewAction(id);
+        }
     }
 }
