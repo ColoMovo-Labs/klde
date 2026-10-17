@@ -23,20 +23,25 @@ Button {
     // Keep each telemetry pair centered inside its fixed cell.  A fill-width
     // label made the pair start at the cell edge, which was especially visible
     // in the two-column monitoring capsule beside the clock.
-    contentItem: Row {
-        anchors.centerIn: parent
-        spacing: Tokens.capsuleIconTextGap
-        Icon {
-            name: root.moduleId === "temperature" ? "thermometer" : root.moduleId
-            width: Tokens.telemetryIcon
-            height: Tokens.telemetryIcon
-        }
-        Label {
-            text: (root.reading.severity > 0 ? "! " : "") + root.reading.value
-            font: Tokens.caption
-            color: root.reading.severity === 2 ? Tokens.error : root.reading.severity === 1 ? Tokens.warning : Tokens.textPrimary
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+    contentItem: Item {
+        implicitWidth: cellRow.implicitWidth
+        implicitHeight: cellRow.implicitHeight
+        Row {
+            id: cellRow
+            anchors.centerIn: parent
+            spacing: Tokens.capsuleIconTextGap
+            Icon {
+                name: root.moduleId === "temperature" ? "thermometer" : root.moduleId
+                width: Tokens.telemetryIcon
+                height: Tokens.telemetryIcon
+            }
+            Label {
+                text: (root.reading.severity > 0 ? "! " : "") + root.reading.value
+                font: Tokens.caption
+                color: root.reading.severity === 2 ? Tokens.error : root.reading.severity === 1 ? Tokens.warning : Tokens.textPrimary
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
         }
     }
     background: Rectangle {
