@@ -131,7 +131,7 @@ void ShellServices::projectState(const QString &path) {
         m_weather.applyPreview(reading, m_state.value("weather.available").toBool());
     }
     if (all || path == "notifications.count" || path == "battery.percent" ||
-        path == "cpu.temperature" || path == "sessionError") {
+        path == "battery.charging" || path == "cpu.temperature" || path == "sessionError") {
         const auto alerts = m_state.alerts();
         const QString context = m_state.value("sessionError").toBool() ? QStringLiteral("session")
                                 : alerts.value("battery").toInt() == 2 ? QStringLiteral("battery")

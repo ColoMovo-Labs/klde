@@ -40,6 +40,12 @@ ColumnLayout {
         values: root.caps.discreteGpu ? ["integrated", "hybrid", "discrete"] : ["integrated"]
         labels: root.caps.discreteGpu ? [I18n.t("lab.gpu.integrated"), I18n.t("lab.gpu.hybrid"), I18n.t("lab.gpu.discrete")] : [I18n.t("lab.gpu.integrated")]
     }
+    Label {
+        visible: root.caps.discreteGpu
+        text: I18n.t("lab.policy.discrete-state").arg(I18n.t(Shell.state.snapshot.policy.discreteEnabled ? "common.on" : "common.off"))
+        font: Tokens.caption
+        color: Tokens.textSecondary
+    }
     StateChoice {
         visible: root.caps.refreshRate
         label: I18n.t("lab.policy.refresh")

@@ -366,5 +366,6 @@
   "lab.scenario.weather-thunderstorm": "Thunderstorm",
   "lab.scenario.weather-fog": "Fog",
   "lab.scenario.weather-extreme-heat": "Extreme heat",
-  "lab.scenario.weather-extreme-cold": "Extreme cold"
+  "lab.scenario.weather-extreme-cold": "Extreme cold",
+  "lab.policy.discrete-state": "Discrete GPU preview: %1"
 }
