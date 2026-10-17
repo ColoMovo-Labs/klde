@@ -15,9 +15,9 @@ Button {
     property real meter: -1
     property bool detailed: false
     readonly property color ink: prominent ? Tokens.textOnPrimary : severity === 2 ? Tokens.error : severity === 1 ? Tokens.warning : active ? Tokens.primary : Tokens.textPrimary
-    implicitWidth: contentRow.implicitWidth + Tokens.space16
+    implicitWidth: Math.max(Tokens.controlHeight, contentRow.implicitWidth + Tokens.ribbonPadding * 2)
     implicitHeight: Tokens.ribbonHeight
-    padding: Tokens.space8
+    padding: Tokens.ribbonPadding
     Accessible.name: label + ", " + valueText + (unavailable ? ", " + I18n.t("lab.unavailable") : "")
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
