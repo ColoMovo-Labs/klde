@@ -9,9 +9,12 @@ QtObject {
     property real textScale: 1.0
     property bool transparencyEnabled: true
     property bool shadowsEnabled: true
-    property int motionLevel: 1
+    property int motionLevel: 2
+    property int densityMode: 1
+    property int shadowLevel: 1
+    property string wallpaperChoice: "snow"
     property string accentChoice: "auto"
-    readonly property color accent: accentChoice === "teal" ? accentTeal : accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#c6c0ff" : "#4338ff"
+    readonly property color accent: accentChoice === "teal" ? accentTeal : accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#99d1c8" : wallpaperChoice === "abstract" ? "#5545ad" : wallpaperChoice === "kemono" ? "#76518e" : "#07679e"
 
     readonly property color background: darkMode ? "#15172c" : "#edf2ff"
     readonly property color surface: darkMode ? "#20243d" : "#f9faff"
@@ -27,6 +30,9 @@ QtObject {
     readonly property color textDisabled: darkMode ? "#84949e" : "#75858e"
     readonly property color textOnPrimary: darkMode ? "#28205e" : "#ffffff"
     readonly property color primaryContainer: Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
+    readonly property color surfaceVariant: surfaceContainer
+    readonly property color warning: darkMode ? "#f4ca86" : "#805200"
+    readonly property color success: darkMode ? "#9ed5ad" : "#27683a"
     readonly property color shadow: "#292e6b"
     readonly property real outlineOpacity: 0.20
     readonly property real shadowOpacity: 0.14
@@ -64,7 +70,9 @@ QtObject {
     readonly property int space32: 32
 
     readonly property bool cjk: I18n.locale === "zh_CN"
-    readonly property string fontFamily: cjk ? "Noto Sans CJK SC" : Application.font.family
+    readonly property FontLoader glowRegular: FontLoader { source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf" }
+    readonly property FontLoader glowMedium: FontLoader { source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf" }
+    readonly property string fontFamily: glowRegular.status === FontLoader.Ready ? glowRegular.name : cjk ? "Noto Sans CJK SC" : Application.font.family
     readonly property font display: Qt.font({
         family: fontFamily,
         pixelSize: 48 * textScale,
@@ -94,7 +102,7 @@ QtObject {
         pixelSize: (cjk ? 13 : 12) * textScale
     })
 
-    readonly property real motionScale: motionLevel === 2 ? 1.2 : 1.0
+    readonly property real motionScale: motionLevel === 3 ? 0.8 : motionLevel === 2 ? 1.2 : 1.0
     readonly property int motionFast: reducedMotion ? 0 : 120 * motionScale
     readonly property int motionNormal: reducedMotion ? 0 : 220 * motionScale
     readonly property int motionSlow: reducedMotion ? 0 : 360 * motionScale
@@ -123,19 +131,23 @@ QtObject {
     readonly property int settingsWidth: 600
     readonly property int settingsHeight: 664
     readonly property int sceneCardHeight: 112
-    readonly property int sliderHeight: 52
-    readonly property int toggleHeight: 84
-    readonly property int toggleIcon: 48
-    readonly property real densityScale: 1.0
+    readonly property int sliderHeight: 52 * densityScale
+    readonly property int toggleHeight: 84 * densityScale
+    readonly property int toggleIcon: 44 * densityScale
+    readonly property real densityScale: densityMode === 0 ? 1.12 : densityMode === 2 ? 0.92 : 1.0
+    readonly property int ribbonHeight: densityMode === 0 ? 48 : densityMode === 2 ? 40 : 44
+    readonly property int rowGap: densityMode === 0 ? space16 : densityMode === 2 ? space8 : space12
+    readonly property int ambientClockSize: 168
+    readonly property int ribbonIcon: 22
     readonly property int launcherWidth: 600
     readonly property int launcherHeight: 528
     readonly property int launcherRow: 64 * densityScale
     readonly property int widgetSize: 224
-    readonly property int desktopMargin: 40
+    readonly property int desktopMargin: 28
     readonly property int blurSampleWidth: 320
     readonly property int blurSampleHeight: 180
     readonly property int previewWidth: 1440
     readonly property int previewHeight: 900
-    readonly property int previewMinimumWidth: 960
-    readonly property int previewMinimumHeight: 720
+    readonly property int previewMinimumWidth: 640
+    readonly property int previewMinimumHeight: 640
 }

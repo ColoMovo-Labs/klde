@@ -15,6 +15,8 @@ enum class WeatherCondition : quint8 {
     Snow,
     Thunderstorm,
     Fog,
+    ExtremeHeat,
+    ExtremeCold,
     Unknown
 };
 WeatherCondition normalizeWeatherCondition(const QString &description);

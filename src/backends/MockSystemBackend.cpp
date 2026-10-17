@@ -3,6 +3,14 @@
 #include <algorithm>
 
 namespace klde {
+void MockSystemBackend::applyPreviewState(const QVariantMap &snapshot) {
+    m_volume = std::clamp(snapshot.value("audio").toMap().value("volume").toInt(), 0, 100);
+    m_brightness = std::clamp(snapshot.value("brightness").toInt(), 0, 100);
+    m_wifi = snapshot.value("network").toMap().value("enabled").toBool();
+    m_bluetooth = snapshot.value("bluetooth").toMap().value("enabled").toBool();
+    m_nightMode = snapshot.value("nightMode").toBool();
+    emit stateChanged();
+}
 void MockSystemBackend::setVolume(int value) {
     value = std::clamp(value, 0, 100);
     if (m_volume != value) {

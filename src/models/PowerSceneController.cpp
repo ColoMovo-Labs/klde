@@ -17,12 +17,14 @@ QVariantList PowerSceneController::defaults() {
                                                   {"blurQuality", quality},
                                                   {"transparency", true},
                                                   {"shadows", shadows},
-                                                  {"motion", motion}}}};
+                                                  {"motion", motion},
+                                                  {"density", 1},
+                                                  {"shadowLevel", 1}}}};
     };
     return {scene("performance", tr("Performance"), "sun", tr("Room for demanding work"),
-                  "Performance", BlurBackend::Low, 1, true),
+                  "Performance", BlurBackend::Low, 3, true),
             scene("balanced", tr("Balanced"), "leaf", tr("A comfortable everyday rhythm"),
-                  "Balanced", BlurBackend::Medium, 1, true),
+                  "Balanced", BlurBackend::Medium, 2, true),
             scene("power-saver", tr("Power Saver"), "moon", tr("Stay light, keep the softness"),
                   "Power saver", BlurBackend::Low, 0, false)};
 }
@@ -60,14 +62,15 @@ bool PowerSceneController::customize(const QString &option, const QVariant &valu
                 QStringList{"auto", "light", "dark"}.contains(value.toString());
     } else if (option == "blurEnabled" || option == "transparency" || option == "shadows") {
         valid = value.metaType().id() == QMetaType::Bool;
-    } else if (option == "blurQuality" || option == "motion") {
+    } else if (option == "blurQuality" || option == "motion" || option == "density" ||
+               option == "shadowLevel") {
         bool converted = false;
         const int number = value.toInt(&converted);
         const bool numeric =
             value.metaType().id() == QMetaType::Int || value.metaType().id() == QMetaType::Double;
         valid = numeric && converted && value.toDouble() == number &&
                 (option == "blurQuality" ? number >= BlurBackend::Low && number <= BlurBackend::High
-                                         : number >= 0 && number <= 2);
+                                         : number >= 0 && number <= (option == "motion" ? 3 : 2));
     }
     if (!valid) {
         emit requestRejected(tr("That scene option is invalid or unsupported"));
@@ -86,6 +89,13 @@ bool PowerSceneController::customize(const QString &option, const QVariant &valu
     emit scenesChanged();
     emit currentChanged();
     return true;
+}
+void PowerSceneController::resetDefaults() {
+    m_scenes = defaults();
+    m_active = 1;
+    apply();
+    emit scenesChanged();
+    emit currentChanged();
 }
 void PowerSceneController::resetCurrent() {
     m_scenes[m_active] = defaults().at(m_active);

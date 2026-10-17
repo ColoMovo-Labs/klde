@@ -17,3 +17,9 @@ path = ["assets/**"]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 KLDE contributors"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = ["assets/fonts/glow-sans/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "2020 Celestial Phineas"
+SPDX-License-Identifier = "OFL-1.1"

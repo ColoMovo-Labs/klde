@@ -23,6 +23,7 @@ class PowerSceneController : public QObject {
     Q_INVOKABLE bool select(const QString &id);
     Q_INVOKABLE bool customize(const QString &option, const QVariant &value);
     Q_INVOKABLE void resetCurrent();
+    void resetDefaults();
   signals:
     void scenesChanged();
     void currentChanged();

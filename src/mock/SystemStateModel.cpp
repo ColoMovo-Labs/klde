@@ -41,6 +41,25 @@ void SystemStateModel::assign(QVariantMap &map, const QString &path, const QVari
     map.insert(key, child);
 }
 QVariant SystemStateModel::value(const QString &path) const { return lookup(m_snapshot, path); }
+QVariantMap SystemStateModel::alerts() const {
+    const int battery = value("battery.percent").toInt();
+    const int temperature = value("cpu.temperature").toInt();
+    return {{"battery", !value("capabilities.battery").toBool()               ? 0
+                        : battery <= 5 && !value("battery.charging").toBool() ? 2
+                        : battery < 20                                        ? 1
+                                                                              : 0},
+            {"temperature", !value("capabilities.sensors").toBool() ? 0
+                            : temperature >= 92                     ? 2
+                            : temperature >= 78                     ? 1
+                                                                    : 0},
+            {"cpu", value("cpu.usage").toInt() >= 85 ? 1 : 0},
+            {"network",
+             value("network.enabled").toBool() &&
+                     (!value("network.internet").toBool() || value("network.strength").toInt() < 30)
+                 ? 1
+                 : 0},
+            {"input", value("input.available").toBool() ? 0 : 1}};
+}
 bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
     const auto original = lookup(m_baseline, path);
     if (!original.isValid())
@@ -109,6 +128,12 @@ bool SystemStateModel::requestValue(const QString &path, const QVariant &newValu
     if (value(path) == newValue)
         return true;
     assign(m_snapshot, path, newValue);
+    if (path == "network.enabled") {
+        assign(m_snapshot, "network.connected", newValue.toBool());
+        assign(m_snapshot, "network.internet", newValue.toBool());
+    }
+    if (path == "bluetooth.enabled" && !newValue.toBool())
+        assign(m_snapshot, "bluetooth.connectedDevices", 0);
     emit changed();
     emit valueEdited(path);
     return true;

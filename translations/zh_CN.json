@@ -192,5 +192,17 @@
   "shell.window.layout-unsupported": "模拟后端不支持此布局",
   "shell.window.unknown": "未知窗口",
   "shell.window.destination-unknown": "未知目标工作区",
-  "shell.window.rules-unavailable": "持久化应用规则将在后续后端中提供"
+  "shell.window.rules-unavailable": "持久化应用规则将在后续后端中提供",
+  "lab.shortcut.message-0": "启动器（Super+Space）",
+  "lab.shortcut.message-1": "模拟实验室",
+  "lab.shortcut.message-2": "通知",
+  "lab.shortcut.message-3": "媒体播放",
+  "lab.shortcut.message-4": "暂存区预览",
+  "lab.shortcut.message-5": "切换浮动预览",
+  "lab.shortcut.message-6": "关闭预览窗口",
+  "lab.shortcut.message-7": "工作区 %1",
+  "lab.shortcut.message-8": "移至工作区 %1",
+  "lab.shortcut.message-9": "预览窗口已关闭。实际应用未受影响。",
+  "weather.condition.extreme-heat": "高温",
+  "weather.condition.extreme-cold": "严寒"
 }

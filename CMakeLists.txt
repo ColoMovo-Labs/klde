@@ -51,7 +51,9 @@ qt_add_resources(klde_backends klde_translations PREFIX / FILES
 qt_add_resources(klde_backends klde_mock_data PREFIX / FILES
     src/mock/scenarios.json src/status/modules.json)
 
-set(klde_assets assets/wallpapers/first-light.svg)
+set(klde_assets assets/wallpapers/first-light.svg
+    assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf
+    assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf)
 foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather)
     list(APPEND klde_assets "assets/icons/${icon}.svg")
     list(APPEND klde_assets "assets/icons/${icon}-light.svg")
@@ -74,7 +76,7 @@ install(FILES packaging/org.klde.shell.preview.desktop
 install(FILES assets/icons/klde.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
 install(DIRECTORY assets/fcitx5/klde-expressive-light assets/fcitx5/klde-expressive-dark
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/fcitx5/themes)
-install(FILES LICENSE LICENSES/CC-BY-SA-4.0.txt
+install(FILES LICENSE LICENSES/CC-BY-SA-4.0.txt LICENSES/OFL-1.1.txt
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/klde)
 
 include(cmake/Packaging.cmake)

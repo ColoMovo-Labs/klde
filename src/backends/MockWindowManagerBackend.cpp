@@ -17,6 +17,23 @@ MockWindowManagerBackend::MockWindowManagerBackend(QObject *parent) : WindowMana
                                  {"floating", true}});
 }
 
+void MockWindowManagerBackend::resetPreview(const QVariantList &layouts, int active) {
+    if (layouts.size() != m_workspaces.size() || active < 1 || active > m_workspaces.size())
+        return;
+    for (qsizetype i = 0; i < layouts.size(); ++i) {
+        auto workspace = m_workspaces.at(i).toMap();
+        workspace["layout"] = layouts.at(i).toInt();
+        m_workspaces[i] = workspace;
+    }
+    m_activeWorkspace = QStringLiteral("workspace-%1").arg(active);
+    m_windows = {QVariantMap{{"id", "demo-terminal"},
+                             {"applicationId", "terminal"},
+                             {"workspaceId", m_activeWorkspace},
+                             {"floating", true}}};
+    emit workspacesChanged();
+    emit windowsChanged();
+    emit activeWorkspaceChanged();
+}
 QVariantList MockWindowManagerBackend::workspaces() const { return m_workspaces; }
 QVariantList MockWindowManagerBackend::windows() const { return m_windows; }
 QString MockWindowManagerBackend::activeWorkspace() const { return m_activeWorkspace; }

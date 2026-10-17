@@ -54,6 +54,20 @@ QString ApplicationModel::nameFor(const QString &appId) const {
                                     [&appId](const Application &app) { return app.id == appId; });
     return found == m_applications.cend() ? QString{} : found->name;
 }
+QString ApplicationModel::activeId() const {
+    for (const auto &app : m_applications)
+        if (app.active)
+            return app.id;
+    return QStringLiteral("desktop");
+}
+void ApplicationModel::resetPreview(const QString &appId) {
+    for (auto &app : m_applications) {
+        app.active = app.id == appId;
+        app.running = app.active || app.id == "files" || app.id == "terminal";
+    }
+    emit dataChanged(index(0), index(rowCount() - 1), {RunningRole, ActiveRole});
+    emit activeChanged();
+}
 bool ApplicationModel::activate(const QString &appId) {
     if (nameFor(appId).isEmpty()) {
         return false;
@@ -63,6 +77,7 @@ bool ApplicationModel::activate(const QString &appId) {
         app.running = app.running || app.active;
     }
     emit dataChanged(index(0), index(rowCount() - 1), {RunningRole, ActiveRole});
+    emit activeChanged();
     return true;
 }
 

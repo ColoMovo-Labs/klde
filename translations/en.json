@@ -192,5 +192,17 @@
   "shell.window.layout-unsupported": "Layout unsupported by mock backend",
   "shell.window.unknown": "Unknown window",
   "shell.window.destination-unknown": "Unknown destination workspace",
-  "shell.window.rules-unavailable": "Persistent application rules are a future adapter capability"
+  "shell.window.rules-unavailable": "Persistent application rules are a future adapter capability",
+  "lab.shortcut.message-0": "Launcher (Super+Space)",
+  "lab.shortcut.message-1": "Mock Lab",
+  "lab.shortcut.message-2": "Notifications",
+  "lab.shortcut.message-3": "Media playback",
+  "lab.shortcut.message-4": "Scratchpad preview",
+  "lab.shortcut.message-5": "Toggle floating preview",
+  "lab.shortcut.message-6": "Close preview window",
+  "lab.shortcut.message-7": "Workspace %1",
+  "lab.shortcut.message-8": "Move to workspace %1",
+  "lab.shortcut.message-9": "Preview window closed. Host applications are unchanged.",
+  "weather.condition.extreme-heat": "Extreme heat",
+  "weather.condition.extreme-cold": "Extreme cold"
 }

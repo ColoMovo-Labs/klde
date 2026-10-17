@@ -26,7 +26,11 @@ class ApplicationModel : public QAbstractListModel {
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
     bool activate(const QString &appId);
-    QString nameFor(const QString &appId) const;
+    Q_INVOKABLE QString nameFor(const QString &appId) const;
+    void resetPreview(const QString &appId);
+    QString activeId() const;
+  signals:
+    void activeChanged();
 
   private:
     struct Application {

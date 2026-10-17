@@ -41,6 +41,13 @@ WeatherService::~WeatherService() {
     m_provider->cancel();
 }
 
+void WeatherService::applyPreview(const WeatherReading &reading, bool available) {
+    disableOnline();
+    m_reading = available ? std::optional<WeatherReading>{reading} : std::nullopt;
+    m_query.city = reading.location;
+    m_status = available ? QStringLiteral("mock") : QStringLiteral("unavailable");
+    emit changed();
+}
 QVariantMap WeatherService::reading() const {
     QVariantMap result = m_reading ? m_reading->toVariantMap()
                                    : QVariantMap{{"location", m_query.city},

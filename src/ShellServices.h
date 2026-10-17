@@ -6,10 +6,13 @@
 #include "backends/MockWindowManagerBackend.h"
 #include "i18n/LocaleVoiceModel.h"
 #include "input/Fcitx5Backend.h"
+#include "mock/SystemStateModel.h"
 #include "models/ApplicationModel.h"
+#include "models/NotificationModel.h"
 #include "models/PowerSceneController.h"
 #include "platform/common/DisplayServerBackend.h"
 #include "shortcuts/ShortcutRegistry.h"
+#include "status/StatusModuleRegistry.h"
 #include "weather/WeatherService.h"
 #include <QTimer>
 
@@ -30,6 +33,10 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::LocaleVoiceModel *language READ language CONSTANT)
     Q_PROPERTY(klde::InputMethodBackend *input READ input CONSTANT)
     Q_PROPERTY(klde::DisplayServerBackend *displayServer READ displayServer CONSTANT)
+    Q_PROPERTY(klde::SystemStateModel *state READ state CONSTANT)
+    Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
+    Q_PROPERTY(klde::NotificationModel *notifications READ notifications CONSTANT)
+    Q_PROPERTY(klde::StatusModuleRegistry *ribbon READ ribbon CONSTANT)
     Q_PROPERTY(QString message READ message NOTIFY messageChanged)
     Q_PROPERTY(int osdValue READ osdValue NOTIFY messageChanged)
   public:
@@ -45,6 +52,11 @@ class ShellServices final : public QObject {
     LocaleVoiceModel *language() { return &m_language; }
     InputMethodBackend *input() { return &m_input; }
     DisplayServerBackend *displayServer() { return &m_displayServer; }
+    SystemStateModel *state() { return &m_state; }
+    MockScenarioManager *mockScenarios() { return &m_mockScenarios; }
+    NotificationModel *notifications() { return &m_notifications; }
+    StatusModuleRegistry *ribbon() { return &m_ribbon; }
+    Q_INVOKABLE bool previewAction(const QString &action);
     QVariantMap weather() const;
     QString message() const { return m_message; }
     int osdValue() const { return m_osdValue; }
@@ -54,8 +66,14 @@ class ShellServices final : public QObject {
   signals:
     void messageChanged();
     void weatherChanged();
+    void launcherRequested();
+
+  protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
   private:
+    void projectState(const QString &path = {});
+    void reconcileSystem();
     MockSystemBackend m_system;
     MockWindowManagerBackend m_windowManager;
     PreviewBlurBackend m_blur;
@@ -67,6 +85,13 @@ class ShellServices final : public QObject {
     LocaleVoiceModel m_language;
     Fcitx5Backend m_input;
     DisplayServerBackend m_displayServer;
+    SystemStateModel m_state;
+    MockScenarioManager m_mockScenarios;
+    NotificationModel m_notifications;
+    StatusModuleRegistry m_ribbon;
+    bool m_syncing = false;
+    bool m_metaDown = false;
+    bool m_metaUsed = false;
     QTimer m_noticeTimer;
     QString m_message;
     int m_osdValue = -1;

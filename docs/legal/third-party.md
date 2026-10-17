@@ -71,3 +71,11 @@ Ubuntu/Fedora runtime font dependencies remain separate distribution packages:
 Noto CJK (OFL-1.1) and Noto Color Emoji (upstream notices include OFL-1.1 and
 Apache-2.0). No font files are in this source tree or embedded binary. Record exact
 package notices when producing a complete distribution image.
+
+## Wêlai Glow Sans SC
+
+The Visual Lab embeds unmodified Normal Regular and Medium from v0.93,
+copyright 2020 Celestial Phineas, licensed under SIL OFL 1.1. The complete
+notice is in `assets/fonts/glow-sans/OFL.txt`, also installed with the application.
+See [font provenance](../../assets/fonts/README.md) for source commit and hashes.
+No MIT-licensed upstream font-building code is copied. No MiSans is bundled.

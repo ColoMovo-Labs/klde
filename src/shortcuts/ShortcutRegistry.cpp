@@ -17,6 +17,23 @@ ShortcutRegistry::ShortcutRegistry(QObject *parent) : QObject(parent) {
          QStringLiteral("Ctrl+Alt+R"),
          {}},
     };
+    m_actions.append({"shell.super-launcher", tr("Launcher (Super+Space)"), "Meta+Space", {}});
+    m_actions.append({"shell.mock-lab", tr("Mock Lab"), "Ctrl+Alt+M", {}});
+    m_actions.append({"shell.notifications", tr("Notifications"), "Meta+N", {}});
+    m_actions.append({"shell.media", tr("Media playback"), "Meta+M", {}});
+    m_actions.append({"shell.scratchpad", tr("Scratchpad preview"), "Meta+Shift+S", {}});
+    m_actions.append({"window.float", tr("Toggle floating preview"), "Meta+V", {}});
+    m_actions.append({"window.close", tr("Close preview window"), "Meta+Q", {}});
+    for (int i = 1; i <= 9; ++i) {
+        m_actions.append({QStringLiteral("workspace.%1").arg(i),
+                          tr("Workspace %1").arg(i),
+                          QStringLiteral("Meta+%1").arg(i),
+                          {}});
+        m_actions.append({QStringLiteral("move.%1").arg(i),
+                          tr("Move to workspace %1").arg(i),
+                          QStringLiteral("Meta+Shift+%1").arg(i),
+                          {}});
+    }
     resetDefaults();
 }
 

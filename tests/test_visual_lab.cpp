@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include "ShellServices.h"
 #include "mock/SystemStateModel.h"
 #include "models/NotificationModel.h"
 #include "status/StatusModuleRegistry.h"
@@ -7,6 +8,29 @@
 class VisualLabTest final : public QObject {
     Q_OBJECT
   private slots:
+    void scenarioProjectionAndEditsStayCoherent() {
+        klde::ShellServices shell;
+        QVERIFY(shell.mockScenarios()->apply("offline"));
+        QVERIFY(!shell.system()->wifi());
+        shell.system()->setWifi(true);
+        QVERIFY(shell.state()->value("network.connected").toBool());
+        QVERIFY(shell.state()->requestValue("audio.volume", 31));
+        QCOMPARE(shell.system()->volume(), 31);
+        shell.system()->setVolume(46);
+        QCOMPARE(shell.state()->value("audio.volume").toInt(), 46);
+        QVERIFY(shell.mockScenarios()->apply("critical-battery"));
+        QCOMPARE(shell.state()->alerts().value("battery").toInt(), 2);
+        shell.notifications()->clear();
+        QCOMPARE(shell.state()->value("notifications.count").toInt(), 0);
+        QVERIFY(shell.mockScenarios()->apply("dark-night"));
+        QCOMPARE(shell.scenes()->current().value("visual").toMap().value("theme").toString(),
+                 QStringLiteral("dark"));
+        QVERIFY(shell.mockScenarios()->apply("laptop-balanced"));
+        QCOMPARE(shell.state()->alerts().value("battery").toInt(), 0);
+        QVERIFY(shell.state()->requestValue("input.currentId", QStringLiteral("pinyin")));
+        QCOMPARE(shell.input()->currentId(), QStringLiteral("pinyin"));
+    }
+
     void scenariosAreCompleteAndResettable() {
         klde::SystemStateModel state;
         klde::MockScenarioManager scenarios(&state);

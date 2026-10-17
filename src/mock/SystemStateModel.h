@@ -10,11 +10,13 @@ class SystemStateModel : public QObject {
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.state")
     Q_PROPERTY(QVariantMap snapshot READ snapshot NOTIFY changed)
+    Q_PROPERTY(QVariantMap alerts READ alerts NOTIFY changed)
     Q_PROPERTY(bool ready READ ready CONSTANT)
   public:
     explicit SystemStateModel(QObject *parent = nullptr);
     ~SystemStateModel() override;
     QVariantMap snapshot() const { return m_snapshot; }
+    QVariantMap alerts() const;
     bool ready() const { return !m_baseline.isEmpty(); }
     QVariantMap baseline() const { return m_baseline; }
     Q_INVOKABLE QVariant value(const QString &path) const;
