@@ -161,8 +161,25 @@ QtObject {
     readonly property int ribbonGroupPadding: space4
     readonly property int telemetryCellWidth: densityMode === 0 ? 92 : 82
     readonly property int telemetryCellHeight: densityMode === 0 ? 32 : 28
-    readonly property int temporalWidth: densityMode === 0 ? 192 : 176
-    readonly property int temporalHeight: 66
+    readonly property int temporalWidth: 208
+    readonly property int temporalHeight: 48
+    readonly property int temporalCompactWidth: 160
+    readonly property int temporalCompactHeight: 40
+    readonly property int temporalExpandedWidth: 400
+    readonly property int temporalExpandedHeight: 144
+    readonly property int temporalFont: 28
+    readonly property int temporalCompactFont: 23
+    readonly property int temporalExpandedFont: 48
+    readonly property real temporalOrbRatio: 0.40
+    readonly property real temporalTextRatio: 0.55
+    readonly property color temporalDayOrb: "#fff0bb"
+    readonly property color temporalSunsetOrb: "#ffcd88"
+    readonly property color temporalText: "#ffffff"
+    readonly property color temporalInkVeil: "#df14243c"
+    readonly property color temporalEdge: "#507f94b6"
+    readonly property color surfaceEdge: Qt.rgba(outline.r, outline.g, outline.b, outlineOpacity)
+    readonly property int temporalStudyWidth: 1160
+    readonly property int temporalStudyCardHeight: 144
     readonly property int ribbonBandHeight: Math.max(temporalHeight, telemetryCellHeight * 2 + space2 + ribbonGroupPadding * 2)
     readonly property int temporalSceneSize: 44
     readonly property int temporalRichWidth: 320

@@ -21,6 +21,16 @@ QVariantMap MockTimeBackend::reading() const {
         else
             phase = weather == "rain" || weather == "thunderstorm" ? "rainy-evening" : "sunset";
     }
+    // Synthetic ephemeris: separate moon visibility, never inferred merely from night.
+    const QTime sunrise(6, 20), sunset(18, 10), moonrise(23, 10), moonset(10, 40);
+    const auto time = date.time();
+    const bool moonAboveHorizon = time >= moonrise || time < moonset;
+    const bool manualPhase = m_state->value("temporal.phase") != "auto";
+    const bool sunVisible = phase == "clear-morning" || phase == "cloudy-day" || phase == "sunset";
+    const bool moonVisible = phase == "moonlit-night" && (manualPhase || moonAboveHorizon);
+    // Quantized to 15 minutes. A minute tick updates text, not the cached SVGs.
+    const double dayProgress =
+        qBound(0.0, (hour * 60 + time.minute() / 15 * 15 - 380) / 710.0, 1.0);
     const int month = date.date().month();
     const auto season = month >= 3 && month <= 5    ? "spring"
                         : month >= 6 && month <= 8  ? "summer"
@@ -35,6 +45,19 @@ QVariantMap MockTimeBackend::reading() const {
             {"night", phase == "starry-night" || phase == "moonlit-night"},
             {"weatherAvailable", m_state->value("weather.available")},
             {"weatherMood", weather},
+            {"sunVisible", sunVisible},
+            {"moonVisible", moonVisible},
+            {"sunX", 0.18 + 0.16 * dayProgress},
+            {"sunY", phase == "sunset" ? 0.64 : 0.34},
+            {"moonX", 0.25},
+            {"moonY", 0.34},
+            {"astronomy", QVariantMap{{"available", true},
+                                      {"simulated", true},
+                                      {"sunrise", sunrise.toString("HH:mm")},
+                                      {"sunset", sunset.toString("HH:mm")},
+                                      {"moonrise", moonrise.toString("HH:mm")},
+                                      {"moonset", moonset.toString("HH:mm")},
+                                      {"moonPhase", "waning-crescent"}}},
             {"mock", true}};
 }
 MockTelemetryBackend::MockTelemetryBackend(SystemStateModel *state) : m_state(state) {

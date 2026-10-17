@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
                             QStringLiteral("weather"),
                             QStringLiteral("language"),
                             QStringLiteral("input"),
+                            "temporal-study",
                             "temporal",
                             "wallpaper-effects",
                             "lock-preview",

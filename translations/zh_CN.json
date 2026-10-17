@@ -433,5 +433,10 @@
   "temporal.scenario.wallpaper-depth-enabled": "景深壁纸已启用",
   "temporal.scenario.segmentation-failed": "前景分割失败",
   "temporal.scenario.lock-screen-blur-enabled": "锁屏缓存示例",
-  "temporal.scenario.waydroid-ready": "可选 Android 应用源就绪"
+  "temporal.scenario.waydroid-ready": "可选 Android 应用源就绪",
+  "temporal.study.title": "时序景观 · 设计对照",
+  "temporal.study.sizes": "同一景观，三种尺寸",
+  "temporal.size.compact": "Compact · 160 × 40",
+  "temporal.size.standard": "Standard · 208 × 48",
+  "temporal.size.expanded": "Expanded · 400 × 144"
 }

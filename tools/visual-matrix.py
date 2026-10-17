@@ -38,6 +38,7 @@ def main():
     cases.append(dict(id='temporal-expanded', scenario='sunset', view='temporal'))
     cases.append(dict(id='ambient-laptop', size='1366x768', ambient=True, density='dense'))
     cases.append(dict(id='lock-screen-dark', scenario='lock-screen-blur-enabled', view='lock-preview', dark=True, ambient=True))
+    cases.append(dict(id='temporal-study', view='temporal-study', size='1440x1000'))
     records=[]
     for case in cases:
         options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False)

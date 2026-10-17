@@ -440,6 +440,11 @@ ApplicationWindow {
             }
         }
     }
+    TemporalStudy {
+        visible: window.initialView === "temporal-study"
+        anchors.fill: parent
+        z: 100
+    }
     ApplicationShortcuts {
         onAction: id => {
             if (id === "shell.launcher" || id === "shell.super-launcher")
