@@ -48,3 +48,9 @@ See [display](docs/architecture/display-protocols.md),
 [i18n](docs/architecture/i18n.md), [input](docs/architecture/input-methods.md) and
 ADRs 0011–0015. ADRs 0009–0010 already record weather and shortcuts and retain
 their historical identifiers. Chinese and English are both primary product paths.
+
+The mock-design milestone now prioritizes a temporal central axis, semantically
+grouped ribbon, composite telemetry, dedicated display numerals and distinct
+Ambient/Working composition. Cached wallpaper depth and optional Android app
+sources are being prototyped as contracts before real providers. Cloud acceptance
+and owner visual review remain required before moving into live integration.

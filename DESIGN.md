@@ -130,3 +130,20 @@ future work.
 The preview offers user-selected accent presets; they remain session choices.
 Wallpaper extraction, arbitrary theme packs, persistent settings and complete
 contrast/accessibility acceptance are separate work.
+
+## Temporal axis direction
+
+The current product principle is **time as center, order as atmosphere**. KLDE is
+still a provisional codename. Chinese contemporary influence starts with central
+axis, hierarchy, rhythm, restraint and spacing; ornamental motifs and paid visual
+packs are future optional asset layers. There is no commerce or donation prompt
+in this milestone.
+
+The [grouped top ribbon](docs/design/top-ribbon-layout.md) and
+[Temporal Capsule](docs/design/temporal-capsule.md) organize time and system state.
+[Wallpaper depth](docs/design/wallpaper-depth.md) is an optional precomputation and
+cache contract. The prototype's pre-authored studies do not run segmentation.
+Display-clock typography is separate from normal UI typography. Working mode
+shrinks temporal emphasis; Ambient mode makes it central. All surfaces use shared
+shape, group spacing, motion and color tokens. Wayland is primary; X11 testing is
+a compatibility check.

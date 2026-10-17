@@ -1,4 +1,4 @@
-# Kemono Linux Desktop Environment
+# KLDE (provisional codename)
 
 **KLDE** is an experimental open-source Linux desktop environment inspired by
 the visual spirit of early UKUI/Kylin desktops, modern expressive UI design,
@@ -57,6 +57,14 @@ and [pinned component reuse audit](docs/reuse/component-audit.md).
 System controls, workspace management and input selection remain mock. The
 experimental weather adapter is disabled by default and requires an explicitly
 entered city and online consent. There is no telemetry or privileged helper.
+
+The next [temporal-axis pass](docs/design/temporal-capsule.md) groups the ribbon,
+adds a dedicated display clock and defines cached wallpaper effects and optional
+Android sources. See [layout](docs/design/top-ribbon-layout.md),
+[wallpaper pipeline](docs/design/wallpaper-depth.md) and
+[provider contracts](docs/architecture/mock-backends.md). These source changes need
+new CircleCI validation and captures; the frozen images below describe the prior
+Visual Lab rendering revision and are not screenshots of this new pass.
 
 ## Screenshots / Concept Art
 

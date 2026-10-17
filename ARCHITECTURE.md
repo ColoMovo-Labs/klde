@@ -181,3 +181,14 @@ policy. This adapter is not claimed to exist in Phase 0.
 Blur policy and caching are described in [blur.md](docs/architecture/blur.md).
 Performance acceptance is separate from build speed; see
 [the measurement strategy](docs/development/performance.md).
+
+## Temporal-axis presentation contracts
+
+The next mock-first pass adds typed time, composite telemetry, cached wallpaper
+and optional Android-source contracts. See [mock providers](docs/architecture/mock-backends.md),
+[cached wallpaper processing](docs/design/wallpaper-depth.md) and
+[Waydroid architecture](docs/architecture/waydroid.md). All heavy wallpaper work is
+outside the live shell. The current provider uses pre-authored resources only.
+Public branding is provisional and centralized; stable internal IDs stay separate.
+Future visual packs should supply validated tokens/assets, not arbitrary QML or
+privileged behavior. Premium packs, donations and commerce remain future planning.
