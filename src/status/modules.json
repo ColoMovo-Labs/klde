@@ -1,0 +1,182 @@
+[
+  {
+    "id": "launcher",
+    "titleId": "lab.module.launcher",
+    "icon": "klde",
+    "section": 0,
+    "priority": 0,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "overview",
+    "titleId": "lab.module.overview",
+    "icon": "overview",
+    "section": 0,
+    "priority": 1,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "weather",
+    "titleId": "lab.module.weather",
+    "icon": "weather",
+    "section": 0,
+    "priority": 3,
+    "widthUnits": 2,
+    "enabled": true
+  },
+  {
+    "id": "context",
+    "titleId": "lab.module.context",
+    "icon": "display",
+    "section": 0,
+    "priority": 4,
+    "widthUnits": 2,
+    "enabled": true
+  },
+  {
+    "id": "date",
+    "titleId": "lab.module.date",
+    "icon": "info",
+    "section": 1,
+    "priority": 2,
+    "widthUnits": 2,
+    "enabled": true
+  },
+  {
+    "id": "workspaces",
+    "titleId": "lab.module.workspaces",
+    "icon": "overview",
+    "section": 1,
+    "priority": 0,
+    "widthUnits": 4,
+    "enabled": true
+  },
+  {
+    "id": "time",
+    "titleId": "lab.module.time",
+    "icon": "info",
+    "section": 1,
+    "priority": 0,
+    "widthUnits": 2,
+    "enabled": true
+  },
+  {
+    "id": "cpu",
+    "titleId": "lab.module.cpu",
+    "icon": "cpu",
+    "section": 2,
+    "priority": 3,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "memory",
+    "titleId": "lab.module.memory",
+    "icon": "memory",
+    "section": 2,
+    "priority": 4,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "temperature",
+    "titleId": "lab.module.temperature",
+    "icon": "thermometer",
+    "section": 2,
+    "priority": 5,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "battery",
+    "titleId": "lab.module.battery",
+    "icon": "battery",
+    "section": 2,
+    "priority": 0,
+    "widthUnits": 2,
+    "enabled": true
+  },
+  {
+    "id": "scene",
+    "titleId": "lab.module.scene",
+    "icon": "leaf",
+    "section": 2,
+    "priority": 6,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "network",
+    "titleId": "lab.module.network",
+    "icon": "wifi",
+    "section": 2,
+    "priority": 1,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "bluetooth",
+    "titleId": "lab.module.bluetooth",
+    "icon": "bluetooth",
+    "section": 2,
+    "priority": 7,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "audio",
+    "titleId": "lab.module.audio",
+    "icon": "volume",
+    "section": 2,
+    "priority": 4,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "microphone",
+    "titleId": "lab.module.microphone",
+    "icon": "microphone",
+    "section": 2,
+    "priority": 8,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "input",
+    "titleId": "lab.module.input",
+    "icon": "note",
+    "section": 2,
+    "priority": 1,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "notifications",
+    "titleId": "lab.module.notifications",
+    "icon": "bell",
+    "section": 2,
+    "priority": 0,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "settings",
+    "titleId": "lab.module.settings",
+    "icon": "settings",
+    "section": 2,
+    "priority": 1,
+    "widthUnits": 1,
+    "enabled": true
+  },
+  {
+    "id": "power",
+    "titleId": "lab.module.power",
+    "icon": "power",
+    "section": 2,
+    "priority": 2,
+    "widthUnits": 1,
+    "enabled": true
+  }
+]

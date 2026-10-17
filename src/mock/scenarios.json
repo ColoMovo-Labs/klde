@@ -1,0 +1,309 @@
+{
+  "baseline": {
+    "capabilities": {
+      "battery": true,
+      "brightness": true,
+      "microphone": true,
+      "sensors": true,
+      "bluetooth": true,
+      "discreteGpu": false,
+      "cpuPolicy": true,
+      "gpuPolicy": true,
+      "refreshRate": true
+    },
+    "battery": {
+      "percent": 74,
+      "charging": false
+    },
+    "cpu": {
+      "usage": 18,
+      "temperature": 62
+    },
+    "memory": {
+      "usedPercent": 57
+    },
+    "gpu": {
+      "usage": 8,
+      "temperature": 54
+    },
+    "network": {
+      "enabled": true,
+      "connected": true,
+      "internet": true,
+      "ssid": "Snowline_5G",
+      "strength": 86
+    },
+    "bluetooth": {
+      "enabled": true,
+      "connectedDevices": 0
+    },
+    "audio": {
+      "volume": 77,
+      "muted": false,
+      "microphone": 82,
+      "output": "speakers"
+    },
+    "brightness": 73,
+    "nightMode": false,
+    "notifications": {
+      "count": 3,
+      "dnd": false
+    },
+    "input": {
+      "currentId": "keyboard-us",
+      "available": true,
+      "simplified": true
+    },
+    "weather": {
+      "condition": "partly-cloudy",
+      "temperature": 21,
+      "available": true,
+      "city": "Snowline"
+    },
+    "locale": "zh_CN",
+    "voice": "standard",
+    "powerScene": "balanced",
+    "time": "2026-10-17T08:30:00",
+    "workspaces": {
+      "active": 1,
+      "layouts": [
+        0,
+        0,
+        1,
+        1,
+        2
+      ]
+    },
+    "activeApp": "desktop",
+    "media": {
+      "playing": false,
+      "progress": 34,
+      "titleId": "lab.media.track",
+      "artist": "KLDE Sessions"
+    },
+    "policy": {
+      "cpu": "balanced",
+      "frequency": 100,
+      "gpu": "integrated",
+      "discreteOn": false,
+      "refreshRate": 60,
+      "brightness": "adaptive"
+    },
+    "appearance": {
+      "wallpaper": "snow",
+      "ambient": false
+    },
+    "presentationMode": false,
+    "sessionError": false,
+    "updateAvailable": false,
+    "scratchpad": false
+  },
+  "scenarios": [
+    {
+      "id": "laptop-balanced",
+      "titleId": "lab.scenario.laptop-balanced",
+      "overrides": {}
+    },
+    {
+      "id": "laptop-power-saver",
+      "titleId": "lab.scenario.laptop-power-saver",
+      "overrides": {
+        "powerScene": "power-saver",
+        "battery.percent": 23,
+        "cpu.usage": 9,
+        "brightness": 44,
+        "policy.cpu": "efficient",
+        "policy.frequency": 65,
+        "policy.brightness": "dim"
+      }
+    },
+    {
+      "id": "laptop-performance",
+      "titleId": "lab.scenario.laptop-performance",
+      "overrides": {
+        "powerScene": "performance",
+        "cpu.usage": 71,
+        "cpu.temperature": 78,
+        "battery.charging": true,
+        "policy.cpu": "performance",
+        "activeApp": "terminal"
+      }
+    },
+    {
+      "id": "desktop-no-battery",
+      "titleId": "lab.scenario.desktop-no-battery",
+      "overrides": {
+        "capabilities.battery": false,
+        "capabilities.brightness": false,
+        "cpu.usage": 32,
+        "memory.usedPercent": 63
+      }
+    },
+    {
+      "id": "igpu-only-laptop",
+      "titleId": "lab.scenario.igpu-only-laptop",
+      "overrides": {}
+    },
+    {
+      "id": "hybrid-gpu-laptop",
+      "titleId": "lab.scenario.hybrid-gpu-laptop",
+      "overrides": {
+        "capabilities.discreteGpu": true,
+        "policy.gpu": "hybrid",
+        "policy.discreteOn": true,
+        "gpu.usage": 62,
+        "policy.refreshRate": 144
+      }
+    },
+    {
+      "id": "offline",
+      "titleId": "lab.scenario.offline",
+      "overrides": {
+        "network.enabled": false,
+        "network.connected": false,
+        "network.internet": false,
+        "weather.available": false,
+        "notifications.count": 2
+      }
+    },
+    {
+      "id": "weak-wifi",
+      "titleId": "lab.scenario.weak-wifi",
+      "overrides": {
+        "network.strength": 17,
+        "network.internet": false
+      }
+    },
+    {
+      "id": "bluetooth-connected",
+      "titleId": "lab.scenario.bluetooth-connected",
+      "overrides": {
+        "bluetooth.connectedDevices": 2,
+        "audio.output": "bluetooth"
+      }
+    },
+    {
+      "id": "chinese-input",
+      "titleId": "lab.scenario.chinese-input",
+      "overrides": {
+        "input.currentId": "pinyin",
+        "voice": "cute"
+      }
+    },
+    {
+      "id": "english-input",
+      "titleId": "lab.scenario.english-input",
+      "overrides": {
+        "locale": "en"
+      }
+    },
+    {
+      "id": "weather-rain",
+      "titleId": "lab.scenario.weather-rain",
+      "overrides": {
+        "weather.condition": "rain",
+        "weather.temperature": 13
+      }
+    },
+    {
+      "id": "weather-snow",
+      "titleId": "lab.scenario.weather-snow",
+      "overrides": {
+        "weather.condition": "snow",
+        "weather.temperature": -4
+      }
+    },
+    {
+      "id": "critical-battery",
+      "titleId": "lab.scenario.critical-battery",
+      "overrides": {
+        "battery.percent": 4,
+        "notifications.count": 1,
+        "powerScene": "power-saver"
+      }
+    },
+    {
+      "id": "high-temperature",
+      "titleId": "lab.scenario.high-temperature",
+      "overrides": {
+        "cpu.temperature": 96,
+        "cpu.usage": 94,
+        "gpu.temperature": 88,
+        "notifications.count": 1
+      }
+    },
+    {
+      "id": "dark-night",
+      "titleId": "lab.scenario.dark-night",
+      "overrides": {
+        "nightMode": true,
+        "time": "2026-10-17T22:18:00",
+        "voice": "cute",
+        "weather.condition": "clear",
+        "brightness": 35
+      }
+    },
+    {
+      "id": "presentation-mode",
+      "titleId": "lab.scenario.presentation-mode",
+      "overrides": {
+        "presentationMode": true,
+        "notifications.dnd": true,
+        "appearance.ambient": true,
+        "activeApp": "notes"
+      }
+    },
+    {
+      "id": "no-microphone",
+      "titleId": "lab.scenario.no-microphone",
+      "overrides": {
+        "capabilities.microphone": false
+      }
+    },
+    {
+      "id": "no-sensors",
+      "titleId": "lab.scenario.no-sensors",
+      "overrides": {
+        "capabilities.sensors": false
+      }
+    },
+    {
+      "id": "bluetooth-unavailable",
+      "titleId": "lab.scenario.bluetooth-unavailable",
+      "overrides": {
+        "capabilities.bluetooth": false,
+        "bluetooth.enabled": false
+      }
+    },
+    {
+      "id": "weather-provider-error",
+      "titleId": "lab.scenario.weather-provider-error",
+      "overrides": {
+        "weather.available": false
+      }
+    },
+    {
+      "id": "update-available",
+      "titleId": "lab.scenario.update-available",
+      "overrides": {
+        "updateAvailable": true,
+        "notifications.count": 4
+      }
+    },
+    {
+      "id": "session-error",
+      "titleId": "lab.scenario.session-error",
+      "overrides": {
+        "sessionError": true,
+        "notifications.count": 1
+      }
+    },
+    {
+      "id": "input-unavailable",
+      "titleId": "lab.scenario.input-unavailable",
+      "overrides": {
+        "input.available": false
+      }
+    }
+  ]
+}

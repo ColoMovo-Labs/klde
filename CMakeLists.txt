@@ -48,6 +48,9 @@ qt_add_resources(klde_backends klde_translations PREFIX / FILES
     translations/en.json translations/zh_CN.json
     translations/voices/cute/en.json translations/voices/cute/zh_CN.json)
 
+qt_add_resources(klde_backends klde_mock_data PREFIX / FILES
+    src/mock/scenarios.json src/status/modules.json)
+
 set(klde_assets assets/wallpapers/first-light.svg)
 foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather)
     list(APPEND klde_assets "assets/icons/${icon}.svg")
