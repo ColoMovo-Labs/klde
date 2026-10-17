@@ -141,7 +141,6 @@ ShellPopup {
             Flow {
                 visible: root.expanded
                 Layout.fillWidth: true
-                implicitHeight: childrenRect.height
                 spacing: Tokens.space8
                 ActionButton {
                     text: I18n.t("temporal.title")
