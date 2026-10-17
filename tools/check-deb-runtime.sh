@@ -23,6 +23,7 @@ test -s /usr/share/doc/klde-shell-preview/LICENSE
 test -s /usr/share/doc/klde-shell-preview/CC-BY-SA-4.0.txt
 test -s /usr/share/doc/klde-shell-preview/OFL-1.1.txt
 test -s /usr/share/doc/klde-shell-preview/Comfortaa-OFL.txt
+test -s /usr/share/doc/klde-shell-preview/Rubik-OFL.txt
 # Developer packages would mask a missing QML/plugin dependency in the .deb.
 if dpkg-query -W -f='${binary:Package} ${db:Status-Status}\n' 'qt6-*-dev' 2>/dev/null | grep -q ' installed$'; then
     echo 'Unexpected Qt development package in the runtime-only job' >&2

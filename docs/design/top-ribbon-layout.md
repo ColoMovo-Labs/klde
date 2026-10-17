@@ -1,56 +1,47 @@
-# Time as center, order as atmosphere
+# Screen axis and ribbon density
 
-The provisional KLDE shell takes spatial order, hierarchy and restraint from a
-Chinese contemporary design direction. This pass adds no traditional ornaments,
-festival palette or cultural motifs. The core stays globally usable.
+The ribbon has three independent zones. Left holds launcher/application, date
+and workspaces. Center holds the landscape. Right groups monitoring, connectivity
+and session controls. Outer margins are symmetric and each zone uses its natural
+painted width, so a short left zone does not allocate invisible blank panels.
 
-## Composition
+For screen width W, margin M and capsule width C, the ribbon has width W−2M.
+Its capsule X is `(W−2M−C)/2`; adding M gives screen left `(W−C)/2`, hence the
+center is exactly W/2. Side lanes end/start one group gap before/after the central
+reserved interval. Their contents may wrap vertically inside those lanes; they
+cannot push the center. Every group is vertically centered in one row band.
 
-```text
-[left: context · date · workspaces]  [Temporal Capsule]  [telemetry · connectivity · session]
-```
+## Degradation in logical pixels
 
-The Temporal Capsule owns the exact horizontal center of the viewport, regardless
-of left/right content width. Outer painted margins are symmetric: side groups use their natural content
-width up to the available lane, and the right lane is aligned to the outer edge. Side groups may have
-different widths; they share a height rhythm, surface, baseline and spacing scale.
-Groups of different heights are vertically centered in one shared row band.
-They wrap within their own lanes rather than shifting the temporal anchor. Below
-1000 logical pixels the two side lanes move below the center capsule. Long panels
-start below the full ribbon, not on top of its wrapped rows.
+Thresholds apply to the available ribbon width, not physical screenshot pixels.
+At 2× scaling a 1440 × 900 logical surface is a 2880 × 1800 capture.
 
-“Group tight, groups apart”: 2 px internal gaps, 4 px group padding and 12/16 px
-inter-group gaps depending on density. The existing spacing control adds space
-above that minimum. These values are shared tokens, not individual component rules.
-Comfortable/Balanced/Dense still alter density and low-priority visibility.
-
-## Semantic groups
-
-| Group | Contents / behavior |
+| Available width | Behavior |
 | --- | --- |
-| Context | Launcher and current application; overview/weather remain optional |
-| Date | Localized date and weekday; future solar terms are not implemented |
-| Workspace | Floating/tiling/mixed mock workspace selection |
-| Temporal | Pinned center; cannot be moved or individually hidden |
-| Telemetry | CPU/memory/temperature/battery in one composite two-column grid |
-| Connectivity | Wi-Fi/Bluetooth/audio/microphone; shared enclosing surface |
-| Session | Input/notifications/settings/power; shared enclosing surface |
-| Extras | Optional power-scene module |
+| 1500+ | Standard landscape; full short values and normal 2×2 telemetry |
+| 1160–1499 | Compress telemetry cells; omit redundant text and optional mic/mood entries |
+| 880–1159 | Compact landscape; fold date/input/Bluetooth and monitoring into existing menus |
+| Under 880 | Keep the center on the first band; move two side lanes underneath |
 
-CPU/memory/temperature/battery retain stable registry IDs and individual actions,
-but do not each own a capsule background. Cells remain keyboard focusable, have
-accessible names, and retain warning/critical text markers. Missing battery is
-omitted; absent sensors show an unavailable value. Short-lived metric changes do
-not resize or reorder groups.
+The existing system dashboard retains all monitoring values; Quick Settings and
+Input/notification panels retain the folded functions. No service/registry state
+is disabled by visual folding. Warning markers and accessible names survive.
+Custom registry spacing can cause additional side-lane wrapping without moving
+the center. The full-ribbon visibility preference remains available.
 
-The registry reserves Center for time. Other modules can move between Left and
-Right; ordering controls reorder within a semantic group. This intentionally
-replaces the earlier unrestricted three-lane pill experiment. Full ribbon hiding
-remains an explicit preference. Existing 20 module IDs are preserved.
+Spacing tokens use 4 px group padding, 4/8 px content gaps, 12/16 px module gaps
+and 24 px separation for major desktop regions. Controls share a 40 px row (44
+in Comfortable), group height 48/52, and centers rather than arbitrary top edges.
+The telemetry enclosure has no redundant individual capsule backgrounds. Its
+four stable IDs are CPU, RAM, temperature and battery; unavailable battery is
+omitted, absent sensors show an em dash. Values are explicitly Mock in tooltips
+and the existing detail dashboard.
 
-## Acceptance
+## Verification
 
-The earlier seven baselines remain immutable, revision-labelled references.
-New source must receive CircleCI rendering and human image inspection at six
-sizes, both languages, voices and themes before selecting replacement baselines.
-Source edits and formatter success alone do not establish visual acceptance.
+Cloud Qt Quick tests exercise 640/1024/1366/1600/1920/2560/3440 logical widths,
+three densities, exact center and outer-edge constraints, plus side-lane collision
+bounds. The visual matrix captures 1366×768, 1600×900, 1920×1080 and 2560×1440,
+alongside prior HiDPI/portrait/ultrawide cases. Native Qt ribbon crops retain their
+original resolution. Geometric success must be accompanied by actual PNG review;
+it does not establish visual quality by itself.

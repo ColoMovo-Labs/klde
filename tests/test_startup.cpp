@@ -3,6 +3,7 @@
 #include <QFont>
 #include <QImageReader>
 #include <QQmlApplicationEngine>
+#include <QQuickItem>
 #include <QQuickWindow>
 #include <QRawFont>
 #include <QSignalSpy>
@@ -35,6 +36,22 @@ class ShellStartupTest final : public QObject {
         QTRY_VERIFY(window->title().contains(QStringLiteral("桌面外壳")));
         QVERIFY(QRawFont::fromFont(QFont(QStringLiteral("Noto Sans CJK SC")))
                     .supportsCharacter(0x4e2dU));
+        auto *center = window->findChild<QQuickItem *>(QStringLiteral("ribbonCenter"));
+        QVERIFY(center != nullptr);
+        QTest::mouseClick(
+            window, Qt::LeftButton, Qt::NoModifier,
+            center->mapToScene(QPointF(center->width() / 2, center->height() / 2)).toPoint());
+        auto *detail = window->findChild<QObject *>(QStringLiteral("temporalDetail"));
+        QVERIFY(detail != nullptr);
+        QTRY_VERIFY(detail->property("opened").toBool());
+        QVERIFY(QMetaObject::invokeMethod(detail, "close"));
+        auto *clockLayer = window->findChild<QObject *>(QStringLiteral("desktopClockLayer"));
+        QVERIFY(clockLayer != nullptr);
+        QVERIFY(!clockLayer->property("visible").toBool());
+        QVERIFY(services->state()->requestValue("appearance.ambient", true));
+        QTRY_VERIFY(clockLayer->property("visible").toBool());
+        QVERIFY(services->state()->requestValue("appearance.ambient", false));
+        QTRY_VERIFY(!clockLayer->property("visible").toBool());
         QVERIFY(services->scenes()->select(QStringLiteral("power-saver")));
         QTRY_COMPARE(tokens->property("reducedMotion").toBool(), true);
         QVERIFY(services->scenes()->select(QStringLiteral("performance")));

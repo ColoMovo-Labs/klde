@@ -81,7 +81,12 @@ set(klde_assets assets/wallpapers/first-light.svg
     assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf
     assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf)
 foreach(phase clear-morning cloudy-day sunset rainy-evening starry-night moonlit-night)
-    list(APPEND klde_assets "assets/temporal/${phase}-sky.svg" "assets/temporal/${phase}-land.svg")
+    foreach(size compact standard expanded)
+        list(APPEND klde_assets "assets/temporal/${phase}-land-${size}.svg")
+    endforeach()
+endforeach()
+foreach(stem abstract quiet kemono depth-foreground soft-cache-study lock-cache-study)
+    list(APPEND klde_assets "assets/wallpapers/${stem}-night.svg")
 endforeach()
 list(APPEND klde_assets assets/temporal/moon.svg assets/wallpapers/first-night.svg
     "assets/fonts/rubik/Rubik[wght].ttf")

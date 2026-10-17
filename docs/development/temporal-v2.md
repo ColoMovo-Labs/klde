@@ -25,3 +25,39 @@ explicitly simulated; a future real provider must supply independent nullable
 rise/set data, moon visibility, phase, season and weather provenance.
 
 Validation and preview provenance will be filled from CircleCI, not local builds.
+
+## Implementation record
+
+C. Independent center and bounded side lanes reuse the registry; graded folding
+replaces whole-ribbon scaling. Monitoring fits the row as a shared 2×2 control.
+D. Default/Clock/Focus selection reuses the Temporal detail page. Rubik 800 has
+pinned OFL provenance and is packaged with its notice. Four original wallpaper
+families have explicit night resources; scene cache studies have night variants.
+Night surfaces, ink, borders, shadows and accents use an independent blue/indigo/
+moonlight palette, without a global day-wallpaper dimming veil.
+E. Cloud validation is pending; no local build, tests or lint are performed.
+
+## Limits
+
+Time, weather, astronomy, resource telemetry and all system actions remain Mock.
+The existing wallpaper-cache and optional-app contracts are preserved, not
+expanded into integrations. No Wayland compositor, WindInput, real weather,
+Waydroid process or segmentation model is added in this correction.
+
+A one-second scene-graph idle-frame count in llvmpipe detects continuous redraw;
+it is not a CPU, RAM, FPS or real GPU benchmark. Representative hardware power,
+frame latency, assistive technology and native speaker visual review remain open.
+
+## Research
+
+- [Rubik official source and license](https://github.com/google/fonts/tree/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/rubik)
+- [Qt image caching and SVG sizing](https://doc.qt.io/qt-6/qml-qtquick-image.html)
+- [Qt performance considerations](https://doc.qt.io/qt-6/qtquick-performance.html)
+
+No external reference artwork or Google proprietary font is copied.
+
+The first cloud comparison (source `61e8f7a`, pipeline 46, integration 339)
+confirmed six distinguishable landscapes but exposed unsupported SVG `clipPath`
+behavior: square corners escaped the pill. The correction bakes convex terrain
+intersection into vector paths and uses a rounded sky outline. It adds no runtime
+mask/FBO. The offline generator is `tools/generate-temporal-assets.py`.

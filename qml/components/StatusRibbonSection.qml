@@ -6,6 +6,7 @@ import KLDE.Backends
 Flow {
     id: root
     required property int section
+    property int degradation: 0
     signal action(string moduleId)
     property int layoutRevision: 0
     readonly property real naturalWidth: {
@@ -34,6 +35,7 @@ Flow {
             visible: group.entries.length > 0
             RibbonGroup {
                 id: group
+                degradation: root.degradation
                 section: root.section
                 groupId: groupCell.modelData
                 y: (parent.height - height) / 2

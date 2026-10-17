@@ -8,7 +8,10 @@ Item {
     property bool lockPreview: false
     readonly property var effects: Shell.wallpaperEffects.state
     readonly property string choice: Shell.state.snapshot.appearance.wallpaper
-    readonly property string original: "qrc:/assets/wallpapers/" + (choice === "snow" ? "first-light" : choice) + ".svg"
+    readonly property string original: "qrc:/assets/wallpapers/" + (choice === "snow" ? Tokens.darkMode ? "first-night" : "first-light" : choice + (Tokens.darkMode ? "-night" : "")) + ".svg"
+    function nightAsset(source: string): string {
+        return Tokens.darkMode && source.length > 0 ? source.replace(".svg", "-night.svg") : source;
+    }
     Image {
         anchors.fill: parent
         visible: !root.foregroundOnly
@@ -19,7 +22,7 @@ Item {
     Image {
         anchors.fill: parent
         visible: !root.foregroundOnly && (root.lockPreview ? root.effects.lockAsset.length > 0 : root.effects.effectiveMode === "soft-blur")
-        source: visible ? root.lockPreview ? root.effects.lockAsset : root.effects.softAsset : ""
+        source: visible ? root.nightAsset(root.lockPreview ? root.effects.lockAsset : root.effects.softAsset) : ""
         opacity: (root.lockPreview ? root.effects.lockBlurStrength : root.effects.blurStrength) / 3
         sourceSize: Qt.size(width, height)
         fillMode: Image.PreserveAspectCrop
@@ -27,7 +30,7 @@ Item {
     Image {
         anchors.fill: parent
         visible: root.foregroundOnly && root.effects.effectiveMode === "depth"
-        source: visible ? root.effects.foregroundAsset : ""
+        source: visible ? root.nightAsset(root.effects.foregroundAsset) : ""
         sourceSize: Qt.size(width, height)
         fillMode: Image.PreserveAspectCrop
         scale: 1 + [0, Tokens.depthLow, Tokens.depthMedium, Tokens.depthHigh][root.effects.depthTier]
@@ -36,6 +39,6 @@ Item {
         anchors.fill: parent
         visible: !root.foregroundOnly
         color: Tokens.background
-        opacity: root.lockPreview && !Tokens.darkMode ? Tokens.wallpaperDim : Tokens.darkMode ? Tokens.darkWallpaperShade : 0
+        opacity: root.lockPreview && !Tokens.darkMode ? Tokens.wallpaperDim : 0
     }
 }

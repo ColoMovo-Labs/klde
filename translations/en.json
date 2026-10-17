@@ -376,7 +376,7 @@
   "temporal.season.note": "Northern-hemisphere month study; not local astronomical data",
   "temporal.phase.auto": "Follow scenario time",
   "temporal.phase.clear-morning": "Morning light",
-  "temporal.phase.cloudy-day": "Daylight",
+  "temporal.phase.cloudy-day": "Sunny afternoon",
   "temporal.phase.sunset": "Sunset",
   "temporal.phase.rainy-evening": "Rainy dusk",
   "temporal.phase.starry-night": "Starry night",
@@ -438,5 +438,14 @@
   "temporal.study.sizes": "One landscape, three sizes",
   "temporal.size.compact": "Compact · 160 × 40",
   "temporal.size.standard": "Standard · 208 × 48",
-  "temporal.size.expanded": "Expanded · 400 × 144"
+  "temporal.size.expanded": "Expanded · 400 × 144",
+  "temporal.desktop-mode": "Desktop composition",
+  "temporal.mode.default": "Default · ribbon time",
+  "temporal.mode.clock": "Clock desktop",
+  "temporal.mode.focus": "Focus · clock and date",
+  "temporal.astronomy": "Simulated astronomy · not location based",
+  "temporal.sun-events": "Sunrise / sunset",
+  "temporal.moon-events": "Moonrise / moonset",
+  "temporal.moon-phase": "Mock waning crescent",
+  "temporal.study.open": "Compare all six landscapes"
 }

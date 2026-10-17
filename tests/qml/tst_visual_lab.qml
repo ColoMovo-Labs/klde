@@ -42,6 +42,10 @@ Item {
         id: wallpaperComponent
         WallpaperEffectsSettings {}
     }
+    Component {
+        id: temporalPanelComponent
+        TemporalSettings {}
+    }
     TestCase {
         name: "VisualLabInteraction"
         when: windowShown
@@ -54,6 +58,29 @@ Item {
             Shell.mockScenarios.apply("laptop-balanced");
             Tokens.reducedMotion = false;
             Tokens.densityMode = 1;
+        }
+        function test_desktopClockCanBeDisabledFromTheKeyboard(): void {
+            const panel = createTemporaryObject(temporalPanelComponent, testRoot, {
+                parent: testRoot
+            });
+            panel.open();
+            tryCompare(panel, "opened", true);
+            const choice = findChild(panel, "desktopModeChoice");
+            choice.forceActiveFocus();
+            keyClick(Qt.Key_Space);
+            tryCompare(choice.popup, "opened", true);
+            keyClick(Qt.Key_End);
+            keyClick(Qt.Key_Return);
+            compare(Shell.state.snapshot.appearance.ambient, true);
+            compare(Shell.state.snapshot.appearance.focus, true);
+            choice.forceActiveFocus();
+            keyClick(Qt.Key_Space);
+            tryCompare(choice.popup, "opened", true);
+            keyClick(Qt.Key_Home);
+            keyClick(Qt.Key_Return);
+            compare(Shell.state.snapshot.appearance.ambient, false);
+            compare(Shell.state.snapshot.appearance.focus, false);
+            panel.close();
         }
         function test_ambientCompositionFitsShortSurfaces(): void {
             const ambient = createTemporaryObject(ambientComponent, testRoot, {
@@ -158,7 +185,7 @@ Item {
         function test_ribbonWrapsAndRemainsBounded(): void {
             const ribbon = createTemporaryObject(ribbonComponent, testRoot);
             verify(ribbon !== null);
-            for (const width of [1024, 1366, 1920, 2560, 3440]) {
+            for (const width of [640, 1024, 1366, 1600, 1920, 2560, 3440]) {
                 ribbon.width = width;
                 for (const density of [0, 1, 2]) {
                     Tokens.densityMode = density;
@@ -167,7 +194,27 @@ Item {
                     verify(ribbon.implicitHeight < 250);
                     const center = findChild(ribbon, "ribbonCenter");
                     verify(center !== null);
+                    const left = findChild(ribbon, "ribbonLeft");
                     const right = findChild(ribbon, "ribbonRight");
+                    verify(left !== null);
+                    if (!ribbon.stacked) {
+                        verify(left.x + left.width <= center.x - Tokens.ribbonGroupGap + 1);
+                        verify(right.x >= center.x + center.width + Tokens.ribbonGroupGap - 1);
+                    } else {
+                        verify(left.y >= center.y + center.height);
+                        verify(right.y >= center.y + center.height);
+                    }
+                    for (const section of [left, right]) {
+                        for (const id of ["context", "date", "workspaces", "telemetry", "connectivity", "session", "extras"]) {
+                            const group = findChild(section, "ribbonGroup-" + id);
+                            if (group && group.entries.length > 0) {
+                                const position = group.mapToItem(ribbon, 0, 0);
+                                verify(position.x >= section.x - 1, id + " starts inside lane");
+                                verify(position.x + group.width <= section.x + section.width + 1, id + " ends inside lane");
+                            }
+                        }
+                    }
+                    console.info("axis-geometry", width, density, center.x + center.width / 2 - width / 2, "right-edge", right.x + right.width);
                     verify(right !== null);
                     verify(Math.abs(right.x + right.width - width) < 1);
                     verify(Math.abs(center.x + center.width / 2 - width / 2) < 1);
@@ -177,6 +224,13 @@ Item {
                     }
                 }
             }
+            const center = findChild(ribbon, "ribbonCenter");
+            for (const id of ["context", "date", "notifications", "bluetooth"]) {
+                verify(Shell.ribbon.setVisible(id, false));
+                wait(0);
+                verify(Math.abs(center.x + center.width / 2 - ribbon.width / 2) <= 1);
+            }
+            Shell.ribbon.reset();
             Shell.mockScenarios.apply("desktop-no-battery");
             compare(Shell.state.snapshot.capabilities.battery, false);
         }

@@ -7,24 +7,25 @@ import KLDE.Backends
 Button {
     id: root
     required property string moduleId
+    property bool condensed: false
     readonly property var cells: Shell.telemetry.cells
     readonly property var reading: cells.find(c => c.id === moduleId) || ({
             value: "—",
             severity: 0,
             available: false
         })
-    width: Tokens.telemetryCellWidth
+    width: condensed ? Tokens.telemetryCompactWidth : Tokens.telemetryCellWidth
     height: Tokens.telemetryCellHeight
-    padding: Tokens.space4
-    Accessible.name: I18n.t("lab.module." + moduleId) + ", " + reading.value + (reading.available ? "" : ", " + I18n.t("lab.unavailable"))
+    padding: 0
+    Accessible.name: I18n.t("lab.preview") + ", " + I18n.t("lab.module." + moduleId) + ", " + reading.value + (reading.available ? "" : ", " + I18n.t("lab.unavailable"))
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
     contentItem: RowLayout {
         spacing: Tokens.space4
         Icon {
             name: root.moduleId === "temperature" ? "thermometer" : root.moduleId
-            Layout.preferredWidth: Tokens.iconS
-            Layout.preferredHeight: Tokens.iconS
+            Layout.preferredWidth: Tokens.telemetryIcon
+            Layout.preferredHeight: Tokens.telemetryIcon
         }
         Label {
             text: (root.reading.severity > 0 ? "! " : "") + root.reading.value

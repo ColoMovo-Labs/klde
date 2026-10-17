@@ -30,4 +30,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" "${CMAKE_SOURCE_DIR}/LICENSES/CC-BY-
 install(FILES "${CMAKE_SOURCE_DIR}/assets/fonts/comfortaa/OFL.txt"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/klde-shell-preview"
     RENAME Comfortaa-OFL.txt)
+install(FILES "${CMAKE_SOURCE_DIR}/assets/fonts/rubik/OFL.txt"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/klde-shell-preview"
+    RENAME Rubik-OFL.txt)
 include(CPack)

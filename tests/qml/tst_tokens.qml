@@ -24,7 +24,7 @@ TestCase {
         tryCompare(Tokens.glowRegular, "status", FontLoader.Ready);
         tryCompare(Tokens.glowMedium, "status", FontLoader.Ready);
         tryCompare(Tokens.clockFace, "status", FontLoader.Ready);
-        verify(Tokens.displayClockFont.indexOf("Comfortaa") >= 0);
+        verify(Tokens.displayClockFont.indexOf("Rubik") >= 0);
         verify(Tokens.displayClockFont !== Tokens.fontFamily);
         verify(Tokens.fontFamily.indexOf("Glow") >= 0);
     }

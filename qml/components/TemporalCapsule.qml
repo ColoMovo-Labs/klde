@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import KLDE.Backends
 
 Button {
@@ -21,6 +20,7 @@ Button {
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
     background: TemporalLandscape {
+        sizeMode: root.sizeMode
         reading: root.reading
     }
     contentItem: Item {

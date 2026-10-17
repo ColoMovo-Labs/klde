@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import KLDE.Backends
@@ -6,6 +7,8 @@ import KLDE.Backends
 Surface {
     id: root
     property bool compact: false
+    property bool grouped: false
+    decorationVisible: !grouped
     implicitWidth: workspaceRow.implicitWidth + Tokens.space16
     width: implicitWidth
     implicitHeight: compact ? Tokens.ribbonHeight : Tokens.controlHeight + Tokens.space16

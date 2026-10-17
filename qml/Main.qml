@@ -16,6 +16,7 @@ ApplicationWindow {
     property int initialDensity: 1
     property string initialWallpaper: "snow"
     property bool initialAmbient: false
+    property bool initialFocus: false
     property bool developerTools: false
     objectName: "shellWindow"
     width: Tokens.previewWidth
@@ -169,6 +170,8 @@ ApplicationWindow {
         Shell.state.requestValue("appearance.wallpaper", initialWallpaper);
         if (initialAmbient)
             Shell.state.requestValue("appearance.ambient", true);
+        if (initialFocus)
+            Shell.state.requestValue("appearance.focus", true);
         applyScene();
         showView(developerTools ? "mock-lab" : initialView);
     }
@@ -235,19 +238,12 @@ ApplicationWindow {
         }
     }
     AmbientDesktop {
+        objectName: "desktopClockLayer"
         visible: window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.space24
         width: parent.width - Tokens.desktopMargin * 2
         height: dock.y - y - Tokens.space24
-    }
-    DisplayClock {
-        visible: !window.snapshot.appearance.ambient
-        pixelSize: Tokens.workingClockSize * Tokens.textScale
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: window.popupTop + Tokens.space16
-        width: implicitWidth
-        height: implicitHeight
     }
     WallpaperLayers {
         anchors.fill: parent
@@ -278,6 +274,7 @@ ApplicationWindow {
     }
     Dock {
         id: dock
+        visible: !window.snapshot.appearance.focus
         backdropSource: wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

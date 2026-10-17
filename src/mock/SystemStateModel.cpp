@@ -153,6 +153,10 @@ bool SystemStateModel::requestValue(const QString &path, const QVariant &input) 
     if (value(path) == newValue)
         return true;
     assign(m_snapshot, path, newValue);
+    if (path == "appearance.focus" && newValue.toBool())
+        assign(m_snapshot, "appearance.ambient", true);
+    if (path == "appearance.ambient" && !newValue.toBool())
+        assign(m_snapshot, "appearance.focus", false);
     if (path == "waydroid.available" && !newValue.toBool())
         assign(m_snapshot, "waydroid.running", false);
     if (path == "policy.gpu")

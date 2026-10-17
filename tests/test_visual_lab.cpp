@@ -13,6 +13,8 @@ class VisualLabTest final : public QObject {
         QVERIFY(shell.mockScenarios()->apply("starry-night"));
         QCOMPARE(shell.time()->reading().value("phase").toString(), QStringLiteral("starry-night"));
         QCOMPARE(shell.time()->reading().value("season").toString(), QStringLiteral("winter"));
+        QVERIFY(!shell.time()->reading().value("moonVisible").toBool());
+        QVERIFY(shell.time()->reading().value("astronomy").toMap().value("simulated").toBool());
         QVERIFY(shell.state()->advanceMinutes(1));
         QCOMPARE(shell.time()->reading().value("timeText").toString(), QStringLiteral("22:21"));
         QVERIFY(shell.mockScenarios()->apply("wallpaper-depth-enabled"));

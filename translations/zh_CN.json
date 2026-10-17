@@ -376,7 +376,7 @@
   "temporal.season.note": "北半球月份示例，不代表所在地天文数据",
   "temporal.phase.auto": "随场景时间",
   "temporal.phase.clear-morning": "晨光",
-  "temporal.phase.cloudy-day": "日间",
+  "temporal.phase.cloudy-day": "晴朗午后",
   "temporal.phase.sunset": "日落",
   "temporal.phase.rainy-evening": "雨暮",
   "temporal.phase.starry-night": "星夜",
@@ -438,5 +438,14 @@
   "temporal.study.sizes": "同一景观，三种尺寸",
   "temporal.size.compact": "Compact · 160 × 40",
   "temporal.size.standard": "Standard · 208 × 48",
-  "temporal.size.expanded": "Expanded · 400 × 144"
+  "temporal.size.expanded": "Expanded · 400 × 144",
+  "temporal.desktop-mode": "桌面显示模式",
+  "temporal.mode.default": "默认桌面 · 顶栏时间",
+  "temporal.mode.clock": "时钟桌面",
+  "temporal.mode.focus": "专注桌面 · 时间与日期",
+  "temporal.astronomy": "模拟天文数据 · 未使用定位",
+  "temporal.sun-events": "日出 / 日落",
+  "temporal.moon-events": "月出 / 月落",
+  "temporal.moon-phase": "模拟残月",
+  "temporal.study.open": "对照六种时序景观"
 }

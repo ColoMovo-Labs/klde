@@ -22,11 +22,17 @@ Full provenance and OFL notices: [font assets](../../assets/fonts/README.md).
 
 ## Dedicated display clock
 
-Large desktop and future lock-screen numerals use unmodified **Comfortaa Bold**,
-OFL-1.1, through `displayClockFont`, `displayClockWeight` and
-`displayClockTracking`. This rounded display face is not applied to menus, body
-text or the compact ribbon. Fixed digit slots balance numeral widths; the colon
-uses two aligned discs and never blinks. A working clock uses the same family at
-smaller emphasis; Ambient uses the display scale. No Google Sans/Product Sans is
-bundled. Final weight, numeral proportions and colon alignment require cloud
-captures and visual review; a font choice alone is not acceptance.
+Large desktop and lock-preview numerals use unmodified **Rubik**, weight 800,
+OFL-1.1. It replaces the earlier Comfortaa Bold proposal, whose strokes were too
+light at desktop scale. Rounded corners, fuller counters and a wider numeral
+body carry the hierarchy. Fixed digit slots use 0.64 em, the colon uses two discs
+in a 0.28 em slot and never blinks. No system font installation or runtime font
+download occurs. Chinese interface typography remains independent.
+
+Default desktop has no duplicate display clock. Clock and Focus modes explicitly
+opt into a 224 px maximum, constrained by available height/width. A preset name
+or font weight alone does not establish acceptance: inspect real cloud captures.
+
+Rubik provenance: [pinned font and original OFL notice](../../assets/fonts/rubik/README.md).
+The earlier Comfortaa resource and notice remain for historical compatibility;
+it is no longer selected. Google Sans/Product Sans is not bundled.

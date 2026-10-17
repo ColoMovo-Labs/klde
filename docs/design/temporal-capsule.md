@@ -1,46 +1,62 @@
-# Temporal Capsule / 时序胶囊
+# Temporal Capsule 2.0 / 时序胶囊
 
-Time is the primary anchor. The capsule is a quiet geometric micro-scene, not a
-miniature animated landscape. A 44 px scene uses a disc/crescent, a horizon, a
-cloud bar and at most three static stars or rain marks. Four small seasonal dots
-add rhythm; accessible text names the selected phase and season. Color is not
-the only information channel.
+The time lives inside a horizontal landscape. It is no longer a circular weather
+icon placed next to a clock. One component owns three layers: a cached gradient
+sky; separately positioned sun/moon and cached mountain/cloud/star/rain geometry;
+and time over a local dark gradient for legibility. Three mountain distances
+carry the silhouette across the full pill. No cultural ornaments are introduced.
+All scene artwork is original CC BY-SA 4.0 geometry.
 
-## Two related proposals in the prototype
+| Scene | Sky / terrain / celestial cues |
+| --- | --- |
+| Morning | Lavender sky, warm gold sun, soft violet ridges |
+| Sunny afternoon | Pale blue, small white clouds, high bright sun |
+| Sunset | Purple sky, orange horizon, low sun behind the ridge |
+| Rainy dusk | Blue grey, layered clouds and a few static rain marks |
+| Starry night | Deep blue, five small stars, low luminance ridges; no implied moon |
+| Moonlit night | Cyan moonlight, independent crescent, quiet teal ridges |
 
-1. **Compact ribbon capsule**: restrained time text, geometric scene and seasonal
-   dots, 176/192 × 66 logical pixels. It stays on the viewport centerline.
-2. **Rich capsule**: the same grammar at 320 × 84, with a phase label. Ambient
-   composition hides its duplicate time because the display clock already owns
-   the center. The Temporal settings page shows the complete rich form.
+The historical fixture ID `cloudy-day` is retained for compatibility; its visible
+name is Sunny afternoon. Six presets are conditions of one component, not six
+independent implementations. `temporal-study` displays all six Standard scenes
+and the three sizes together, at a readable 1440 × 1000 logical surface.
 
-Lighting studies: morning light, daylight, sunset, rainy dusk, starry night and
-moonlit night. Weather mood is an independent cue within the lighting study. The mock backend derives an automatic phase from scenario time
-with optional overrides. Seasons use northern-hemisphere months as a labelled
-fixture. These are illustrative mood states; there is no location, ephemeris,
-sunrise/sunset calculation or physical moon phase claim.
+| Size | Logical dimensions | Usage |
+| --- | --- | --- |
+| Compact | 160 × 40 | Narrow ribbon, landscape and time retained |
+| Standard | 208 × 48 | Default top anchor |
+| Expanded | 400 × 144 | Click detail only, not a permanent ribbon element |
 
-## Time contract and motion
+Expanded detail also shows date, season and explicitly simulated rise/set data.
+The time uses bundled OFL Rubik; Chinese UI retains Glow Sans. A local ink veil
+provides contrast without a live blur or text shadow filter.
 
-`TimeBackend.reading` exposes ISO date/time, hour/minute strings, phase, season,
-night state and weather mood. `MockTimeBackend` follows the central scenario and
-manual one-minute advances. It has no timer, no network request and no particles.
-A future live provider should publish on minute boundaries and relevant clock,
-timezone, resume or weather changes. It must not cause per-second repainting.
-Suspend its visual delivery when no visible consumer needs it, then refresh once
-on resume. Astronomical data would require explicit location/timezone semantics.
+## Time and astronomy contract
 
-Only relevant geometry/tint changes receive finite transitions. Hidden scenes
-and reduced motion bypass those transitions. A static phase has no active loop,
-shader animation or continuously redrawn Canvas.
+`TimeBackend.reading` keeps ISO date/time, stable hour/minute strings, phase,
+season, weather provenance and `mock`. Sun and moon have separate visibility and
+normalized coordinates. The `astronomy` map declares availability, simulation,
+sunrise, sunset, moonrise, moonset and phase. Mock events are fixed fixtures,
+not location-derived astronomy. Manual phase overrides are explicitly art states.
+The independent mock moon window crosses midnight; starry night does not infer
+a visible moon just because it is dark.
 
-## Ambient and working modes
+A real provider must supply independently valid nullable sun/moon event data,
+visibility, season convention and weather provenance, including polar/no-event
+cases. It must not infer moonrise from sunset. No real provider is added here.
 
-Working mode uses a 56 px display clock beneath the ribbon and keeps application
-context prominent. The welcome message is limited to an empty preview desktop.
-Ambient mode opts into a 184 px central display clock, date, weather, rich capsule
-and media. Text width and height budgets scale the clock for the available surface. Short
-windows drop the rich mood/weather detail, then the media card, before allowing
-the composition to overlap the ribbon or dock.
-Neither mode is a secure lock screen. Automatic idle transitions are future work;
-the prototype switches explicitly in the Mock Lab or Temporal page.
+Mock time advances manually in minutes. Sun X is quantized to 15-minute steps;
+SVG source and raster size do not change on each minute tick. A future live
+provider should publish minute boundaries and clock/timezone/resume events,
+never a per-frame astronomy loop. No network request or AI generation occurs.
+Finite position/scene transitions stop while hidden, rendering is suspended or
+reduced motion is enabled. Static SVGs use Qt Image caching at the requested
+physical size. Canvas offers no advantage for these fixed curves and is unused.
+
+## Desktop time hierarchy
+
+Default: only the ribbon time entry. Clock: opt into the large centered time and
+date, with weather and media in separate lower side regions. Focus: time/date
+with secondary content and Dock hidden. The existing lock preview uses the same
+display face, date and a disclosed mock surface; it cannot authenticate or lock.
+No automatic idle mode switch is implemented.

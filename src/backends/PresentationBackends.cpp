@@ -29,8 +29,8 @@ QVariantMap MockTimeBackend::reading() const {
     const bool sunVisible = phase == "clear-morning" || phase == "cloudy-day" || phase == "sunset";
     const bool moonVisible = phase == "moonlit-night" && (manualPhase || moonAboveHorizon);
     // Quantized to 15 minutes. A minute tick updates text, not the cached SVGs.
-    const double dayProgress =
-        qBound(0.0, (hour * 60 + time.minute() / 15 * 15 - 380) / 710.0, 1.0);
+    const int sampledMinutes = hour * 60 + time.minute() / 15 * 15;
+    const double dayProgress = qBound(0.0, (sampledMinutes - 380) / 710.0, 1.0);
     const int month = date.date().month();
     const auto season = month >= 3 && month <= 5    ? "spring"
                         : month >= 6 && month <= 8  ? "summer"

@@ -39,15 +39,22 @@ def main():
     cases.append(dict(id='ambient-laptop', size='1366x768', ambient=True, density='dense'))
     cases.append(dict(id='lock-screen-dark', scenario='lock-screen-blur-enabled', view='lock-preview', dark=True, ambient=True))
     cases.append(dict(id='temporal-study', view='temporal-study', size='1440x1000'))
+    for name, size in [('hdplus','1600x900'), ('fhd','1920x1080'), ('qhd','2560x1440'), ('narrow','1366x768')]:
+        cases.append(dict(id='axis-'+name, size=size))
+    cases.extend([dict(id='night-desktop', scenario='moonlit-night', dark=True),
+                  dict(id='focus-desktop', focus=True, ambient=True),
+                  dict(id='ribbon-detail', region='ribbon'),
+                  dict(id='ribbon-narrow-detail', size='1366x768', region='ribbon')])
     records=[]
     for case in cases:
-        options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False)
+        options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False, focus=False, region='full')
         options.update(case)
         stem=output / options['id']
         command=[str(binary), '--smoke-test', '--audit-idle', '--capture', str(stem)+'.png']
         for key in ('locale','voice','scenario','density','size','wallpaper','view'):
             command.extend(['--'+key,options[key]])
-        for key in ('dark','ambient'):
+        command.extend(['--capture-region',options['region']])
+        for key in ('dark','ambient','focus'):
             if options[key]: command.append('--'+key)
         env=dict(os.environ,QT_SCALE_FACTOR=str(options['scale']))
         with Path(str(stem)+'.log').open('w') as log:
@@ -57,7 +64,9 @@ def main():
         if capture.exists():
             record['physicalSize']=list(struct.unpack('>II',capture.read_bytes()[16:24]))
             logical=[int(n) for n in options['size'].split('x')]
-            if record['physicalSize'] != [n*options['scale'] for n in logical]:
+            if options['region'] == 'ribbon':
+                record['logicalCropHeight']=record['physicalSize'][1]/options['scale']
+            if record['physicalSize'][0] != logical[0]*options['scale'] or (options['region'] == 'full' and record['physicalSize'][1] != logical[1]*options['scale']):
                 record['exitCode']=1
         else:
             record['exitCode']=1
