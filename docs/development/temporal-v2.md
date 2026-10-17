@@ -13,7 +13,7 @@ Dock, notifications, existing services and preview pages remain in place.
 
 A. Inspect existing QML, tokens, state schema and cloud capture pipeline: done.
 B. Original six-scene landscape, three sizes, one comparison surface:
-`klde-shell --view temporal-study --size 1440x1000`. Cloud preview pending.
+`klde-shell --view temporal-study --size 1440x1000`.
 C. Rebalance independent left/center/right zones with explicit degradation.
 D. Optional clock/focus modes, heavier OFL display face and a true night palette.
 E. Cloud interactions, four logical resolutions, real capture inspection.
@@ -35,7 +35,8 @@ pinned OFL provenance and is packaged with its notice. Four original wallpaper
 families have explicit night resources; scene cache studies have night variants.
 Night surfaces, ink, borders, shadows and accents use an independent blue/indigo/
 moonlight palette, without a global day-wallpaper dimming veil.
-E. Cloud validation is pending; no local build, tests or lint are performed.
+E. Cloud validation is recorded against the exact pushed commit; no local build,
+tests or lint are performed.
 
 ## Limits
 
@@ -57,7 +58,8 @@ frame latency, assistive technology and native speaker visual review remain open
 No external reference artwork or Google proprietary font is copied.
 
 The first cloud comparison (source `61e8f7a`, pipeline 46, integration 339)
-confirmed six distinguishable landscapes but exposed unsupported SVG `clipPath`
-behavior: square corners escaped the pill. The correction bakes convex terrain
-intersection into vector paths and uses a rounded sky outline. It adds no runtime
-mask/FBO. The offline generator is `tools/generate-temporal-assets.py`.
+confirmed six distinguishable landscapes but exposed incomplete path clipping:
+cloud and rain layers could escape the pill. The offline generator now keeps a
+size-specific SVG `clipPath` around every layer and still bakes convex terrain
+intersection into vector paths. It adds no runtime mask/FBO. The generator is
+`tools/generate-temporal-assets.py`.

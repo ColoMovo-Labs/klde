@@ -86,3 +86,14 @@ Comfortaa Bold: unmodified Fedora 3.105 package asset, OFL-1.1; original notices
 reserved name and FONTLOG retained. See [font provenance](../../assets/fonts/README.md).
 The project bundles no proprietary Google display font. New wallpaper layer
 studies are original vectors, not output copied from a segmentation model.
+
+## Rubik display correction
+
+The unmodified `Rubik[wght].ttf` is from Google Fonts commit
+`8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5`, copyright 2015 The Rubik Project Authors,
+SIL OFL 1.1. [Exact provenance and SHA-256](../../assets/fonts/rubik/README.md),
+original OFL, upstream metadata and source history are retained. Its notice is
+installed as `Rubik-OFL.txt` and verified in the clean runtime packaging job.
+This is an open font distribution, not permission to distribute Google Sans or
+use Google's marks. New landscape and night assets are original CC BY-SA 4.0
+vectors. No reference screenshot pixels or third-party illustration is copied.

@@ -11,7 +11,7 @@ Only two unmodified weights are selected; the full family is not bundled. Qt
 FontLoader registers them for this application. No system font is installed.
 Noto Sans CJK SC and system sans remain fallbacks. No MiSans is included.
 
-## Display-clock face
+## Earlier display-clock study
 
 Comfortaa Bold is copied unchanged from Fedora's
 `aajohan-comfortaa-fonts-3.105-0.9.20210729git2a87ac6.fc44.noarch` package.
@@ -19,5 +19,12 @@ Upstream: <https://github.com/alexeiva/comfortaa>. SHA-256 of the bundled OTF:
 `fcbf28724771990af83923eb09ef541af4219af43aa94761b1ac0a92e0ee14d7`.
 Original OFL, reserved name notice, AUTHORS and FONTLOG are preserved in
 `comfortaa/`. Copyright 2011 The Comfortaa Project Authors. The binary is not
-modified or renamed. It is embedded per process and used only for display clocks.
+modified or renamed. It is retained as an earlier study; the corrected clock selects Rubik.
 The package installs its font-specific notice as `Comfortaa-OFL.txt`.
+
+## Current display-clock face
+
+[Rubik](rubik/README.md), unmodified official variable font, is the current display
+face at weight 800. Original OFL 1.1 notice and pinned upstream metadata are in
+`rubik/`; the package installs `Rubik-OFL.txt`. Glow Sans remains the interface
+face. No font is installed into the user or system font directories.

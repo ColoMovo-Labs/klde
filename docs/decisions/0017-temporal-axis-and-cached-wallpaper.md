@@ -28,3 +28,13 @@ normal text. Proprietary display fonts carried avoidable licensing constraints.
 Always-running segmentation, per-frame blur and an immediate compositor fork do
 not fit the current phase or performance goals. Decorative cultural skins and
 commerce remain future independent asset layers.
+
+## Visual correction amendment (2026-10-17)
+
+The first icon-and-time form did not meet the landscape requirement. The amended
+presentation has three landscape sizes and six finite states. Rubik weight 800
+replaces Comfortaa as the selected clock face, with its original OFL notice.
+Default desktop no longer paints a second clock; Clock and Focus are opt-in.
+Dedicated night resources replace global day-wallpaper dimming. Independent
+provider contracts and mock boundaries are unchanged. Details and actual cloud
+evidence: [Temporal 2.0](../development/temporal-v2.md).

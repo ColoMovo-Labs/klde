@@ -9,7 +9,7 @@ hardware/process logic to visual components.
 
 | Interface | Current implementation | Published contract |
 | --- | --- | --- |
-| TimeBackend | MockTimeBackend | date/time, phase, season, weather mood |
+| TimeBackend | MockTimeBackend | date/time, phase, season, weather mood, separate celestial visibility/positions and simulated event metadata |
 | TelemetryBackend | MockTelemetryBackend | stable CPU/memory/temperature/battery cells, availability, severity |
 | WallpaperEffectsBackend | MockWallpaperEffectsBackend | requested/effective settings, cache validity, asset URLs, preview actions |
 | WaydroidBackend | MockWaydroidBackend | optional availability/session/index preference, simulated start/stop |
@@ -25,6 +25,10 @@ optional Android source state. All leaves retain strict type/range/enum checks.
 The catalog now includes morning/day/dusk/night, depth-ready/failure, cached lock
 and Android-ready fixtures. Applying a scenario starts from the complete baseline;
 weather network consent and optional source state do not leak into the next one.
+When phase is `auto`, MockTimeBackend combines the scenario time with weather:
+precipitation selects the rain landscape, fog/overcast selects the cloudy
+landscape, and clear afternoon retains the established daytime study state.
+Manual phase values remain explicit art-direction overrides.
 
 Branding is separate from technical identity. `Branding.qml` centralizes display
 name, expanded name and replaceable mark. Localized strings use `{brand}`. QML
