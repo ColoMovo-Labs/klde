@@ -229,7 +229,7 @@
   "lab.density.balanced": "均衡",
   "lab.density.dense": "紧凑",
   "lab.candidate.title": "候选窗预览",
-  "lab.candidate.disclosure": "独立视觉样例 · 选择候选词不会向其他应用输入文字。",
+  "lab.candidate.disclosure": "候选样式预览，选择仅在这里生效。",
   "lab.input.simplified": "简体中文候选词",
   "lab.candidate.selected": "已选候选词 %1",
   "lab.ambient": "氛围工作区",

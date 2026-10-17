@@ -5,11 +5,12 @@ import QtQuick.Layouts
 
 ShellPopup {
     id: root
+    property Component footer: null
     required property string heading
     default property alias body: bodyColumn.data
     property alias subtitle: subtitle.text
     width: Math.min(Tokens.settingsWidth, parent ? parent.width - Tokens.space32 : Tokens.settingsWidth)
-    height: Math.min(bodyColumn.implicitHeight + header.implicitHeight + padding * 2 + Tokens.space16, parent ? parent.height - Tokens.space32 : Tokens.settingsHeight)
+    height: Math.min(bodyColumn.implicitHeight + header.implicitHeight + footerLoader.implicitHeight + padding * 2 + Tokens.space16, parent ? parent.height - Tokens.space32 : Tokens.settingsHeight)
     contentItem: ColumnLayout {
         spacing: Tokens.space16
         RowLayout {
@@ -50,6 +51,13 @@ ShellPopup {
                 width: scroll.availableWidth
                 spacing: Tokens.rowGap
             }
+        }
+        Loader {
+            id: footerLoader
+            active: root.footer !== null
+            visible: active
+            sourceComponent: root.footer
+            Layout.fillWidth: true
         }
     }
 }

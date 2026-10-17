@@ -17,6 +17,10 @@ Item {
         CandidatePreview {}
     }
     Component {
+        id: labComponent
+        MockLab {}
+    }
+    Component {
         id: ribbonComponent
         StatusRibbon {
             width: testRoot.width
@@ -35,6 +39,30 @@ Item {
             Shell.mockScenarios.apply("laptop-balanced");
             Tokens.reducedMotion = false;
             Tokens.densityMode = 1;
+        }
+        function test_layoutRequestsCrossTheQmlModelBoundary(): void {
+            verify(Shell.state.requestValue("workspaces.layouts", [0, 1, 2, 3, 0]));
+            compare(Shell.windowManager.workspaces[3].layout, 3);
+            verify(Shell.state.requestValue("workspaces.active", 4));
+            compare(Shell.windowManager.activeWorkspace, "workspace-4");
+        }
+        function test_scenarioSelectorCanBeUsedFromTheKeyboard(): void {
+            const panel = createTemporaryObject(labComponent, testRoot, {
+                parent: testRoot
+            });
+            panel.open();
+            tryCompare(panel, "opened", true);
+            const selector = findChild(panel, "scenarioSelector");
+            verify(selector !== null);
+            selector.forceActiveFocus();
+            keyClick(Qt.Key_Space);
+            tryCompare(selector.popup, "opened", true);
+            keyClick(Qt.Key_End);
+            keyClick(Qt.Key_Return);
+            tryCompare(selector.popup, "opened", false);
+            compare(Shell.mockScenarios.activeId, "weather-extreme-cold");
+            compare(Shell.state.snapshot.weather.temperature, -32);
+            panel.close();
         }
         function test_dateUsesTheSelectedLocale(): void {
             Shell.language.setLocale("zh_CN");

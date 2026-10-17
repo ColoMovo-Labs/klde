@@ -179,16 +179,17 @@ LabPanel {
             onClicked: root.weatherRequested()
         }
     }
-    Rectangle {
-        Layout.fillWidth: true
-        implicitHeight: Tokens.controlHeight + Tokens.space16
-        radius: Tokens.radiusPill
-        color: Tokens.primaryContainer
-        Label {
-            anchors.centerIn: parent
-            text: I18n.t("lab.center.tasks")
-            font: Tokens.label
-            color: Tokens.textPrimary
+    footer: Component {
+        Rectangle {
+            implicitHeight: Tokens.controlHeight + Tokens.space16
+            radius: Tokens.radiusPill
+            color: Tokens.primaryContainer
+            Label {
+                anchors.centerIn: parent
+                text: I18n.t("lab.center.tasks")
+                font: Tokens.label
+                color: Tokens.textPrimary
+            }
         }
     }
 }

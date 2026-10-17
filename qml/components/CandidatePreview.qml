@@ -10,6 +10,7 @@ LabPanel {
     objectName: "candidatePreview"
     heading: I18n.t("lab.candidate.title")
     subtitle: I18n.t("lab.candidate.disclosure")
+    width: Math.min(Tokens.panelWidth, parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
     property int selectedIndex: 0
     function focusCandidate(index: int): void {
         const candidate = candidateRepeater.itemAt(index);
@@ -23,19 +24,25 @@ LabPanel {
         font: Tokens.headline
         color: Tokens.primary
     }
-    Repeater {
-        id: candidateRepeater
-        model: root.simplified ? ["你好", "你好吗", "你好呀"] : ["你好", "你好嗎", "你好呀"]
-        delegate: ActionButton {
-            required property int index
-            required property string modelData
-            objectName: "candidate" + index
-            Layout.fillWidth: true
-            emphasized: root.selectedIndex === index
-            text: (index + 1).toString() + "   " + modelData
-            onClicked: root.selectedIndex = index
-            Keys.onDownPressed: root.focusCandidate((index + 1) % 3)
-            Keys.onUpPressed: root.focusCandidate((index + 2) % 3)
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: Tokens.space4
+        Repeater {
+            id: candidateRepeater
+            model: root.simplified ? ["你好", "你好吗", "你好呀"] : ["你好", "你好嗎", "你好呀"]
+            delegate: ActionButton {
+                required property int index
+                required property string modelData
+                objectName: "candidate" + index
+                Layout.fillWidth: true
+                emphasized: root.selectedIndex === index
+                text: (index + 1).toString() + "   " + modelData
+                onClicked: root.selectedIndex = index
+                Keys.onRightPressed: root.focusCandidate((index + 1) % 3)
+                Keys.onLeftPressed: root.focusCandidate((index + 2) % 3)
+                Keys.onDownPressed: root.focusCandidate((index + 1) % 3)
+                Keys.onUpPressed: root.focusCandidate((index + 2) % 3)
+            }
         }
     }
     Switch {

@@ -229,7 +229,7 @@
   "lab.density.balanced": "Balanced",
   "lab.density.dense": "Dense",
   "lab.candidate.title": "Candidate window preview",
-  "lab.candidate.disclosure": "Owned visual sample · selections do not type into other applications.",
+  "lab.candidate.disclosure": "Candidate style preview. Selection stays here.",
   "lab.input.simplified": "Simplified Chinese candidates",
   "lab.candidate.selected": "Selected candidate %1",
   "lab.ambient": "Ambient workspace",
