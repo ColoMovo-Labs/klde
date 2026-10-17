@@ -25,60 +25,65 @@ Button {
     Accessible.name: label + ", " + valueText + (unavailable ? ", " + I18n.t("lab.unavailable") : "")
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
-    contentItem: RowLayout {
-        id: contentRow
-        spacing: Tokens.capsuleIconTextGap
-        Item {
-            // The row already owns the icon/text gap.  Keeping the slot at the
-            // icon size prevents a second invisible gap from pulling labels
-            // outward and makes icon-only capsules optically centered.
-            implicitWidth: Tokens.capsuleIconSize
-            implicitHeight: Tokens.capsuleIconSize
-            Canvas {
-                id: ring
-                anchors.fill: parent
-                visible: root.meter >= 0
-                onPaint: {
-                    const ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.lineWidth = Tokens.space3;
-                    ctx.strokeStyle = Tokens.outline;
-                    ctx.globalAlpha = Tokens.outlineOpacity;
-                    ctx.beginPath();
-                    ctx.arc(width / 2, height / 2, width / 2 - Tokens.space2, 0, 2 * Math.PI);
-                    ctx.stroke();
-                    ctx.globalAlpha = 1;
-                    ctx.strokeStyle = root.ink;
-                    ctx.beginPath();
-                    ctx.arc(width / 2, height / 2, width / 2 - Tokens.space2, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * root.meter / 100);
-                    ctx.stroke();
+    contentItem: Item {
+        implicitWidth: contentRow.implicitWidth
+        implicitHeight: contentRow.implicitHeight
+        RowLayout {
+            id: contentRow
+            anchors.centerIn: parent
+            spacing: Tokens.capsuleIconTextGap
+            Item {
+                // The row already owns the icon/text gap.  Keeping the slot at the
+                // icon size prevents a second invisible gap from pulling labels
+                // outward and makes icon-only capsules optically centered.
+                implicitWidth: Tokens.capsuleIconSize
+                implicitHeight: Tokens.capsuleIconSize
+                Canvas {
+                    id: ring
+                    anchors.fill: parent
+                    visible: root.meter >= 0
+                    onPaint: {
+                        const ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.lineWidth = Tokens.space3;
+                        ctx.strokeStyle = Tokens.outline;
+                        ctx.globalAlpha = Tokens.outlineOpacity;
+                        ctx.beginPath();
+                        ctx.arc(width / 2, height / 2, width / 2 - Tokens.space2, 0, 2 * Math.PI);
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                        ctx.strokeStyle = root.ink;
+                        ctx.beginPath();
+                        ctx.arc(width / 2, height / 2, width / 2 - Tokens.space2, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * root.meter / 100);
+                        ctx.stroke();
+                    }
+                    Connections {
+                        target: root
+                        function onMeterChanged(): void {
+                            ring.requestPaint();
+                        }
+                        function onInkChanged(): void {
+                            ring.requestPaint();
+                        }
+                    }
                 }
-                Connections {
-                    target: root
-                    function onMeterChanged(): void {
-                        ring.requestPaint();
-                    }
-                    function onInkChanged(): void {
-                        ring.requestPaint();
-                    }
+                Icon {
+                    anchors.centerIn: parent
+                    name: root.iconName
+                    lightInk: root.prominent ? !Tokens.darkMode : Tokens.darkMode
+                    width: root.meter >= 0 ? Tokens.iconS : Tokens.capsuleIconSize
+                    height: width
                 }
             }
-            Icon {
-                anchors.centerIn: parent
-                name: root.iconName
-                lightInk: root.prominent ? !Tokens.darkMode : Tokens.darkMode
-                width: root.meter >= 0 ? Tokens.iconS : Tokens.capsuleIconSize
-                height: width
+            Label {
+                visible: root.valueText.length > 0 || root.detailed
+                text: (root.severity > 0 ? "! " : "") + (root.detailed ? root.label + " " : "") + root.valueText
+                color: root.ink
+                font: Tokens.label
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+                Layout.maximumWidth: root.detailed ? Tokens.widgetSize : Tokens.widgetSize / 2
             }
-        }
-        Label {
-            visible: root.valueText.length > 0 || root.detailed
-            text: (root.severity > 0 ? "! " : "") + (root.detailed ? root.label + " " : "") + root.valueText
-            color: root.ink
-            font: Tokens.label
-            elide: Text.ElideRight
-            verticalAlignment: Text.AlignVCenter
-            Layout.maximumWidth: root.detailed ? Tokens.widgetSize : Tokens.widgetSize / 2
         }
     }
     background: Rectangle {
