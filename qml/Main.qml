@@ -16,6 +16,9 @@ ApplicationWindow {
     property int initialDensity: 1
     property string initialWallpaper: "snow"
     property bool initialAmbient: false
+    property bool initialFocus: false
+    property string initialLockState: "ambient"
+    property bool initialDebugGeometry: false
     property bool developerTools: false
     objectName: "shellWindow"
     width: Tokens.previewWidth
@@ -41,9 +44,10 @@ ApplicationWindow {
     palette.shadow: Tokens.shadow
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
+    readonly property bool lockSurfaceMode: initialView === "lock-screen"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: ribbon.y + ribbon.height + Tokens.space16
-    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite]
+    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function applyScene(): void {
         const visual = Shell.scenes.current.visual;
@@ -58,6 +62,18 @@ ApplicationWindow {
     function showView(view: string): void {
         let target = null;
         switch (view) {
+        case "temporal":
+            target = temporalSettings;
+            break;
+        case "wallpaper-effects":
+            target = wallpaperSettings;
+            break;
+        case "lock-preview":
+            target = lockPreview;
+            break;
+        case "waydroid":
+            target = waydroidSettings;
+            break;
         case "launcher":
             target = launcher;
             break;
@@ -125,7 +141,9 @@ ApplicationWindow {
             showView("input");
         else if (id === "scene")
             showView("power-scenes");
-        else if (id === "cpu" || id === "memory" || id === "temperature" || id === "battery" || id === "time")
+        else if (id === "time")
+            showView("temporal");
+        else if (id === "cpu" || id === "memory" || id === "temperature" || id === "battery")
             showView("ribbon");
         else if (id === "power")
             Shell.system.requestSessionAction("shutdown");
@@ -155,6 +173,9 @@ ApplicationWindow {
         Shell.state.requestValue("appearance.wallpaper", initialWallpaper);
         if (initialAmbient)
             Shell.state.requestValue("appearance.ambient", true);
+        if (initialFocus)
+            Shell.state.requestValue("appearance.focus", true);
+        Tokens.debugGeometry = initialDebugGeometry;
         applyScene();
         showView(developerTools ? "mock-lab" : initialView);
     }
@@ -163,20 +184,9 @@ ApplicationWindow {
         property: "wallpaperChoice"
         value: window.snapshot.appearance.wallpaper
     }
-    Item {
+    WallpaperLayers {
         id: wallpaper
         anchors.fill: parent
-        Image {
-            anchors.fill: parent
-            source: "qrc:/assets/wallpapers/" + (window.snapshot.appearance.wallpaper === "snow" ? "first-light" : window.snapshot.appearance.wallpaper) + ".svg"
-            sourceSize: Qt.size(width, height)
-            fillMode: Image.PreserveAspectCrop
-        }
-        Rectangle {
-            anchors.fill: parent
-            color: Tokens.background
-            opacity: Tokens.darkMode ? Tokens.darkWallpaperShade : 0
-        }
     }
     StatusRibbon {
         id: ribbon
@@ -210,7 +220,7 @@ ApplicationWindow {
         }
     }
     ColumnLayout {
-        visible: !window.snapshot.appearance.ambient
+        visible: !window.snapshot.appearance.ambient && window.snapshot.activeApp === "desktop"
         x: Tokens.desktopMargin
         anchors.bottom: dock.top
         anchors.bottomMargin: Tokens.space32
@@ -232,11 +242,17 @@ ApplicationWindow {
         }
     }
     AmbientDesktop {
+        objectName: "desktopClockLayer"
         visible: window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.space24
         width: parent.width - Tokens.desktopMargin * 2
         height: dock.y - y - Tokens.space24
+    }
+    WallpaperLayers {
+        anchors.fill: parent
+        foregroundOnly: true
+        visible: window.snapshot.appearance.ambient
     }
     Surface {
         visible: window.snapshot.scratchpad
@@ -262,6 +278,7 @@ ApplicationWindow {
     }
     Dock {
         id: dock
+        visible: !window.snapshot.appearance.focus
         backdropSource: wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -371,6 +388,42 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
+    TemporalSettings {
+        id: temporalSettings
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    WallpaperEffectsSettings {
+        id: wallpaperSettings
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+        onViewRequested: view => window.showView(view)
+    }
+    LockScreenPreview {
+        id: lockPreview
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    LockScreenSurface {
+        id: lockSurface
+        anchors.fill: parent
+        visible: window.lockSurfaceMode
+        z: 1000
+        stateName: window.initialLockState
+    }
+    WaydroidSettings {
+        id: waydroidSettings
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
     Surface {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: dock.top
@@ -394,6 +447,11 @@ ApplicationWindow {
                 duration: Tokens.motionFast
             }
         }
+    }
+    TemporalStudy {
+        visible: window.initialView === "temporal-study"
+        anchors.fill: parent
+        z: 100
     }
     ApplicationShortcuts {
         onAction: id => {

@@ -6,30 +6,44 @@ Item {
     id: root
     signal action(string moduleId)
     visible: Shell.ribbon.enabled
-    implicitHeight: visible ? Math.max(left.height, center.height, right.height) : 0
-    readonly property real gap: Tokens.space16
+    readonly property bool stacked: width < Tokens.ribbonStackThreshold
+    readonly property int degradation: stacked ? 3 : width < Tokens.ribbonFoldThreshold ? 2 : width < Tokens.ribbonCondenseThreshold ? 1 : 0
+    readonly property real sideWidth: stacked ? (width - Tokens.ribbonGroupGap) / 2 : center.x - Tokens.ribbonGroupGap
+    implicitHeight: visible ? Math.max(center.height, left.y + left.height, right.y + right.height) : 0
     StatusRibbonSection {
         id: left
+        objectName: "ribbonLeft"
+        degradation: root.degradation
         section: 0
-        width: Math.max(Tokens.controlHeight, Math.min(naturalWidth, parent.width * Tokens.ribbonLeftShare))
-        height: childrenRect.height
+        width: Math.min(naturalWidth, root.sideWidth)
+        y: root.stacked ? Tokens.ribbonBandHeight + Tokens.ribbonGroupGap : 0
+        height: implicitHeight
         onAction: moduleId => root.action(moduleId)
     }
-    StatusRibbonSection {
+    TemporalCapsule {
         id: center
         objectName: "ribbonCenter"
-        section: 1
-        width: Math.max(Tokens.controlHeight, Math.min(naturalWidth, parent.width * Tokens.ribbonCenterShare))
+        sizeMode: root.degradation >= 2 ? "compact" : "standard"
         x: (parent.width - width) / 2
-        height: childrenRect.height
-        onAction: moduleId => root.action(moduleId)
+        y: (Tokens.ribbonBandHeight - height) / 2
+        onClicked: root.action("time")
     }
     StatusRibbonSection {
         id: right
+        objectName: "ribbonRight"
+        degradation: root.degradation
         section: 2
-        x: center.x + center.width + root.gap
-        width: parent.width - x
-        height: childrenRect.height
+        x: parent.width - width
+        y: left.y
+        width: Math.min(naturalWidth, root.sideWidth)
+        height: implicitHeight
         onAction: moduleId => root.action(moduleId)
+    }
+    GeometryDebugOverlay {
+        anchors.fill: parent
+        enabled: Tokens.debugGeometry
+        targetItems: [center, left, right]
+        contentItems: [center.debugContentItem]
+        textItems: [center.debugTextItem]
     }
 }

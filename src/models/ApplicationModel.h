@@ -18,7 +18,8 @@ class ApplicationModel : public QAbstractListModel {
         IconRole,
         KeywordsRole,
         RunningRole,
-        ActiveRole
+        ActiveRole,
+        OriginRole
     };
     Q_ENUM(Role)
     explicit ApplicationModel(QObject *parent = nullptr);
@@ -28,6 +29,7 @@ class ApplicationModel : public QAbstractListModel {
     bool activate(const QString &appId);
     Q_INVOKABLE QString nameFor(const QString &appId) const;
     void resetPreview(const QString &appId);
+    void setAndroidSource(bool enabled);
     QString activeId() const;
   signals:
     void activeChanged();
@@ -41,6 +43,7 @@ class ApplicationModel : public QAbstractListModel {
         QString keywords;
         bool running = false;
         bool active = false;
+        QString origin = "linux";
     };
     QList<Application> m_applications;
 };

@@ -12,33 +12,33 @@ QtObject {
     property int motionLevel: 2
     property int densityMode: 1
     property int shadowLevel: 1
+    property bool debugGeometry: false
     property string wallpaperChoice: "snow"
     property string accentChoice: "auto"
     readonly property color accent: accentChoice === "teal" ? accentTeal : accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#99d1c8" : wallpaperChoice === "abstract" ? "#5545ad" : wallpaperChoice === "kemono" ? "#76518e" : "#07679e"
 
-    readonly property color background: darkMode ? "#15172c" : "#edf2ff"
-    readonly property color surface: darkMode ? "#20243d" : "#f9faff"
-    readonly property color surfaceContainer: darkMode ? "#303555" : "#e8eaff"
-    readonly property color surfaceElevated: darkMode ? "#292e4b" : "#ffffff"
+    readonly property color background: darkMode ? "#10182b" : "#edf2ff"
+    readonly property color surface: darkMode ? "#19283e" : "#f9faff"
+    readonly property color surfaceContainer: darkMode ? "#263650" : "#e8eaff"
+    readonly property color surfaceElevated: darkMode ? "#223148" : "#ffffff"
     readonly property color primary: accent
     readonly property color secondary: darkMode ? "#dfc0ff" : "#8554bf"
     readonly property color tertiary: darkMode ? "#f0c49e" : "#8a5732"
     readonly property color error: darkMode ? "#ffb4ab" : "#a82d3b"
-    readonly property color outline: darkMode ? "#a8afd1" : "#747fa6"
-    readonly property color textPrimary: darkMode ? "#f0efff" : "#20264d"
-    readonly property color textSecondary: darkMode ? "#c6c8e7" : "#566287"
+    readonly property color outline: darkMode ? "#8fa5c5" : "#747fa6"
+    readonly property color textPrimary: darkMode ? "#eef3ff" : "#20264d"
+    readonly property color textSecondary: darkMode ? "#bacbe1" : "#566287"
     readonly property color textDisabled: darkMode ? "#84949e" : "#75858e"
-    readonly property color textOnPrimary: darkMode ? "#28205e" : "#ffffff"
+    readonly property color textOnPrimary: darkMode ? "#152633" : "#ffffff"
     readonly property color primaryContainer: Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
     readonly property color surfaceVariant: surfaceContainer
     readonly property color warning: darkMode ? "#f4ca86" : "#805200"
     readonly property color success: darkMode ? "#9ed5ad" : "#27683a"
-    readonly property color shadow: "#292e6b"
+    readonly property color shadow: darkMode ? "#070e20" : "#292e6b"
     readonly property real outlineOpacity: 0.20
-    readonly property real shadowOpacity: 0.14
+    readonly property real shadowOpacity: darkMode ? 0.30 : 0.14
     readonly property real mutedOpacity: 0.35
     readonly property real popupStartScale: 0.96
-    readonly property real darkWallpaperShade: 0.72
     readonly property real frostedSurfaceOpacity: darkMode ? 0.88 : 0.80
     readonly property real blurScaleLow: 0.25
     readonly property real blurScaleMedium: 0.50
@@ -139,13 +139,76 @@ QtObject {
     readonly property int toggleHeight: 84 * densityScale
     readonly property int toggleIcon: 44 * densityScale
     readonly property real densityScale: densityMode === 0 ? 1.12 : densityMode === 2 ? 0.92 : 1.0
-    readonly property int ribbonHeight: densityMode === 0 ? 48 : densityMode === 2 ? 40 : 44
+    readonly property int ribbonHeight: densityMode === 0 ? 44 : 40
     readonly property int rowGap: densityMode === 0 ? space16 : densityMode === 2 ? space8 : space12
-    readonly property int ambientClockSize: 168
+    readonly property FontLoader clockFace: FontLoader {
+        source: "qrc:/assets/fonts/rubik/Rubik[wght].ttf"
+    }
+    readonly property string displayClockFont: clockFace.status === FontLoader.Ready ? clockFace.name : "Sans Serif"
+    readonly property int displayClockWeight: Font.ExtraBold
+    readonly property real displayClockTracking: -1 * textScale
+    readonly property real displayClockDigitWidth: 0.64
+    readonly property real displayClockColonWidth: 0.28
+    readonly property int ambientClockSize: 224
+    readonly property int workingClockSize: 56
+    readonly property int ambientMediaThreshold: 420
+    // Keep the lower media affordance out of the central clock's short-surface budget.
+    readonly property int ambientMediaMinimumHeight: 520
+    readonly property int ribbonGroupGap: densityMode === 2 ? space12 : space16
+    readonly property int ribbonInnerGap: space2
+    readonly property int ribbonGroupPadding: space4
+    readonly property int telemetryCellWidth: 72
+    readonly property int telemetryCompactWidth: 60
+    readonly property int telemetryIcon: 14
+    readonly property int ribbonCondenseThreshold: 1500
+    readonly property int ribbonFoldThreshold: 1160
+    readonly property int telemetryCellHeight: 18
+    readonly property int temporalWidth: 208
+    readonly property int temporalHeight: 48
+    readonly property int temporalCompactWidth: 160
+    readonly property int temporalCompactHeight: 40
+    readonly property int temporalExpandedWidth: 400
+    readonly property int temporalExpandedHeight: 144
+    readonly property int temporalFont: 28
+    readonly property int temporalCompactFont: 23
+    readonly property int temporalExpandedFont: 48
+    readonly property int temporalCompactInset: 12
+    readonly property int temporalInset: 16
+    readonly property int temporalExpandedInset: 24
+    readonly property real temporalOrbRatio: 0.40
+    readonly property var temporalPalettes: ({
+            "clear-morning": ["#aaa1dc", "#f5d7b4"],
+            "cloudy-day": ["#8dc6eb", "#d9eff6"],
+            "sunset": ["#8272b3", "#f3ae9d"],
+            "rainy-evening": ["#526781", "#9aafbf"],
+            "starry-night": ["#111b42", "#33476e"],
+            "moonlit-night": ["#163f59", "#53858c"]
+        })
+    readonly property color temporalDayOrb: "#fff0bb"
+    readonly property color temporalSunsetOrb: "#ffcd88"
+    readonly property color temporalText: "#ffffff"
+    readonly property color temporalEdge: "#507f94b6"
+    readonly property color surfaceEdge: Qt.rgba(outline.r, outline.g, outline.b, outlineOpacity)
+    readonly property int temporalStudyWidth: 1160
+    readonly property int temporalStudyCardHeight: 144
+    readonly property int ribbonBandHeight: Math.max(temporalHeight, ribbonHeight + ribbonGroupPadding * 2, telemetryCellHeight * 2 + space2 + ribbonGroupPadding * 2)
+    readonly property int ribbonStackThreshold: 880
+    readonly property real depthLow: 0.015
+    readonly property real depthMedium: 0.025
+    readonly property real depthHigh: 0.035
+    readonly property real displayClockLineHeight: 1.14
+    readonly property real displayClockColonDot: 0.085
+    readonly property real displayClockColonGap: 0.18
+    readonly property real wallpaperDim: 0.16
     readonly property int ribbonIcon: 22
     readonly property int ribbonPadding: densityMode === 2 ? space6 : space8
-    readonly property real ribbonCenterShare: 0.38
-    readonly property real ribbonLeftShare: 0.24
+    readonly property int capsuleBorderWidth: 1
+    readonly property int capsuleHorizontalPadding: space8
+    readonly property int capsuleVerticalPadding: space4
+    readonly property int capsuleIconSize: 22
+    readonly property int capsuleIconTextGap: space4
+    readonly property int lockScreenEdgeMargin: 48
+    readonly property int lockScreenContentWidth: 360
     readonly property int launcherWidth: 600
     readonly property int launcherHeight: 528
     readonly property int launcherRow: 64 * densityScale

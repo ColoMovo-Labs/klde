@@ -19,7 +19,7 @@ LabPanel {
             },
             {
                 id: "settings",
-                name: "KLDE / Lingmo Settings"
+                name: Branding.displayName + " / Lingmo Settings"
             },
             {
                 id: "images",

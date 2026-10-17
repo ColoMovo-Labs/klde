@@ -5,20 +5,21 @@ import KLDE.Backends
 StatusCapsule {
     id: root
     required property var module
+    property bool condensed: false
     readonly property var snapshot: Shell.state.snapshot
     readonly property var alerts: Shell.state.alerts
     readonly property string moduleId: module.id
     signal invoked(string moduleId)
     label: I18n.t(module.titleId)
-    iconName: moduleId === "weather" ? "weather-" + snapshot.weather.condition : module.icon
+    iconName: moduleId === "weather" ? "weather-" + snapshot.weather.condition : module.icon === "klde" ? Branding.iconName : module.icon
     prominent: moduleId === "time"
-    detailed: !Shell.ribbon.compact && Tokens.densityMode === 0
+    detailed: !condensed && !Shell.ribbon.compact && Tokens.densityMode === 0
     valueText: {
         switch (moduleId) {
         case "weather":
             return snapshot.weather.available ? I18n.number(snapshot.weather.temperature, 0) + "°" : "—";
         case "context":
-            return snapshot.activeApp === "desktop" ? I18n.t("lab.desktop") : I18n.s(Shell.applications.nameFor(snapshot.activeApp));
+            return condensed ? "" : snapshot.activeApp === "desktop" ? I18n.t("lab.desktop") : I18n.s(Shell.applications.nameFor(snapshot.activeApp));
         case "date":
             return I18n.date(snapshot.time, true);
         case "time":
@@ -38,7 +39,7 @@ StatusCapsule {
         case "bluetooth":
             return snapshot.bluetooth.enabled ? snapshot.bluetooth.connectedDevices > 0 ? snapshot.bluetooth.connectedDevices.toString() : "" : "×";
         case "audio":
-            return snapshot.audio.muted ? "×" : Tokens.densityMode === 2 ? "" : I18n.number(snapshot.audio.volume, 0);
+            return snapshot.audio.muted ? "×" : condensed || Tokens.densityMode === 2 ? "" : I18n.number(snapshot.audio.volume, 0);
         case "microphone":
             return snapshot.capabilities.microphone ? snapshot.audio.microphoneMuted ? "×" : "" : "—";
         case "input":

@@ -1,4 +1,4 @@
-# Kemono Linux Desktop Environment
+# KLDE (provisional codename)
 
 **KLDE** is an experimental open-source Linux desktop environment inspired by
 the visual spirit of early UKUI/Kylin desktops, modern expressive UI design,
@@ -58,6 +58,13 @@ System controls, workspace management and input selection remain mock. The
 experimental weather adapter is disabled by default and requires an explicitly
 entered city and online consent. There is no telemetry or privileged helper.
 
+The current [temporal-axis pass](docs/design/temporal-capsule.md) groups the
+ribbon, adds a dedicated display clock and defines cached wallpaper effects and
+optional Android sources. See [layout](docs/design/top-ribbon-layout.md),
+[wallpaper pipeline](docs/design/wallpaper-depth.md),
+[provider contracts](docs/architecture/mock-backends.md) and the
+[temporal v2 implementation record](docs/development/temporal-v2.md).
+
 ## Screenshots / Concept Art
 
 Actual Visual System Lab window rendered in CircleCI at `752af8c8f36b` using
@@ -72,6 +79,21 @@ Mesa llvmpipe. All system state is mock; this is a runnable Qt preview.
 [Quick Settings](docs/previews/baseline-quick-settings.png) ·
 [Language & Input](docs/previews/baseline-language-input.png) ·
 [Rendering provenance and review procedure](docs/previews/README.md).
+
+### Temporal v2 visual study
+
+These actual Qt captures were rendered by CircleCI pipeline 50 from source
+`775d728`. They show the six landscape states, the three capsule sizes, the
+night palette, the centered ribbon crop and the focus clock mode. Mock data is
+explicitly disclosed in the [evidence record](docs/previews/temporal-v2/README.md).
+
+![Six temporal states and three sizes](docs/previews/temporal-v2/temporal-study.png)
+
+[Night desktop](docs/previews/temporal-v2/night-desktop.png) ·
+[Narrow desktop](docs/previews/temporal-v2/axis-narrow.png) ·
+[Ribbon crop](docs/previews/temporal-v2/ribbon-detail.png) ·
+[Expanded capsule](docs/previews/temporal-v2/temporal-expanded.png) ·
+[Focus clock](docs/previews/temporal-v2/focus-desktop.png)
 
 Earlier Phase 1 captures remain in the [expressive preview record](docs/development/expressive-language.md)
 and [prototype guide](docs/development/phase-1.md).

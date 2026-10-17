@@ -6,6 +6,7 @@ import KLDE.Backends
 Item {
     id: root
     default property alias contentData: content.data
+    property bool decorationVisible: true
     property real padding: Tokens.space16
     property real cornerRadius: Tokens.radiusXL
     property color tone: Tokens.surfaceElevated
@@ -30,7 +31,7 @@ Item {
 
     Loader {
         anchors.fill: parent
-        active: root.visible && root.hasBlur
+        active: root.visible && root.decorationVisible && root.hasBlur
         sourceComponent: Component {
             OwnedBackdrop {
                 sourceItem: root.backdropSource
@@ -40,6 +41,7 @@ Item {
         }
     }
     Rectangle {
+        visible: root.decorationVisible
         anchors.fill: parent
         anchors.topMargin: Tokens.elevationLow
         anchors.bottomMargin: -Tokens.elevationLow
@@ -48,6 +50,7 @@ Item {
         opacity: Tokens.shadowsEnabled ? Tokens.shadowOpacity * (Tokens.shadowLevel === 0 ? 0.6 : Tokens.shadowLevel === 2 ? 1.4 : 1) : 0
     }
     Rectangle {
+        visible: root.decorationVisible
         anchors.fill: parent
         radius: root.cornerRadius
         color: Qt.rgba(root.tone.r, root.tone.g, root.tone.b, root.hasBlur ? Tokens.frostedSurfaceOpacity : 1)

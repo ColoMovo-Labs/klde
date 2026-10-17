@@ -1,7 +1,7 @@
 # Wayland first, X11 compatible
 
 KLDE targets Wayland for its future default session and keeps X11/XCB as a
-transitional compatibility path. It is neither Wayland-only nor X11-first.
+transitional compatibility path. Wayland is the primary product path; X11 is limited compatibility coverage.
 The standalone preview uses Qt QPA and runs with `QT_QPA_PLATFORM=wayland` or
 `QT_QPA_PLATFORM=xcb`. These are application paths, not installed KLDE sessions.
 
@@ -24,11 +24,13 @@ Test activation, scaling, clipboard, drag/drop, IME and mixed native/XWayland
 workflows. Their presence must not make the shell itself depend on X11. An XCB
 smoke under Xvfb proves neither XWayland integration nor an X11 login session.
 
-A future display manager may offer KLDE (Wayland) and KLDE (X11), with Wayland
-default. Legacy software, remote tools, specialist graphics and driver/input
+A future display manager should prioritize the Wayland session. An X11 session
+would require a separate scope/maintenance decision; it is not promised. Legacy software, remote tools, specialist graphics and driver/input
 issues justify compatibility testing. X11 support has no perpetual guarantee;
 removal needs published evidence, migration options and a new decision review.
 
-No compositor is chosen. KWin as an engine does not imply Plasma presentation;
-wlroots and other existing engines remain candidates. A compositor fork requires
-its own maintenance argument. Headless correctness is separate from GPU speed.
+KWin is the first engine candidate and does not imply Plasma presentation. The
+adapter must distinguish upstream KWin 6 from the deepin/Lingmo KWin lineage;
+wlroots and other existing engines remain later profiles. A compositor fork
+requires its own maintenance argument. Headless correctness is separate from GPU
+speed. See [the KWin adapter boundary](kwin-adapter.md).

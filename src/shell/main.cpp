@@ -12,6 +12,7 @@
 #include <QSGRendererInterface>
 #include <QStyleHints>
 #include <QTimer>
+#include <QtMath>
 #include <QtQml/QQmlExtensionPlugin>
 #include <cstdlib>
 
@@ -34,10 +35,19 @@ int main(int argc, char *argv[]) {
     const QCommandLineOption captureOption(QStringLiteral("capture"),
                                            QStringLiteral("Save the smoke-test window as a PNG"),
                                            QStringLiteral("path"));
+    const QCommandLineOption cropOption("capture-region", "Smoke capture: full or ribbon", "region",
+                                        "full");
+    const QCommandLineOption focusOption("focus", "Preview the focus desktop composition");
+    const QCommandLineOption lockStateOption(
+        "lock-state", "Lock-screen visual state: ambient, auth, error, reduced, depth or fallback",
+        "state", "ambient");
+    const QCommandLineOption debugGeometryOption("debug-geometry",
+                                                 "Show the development-only alignment overlay");
     const QCommandLineOption viewOption(
         QStringLiteral("view"),
         QStringLiteral("Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
-                       "weather, language, input"),
+                       "weather, language, input, temporal, wallpaper-effects, lock-preview, "
+                       "lock-screen, waydroid"),
         QStringLiteral("view"), QStringLiteral("desktop"));
     const QCommandLineOption darkOption(QStringLiteral("dark"),
                                         QStringLiteral("Start with dark appearance"));
@@ -62,11 +72,16 @@ int main(int argc, char *argv[]) {
     const QCommandLineOption developerOption("dev-tools", "Open the session-only Mock Lab");
     parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
                        developerOption});
-    parser.addOptions({smokeOption, captureOption, viewOption, darkOption, idleOption, localeOption,
+    parser.addOptions({cropOption, focusOption, lockStateOption, debugGeometryOption, smokeOption,
+                       captureOption, viewOption, darkOption, idleOption, localeOption,
                        voiceOption});
     parser.process(app);
     if ((parser.isSet(captureOption) || parser.isSet(idleOption)) && !parser.isSet(smokeOption)) {
         qCritical() << "--capture and --audit-idle require --smoke-test";
+        return EXIT_FAILURE;
+    }
+    if (parser.value(cropOption) != "full" && parser.value(cropOption) != "ribbon") {
+        qCritical() << "Invalid capture region";
         return EXIT_FAILURE;
     }
     const QStringList views{QStringLiteral("desktop"),
@@ -77,6 +92,12 @@ int main(int argc, char *argv[]) {
                             QStringLiteral("weather"),
                             QStringLiteral("language"),
                             QStringLiteral("input"),
+                            "temporal-study",
+                            "temporal",
+                            "wallpaper-effects",
+                            "lock-preview",
+                            "lock-screen",
+                            "waydroid",
                             "weather-preview",
                             "quick-settings-expanded",
                             "notifications",
@@ -87,6 +108,13 @@ int main(int argc, char *argv[]) {
                             "app-suite"};
     if (!views.contains(parser.value(viewOption))) {
         qCritical() << "Unknown preview view";
+        return EXIT_FAILURE;
+    }
+    const QStringList lockStates{QStringLiteral("ambient"), QStringLiteral("auth"),
+                                 QStringLiteral("error"),   QStringLiteral("reduced"),
+                                 QStringLiteral("depth"),   QStringLiteral("fallback")};
+    if (!lockStates.contains(parser.value(lockStateOption))) {
+        qCritical() << "Unsupported lock-screen state";
         return EXIT_FAILURE;
     }
     if ((!parser.value(localeOption).isEmpty() && parser.value(localeOption) != "en" &&
@@ -124,17 +152,21 @@ int main(int argc, char *argv[]) {
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
         [] { QCoreApplication::exit(EXIT_FAILURE); }, Qt::QueuedConnection);
-    engine.setInitialProperties({{QStringLiteral("initialView"), parser.value(viewOption)},
-                                 {QStringLiteral("initialDark"), parser.isSet(darkOption)},
-                                 {QStringLiteral("initialLocale"), parser.value(localeOption)},
-                                 {QStringLiteral("initialVoice"), parser.value(voiceOption)},
-                                 {"initialScenario", parser.value(scenarioOption)},
-                                 {"initialDensity", densities.indexOf(parser.value(densityOption))},
-                                 {"initialWallpaper", parser.value(wallpaperOption)},
-                                 {"initialAmbient", parser.isSet(ambientOption)},
-                                 {"developerTools", parser.isSet(developerOption)},
-                                 {"width", logicalWidth},
-                                 {"height", logicalHeight}});
+    engine.setInitialProperties(
+        {{QStringLiteral("initialView"), parser.value(viewOption)},
+         {QStringLiteral("initialDark"), parser.isSet(darkOption)},
+         {QStringLiteral("initialLocale"), parser.value(localeOption)},
+         {QStringLiteral("initialVoice"), parser.value(voiceOption)},
+         {"initialScenario", parser.value(scenarioOption)},
+         {"initialDensity", densities.indexOf(parser.value(densityOption))},
+         {"initialWallpaper", parser.value(wallpaperOption)},
+         {"initialAmbient", parser.isSet(ambientOption) || parser.isSet(focusOption)},
+         {"initialFocus", parser.isSet(focusOption)},
+         {"initialLockState", parser.value(lockStateOption)},
+         {"initialDebugGeometry", parser.isSet(debugGeometryOption)},
+         {"developerTools", parser.isSet(developerOption)},
+         {"width", logicalWidth},
+         {"height", logicalHeight}});
     engine.loadFromModule(QStringLiteral("KLDE.Shell"), QStringLiteral("Main"));
     if (engine.rootObjects().size() != 1) {
         return EXIT_FAILURE;
@@ -169,9 +201,19 @@ int main(int argc, char *argv[]) {
     if (parser.isSet(smokeOption)) {
         const auto capturePath = parser.value(captureOption);
         const bool audit = parser.isSet(idleOption);
-        const auto finish = [window, &app, &qmlWarnings, &idleFrames, capturePath, audit] {
+        const bool cropRibbon = parser.value(cropOption) == "ribbon";
+        const auto finish = [window, &app, &qmlWarnings, &idleFrames, capturePath, audit,
+                             cropRibbon] {
             if (!capturePath.isEmpty()) {
-                const QImage capture = window->grabWindow();
+                QImage capture = window->grabWindow();
+                if (cropRibbon) {
+                    auto *ribbon = window->findChild<QObject *>(QStringLiteral("statusRibbon"));
+                    const auto ratio = window->devicePixelRatio();
+                    const auto height = ribbon ? ribbon->property("height").toDouble() +
+                                                     2 * ribbon->property("y").toDouble()
+                                               : 96.0;
+                    capture = capture.copy(0, 0, capture.width(), qCeil(height * ratio));
+                }
                 if (capture.isNull() || !capture.save(capturePath, "PNG")) {
                     qCritical() << "Failed to save smoke capture";
                     app.exit(EXIT_FAILURE);
