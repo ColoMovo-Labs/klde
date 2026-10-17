@@ -9,8 +9,8 @@ Rectangle {
     required property int section
     required property string groupId
     signal action(string moduleId)
-    readonly property var snapshot: Shell.state.snapshot
-    readonly property var entries: Shell.ribbon.modules.filter(m => m.id !== "time" && m.enabled && m.section === section && m.group === groupId && (m.id !== "battery" || snapshot.capabilities.battery) && (groupId === "telemetry" || Tokens.densityMode !== 0 || m.priority <= 3))
+    readonly property bool batteryAvailable: Shell.state.snapshot.capabilities.battery
+    readonly property var entries: Shell.ribbon.modules.filter(m => m.id !== "time" && m.enabled && m.section === root.section && m.group === root.groupId && (m.id !== "battery" || root.batteryAvailable) && (root.groupId === "telemetry" || Tokens.densityMode !== 0 || m.priority <= 3))
     width: groupId === "telemetry" ? telemetry.implicitWidth + Tokens.ribbonGroupPadding * 2 : row.implicitWidth + Tokens.ribbonGroupPadding * 2
     height: groupId === "telemetry" ? telemetry.implicitHeight + Tokens.ribbonGroupPadding * 2 : Tokens.ribbonHeight + Tokens.ribbonGroupPadding * 2
     radius: Tokens.radiusL

@@ -12,14 +12,14 @@ Item {
     Image {
         anchors.fill: parent
         visible: !root.foregroundOnly
-        source: root.original
+        source: visible ? root.original : ""
         sourceSize: Qt.size(width, height)
         fillMode: Image.PreserveAspectCrop
     }
     Image {
         anchors.fill: parent
         visible: !root.foregroundOnly && (root.lockPreview ? root.effects.lockAsset.length > 0 : root.effects.effectiveMode === "soft-blur")
-        source: root.lockPreview ? root.effects.lockAsset : root.effects.softAsset
+        source: visible ? root.lockPreview ? root.effects.lockAsset : root.effects.softAsset : ""
         opacity: (root.lockPreview ? root.effects.lockBlurStrength : root.effects.blurStrength) / 3
         sourceSize: Qt.size(width, height)
         fillMode: Image.PreserveAspectCrop
@@ -27,7 +27,7 @@ Item {
     Image {
         anchors.fill: parent
         visible: root.foregroundOnly && root.effects.effectiveMode === "depth"
-        source: root.effects.foregroundAsset
+        source: visible ? root.effects.foregroundAsset : ""
         sourceSize: Qt.size(width, height)
         fillMode: Image.PreserveAspectCrop
         scale: 1 + [0, Tokens.depthLow, Tokens.depthMedium, Tokens.depthHigh][root.effects.depthTier]
