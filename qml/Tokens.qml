@@ -187,8 +187,6 @@ QtObject {
     readonly property color temporalDayOrb: "#fff0bb"
     readonly property color temporalSunsetOrb: "#ffcd88"
     readonly property color temporalText: "#ffffff"
-    // A quiet contrast wash; the clock remains light text without a halo/outline.
-    readonly property color temporalInkVeil: "#a614243c"
     readonly property color temporalEdge: "#507f94b6"
     readonly property color surfaceEdge: Qt.rgba(outline.r, outline.g, outline.b, outlineOpacity)
     readonly property int temporalStudyWidth: 1160

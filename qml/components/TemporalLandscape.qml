@@ -78,31 +78,4 @@ Item {
         sourceSize: Qt.size(width * Screen.devicePixelRatio, height * Screen.devicePixelRatio)
         cache: true
     }
-    Rectangle {
-        anchors.fill: parent
-        radius: height / 2
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop {
-                position: 0
-                color: "transparent"
-            }
-            GradientStop {
-                position: 0.24
-                color: "transparent"
-            }
-            GradientStop {
-                position: 0.34
-                color: Tokens.temporalInkVeil
-            }
-            GradientStop {
-                position: 0.70
-                color: Tokens.temporalInkVeil
-            }
-            GradientStop {
-                position: 0.82
-                color: "transparent"
-            }
-        }
-    }
 }
