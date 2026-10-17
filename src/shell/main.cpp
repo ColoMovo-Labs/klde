@@ -77,6 +77,8 @@ int main(int argc, char *argv[]) {
                             QStringLiteral("weather"),
                             QStringLiteral("language"),
                             QStringLiteral("input"),
+                            "weather-preview",
+                            "quick-settings-expanded",
                             "notifications",
                             "ribbon",
                             "ribbon-settings",

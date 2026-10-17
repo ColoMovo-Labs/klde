@@ -40,14 +40,6 @@ env QT_QPA_PLATFORM=wayland WAYLAND_DISPLAY=wayland-klde QT_QUICK_BACKEND=softwa
     "$shell_binary" --smoke-test --capture "$smoke_dir/wayland.png" \
     > "$smoke_dir/wayland.log" 2>&1
 
-# Exercise the same focus/typing/token suite through each real QPA path.
-qml_test_binary="$(dirname "$shell_binary")/klde-qml-tests"
-env QT_QPA_PLATFORM=wayland WAYLAND_DISPLAY=wayland-klde QT_QUICK_BACKEND=software \
-    QT_QUICK_CONTROLS_STYLE=Basic "$qml_test_binary" \
-    > "$smoke_dir/wayland-interaction.log" 2>&1
-xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic \
-    "$qml_test_binary" > "$smoke_dir/xcb-interaction.log" 2>&1
-
 # llvmpipe checks the OpenGL path. It is not an Intel GPU benchmark.
 xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 glxinfo -B > "$smoke_dir/glxinfo.txt"
 xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
@@ -90,4 +82,12 @@ done
 xvfb-run -a env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
     LIBGL_ALWAYS_SOFTWARE=1 "$shell_binary" --smoke-test --locale zh_CN --voice cute --view language \
     --capture "$smoke_dir/language-zh_CN.png" > "$smoke_dir/language-zh_CN.log" 2>&1
+# Exercise the same focus/typing/token suite through each real QPA path.
+qml_test_binary="$(dirname "$shell_binary")/klde-qml-tests"
+env QT_QPA_PLATFORM=wayland WAYLAND_DISPLAY=wayland-klde QT_QUICK_BACKEND=software \
+    QT_QUICK_CONTROLS_STYLE=Basic "$qml_test_binary" \
+    > "$smoke_dir/wayland-interaction.log" 2>&1
+xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic \
+    "$qml_test_binary" > "$smoke_dir/xcb-interaction.log" 2>&1
+
 exit "$smoke_status"

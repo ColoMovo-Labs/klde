@@ -71,7 +71,7 @@ set(klde_assets assets/wallpapers/first-light.svg
     assets/wallpapers/abstract.svg assets/wallpapers/quiet.svg assets/wallpapers/kemono.svg
     assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf
     assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf)
-foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather cpu memory microphone battery bell overview display info previous next thermometer)
+foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather cpu memory microphone battery bell overview display info previous next thermometer weather-clear weather-partly-cloudy weather-cloudy weather-rain weather-snow weather-thunderstorm weather-fog weather-extreme-heat weather-extreme-cold)
     list(APPEND klde_assets "assets/icons/${icon}.svg")
     list(APPEND klde_assets "assets/icons/${icon}-light.svg")
 endforeach()

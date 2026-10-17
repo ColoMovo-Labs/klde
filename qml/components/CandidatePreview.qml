@@ -11,6 +11,12 @@ LabPanel {
     heading: I18n.t("lab.candidate.title")
     subtitle: I18n.t("lab.candidate.disclosure")
     property int selectedIndex: 0
+    function focusCandidate(index: int): void {
+        const candidate = candidateRepeater.itemAt(index);
+        if (candidate)
+            candidate.forceActiveFocus();
+    }
+    onOpened: focusCandidate(0)
     readonly property bool simplified: Shell.state.snapshot.input.simplified
     Label {
         text: "nǐ hǎo"
@@ -18,6 +24,7 @@ LabPanel {
         color: Tokens.primary
     }
     Repeater {
+        id: candidateRepeater
         model: root.simplified ? ["你好", "你好吗", "你好呀"] : ["你好", "你好嗎", "你好呀"]
         delegate: ActionButton {
             required property int index
@@ -27,6 +34,8 @@ LabPanel {
             emphasized: root.selectedIndex === index
             text: (index + 1).toString() + "   " + modelData
             onClicked: root.selectedIndex = index
+            Keys.onDownPressed: root.focusCandidate((index + 1) % 3)
+            Keys.onUpPressed: root.focusCandidate((index + 2) % 3)
         }
     }
     Switch {

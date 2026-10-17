@@ -15,6 +15,9 @@ QtObject {
     function number(value: real, precision: int): string {
         return value.toLocaleString(Qt.locale(locale), "f", precision);
     }
+    function date(value: string, compact: bool): string {
+        return new Date(value).toLocaleDateString(Qt.locale(locale), compact ? locale === "zh_CN" ? "M月d日 ddd" : "MMM d, ddd" : Locale.LongFormat);
+    }
     function clock(): string {
         return Shell.language.previewClock(Shell.language.revision);
     }

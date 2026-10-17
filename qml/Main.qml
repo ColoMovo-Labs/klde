@@ -61,6 +61,10 @@ ApplicationWindow {
         case "launcher":
             target = launcher;
             break;
+        case "quick-settings-expanded":
+            quickSettings.expanded = true;
+            target = quickSettings;
+            break;
         case "quick-settings":
             target = quickSettings;
             break;
@@ -79,7 +83,12 @@ ApplicationWindow {
         case "input":
             target = inputPopup;
             break;
+        case "weather-preview":
+            notificationCenter.tab = 2;
+            target = notificationCenter;
+            break;
         case "notifications":
+            notificationCenter.tab = window.snapshot.weather.available ? 0 : 2;
             target = notificationCenter;
             break;
         case "ribbon":

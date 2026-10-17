@@ -10,7 +10,8 @@ StatusCapsule {
     readonly property string moduleId: module.id
     signal invoked(string moduleId)
     label: I18n.t(module.titleId)
-    iconName: module.icon
+    iconName: moduleId === "weather" ? "weather-" + snapshot.weather.condition : module.icon
+    prominent: moduleId === "time"
     detailed: !Shell.ribbon.compact && Tokens.densityMode === 0
     valueText: {
         switch (moduleId) {
@@ -19,7 +20,7 @@ StatusCapsule {
         case "context":
             return snapshot.activeApp === "desktop" ? I18n.t("lab.desktop") : I18n.s(Shell.applications.nameFor(snapshot.activeApp));
         case "date":
-            return Qt.formatDate(new Date(snapshot.time), I18n.locale === "zh_CN" ? "M月d日 ddd" : "MMM d, ddd");
+            return I18n.date(snapshot.time, true);
         case "time":
             return Qt.formatTime(new Date(snapshot.time), "hh:mm");
         case "cpu":
@@ -33,7 +34,7 @@ StatusCapsule {
         case "scene":
             return Tokens.densityMode === 0 ? I18n.t("lab.scene." + snapshot.powerScene) : "";
         case "network":
-            return snapshot.network.enabled ? snapshot.network.connected ? "" : "!" : "×";
+            return !snapshot.network.enabled ? "×" : !snapshot.network.connected || !snapshot.network.internet ? "!" : snapshot.network.strength < 30 ? I18n.number(snapshot.network.strength, 0) + "%" : "";
         case "bluetooth":
             return snapshot.bluetooth.enabled ? snapshot.bluetooth.connectedDevices > 0 ? snapshot.bluetooth.connectedDevices.toString() : "" : "×";
         case "audio":

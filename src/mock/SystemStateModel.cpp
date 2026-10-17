@@ -121,6 +121,7 @@ bool SystemStateModel::requestValue(const QString &path, const QVariant &newValu
         {"battery.percent", "battery"},       {"cpu.temperature", "sensors"},
         {"audio.microphone", "microphone"},   {"bluetooth.enabled", "bluetooth"},
         {"brightness", "brightness"},         {"policy.frequency", "cpuPolicy"},
+        {"policy.cpu", "cpuPolicy"},          {"policy.gpu", "gpuPolicy"},
         {"policy.refreshRate", "refreshRate"}};
     if (needs.contains(path) && !value("capabilities." + needs.value(path)).toBool())
         return false;

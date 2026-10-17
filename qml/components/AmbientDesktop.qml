@@ -20,7 +20,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter
         }
         Label {
-            text: Qt.formatDate(new Date(root.snapshot.time), Qt.locale(I18n.locale).dateFormat(Locale.LongFormat))
+            text: I18n.date(root.snapshot.time, false)
             font: Tokens.title
             color: Tokens.textPrimary
             Layout.alignment: Qt.AlignHCenter

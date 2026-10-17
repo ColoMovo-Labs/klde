@@ -22,13 +22,15 @@ def main():
         for locale in ('zh_CN', 'en'):
             for voice in ('standard', 'cute'):
                 cases.append(dict(id=f'{"dark" if dark else "light"}-{locale}-{voice}', dark=dark, locale=locale, voice=voice, view='quick-settings'))
-    for scenario in ('critical-battery', 'high-temperature', 'offline', 'desktop-no-battery', 'hybrid-gpu-laptop', 'weather-provider-error', 'session-error', 'input-unavailable', 'no-microphone', 'no-sensors', 'bluetooth-unavailable', 'weak-wifi', 'bluetooth-connected', 'igpu-only-laptop', 'update-available', 'weather-snow', 'weather-rain'):
+    for scenario in ('critical-battery', 'high-temperature', 'offline', 'desktop-no-battery', 'hybrid-gpu-laptop', 'weather-provider-error', 'session-error', 'input-unavailable', 'no-microphone', 'no-sensors', 'bluetooth-unavailable', 'weak-wifi', 'bluetooth-connected', 'igpu-only-laptop', 'update-available', 'weather-snow', 'weather-rain', 'wifi-disconnected', 'no-internet', 'low-battery', 'weather-clear', 'weather-cloudy', 'weather-thunderstorm', 'weather-fog', 'weather-extreme-heat', 'weather-extreme-cold'):
         for voice in ('standard', 'cute'):
-            cases.append(dict(id=f'{scenario}-{voice}', scenario=scenario, voice=voice, view='notifications' if scenario in ('critical-battery','high-temperature','session-error') else 'ribbon'))
+            cases.append(dict(id=f'{scenario}-{voice}', scenario=scenario, voice=voice, view='notifications' if scenario in ('critical-battery','high-temperature','session-error') else 'weather-preview' if scenario.startswith('weather-') else 'ribbon'))
     for name, size, scale in [('laptop','1366x768',1), ('full-hd','1920x1080',1), ('qhd','2560x1440',1), ('hidpi','1440x900',2), ('ultrawide','3440x1440',1), ('portrait','1080x1920',1)]:
         cases.append(dict(id='size-'+name, size=size, scale=scale, view='quick-settings', density='dense'))
     for wallpaper in ('snow','abstract','quiet','kemono'):
         cases.append(dict(id='ambient-'+wallpaper, wallpaper=wallpaper, ambient=True, density='dense'))
+    cases.append(dict(id="reference-composition", ambient=True, wallpaper="abstract", view="notifications", density="dense"))
+    cases.append(dict(id="expanded-controls", view="quick-settings-expanded", dark=True, voice="cute"))
     records=[]
     for case in cases:
         options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False)

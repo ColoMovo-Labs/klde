@@ -10,10 +10,11 @@ Button {
     property string iconName: "info"
     property int severity: 0
     property bool active: false
+    property bool prominent: false
     property bool unavailable: false
     property real meter: -1
     property bool detailed: false
-    readonly property color ink: severity === 2 ? Tokens.error : severity === 1 ? Tokens.warning : active ? Tokens.primary : Tokens.textPrimary
+    readonly property color ink: prominent ? Tokens.textOnPrimary : severity === 2 ? Tokens.error : severity === 1 ? Tokens.warning : active ? Tokens.primary : Tokens.textPrimary
     implicitWidth: contentRow.implicitWidth + Tokens.space16
     implicitHeight: Tokens.ribbonHeight
     padding: Tokens.space8
@@ -58,6 +59,7 @@ Button {
             Icon {
                 anchors.centerIn: parent
                 name: root.iconName
+                lightInk: root.prominent ? !Tokens.darkMode : Tokens.darkMode
                 width: root.meter >= 0 ? Tokens.iconS : Tokens.ribbonIcon
                 height: width
             }
@@ -72,8 +74,8 @@ Button {
         }
     }
     background: Rectangle {
-        radius: root.active ? Tokens.radiusPill : root.hovered ? Tokens.radiusL : Tokens.radiusM
-        color: root.severity === 2 ? Qt.tint(Tokens.surface, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.14)) : root.active || root.hovered ? Tokens.primaryContainer : Tokens.surface
+        radius: root.active || root.prominent ? Tokens.radiusPill : root.hovered ? Tokens.radiusL : Tokens.radiusM
+        color: root.prominent ? Tokens.primary : root.severity === 2 ? Qt.tint(Tokens.surface, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.14)) : root.active || root.hovered ? Tokens.primaryContainer : Tokens.surface
         opacity: root.unavailable ? Tokens.surfaceOpacityLow : Tokens.transparencyEnabled ? Tokens.surfaceOpacityMedium : 1
         border.width: root.visualFocus || root.severity === 2 ? Tokens.space2 : Tokens.space1
         border.color: root.visualFocus || root.severity > 0 ? root.ink : Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)

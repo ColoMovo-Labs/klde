@@ -9,7 +9,7 @@ LabPanel {
     id: root
     objectName: "notificationCenter"
     heading: I18n.t("lab.center.title")
-    subtitle: Qt.formatDate(new Date(Shell.state.snapshot.time), Qt.locale(I18n.locale).dateFormat(Locale.LongFormat))
+    subtitle: I18n.date(Shell.state.snapshot.time, false)
     property int tab: 0
     signal weatherRequested
     RowLayout {
@@ -59,6 +59,12 @@ LabPanel {
                 text: I18n.t("lab.center.system")
                 font: Tokens.label
                 color: Tokens.textPrimary
+            }
+            Label {
+                visible: Shell.state.snapshot.updateAvailable
+                text: I18n.t("lab.notification.update.title")
+                font: Tokens.label
+                color: Tokens.primary
             }
             Label {
                 text: I18n.t("lab.preview")

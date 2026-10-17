@@ -304,6 +304,76 @@
       "overrides": {
         "input.available": false
       }
+    },
+    {
+      "id": "wifi-disconnected",
+      "titleId": "lab.scenario.wifi-disconnected",
+      "overrides": {
+        "network.connected": false,
+        "network.internet": false
+      }
+    },
+    {
+      "id": "no-internet",
+      "titleId": "lab.scenario.no-internet",
+      "overrides": {
+        "network.internet": false
+      }
+    },
+    {
+      "id": "low-battery",
+      "titleId": "lab.scenario.low-battery",
+      "overrides": {
+        "battery.percent": 17
+      }
+    },
+    {
+      "id": "weather-clear",
+      "titleId": "lab.scenario.weather-clear",
+      "overrides": {
+        "weather.condition": "clear",
+        "weather.temperature": 24
+      }
+    },
+    {
+      "id": "weather-cloudy",
+      "titleId": "lab.scenario.weather-cloudy",
+      "overrides": {
+        "weather.condition": "cloudy",
+        "weather.temperature": 18
+      }
+    },
+    {
+      "id": "weather-thunderstorm",
+      "titleId": "lab.scenario.weather-thunderstorm",
+      "overrides": {
+        "weather.condition": "thunderstorm",
+        "weather.temperature": 21
+      }
+    },
+    {
+      "id": "weather-fog",
+      "titleId": "lab.scenario.weather-fog",
+      "overrides": {
+        "weather.condition": "fog",
+        "weather.temperature": 12
+      }
+    },
+    {
+      "id": "weather-extreme-heat",
+      "titleId": "lab.scenario.weather-extreme-heat",
+      "overrides": {
+        "weather.condition": "extreme-heat",
+        "weather.temperature": 42
+      }
+    },
+    {
+      "id": "weather-extreme-cold",
+      "titleId": "lab.scenario.weather-extreme-cold",
+      "overrides": {
+        "weather.condition": "extreme-cold",
+        "weather.temperature": -32
+      }
     }
   ]
 }

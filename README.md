@@ -48,6 +48,12 @@ are tracked in [PR #1](https://github.com/ColoMovo-Labs/klde/pull/1). See the
 [prototype guide](docs/development/phase-1.md) and
 [latest rendering evidence](docs/development/expressive-language.md).
 
+The stacked [Visual System Lab change](https://github.com/ColoMovo-Labs/klde/pull/2)
+adds structured scenarios, configurable floating status islands, three density
+modes, notifications, owned candidate UI, optional ambient layout, original
+wallpapers and the opt-in Mock Lab. See the [usage and acceptance guide](docs/development/visual-lab.md)
+and [pinned component reuse audit](docs/reuse/component-audit.md).
+
 System controls, workspace management and input selection remain mock. The
 experimental weather adapter is disabled by default and requires an explicitly
 entered city and online consent. There is no telemetry or privileged helper.

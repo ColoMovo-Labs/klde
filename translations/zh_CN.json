@@ -357,5 +357,14 @@
   "lab.apps.calculator": "计算器",
   "lab.apps.archive": "归档",
   "lab.apps.software": "软件中心",
-  "lab.apps.media": "媒体播放器"
+  "lab.apps.media": "媒体播放器",
+  "lab.scenario.wifi-disconnected": "Wi-Fi 未连接",
+  "lab.scenario.no-internet": "已连接但无法访问互联网",
+  "lab.scenario.low-battery": "电量偏低",
+  "lab.scenario.weather-clear": "晴天",
+  "lab.scenario.weather-cloudy": "阴天",
+  "lab.scenario.weather-thunderstorm": "雷雨",
+  "lab.scenario.weather-fog": "雾",
+  "lab.scenario.weather-extreme-heat": "高温天气",
+  "lab.scenario.weather-extreme-cold": "严寒天气"
 }

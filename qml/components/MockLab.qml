@@ -89,6 +89,17 @@ LabPanel {
         }
     }
     Label {
+        text: I18n.t("lab.density")
+        font: Tokens.label
+        color: Tokens.textPrimary
+    }
+    ChoiceBox {
+        Layout.fillWidth: true
+        model: [I18n.t("lab.density.comfortable"), I18n.t("lab.density.balanced"), I18n.t("lab.density.dense")]
+        currentIndex: Tokens.densityMode
+        onActivated: Shell.scenes.customize("density", currentIndex)
+    }
+    Label {
         text: I18n.t("shell.effects.motion")
         color: Tokens.textPrimary
         font: Tokens.label

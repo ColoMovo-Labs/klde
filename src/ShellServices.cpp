@@ -132,11 +132,12 @@ void ShellServices::projectState(const QString &path) {
     }
     if (all || path == "notifications.count" || path == "battery.percent" ||
         path == "cpu.temperature" || path == "sessionError") {
-        const QString context =
-            m_state.value("sessionError").toBool()           ? QStringLiteral("session")
-            : m_state.value("battery.percent").toInt() <= 5  ? QStringLiteral("battery")
-            : m_state.value("cpu.temperature").toInt() >= 92 ? QStringLiteral("temperature")
-                                                             : QString();
+        const auto alerts = m_state.alerts();
+        const QString context = m_state.value("sessionError").toBool() ? QStringLiteral("session")
+                                : alerts.value("battery").toInt() == 2 ? QStringLiteral("battery")
+                                : alerts.value("temperature").toInt() == 2
+                                    ? QStringLiteral("temperature")
+                                    : QString();
         m_notifications.seedDemo(m_state.value("notifications.count").toInt(), context);
     }
     if (all || path == "activeApp")
@@ -179,6 +180,11 @@ bool ShellServices::previewAction(const QString &action) {
 bool ShellServices::eventFilter(QObject *watched, QEvent *event) {
     if (!qobject_cast<QWindow *>(watched))
         return false;
+    if (event->type() == QEvent::FocusOut || event->type() == QEvent::WindowDeactivate) {
+        m_metaDown = false;
+        m_metaUsed = false;
+        return false;
+    }
     if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) {
         const auto *key = static_cast<QKeyEvent *>(event);
         if (key->isAutoRepeat())

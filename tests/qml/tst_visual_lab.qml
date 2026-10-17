@@ -36,6 +36,12 @@ Item {
             Tokens.reducedMotion = false;
             Tokens.densityMode = 1;
         }
+        function test_dateUsesTheSelectedLocale(): void {
+            Shell.language.setLocale("zh_CN");
+            verify(I18n.date("2026-10-17T08:30:00", true).indexOf("周六") >= 0);
+            Shell.language.setLocale("en");
+            verify(I18n.date("2026-10-17T08:30:00", true).indexOf("Sat") >= 0);
+        }
         function test_notificationClearPropagatesToState(): void {
             const panel = createTemporaryObject(centerComponent, testRoot, {
                 parent: testRoot
@@ -57,9 +63,7 @@ Item {
             });
             panel.open();
             tryCompare(panel, "opened", true);
-            const second = findChild(panel, "candidate1");
-            verify(second !== null);
-            second.forceActiveFocus();
+            panel.focusCandidate(1);
             keyClick(Qt.Key_Space);
             compare(panel.selectedIndex, 1);
             verify(Shell.state.requestValue("input.simplified", false));
