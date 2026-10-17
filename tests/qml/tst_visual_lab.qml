@@ -55,6 +55,19 @@ Item {
             Tokens.reducedMotion = false;
             Tokens.densityMode = 1;
         }
+        function test_ambientCompositionFitsShortSurfaces(): void {
+            const ambient = createTemporaryObject(ambientComponent, testRoot, {
+                width: 1366
+            });
+            const composition = findChild(ambient, "ambientComposition");
+            verify(composition !== null);
+            for (const height of [320, 420, 600, 900]) {
+                ambient.height = height;
+                wait(0);
+                verify(composition.height <= height + 1, "Ambient height: " + height);
+                verify(composition.y >= -1);
+            }
+        }
         function test_temporalStateAndCacheControls(): void {
             const capsule = createTemporaryObject(temporalComponent, testRoot);
             verify(capsule !== null);

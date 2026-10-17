@@ -7,12 +7,16 @@ import KLDE.Backends
 Item {
     id: root
     readonly property var snapshot: Shell.state.snapshot
+    readonly property bool compactHeight: height < Tokens.ambientCompactThreshold
+    readonly property bool mediaVisible: height >= Tokens.ambientMediaThreshold
+    readonly property real reservedHeight: !mediaVisible ? Tokens.ambientMinimalBudget : compactHeight ? Tokens.ambientCompactBudget : Tokens.ambientDetailsBudget
     ColumnLayout {
+        objectName: "ambientComposition"
         anchors.centerIn: parent
         width: Math.min(parent.width - Tokens.space32, Tokens.settingsWidth)
         spacing: Tokens.space16
         DisplayClock {
-            pixelSize: Math.min((root.width - Tokens.space32) / 3.10, Tokens.ambientClockSize * Tokens.textScale)
+            pixelSize: Math.max(Tokens.workingClockSize, Math.min((root.width - Tokens.space32) / 3.10, Tokens.ambientClockSize * Tokens.textScale, (root.height - root.reservedHeight) / Tokens.displayClockLineHeight))
             Layout.preferredWidth: implicitWidth
             Layout.preferredHeight: implicitHeight
             Layout.alignment: Qt.AlignHCenter
@@ -25,17 +29,20 @@ Item {
         }
         Label {
             objectName: "ambientWeather"
+            visible: !root.compactHeight
             text: root.snapshot.weather.available ? root.snapshot.weather.city + " · " + I18n.t("weather.condition." + root.snapshot.weather.condition) + "  " + I18n.number(root.snapshot.weather.temperature, 0) + "°" : I18n.t("friendly.weather.unavailable")
             font: Tokens.label
             color: Tokens.textSecondary
             Layout.alignment: Qt.AlignHCenter
         }
         TemporalCapsule {
+            visible: !root.compactHeight
             compact: false
             showTime: false
             Layout.alignment: Qt.AlignHCenter
         }
         Rectangle {
+            visible: root.mediaVisible
             Layout.topMargin: Tokens.space24
             Layout.fillWidth: true
             implicitHeight: Tokens.sceneCardHeight + Tokens.space16

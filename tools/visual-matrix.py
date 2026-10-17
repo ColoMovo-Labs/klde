@@ -36,6 +36,8 @@ def main():
                           view='lock-preview' if scenario == 'lock-screen-blur-enabled' else 'launcher' if scenario == 'waydroid-ready' else 'desktop'))
     cases.append(dict(id='working-desktop', scenario='laptop-balanced', view='desktop'))
     cases.append(dict(id='temporal-expanded', scenario='sunset', view='temporal'))
+    cases.append(dict(id='ambient-laptop', size='1366x768', ambient=True, density='dense'))
+    cases.append(dict(id='lock-screen-dark', scenario='lock-screen-blur-enabled', view='lock-preview', dark=True, ambient=True))
     records=[]
     for case in cases:
         options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False)

@@ -151,6 +151,11 @@ QtObject {
     readonly property real displayClockColonWidth: 0.30
     readonly property int ambientClockSize: 184
     readonly property int workingClockSize: 56
+    readonly property int ambientCompactThreshold: 560
+    readonly property int ambientMediaThreshold: 360
+    readonly property int ambientDetailsBudget: 360
+    readonly property int ambientCompactBudget: 240
+    readonly property int ambientMinimalBudget: 64
     readonly property int ribbonGroupGap: densityMode === 2 ? space12 : space16
     readonly property int ribbonInnerGap: space2
     readonly property int ribbonGroupPadding: space4

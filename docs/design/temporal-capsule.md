@@ -39,6 +39,8 @@ shader animation or continuously redrawn Canvas.
 Working mode uses a 56 px display clock beneath the ribbon and keeps application
 context prominent. The welcome message is limited to an empty preview desktop.
 Ambient mode opts into a 184 px central display clock, date, weather, rich capsule
-and media. Text width limits scale the large clock for the available surface.
+and media. Text width and height budgets scale the clock for the available surface. Short
+windows drop the rich mood/weather detail, then the media card, before allowing
+the composition to overlap the ribbon or dock.
 Neither mode is a secure lock screen. Automatic idle transitions are future work;
 the prototype switches explicitly in the Mock Lab or Temporal page.

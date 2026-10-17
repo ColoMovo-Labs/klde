@@ -29,7 +29,7 @@ They remain historical evidence for that revision.
 
 This new pass requires its own pushed CircleCI run. Do not inherit the prior
 commit's green status or reuse its pictures as evidence for changed geometry.
-The smoke script now requests the new panels; the matrix adds 12 new cases to the
+The smoke script now requests the new panels; the matrix adds 14 new cases to the
 previous 72. Tests add time stepping, cache invalidation/fallback, scene restoration,
 optional app source and stopped-session behavior. Their results are unverified
 until the cloud run completes.

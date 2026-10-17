@@ -36,6 +36,6 @@ Item {
         anchors.fill: parent
         visible: !root.foregroundOnly
         color: Tokens.background
-        opacity: root.lockPreview ? Tokens.wallpaperDim : Tokens.darkMode ? Tokens.darkWallpaperShade : 0
+        opacity: root.lockPreview && !Tokens.darkMode ? Tokens.wallpaperDim : Tokens.darkMode ? Tokens.darkWallpaperShade : 0
     }
 }
