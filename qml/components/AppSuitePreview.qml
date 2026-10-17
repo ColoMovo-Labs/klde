@@ -51,6 +51,7 @@ LabPanel {
             }
         ]
         delegate: Rectangle {
+            id: appCard
             required property var modelData
             Layout.fillWidth: true
             implicitHeight: Tokens.launcherRow + Tokens.space16
@@ -60,12 +61,12 @@ LabPanel {
                 anchors.fill: parent
                 anchors.margins: Tokens.space12
                 Label {
-                    text: I18n.t("lab.apps." + parent.parent.modelData.id)
+                    text: I18n.t("lab.apps." + appCard.modelData.id)
                     font: Tokens.label
                     color: Tokens.primary
                 }
                 Label {
-                    text: parent.parent.modelData.name
+                    text: appCard.modelData.name
                     font: Tokens.body
                     color: Tokens.textPrimary
                     Layout.fillWidth: true

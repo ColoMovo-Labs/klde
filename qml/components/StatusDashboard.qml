@@ -21,7 +21,7 @@ LabPanel {
                 module: modelData
                 detailed: true
                 visible: module.id !== "workspaces" && (module.id !== "battery" || Shell.state.snapshot.capabilities.battery)
-                onAction: moduleId => Shell.showNotice(I18n.t(module.titleId) + ": " + valueText)
+                onInvoked: moduleId => Shell.showNotice(I18n.t(module.titleId) + ": " + valueText)
             }
         }
     }

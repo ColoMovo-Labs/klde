@@ -127,6 +127,15 @@ jobs:
       - run:
           name: Offscreen, nested Wayland and llvmpipe startup
           command: bash tools/smoke-test.sh build/ci/bin/klde-shell
+      - run:
+          name: Locale, voice, state and responsive visual matrix
+          command: |
+            runtime_dir="$(mktemp -d)"
+            chmod 700 "$runtime_dir"
+            trap 'rm -rf "$runtime_dir"' EXIT
+            xvfb-run -a -s '-screen 0 3840x2160x24' env -u QT_QUICK_BACKEND \
+              XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=xcb QSG_RHI_BACKEND=opengl \
+              LIBGL_ALWAYS_SOFTWARE=1 python3 tools/visual-matrix.py build/ci/bin/klde-shell
       - store_artifacts:
           path: artifacts/smoke
 

@@ -19,14 +19,14 @@ QVariantList PowerSceneController::defaults() {
                                                   {"shadows", shadows},
                                                   {"motion", motion},
                                                   {"density", 1},
-                                                  {"shadowLevel", 1}}}};
+                                                  {"shadowLevel", motion == 2 ? 1 : 0}}}};
     };
     return {scene("performance", tr("Performance"), "sun", tr("Room for demanding work"),
                   "Performance", BlurBackend::Low, 3, true),
             scene("balanced", tr("Balanced"), "leaf", tr("A comfortable everyday rhythm"),
                   "Balanced", BlurBackend::Medium, 2, true),
             scene("power-saver", tr("Power Saver"), "moon", tr("Stay light, keep the softness"),
-                  "Power saver", BlurBackend::Low, 0, false)};
+                  "Power saver", BlurBackend::Low, 0, true)};
 }
 PowerSceneController::PowerSceneController(SystemBackend *system, BlurBackend *blur,
                                            QObject *parent)

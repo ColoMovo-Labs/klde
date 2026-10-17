@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import KLDE.Backends
 
 ColumnLayout {
+    id: root
     readonly property var caps: Shell.state.snapshot.capabilities
     spacing: Tokens.rowGap
     Label {
@@ -20,34 +21,34 @@ ColumnLayout {
         wrapMode: Text.WordWrap
     }
     StateChoice {
-        visible: parent.caps.cpuPolicy
+        visible: root.caps.cpuPolicy
         label: I18n.t("lab.policy.cpu")
         path: "policy.cpu"
         values: ["efficient", "balanced", "performance"]
         labels: [I18n.t("lab.policy.efficient"), I18n.t("lab.scene.balanced"), I18n.t("lab.scene.performance")]
     }
     StateSlider {
-        visible: parent.caps.cpuPolicy
+        visible: root.caps.cpuPolicy
         path: "policy.frequency"
         label: I18n.t("lab.policy.frequency")
         iconName: "cpu"
     }
     StateChoice {
-        visible: parent.caps.gpuPolicy
+        visible: root.caps.gpuPolicy
         label: I18n.t("lab.policy.gpu")
         path: "policy.gpu"
-        values: parent.caps.discreteGpu ? ["integrated", "hybrid", "discrete"] : ["integrated"]
-        labels: parent.caps.discreteGpu ? [I18n.t("lab.gpu.integrated"), I18n.t("lab.gpu.hybrid"), I18n.t("lab.gpu.discrete")] : [I18n.t("lab.gpu.integrated")]
+        values: root.caps.discreteGpu ? ["integrated", "hybrid", "discrete"] : ["integrated"]
+        labels: root.caps.discreteGpu ? [I18n.t("lab.gpu.integrated"), I18n.t("lab.gpu.hybrid"), I18n.t("lab.gpu.discrete")] : [I18n.t("lab.gpu.integrated")]
     }
     StateChoice {
-        visible: parent.caps.refreshRate
+        visible: root.caps.refreshRate
         label: I18n.t("lab.policy.refresh")
         path: "policy.refreshRate"
         values: [60, 90, 120, 144]
         labels: ["60 Hz", "90 Hz", "120 Hz", "144 Hz"]
     }
     StateChoice {
-        visible: parent.caps.brightness
+        visible: root.caps.brightness
         label: I18n.t("lab.policy.brightness")
         path: "policy.brightness"
         values: ["manual", "adaptive", "dim"]

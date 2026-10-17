@@ -41,7 +41,7 @@ ApplicationWindow {
     palette.shadow: Tokens.shadow
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
-    readonly property var state: Shell.state.snapshot
+    readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: ribbon.y + ribbon.height + Tokens.space16
     readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
@@ -152,14 +152,14 @@ ApplicationWindow {
     Binding {
         target: Tokens
         property: "wallpaperChoice"
-        value: window.state.appearance.wallpaper
+        value: window.snapshot.appearance.wallpaper
     }
     Item {
         id: wallpaper
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "qrc:/assets/wallpapers/" + (window.state.appearance.wallpaper === "snow" ? "first-light" : window.state.appearance.wallpaper) + ".svg"
+            source: "qrc:/assets/wallpapers/" + (window.snapshot.appearance.wallpaper === "snow" ? "first-light" : window.snapshot.appearance.wallpaper) + ".svg"
             sourceSize: Qt.size(width, height)
             fillMode: Image.PreserveAspectCrop
         }
@@ -188,7 +188,7 @@ ApplicationWindow {
     }
     WidgetHost {
         widgetId: "weather"
-        visible: !window.state.appearance.ambient
+        visible: !window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.controlHeight
         renderingAllowed: window.renderingAllowed
@@ -201,7 +201,7 @@ ApplicationWindow {
         }
     }
     ColumnLayout {
-        visible: !window.state.appearance.ambient
+        visible: !window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         anchors.bottom: dock.top
         anchors.bottomMargin: Tokens.space32
@@ -223,14 +223,14 @@ ApplicationWindow {
         }
     }
     AmbientDesktop {
-        visible: window.state.appearance.ambient
+        visible: window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.space24
         width: parent.width - Tokens.desktopMargin * 2
         height: dock.y - y - Tokens.space24
     }
     Surface {
-        visible: window.state.scratchpad
+        visible: window.snapshot.scratchpad
         anchors.centerIn: parent
         width: Math.min(Tokens.panelWidth, parent.width - Tokens.space32)
         height: Tokens.widgetSize

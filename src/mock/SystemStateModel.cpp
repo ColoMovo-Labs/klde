@@ -88,7 +88,9 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
         if (value.metaType().id() != QMetaType::QVariantList || value.toList().size() != 5)
             return false;
         for (const auto &layout : value.toList())
-            if (layout.toInt() < 0 || layout.toInt() > 3 || layout.toDouble() != layout.toInt())
+            if (layout.metaType().id() == QMetaType::Bool ||
+                layout.metaType().id() == QMetaType::QString || layout.toInt() < 0 ||
+                layout.toInt() > 3 || layout.toDouble() != layout.toInt())
                 return false;
         return true;
     }
@@ -128,6 +130,8 @@ bool SystemStateModel::requestValue(const QString &path, const QVariant &newValu
     if (value(path) == newValue)
         return true;
     assign(m_snapshot, path, newValue);
+    if (path == "policy.gpu")
+        assign(m_snapshot, "policy.discreteEnabled", newValue != "integrated");
     if (path == "network.enabled") {
         assign(m_snapshot, "network.connected", newValue.toBool());
         assign(m_snapshot, "network.internet", newValue.toBool());

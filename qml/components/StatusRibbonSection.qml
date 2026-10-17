@@ -7,14 +7,14 @@ Flow {
     id: root
     required property int section
     signal action(string moduleId)
-    readonly property var state: Shell.state.snapshot
+    readonly property var snapshot: Shell.state.snapshot
     spacing: Shell.ribbon.spacing
     Repeater {
         model: Shell.ribbon.modules
         delegate: Loader {
             id: cell
             required property var modelData
-            readonly property bool capable: modelData.id !== "battery" || root.state.capabilities.battery
+            readonly property bool capable: modelData.id !== "battery" || root.snapshot.capabilities.battery
             readonly property bool densityVisible: Tokens.densityMode !== 0 || modelData.priority <= 3
             visible: modelData.enabled && modelData.section === root.section && capable && densityVisible
             active: visible
@@ -38,7 +38,7 @@ Flow {
                         id: moduleComponent
                         StatusModule {
                             module: cell.modelData
-                            onAction: moduleId => root.action(moduleId)
+                            onInvoked: moduleId => root.action(moduleId)
                         }
                     }
                 }

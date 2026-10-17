@@ -53,6 +53,16 @@ def main():
         for key in re.findall(r'I18n\.t\("([a-z0-9.-]+)"\)', source):
             if key not in english:
                 raise ValueError(f"Missing required UI ID {key} in {path}")
+    for relative in ("src/mock/scenarios.json", "src/status/modules.json"):
+        data = json.loads((ROOT / relative).read_text())
+        entries = data["scenarios"] if isinstance(data, dict) else data
+        for item in entries:
+            if item["titleId"] not in english:
+                raise ValueError(f"Missing fixture/module title: {item['titleId']}")
+    for context in ("battery", "temperature", "session"):
+        for part in ("title", "body"):
+            if f"critical.notification.{context}.{part}" not in english:
+                raise ValueError("Critical notification vocabulary is incomplete")
     # Existing C++ mock contracts retain a source-text bridge until their data models
     # expose message IDs. Ensure every legacy tr() source has a bilingual base.
     sources = set(english.values())

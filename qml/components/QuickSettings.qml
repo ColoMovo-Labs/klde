@@ -11,7 +11,7 @@ ShellPopup {
     signal sceneSettingsRequested
     signal viewRequested(string view)
     property bool expanded: false
-    readonly property var state: Shell.state.snapshot
+    readonly property var snapshot: Shell.state.snapshot
     width: Math.min(Tokens.panelWidth + (expanded ? Tokens.space32 : 0), parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
     height: Math.min(settingsColumn.implicitHeight + padding * 2, parent ? parent.height - y - Tokens.space24 : Tokens.previewHeight)
     contentItem: ScrollView {
@@ -59,17 +59,17 @@ ShellPopup {
                 ToggleTile {
                     text: I18n.t("shell.network.wifi")
                     iconName: "wifi"
-                    detail: root.state.network.connected ? root.state.network.ssid : I18n.t("lab.network.offline")
-                    selected: root.state.network.enabled
+                    detail: root.snapshot.network.connected ? root.snapshot.network.ssid : I18n.t("lab.network.offline")
+                    selected: root.snapshot.network.enabled
                     Layout.fillWidth: true
                     onToggleRequested: Shell.system.wifi = !Shell.system.wifi
                 }
                 ToggleTile {
                     text: I18n.t("shell.network.bluetooth")
                     iconName: "bluetooth"
-                    enabled: root.state.capabilities.bluetooth
-                    detail: !enabled ? I18n.t("lab.unavailable") : I18n.t(root.state.bluetooth.enabled ? "common.on" : "common.off")
-                    selected: root.state.bluetooth.enabled
+                    enabled: root.snapshot.capabilities.bluetooth
+                    detail: !enabled ? I18n.t("lab.unavailable") : I18n.t(root.snapshot.bluetooth.enabled ? "common.on" : "common.off")
+                    selected: root.snapshot.bluetooth.enabled
                     Layout.fillWidth: true
                     onToggleRequested: Shell.system.bluetooth = !Shell.system.bluetooth
                 }
@@ -89,7 +89,7 @@ ShellPopup {
                 }
             }
             SliderCard {
-                visible: root.state.capabilities.brightness
+                visible: root.snapshot.capabilities.brightness
                 label: I18n.t("shell.effects.brightness")
                 iconName: "sun"
                 value: Shell.system.brightness
@@ -104,7 +104,7 @@ ShellPopup {
                 onValueRequested: requestedValue => Shell.system.volume = requestedValue
             }
             StateSlider {
-                visible: root.expanded && root.state.capabilities.microphone
+                visible: root.expanded && root.snapshot.capabilities.microphone
                 path: "audio.microphone"
                 label: I18n.t("lab.module.microphone")
                 iconName: "microphone"
@@ -118,7 +118,7 @@ ShellPopup {
             }
             Switch {
                 text: I18n.t("lab.dnd")
-                checked: root.state.notifications.dnd
+                checked: root.snapshot.notifications.dnd
                 onToggled: Shell.state.requestValue("notifications.dnd", checked)
             }
             Flow {

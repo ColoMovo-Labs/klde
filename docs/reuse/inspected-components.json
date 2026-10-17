@@ -1,0 +1,334 @@
+[
+  {
+    "repository": "LingmoOS/LingmoUI",
+    "revision": "87ed8ecd4359b236be687f97aafd7a242c5b6ba9",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "example/qml/main.qml",
+      "Compatible/platforms/linux/blurhelper/windowblur.cpp",
+      "Compatible/platforms/linux/blurhelper/windowblur.h"
+    ],
+    "decision": "Reference surfaces; avoid wholesale runtime dependency: GuiPrivate and X11 blur helper."
+  },
+  {
+    "repository": "LingmoOS/album",
+    "revision": "a3af12a290f5e919c9fddda851bbf61db2b22d10",
+    "files": [
+      "LICENSE.txt",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "src/qml/main.qml"
+    ],
+    "decision": "Evaluate separately: Qt6 but Deepin/DTK application and service names, substantial dependencies; not a tiny generic viewer."
+  },
+  {
+    "repository": "LingmoOS/lingmo-calculator",
+    "revision": "7e11870128d8b2270878c507c70dd58862707fc3",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Promising external app candidate: Qt6/LingmoUI3; validate accessibility and translation separately."
+  },
+  {
+    "repository": "LingmoOS/lingmo-core",
+    "revision": "50f42d6c6531ce34852446278f27be8238a3a8f4",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "notificationd/qml/main.qml",
+      "polkit-agent/main.qml",
+      "notificationd/dbus/notificationsadaptor.cpp",
+      "notificationd/dbus/notificationsadaptor.h",
+      "session/CMakeLists.txt",
+      "session/main.cpp",
+      "session/application.cpp",
+      "notificationd/notificationserver.cpp"
+    ],
+    "decision": "Reference freedesktop notification server/history; Qt6, mixed file licenses and privileged/session helpers require isolation."
+  },
+  {
+    "repository": "LingmoOS/lingmo-daemon",
+    "revision": "610162449954c5ac12eca33493f7c9fe211cb5c0",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp"
+    ],
+    "decision": "Avoid shell dependency: Qt5/QApt makes package management distribution-specific."
+  },
+  {
+    "repository": "LingmoOS/lingmo-dock",
+    "revision": "4f0f30a06515bb45c011eca8c98c278e497ffe0f",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Reference app/task model; Qt6 GuiPrivate/KF6 and Lingmo service assumptions."
+  },
+  {
+    "repository": "LingmoOS/lingmo-filemanager",
+    "revision": "c0ec387386c174db9bb5461071dcb76fd91d3808",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "main.cpp",
+      "qml/Desktop/Main.qml",
+      "qml/main.qml"
+    ],
+    "decision": "Evaluate standalone app: Qt6/KF6 KIO/Solid/Config, LingmoUI3 and desktop/dock coupling to isolate."
+  },
+  {
+    "repository": "LingmoOS/lingmo-launcher",
+    "revision": "eac296ecccf47c9d25eb989e06a7cc6e953129fb",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Reference app catalog/keyboard patterns; Qt6/KF6 and Lingmo service assumptions."
+  },
+  {
+    "repository": "LingmoOS/lingmo-qt-plugins",
+    "revision": "3a54d1a70b0434b609fce85ba11caa3dc8704e22",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "widgetstyle/blurhelper.cpp",
+      "widgetstyle/blurhelper.h",
+      "widgetstyle/CMakeLists.txt",
+      "platformtheme/CMakeLists.txt"
+    ],
+    "decision": "Avoid global installation now. Platform theme/widget styles have separate build dependencies and mixed headers."
+  },
+  {
+    "repository": "LingmoOS/lingmo-screenlocker",
+    "revision": "d16aa1d2b2cb39489da4f2bbda06422cac09ec16",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "screenlocker/qml/LockScreen.qml"
+    ],
+    "decision": "Do not embed or imitate authentication. Qt5/X11; selected lock QML has GPL-3.0 marker, not an or-later grant."
+  },
+  {
+    "repository": "LingmoOS/lingmo-screenshots",
+    "revision": "12430cb7801b932294fb86fe4288dc70fbdebeaf",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Reference capture selection UX; Qt5/GraphicalEffects and service coupling. Wayland needs portal/compositor path."
+  },
+  {
+    "repository": "LingmoOS/lingmo-settings",
+    "revision": "78c6f1483594285dc01ea59591f761a570ecea80",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "src/qml/About/Main.qml",
+      "src/qml/Accessibility/Main.qml",
+      "src/notifications.cpp",
+      "src/notifications.h"
+    ],
+    "decision": "Reference selected service adapters; Qt6/KF6 plus X11 and Lingmo D-Bus names prevent direct replacement."
+  },
+  {
+    "repository": "LingmoOS/lingmo-statusbar",
+    "revision": "ee5d766075b145fd46fdcdebd87121208251a8ae",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml",
+      "src/notifications.cpp",
+      "src/notifications.h"
+    ],
+    "decision": "Reference tray/menu/notification APIs; Qt/KF and private distro services are not a drop-in ribbon."
+  },
+  {
+    "repository": "LingmoOS/lingmo-terminal",
+    "revision": "276b3a46dab02cd48b530d9875e0bc604c0a55d4",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "src/qml/main.qml",
+      "qmltermwidget/lib/Session.cpp",
+      "qmltermwidget/lib/Session.h"
+    ],
+    "decision": "Reference/evaluate external app; Qt5 and bundled qmltermwidget require Qt6 port and file-level license inventory."
+  },
+  {
+    "repository": "LingmoOS/lingmo-texteditor",
+    "revision": "419fc5b8fb5e4519fda1ea5e9b8581d876a1e918",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Evaluate external app; Qt5/KF5 SyntaxHighlighting and LingmoUI require port/packaging work."
+  },
+  {
+    "repository": "LingmoOS/lingmo-videoplayer",
+    "revision": "13f8946b630f9bb42bb34809dc45c090a78a730b",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Evaluate external app: Qt5/libmpv, screensaver D-Bus and inherited player code; retain all authors."
+  },
+  {
+    "repository": "cutefishos/core",
+    "revision": "1dc644326c18b9495b5a707a1075d15538eb328b",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "polkit-agent/main.qml",
+      "session/CMakeLists.txt",
+      "session/main.cpp",
+      "session/application.cpp",
+      "session/cutefish-kwin-wayland-session"
+    ],
+    "decision": "Reference session supervision/service separation; Qt6, compositor launch scripts and privileged helpers are not shell UI."
+  },
+  {
+    "repository": "cutefishos/dock",
+    "revision": "0535d7c0bdc0dfbd100301effe74034933b060b9",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Reference task model; Qt6/KF6 plus XCB; do not bind KLDE to its window API."
+  },
+  {
+    "repository": "cutefishos/filemanager",
+    "revision": "59fa83a5e62ce1d6d86d0a4e64c671f958039534",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "main.cpp",
+      "qml/Desktop/Main.qml",
+      "qml/main.qml"
+    ],
+    "decision": "Evaluate standalone app: Qt6/KF6, FishUI and separate desktop integration; no immediate fork."
+  },
+  {
+    "repository": "cutefishos/fishui",
+    "revision": "77e84001da0b9a8d29797b0c8b850532c771c9da",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/platforms/linux/blurhelper/waylandblurmanager.cpp",
+      "src/platforms/linux/blurhelper/waylandblurmanager.h"
+    ],
+    "decision": "Reference public Wayland blur cooperation; Qt6 GuiPrivate/KF6/KWayland make wholesale adoption costly."
+  },
+  {
+    "repository": "cutefishos/kwin-plugins",
+    "revision": "5df71a4e684682e33b5630b7831206d504158937",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "tabbox/cutefish_thumbnail/contents/ui/main.qml"
+    ],
+    "decision": "Do not install: writes KWin defaults/global shortcuts and assumes KWin; study only behind future backend."
+  },
+  {
+    "repository": "cutefishos/launcher",
+    "revision": "723e2f9f994e7cb83a008d3889eefeb330103f5d",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Reference app catalog/keyboard patterns; Qt6/KF6 and Cutefish service assumptions."
+  },
+  {
+    "repository": "cutefishos/qt-plugins",
+    "revision": "bf650f604700ae3ee8297328984c6dbaa9b95598",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "widgetstyle/CMakeLists.txt",
+      "platformtheme/CMakeLists.txt"
+    ],
+    "decision": "Avoid global installation now. Platform theme/widget style/image plugins need per-file and Qt ABI review."
+  },
+  {
+    "repository": "cutefishos/screenlocker",
+    "revision": "b852033bab79749dd5e9b0e4ef5e3f01bd1f7769",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "screenlocker/qml/LockScreen.qml"
+    ],
+    "decision": "Security-sensitive external research only. Qt6 with X11 discovery; a mock popup cannot provide secure locking."
+  },
+  {
+    "repository": "cutefishos/screenshot",
+    "revision": "2b5ce06de6f78a161d4d389e1b2775f2ec09464a",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml"
+    ],
+    "decision": "Reference capture UX; Qt5/GraphicalEffects. Do not use arbitrary screen capture assumptions on Wayland."
+  },
+  {
+    "repository": "cutefishos/settings",
+    "revision": "de043226530b6ce2ca0121022295f83d8938163b",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "src/qml/About/Main.qml",
+      "src/qml/Appearance/Main.qml",
+      "src/notifications.cpp",
+      "src/notifications.h"
+    ],
+    "decision": "Reference service adapters; Qt6/KF6 and Cutefish D-Bus contracts need adaptation."
+  },
+  {
+    "repository": "cutefishos/statusbar",
+    "revision": "e4b9a614c3420c9d25e03f25c077ea9fde3502b7",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "qml/main.qml",
+      "src/notifications.cpp",
+      "src/notifications.h"
+    ],
+    "decision": "Reference StatusNotifier/dbusmenu contracts; Qt6/KF6 and Cutefish services, inherited libraries need separate licenses."
+  },
+  {
+    "repository": "cutefishos/terminal",
+    "revision": "cf5ab4cb24b60d329e9664a5339e8011209c4a29",
+    "files": [
+      "LICENSE",
+      "CMakeLists.txt",
+      "src/main.cpp",
+      "src/qml/main.qml",
+      "qmltermwidget/lib/Session.cpp",
+      "qmltermwidget/lib/Session.h"
+    ],
+    "decision": "Evaluate Qt6 app; CutefishFramework and inherited qmltermwidget remain dependencies."
+  }
+]

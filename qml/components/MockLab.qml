@@ -9,7 +9,7 @@ LabPanel {
     objectName: "mockLab"
     heading: I18n.t("lab.developer.title")
     subtitle: I18n.t("lab.developer.disclosure")
-    readonly property var state: Shell.state.snapshot
+    readonly property var snapshot: Shell.state.snapshot
     signal viewRequested(string view)
     ChoiceBox {
         objectName: "scenarioSelector"
@@ -46,7 +46,7 @@ LabPanel {
         }
         Switch {
             text: I18n.t("lab.ambient")
-            checked: root.state.appearance.ambient
+            checked: root.snapshot.appearance.ambient
             onToggled: Shell.state.requestValue("appearance.ambient", checked)
         }
     }
@@ -100,15 +100,15 @@ LabPanel {
         onActivated: Shell.scenes.customize("motion", currentIndex)
     }
     StateSlider {
-        visible: root.state.capabilities.battery
+        visible: root.snapshot.capabilities.battery
         label: I18n.t("lab.module.battery")
         path: "battery.percent"
         iconName: "battery"
     }
     Switch {
-        visible: root.state.capabilities.battery
+        visible: root.snapshot.capabilities.battery
         text: I18n.t("lab.battery.charging")
-        checked: root.state.battery.charging
+        checked: root.snapshot.battery.charging
         onToggled: Shell.state.requestValue("battery.charging", checked)
     }
     StateSlider {
@@ -122,7 +122,7 @@ LabPanel {
         iconName: "memory"
     }
     StateSlider {
-        visible: root.state.capabilities.sensors
+        visible: root.snapshot.capabilities.sensors
         label: I18n.t("lab.module.temperature")
         path: "cpu.temperature"
         iconName: "thermometer"
@@ -130,13 +130,13 @@ LabPanel {
     RowLayout {
         Switch {
             text: I18n.t("shell.network.wifi")
-            checked: root.state.network.enabled
+            checked: root.snapshot.network.enabled
             onToggled: Shell.state.requestValue("network.enabled", checked)
         }
         Switch {
-            visible: root.state.capabilities.bluetooth
+            visible: root.snapshot.capabilities.bluetooth
             text: I18n.t("shell.network.bluetooth")
-            checked: root.state.bluetooth.enabled
+            checked: root.snapshot.bluetooth.enabled
             onToggled: Shell.state.requestValue("bluetooth.enabled", checked)
         }
     }
@@ -146,13 +146,13 @@ LabPanel {
         iconName: "volume"
     }
     StateSlider {
-        visible: root.state.capabilities.microphone
+        visible: root.snapshot.capabilities.microphone
         label: I18n.t("lab.module.microphone")
         path: "audio.microphone"
         iconName: "microphone"
     }
     StateSlider {
-        visible: root.state.capabilities.brightness
+        visible: root.snapshot.capabilities.brightness
         label: I18n.t("shell.effects.brightness")
         path: "brightness"
         iconName: "sun"
@@ -189,10 +189,10 @@ LabPanel {
     ChoiceBox {
         Layout.fillWidth: true
         model: [I18n.t("shell.workspace.floating"), I18n.t("shell.workspace.tiled"), I18n.t("shell.workspace.mixed"), I18n.t("lab.workspace.scrolling")]
-        currentIndex: root.state.workspaces.layouts[root.state.workspaces.active - 1]
+        currentIndex: root.snapshot.workspaces.layouts[root.snapshot.workspaces.active - 1]
         onActivated: {
-            const layouts = root.state.workspaces.layouts.slice();
-            layouts[root.state.workspaces.active - 1] = currentIndex;
+            const layouts = root.snapshot.workspaces.layouts.slice();
+            layouts[root.snapshot.workspaces.active - 1] = currentIndex;
             Shell.state.requestValue("workspaces.layouts", layouts);
         }
     }

@@ -4,7 +4,8 @@
 
 This baseline is newly authored for KLDE. No UKUI, KWin, GNOME, Quickshell,
 end-4, LingmoOS or other shell source code has been copied or derived. No third-party
-artwork, icons, fonts, mascot or concept image is included.
+artwork, icons, mascot or concept image is included. The separately licensed
+Glow Sans font evaluation is documented below.
 
 | Material | License | Attribution |
 | --- | --- | --- |
@@ -69,7 +70,8 @@ only read-only session-bus service availability is observed.
 
 Ubuntu/Fedora runtime font dependencies remain separate distribution packages:
 Noto CJK (OFL-1.1) and Noto Color Emoji (upstream notices include OFL-1.1 and
-Apache-2.0). No font files are in this source tree or embedded binary. Record exact
+Apache-2.0). Those fallback files are not bundled. Glow Sans is embedded separately under
+OFL-1.1 as described below. Record exact
 package notices when producing a complete distribution image.
 
 ## Wêlai Glow Sans SC

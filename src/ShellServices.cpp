@@ -57,7 +57,6 @@ ShellServices::ShellServices(QObject *parent)
     connect(&m_scenes, &PowerSceneController::currentChanged, this, [this] {
         if (m_syncing)
             return;
-        QScopedValueRollback guard(m_syncing, true);
         m_state.requestValue("powerScene", m_scenes.activeId());
     });
     connect(&m_windowManager, &WindowManagerBackend::activeWorkspaceChanged, this, [this] {
@@ -107,6 +106,18 @@ void ShellServices::projectState(const QString &path) {
         m_state.requestValue("policy.cpu", scene == "power-saver"   ? "efficient"
                                            : scene == "performance" ? "performance"
                                                                     : "balanced");
+        const bool saver = scene == "power-saver", performance = scene == "performance";
+        if (m_state.value("capabilities.cpuPolicy").toBool())
+            m_state.requestValue("policy.frequency", saver ? 55 : performance ? 100 : 85);
+        if (m_state.value("capabilities.gpuPolicy").toBool())
+            m_state.requestValue("policy.gpu",
+                                 performance && m_state.value("capabilities.discreteGpu").toBool()
+                                     ? "hybrid"
+                                     : "integrated");
+        if (m_state.value("capabilities.refreshRate").toBool())
+            m_state.requestValue("policy.refreshRate", saver ? 60 : performance ? 120 : 90);
+        if (m_state.value("capabilities.brightness").toBool())
+            m_state.requestValue("policy.brightness", saver ? "dim" : "adaptive");
     }
     if (all && m_state.value("nightMode").toBool())
         m_scenes.customize("theme", QStringLiteral("dark"));
@@ -119,7 +130,8 @@ void ShellServices::projectState(const QString &path) {
         reading.fetchedAt = QDateTime::fromString(m_state.value("time").toString(), Qt::ISODate);
         m_weather.applyPreview(reading, m_state.value("weather.available").toBool());
     }
-    if (all || path == "notifications.count") {
+    if (all || path == "notifications.count" || path == "battery.percent" ||
+        path == "cpu.temperature" || path == "sessionError") {
         const QString context =
             m_state.value("sessionError").toBool()           ? QStringLiteral("session")
             : m_state.value("battery.percent").toInt() <= 5  ? QStringLiteral("battery")

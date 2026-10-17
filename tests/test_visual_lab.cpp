@@ -22,6 +22,12 @@ class VisualLabTest final : public QObject {
         QCOMPARE(shell.state()->alerts().value("battery").toInt(), 2);
         shell.notifications()->clearAll();
         QCOMPARE(shell.state()->value("notifications.count").toInt(), 0);
+        QVERIFY(shell.mockScenarios()->apply("hybrid-gpu-laptop"));
+        QVERIFY(shell.scenes()->select("performance"));
+        QCOMPARE(shell.state()->value("policy.gpu").toString(), QStringLiteral("hybrid"));
+        QCOMPARE(shell.state()->value("policy.refreshRate").toInt(), 120);
+        QVERIFY(shell.scenes()->select("power-saver"));
+        QCOMPARE(shell.state()->value("policy.frequency").toInt(), 55);
         QVERIFY(shell.mockScenarios()->apply("dark-night"));
         QCOMPARE(shell.scenes()->current().value("visual").toMap().value("theme").toString(),
                  QStringLiteral("dark"));
