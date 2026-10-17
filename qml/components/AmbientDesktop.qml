@@ -26,7 +26,8 @@ Item {
             Layout.alignment: Qt.AlignHCenter
         }
         Label {
-            text: root.snapshot.weather.city + " · " + I18n.t("weather.condition." + root.snapshot.weather.condition) + "  " + I18n.number(root.snapshot.weather.temperature, 0) + "°"
+            objectName: "ambientWeather"
+            text: root.snapshot.weather.available ? root.snapshot.weather.city + " · " + I18n.t("weather.condition." + root.snapshot.weather.condition) + "  " + I18n.number(root.snapshot.weather.temperature, 0) + "°" : I18n.t("friendly.weather.unavailable")
             font: Tokens.label
             color: Tokens.textSecondary
             Layout.alignment: Qt.AlignHCenter

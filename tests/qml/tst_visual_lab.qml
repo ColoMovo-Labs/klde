@@ -17,6 +17,13 @@ Item {
         CandidatePreview {}
     }
     Component {
+        id: ambientComponent
+        AmbientDesktop {
+            width: 640
+            height: 800
+        }
+    }
+    Component {
         id: labComponent
         MockLab {}
     }
@@ -39,6 +46,13 @@ Item {
             Shell.mockScenarios.apply("laptop-balanced");
             Tokens.reducedMotion = false;
             Tokens.densityMode = 1;
+        }
+        function test_ambientWeatherHonorsUnavailableState(): void {
+            const ambient = createTemporaryObject(ambientComponent, testRoot);
+            verify(Shell.mockScenarios.apply("weather-provider-error"));
+            const label = findChild(ambient, "ambientWeather");
+            verify(label !== null);
+            compare(label.text, I18n.t("friendly.weather.unavailable"));
         }
         function test_layoutRequestsCrossTheQmlModelBoundary(): void {
             verify(Shell.state.requestValue("workspaces.layouts", [0, 1, 2, 3, 0]));
