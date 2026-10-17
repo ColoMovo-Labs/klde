@@ -143,7 +143,8 @@ The [grouped top ribbon](docs/design/top-ribbon-layout.md) and
 [Temporal Capsule](docs/design/temporal-capsule.md) organize time and system state.
 [Wallpaper depth](docs/design/wallpaper-depth.md) is an optional precomputation and
 cache contract. The prototype's pre-authored studies do not run segmentation.
-Display-clock typography is separate from normal UI typography. Working mode
-shrinks temporal emphasis; Ambient mode makes it central. All surfaces use shared
+Display-clock typography is separate from normal UI typography. Default mode keeps time in the ribbon; Clock/Focus explicitly enable the large
+clock. [Night roles](docs/design/night-palette.md) have dedicated resources and
+colors. All surfaces use shared
 shape, group spacing, motion and color tokens. Wayland is primary; X11 testing is
 a compatibility check.
