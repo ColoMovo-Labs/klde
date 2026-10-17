@@ -167,6 +167,9 @@ Item {
                     verify(ribbon.implicitHeight < 250);
                     const center = findChild(ribbon, "ribbonCenter");
                     verify(center !== null);
+                    const right = findChild(ribbon, "ribbonRight");
+                    verify(right !== null);
+                    verify(Math.abs(right.x + right.width - width) < 1);
                     verify(Math.abs(center.x + center.width / 2 - width / 2) < 1);
                     for (const section of ribbon.children) {
                         verify(section.x >= 0);

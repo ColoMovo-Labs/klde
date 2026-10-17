@@ -11,8 +11,10 @@ festival palette or cultural motifs. The core stays globally usable.
 ```
 
 The Temporal Capsule owns the exact horizontal center of the viewport, regardless
-of left/right content width. Outer margins are symmetric. Side groups may have
+of left/right content width. Outer painted margins are symmetric: side groups use their natural content
+width up to the available lane, and the right lane is aligned to the outer edge. Side groups may have
 different widths; they share a height rhythm, surface, baseline and spacing scale.
+Groups of different heights are vertically centered in one shared row band.
 They wrap within their own lanes rather than shifting the temporal anchor. Below
 1000 logical pixels the two side lanes move below the center capsule. Long panels
 start below the full ribbon, not on top of its wrapped rows.

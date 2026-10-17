@@ -163,6 +163,7 @@ QtObject {
     readonly property int telemetryCellHeight: densityMode === 0 ? 32 : 28
     readonly property int temporalWidth: densityMode === 0 ? 192 : 176
     readonly property int temporalHeight: 66
+    readonly property int ribbonBandHeight: Math.max(temporalHeight, telemetryCellHeight * 2 + space2 + ribbonGroupPadding * 2)
     readonly property int temporalSceneSize: 44
     readonly property int temporalRichWidth: 320
     readonly property int temporalRichHeight: 84
