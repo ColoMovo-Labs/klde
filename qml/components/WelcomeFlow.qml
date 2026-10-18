@@ -59,14 +59,16 @@ Item {
         color: Qt.rgba(Tokens.background.r, Tokens.background.g, Tokens.background.b, 0.68)
     }
 
-    RowLayout {
+    Item {
         anchors.fill: parent
         anchors.margins: Tokens.space32
-        spacing: Tokens.space32
 
         ColumnLayout {
-            Layout.preferredWidth: 216
-            Layout.fillHeight: true
+            id: rail
+            x: 0
+            y: 0
+            width: 216
+            height: parent.height
             spacing: Tokens.space16
             Label {
                 text: Branding.displayName
@@ -115,8 +117,10 @@ Item {
 
         Surface {
             id: welcomeSurface
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            x: rail.x + rail.width + Tokens.space32
+            y: 0
+            width: parent.width - x
+            height: parent.height
             padding: Tokens.space32
             cornerRadius: Tokens.radiusXL
             backdropSource: root.backdropSource
@@ -147,7 +151,8 @@ Item {
 
                     Item {
                         RowLayout {
-                            anchors.centerIn: parent
+                            anchors.fill: parent
+                            anchors.margins: Tokens.space24
                             spacing: Tokens.space32
                             ColumnLayout {
                                 Layout.preferredWidth: 340
