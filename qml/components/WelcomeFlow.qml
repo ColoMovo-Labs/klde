@@ -214,7 +214,7 @@ Item {
                         ColumnLayout {
                             anchors.centerIn: parent
                             width: Math.min(760, parent.width - Tokens.space64)
-                            spacing: Tokens.space20
+                            spacing: Tokens.space16
                             Icon {
                                 name: "klde"
                                 Layout.preferredWidth: 64
