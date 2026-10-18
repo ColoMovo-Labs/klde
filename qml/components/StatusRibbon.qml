@@ -5,6 +5,7 @@ import KLDE.Backends
 Item {
     id: root
     signal action(string moduleId)
+    property string islandState: "idle"
     visible: Shell.ribbon.enabled
     readonly property bool stacked: width < Tokens.ribbonStackThreshold
     readonly property int degradation: stacked ? 3 : width < Tokens.ribbonFoldThreshold ? 2 : width < Tokens.ribbonCondenseThreshold ? 1 : 0
@@ -20,9 +21,10 @@ Item {
         height: implicitHeight
         onAction: moduleId => root.action(moduleId)
     }
-    TemporalCapsule {
+    SystemIsland {
         id: center
         objectName: "ribbonCenter"
+        stateName: root.islandState
         sizeMode: root.degradation >= 2 ? "compact" : "standard"
         x: (parent.width - width) / 2
         y: (Tokens.ribbonBandHeight - height) / 2

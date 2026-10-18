@@ -54,6 +54,19 @@ Item {
             stateName: "ambient"
         }
     }
+    Component {
+        id: welcomeComponent
+        WelcomeFlow {
+            width: 1280
+            height: 800
+        }
+    }
+    Component {
+        id: islandComponent
+        SystemIsland {
+            stateName: "notification"
+        }
+    }
     TestCase {
         name: "VisualLabInteraction"
         when: windowShown
@@ -294,6 +307,35 @@ Item {
             Shell.ribbon.reset();
             Shell.mockScenarios.apply("desktop-no-battery");
             compare(Shell.state.snapshot.capabilities.battery, false);
+        }
+        function test_welcomeFlowHasOfflineSafeCoreSteps(): void {
+            const flow = createTemporaryObject(welcomeComponent, testRoot, {
+                parent: testRoot
+            });
+            verify(flow !== null);
+            compare(flow.pageCount, 10);
+            compare(flow.pageId, "welcome");
+            flow.next();
+            compare(flow.pageId, "language");
+            flow.pageIndex = 8;
+            compare(flow.pageId, "preparation");
+            flow.offline = true;
+            verify(flow.pageTitle.length > 0);
+            flow.next();
+            compare(flow.pageId, "ready");
+        }
+        function test_systemIslandHonorsEventPriority(): void {
+            const island = createTemporaryObject(islandComponent, testRoot, {
+                parent: testRoot
+            });
+            verify(island !== null);
+            compare(island.stateName, "notification");
+            verify(!island.requestState("progress", 1));
+            compare(island.stateName, "notification");
+            verify(island.requestState("authorization", 7));
+            compare(island.stateName, "authorization");
+            island.returnToIdle();
+            compare(island.stateName, "idle");
         }
     }
 }

@@ -97,3 +97,11 @@ installed as `Rubik-OFL.txt` and verified in the clean runtime packaging job.
 This is an open font distribution, not permission to distribute Google Sans or
 use Google's marks. New landscape and night assets are original CC BY-SA 4.0
 vectors. No reference screenshot pixels or third-party illustration is copied.
+
+## Welcome guide reference
+
+`assets/welcome/klde-guide-placeholder.png` is a transparent guide illustration
+derived from a user-provided mint fox character reference for the KLDE Welcome
+mock. It is replaceable artwork for the visual phase. Before a public release,
+record the final character author's permission and asset license here; do not
+assume that the reference screenshot alone grants redistribution rights.

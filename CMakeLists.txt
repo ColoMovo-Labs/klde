@@ -20,6 +20,8 @@ set(klde_qml_files
     qml/Main.qml qml/Tokens.qml qml/I18n.qml qml/Branding.qml
     qml/components/RibbonGroup.qml qml/components/TelemetryCell.qml
     qml/components/TemporalCapsule.qml qml/components/TemporalLandscape.qml
+    qml/components/SystemIsland.qml qml/components/WelcomeFlow.qml
+    qml/components/SystemUiGallery.qml
     qml/components/TemporalStudy.qml qml/components/DisplayClock.qml
     qml/components/GeometryDebugOverlay.qml
     qml/components/TemporalSettings.qml qml/components/WallpaperLayers.qml
@@ -79,6 +81,7 @@ qt_add_resources(klde_backends klde_mock_data PREFIX / FILES
 set(klde_assets assets/wallpapers/first-light.svg
     assets/wallpapers/depth-foreground.svg assets/wallpapers/soft-cache-study.svg
     assets/wallpapers/lock-cache-study.svg assets/fonts/comfortaa/Comfortaa-Bold.otf
+    assets/welcome/klde-guide-placeholder.png
     assets/wallpapers/abstract.svg assets/wallpapers/quiet.svg assets/wallpapers/kemono.svg
     assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf
     assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf)

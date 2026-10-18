@@ -41,13 +41,16 @@ int main(int argc, char *argv[]) {
     const QCommandLineOption lockStateOption(
         "lock-state", "Lock-screen visual state: ambient, auth, error, reduced, depth or fallback",
         "state", "ambient");
+    const QCommandLineOption islandStateOption(
+        "island-state", "System Island mock state: idle, notification, progress, privacy, authorization, media, device or critical",
+        "state", "idle");
     const QCommandLineOption debugGeometryOption("debug-geometry",
                                                  "Show the development-only alignment overlay");
     const QCommandLineOption viewOption(
         QStringLiteral("view"),
         QStringLiteral("Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
                        "weather, language, input, temporal, wallpaper-effects, lock-preview, "
-                       "lock-screen, waydroid"),
+                       "lock-screen, welcome, gallery, waydroid"),
         QStringLiteral("view"), QStringLiteral("desktop"));
     const QCommandLineOption darkOption(QStringLiteral("dark"),
                                         QStringLiteral("Start with dark appearance"));
@@ -72,7 +75,7 @@ int main(int argc, char *argv[]) {
     const QCommandLineOption developerOption("dev-tools", "Open the session-only Mock Lab");
     parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
                        developerOption});
-    parser.addOptions({cropOption, focusOption, lockStateOption, debugGeometryOption, smokeOption,
+    parser.addOptions({cropOption, focusOption, lockStateOption, islandStateOption, debugGeometryOption, smokeOption,
                        captureOption, viewOption, darkOption, idleOption, localeOption,
                        voiceOption});
     parser.process(app);
@@ -97,6 +100,8 @@ int main(int argc, char *argv[]) {
                             "wallpaper-effects",
                             "lock-preview",
                             "lock-screen",
+                            "welcome",
+                            "gallery",
                             "waydroid",
                             "weather-preview",
                             "quick-settings-expanded",
@@ -115,6 +120,14 @@ int main(int argc, char *argv[]) {
                                  QStringLiteral("depth"),   QStringLiteral("fallback")};
     if (!lockStates.contains(parser.value(lockStateOption))) {
         qCritical() << "Unsupported lock-screen state";
+        return EXIT_FAILURE;
+    }
+    const QStringList islandStates{QStringLiteral("idle"), QStringLiteral("notification"),
+                                   QStringLiteral("progress"), QStringLiteral("privacy"),
+                                   QStringLiteral("authorization"), QStringLiteral("media"),
+                                   QStringLiteral("device"), QStringLiteral("critical")};
+    if (!islandStates.contains(parser.value(islandStateOption))) {
+        qCritical() << "Unsupported System Island state";
         return EXIT_FAILURE;
     }
     if ((!parser.value(localeOption).isEmpty() && parser.value(localeOption) != "en" &&
@@ -163,6 +176,7 @@ int main(int argc, char *argv[]) {
          {"initialAmbient", parser.isSet(ambientOption) || parser.isSet(focusOption)},
          {"initialFocus", parser.isSet(focusOption)},
          {"initialLockState", parser.value(lockStateOption)},
+         {"initialIslandState", parser.value(islandStateOption)},
          {"initialDebugGeometry", parser.isSet(debugGeometryOption)},
          {"developerTools", parser.isSet(developerOption)},
          {"width", logicalWidth},

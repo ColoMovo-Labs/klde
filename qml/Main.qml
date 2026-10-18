@@ -18,6 +18,7 @@ ApplicationWindow {
     property bool initialAmbient: false
     property bool initialFocus: false
     property string initialLockState: "ambient"
+    property string initialIslandState: "idle"
     property bool initialDebugGeometry: false
     property bool developerTools: false
     objectName: "shellWindow"
@@ -45,9 +46,10 @@ ApplicationWindow {
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
     readonly property bool lockSurfaceMode: initialView === "lock-screen"
+    readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: ribbon.y + ribbon.height + Tokens.space16
-    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings]
+    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function applyScene(): void {
         const visual = Shell.scenes.current.visual;
@@ -122,6 +124,9 @@ ApplicationWindow {
         case "app-suite":
             target = appSuite;
             break;
+        case "gallery":
+            target = systemUiGallery;
+            break;
         }
         const close = target && target.opened;
         for (const panel of panels)
@@ -191,10 +196,12 @@ ApplicationWindow {
     StatusRibbon {
         id: ribbon
         objectName: "statusRibbon"
+        visible: !window.welcomeMode && Shell.ribbon.enabled
         x: Shell.ribbon.margin
         y: Shell.ribbon.margin
         width: parent.width - x * 2
         height: implicitHeight
+        islandState: window.initialIslandState
         onAction: moduleId => window.moduleAction(moduleId)
     }
     Label {
@@ -207,7 +214,7 @@ ApplicationWindow {
     }
     WidgetHost {
         widgetId: "weather"
-        visible: !window.snapshot.appearance.ambient
+        visible: !window.welcomeMode && !window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.controlHeight
         renderingAllowed: window.renderingAllowed
@@ -220,7 +227,7 @@ ApplicationWindow {
         }
     }
     ColumnLayout {
-        visible: !window.snapshot.appearance.ambient && window.snapshot.activeApp === "desktop"
+        visible: !window.welcomeMode && !window.snapshot.appearance.ambient && window.snapshot.activeApp === "desktop"
         x: Tokens.desktopMargin
         anchors.bottom: dock.top
         anchors.bottomMargin: Tokens.space32
@@ -243,7 +250,7 @@ ApplicationWindow {
     }
     AmbientDesktop {
         objectName: "desktopClockLayer"
-        visible: window.snapshot.appearance.ambient
+        visible: !window.welcomeMode && window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.space24
         width: parent.width - Tokens.desktopMargin * 2
@@ -252,10 +259,10 @@ ApplicationWindow {
     WallpaperLayers {
         anchors.fill: parent
         foregroundOnly: true
-        visible: window.snapshot.appearance.ambient
+        visible: !window.welcomeMode && window.snapshot.appearance.ambient
     }
     Surface {
-        visible: window.snapshot.scratchpad
+        visible: !window.welcomeMode && window.snapshot.scratchpad
         anchors.centerIn: parent
         width: Math.min(Tokens.panelWidth, parent.width - Tokens.space32)
         height: Tokens.widgetSize
@@ -278,7 +285,7 @@ ApplicationWindow {
     }
     Dock {
         id: dock
-        visible: !window.snapshot.appearance.focus
+        visible: !window.welcomeMode && !window.snapshot.appearance.focus
         backdropSource: wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -388,6 +395,13 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
+    SystemUiGallery {
+        id: systemUiGallery
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
     TemporalSettings {
         id: temporalSettings
         parent: Overlay.overlay
@@ -416,6 +430,14 @@ ApplicationWindow {
         visible: window.lockSurfaceMode
         z: 1000
         stateName: window.initialLockState
+    }
+    WelcomeFlow {
+        id: welcomeFlow
+        anchors.fill: parent
+        visible: window.welcomeMode
+        z: 1000
+        backdropSource: wallpaper
+        onFinished: window.initialView = "desktop"
     }
     WaydroidSettings {
         id: waydroidSettings
