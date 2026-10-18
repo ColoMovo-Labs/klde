@@ -10,7 +10,7 @@ namespace klde {
 
 // Read-only runtime capability probe. It never starts a compositor, changes the
 // host session or claims that a mock surface is a desktop shell surface.
-class SessionRuntimeBackend final : public QObject {
+class SessionRuntimeBackend : public QObject {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.session")
