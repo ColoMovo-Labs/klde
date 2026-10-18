@@ -189,17 +189,12 @@ Item {
                                     }
                                 }
                             }
-                            Rectangle {
-                                Layout.preferredWidth: 220
-                                Layout.preferredHeight: 220
-                                radius: 110
-                                color: Tokens.primaryContainer
-                                border.width: Tokens.space1
-                                border.color: Tokens.primary
+                            Item {
+                                Layout.preferredWidth: 260
+                                Layout.preferredHeight: 360
                                 Image {
                                     anchors.fill: parent
-                                    anchors.margins: Tokens.space8
-                                    source: "qrc:/assets/welcome/klde-guide-placeholder.png"
+                                    source: "qrc:/assets/welcome/klde-guide-wave.png"
                                     fillMode: Image.PreserveAspectFit
                                     smooth: true
                                     mipmap: true

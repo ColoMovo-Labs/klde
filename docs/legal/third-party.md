@@ -100,8 +100,9 @@ vectors. No reference screenshot pixels or third-party illustration is copied.
 
 ## Welcome guide reference
 
-`assets/welcome/klde-guide-placeholder.png` is a transparent guide illustration
-derived from a user-provided mint fox character reference for the KLDE Welcome
-mock. It is replaceable artwork for the visual phase. Before a public release,
+`assets/welcome/klde-guide-wave.png` and its neutral fallback are transparent
+guide illustrations derived from a user-provided mint fox character reference
+for the KLDE Welcome mock. They are replaceable artwork for the visual phase.
+Before a public release,
 record the final character author's permission and asset license here; do not
 assume that the reference screenshot alone grants redistribution rights.

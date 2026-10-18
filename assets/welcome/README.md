@@ -1,6 +1,7 @@
 # Welcome guide artwork
 
-`klde-guide-placeholder.png` is a transparent, project-local guide illustration
-derived from the user-provided mint fox character reference for the KLDE OOBE
-concept. It is intentionally replaceable. Before a public release, record the
-final character asset's authorship and license here and in `docs/legal/third-party.md`.
+`klde-guide-wave.png` is the current transparent guide illustration, derived
+from the user-provided mint fox character reference with a small welcoming wave.
+`klde-guide-placeholder.png` remains as the neutral pose fallback. Both are
+intentionally replaceable. Before a public release, record the final character
+asset's authorship and license here and in `docs/legal/third-party.md`.

@@ -16,7 +16,7 @@ WelcomeFlow
 ```
 
 The supplied mint fox reference is used as a replaceable guide asset in the
-welcome screen. It is deliberately treated as project artwork, not as a
+welcome screen, currently with a small welcoming wave. It is deliberately treated as project artwork, not as a
 security identity or a mandatory mascot on every page. The source asset lives
 at `assets/welcome/klde-guide-placeholder.png` until a final licensed character
 asset is selected.
