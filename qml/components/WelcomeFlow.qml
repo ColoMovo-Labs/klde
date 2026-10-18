@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -86,6 +87,7 @@ Item {
                 model: root.pageIds
                 delegate: RowLayout {
                     required property string modelData
+                    required property int index
                     Layout.fillWidth: true
                     spacing: Tokens.space8
                     Rectangle {
@@ -268,6 +270,7 @@ Item {
                                 model: [I18n.t("welcome.task.settings"), I18n.t("welcome.task.wallpaper"), I18n.t("welcome.task.input"), I18n.t("welcome.task.index"), root.offline ? I18n.t("welcome.task.offline") : I18n.t("welcome.task.updates")]
                                 delegate: RowLayout {
                                     required property string modelData
+                                    required property int index
                                     Layout.fillWidth: true
                                     Icon {
                                         name: index < 3 ? "klde" : index === 3 ? "overview" : "wifi"
@@ -349,6 +352,7 @@ Item {
             model: choices
             delegate: Button {
                 required property string modelData
+                required property int index
                 Layout.fillWidth: true
                 implicitHeight: Tokens.controlHeight
                 text: modelData
