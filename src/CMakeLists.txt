@@ -21,6 +21,7 @@ qt_add_qml_module(klde_backends STATIC
         i18n/LocaleVoiceModel.h i18n/LocaleVoiceModel.cpp
         input/InputMethodBackend.h input/Fcitx5Backend.h input/Fcitx5Backend.cpp
         platform/common/DisplayServerBackend.h platform/common/DisplayServerBackend.cpp
+        platform/common/SessionRuntimeBackend.h platform/common/SessionRuntimeBackend.cpp
         mock/SystemStateModel.h mock/SystemStateModel.cpp
         models/NotificationModel.h models/NotificationModel.cpp
         status/StatusModuleRegistry.h status/StatusModuleRegistry.cpp

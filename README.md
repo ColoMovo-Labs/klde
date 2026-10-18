@@ -1,6 +1,8 @@
-# KLDE (provisional codename)
+# LoMoDE (formerly KLDE)
 
-**KLDE** is an experimental open-source Linux desktop environment inspired by
+**LoMoDE** (**LoMo Desktop Environment · 洛陌桌面环境**) is an experimental
+open-source Linux desktop environment. The repository and technical identifiers
+still use **KLDE** during the controlled migration. It is inspired by
 the visual spirit of early UKUI/Kylin desktops, modern expressive UI design,
 and a flexible floating/tiling workflow.
 
@@ -57,6 +59,11 @@ and [pinned component reuse audit](docs/reuse/component-audit.md).
 System controls, workspace management and input selection remain mock. The
 experimental weather adapter is disabled by default and requires an explicitly
 entered city and online consent. There is no telemetry or privileged helper.
+
+Real Session 0.1 now begins the KWin/Wayland integration. The current host-safe
+checkpoint adds a runtime capability probe and an isolated KWin launcher; it
+does not claim live KWin surfaces until the target KWin and LayerShellQt
+prerequisites are installed and verified. See [the Real Session 0.1 record](docs/development/real-session-0.1.md).
 
 The current [temporal-axis pass](docs/design/temporal-capsule.md) groups the
 ribbon, adds a dedicated display clock and defines cached wallpaper effects and
