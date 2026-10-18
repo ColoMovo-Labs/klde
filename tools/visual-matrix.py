@@ -70,7 +70,7 @@ def main():
         stem=output / options['id']
         command=[str(binary), '--smoke-test', '--audit-idle', '--capture', str(stem)+'.png']
         for key in ('locale','voice','scenario','density','size','wallpaper','view','lock_state','island_state','welcome_page'):
-            command.extend(['--'+key.replace('_', '-'),options[key]])
+            command.extend(['--'+key.replace('_', '-'), str(options[key])])
         command.extend(['--capture-region',options['region']])
         for key in ('dark','ambient','focus'):
             if options[key]: command.append('--'+key)
