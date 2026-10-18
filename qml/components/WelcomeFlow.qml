@@ -259,7 +259,8 @@ Item {
                         }
                     }
                     Item {
-                        anchors.fill: parent
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         Item {
                             id: waveClip
                             anchors.right: parent.right
