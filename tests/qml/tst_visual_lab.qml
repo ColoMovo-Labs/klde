@@ -329,6 +329,13 @@ Item {
             verify(flow.pageTitle.length > 0);
             flow.next();
             compare(flow.pageId, "ready");
+            flow.pageIndex = 0;
+            const chinese = findChild(flow, "welcomeChinese");
+            verify(chinese !== null);
+            chinese.forceActiveFocus();
+            keyClick(Qt.Key_Space);
+            compare(Shell.language.locale, "zh_CN");
+            compare(flow.pageTitle, "欢迎使用 KLDE");
         }
         function test_systemIslandHonorsEventPriority(): void {
             const island = createTemporaryObject(islandComponent, testRoot, {
