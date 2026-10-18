@@ -82,6 +82,7 @@ set(klde_assets assets/wallpapers/first-light.svg
     assets/wallpapers/depth-foreground.svg assets/wallpapers/soft-cache-study.svg
     assets/wallpapers/lock-cache-study.svg assets/fonts/comfortaa/Comfortaa-Bold.otf
     assets/welcome/klde-guide-placeholder.png assets/welcome/klde-guide-wave.png
+    assets/welcome/klde-guide-hero-v2.png
     assets/welcome/klde-wordmark.svg
     assets/wallpapers/abstract.svg assets/wallpapers/quiet.svg assets/wallpapers/kemono.svg
     assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf

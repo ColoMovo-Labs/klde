@@ -76,10 +76,10 @@ Item {
     }
 
     onPageIndexChanged: {
-        if (pageId === "welcome" && welcomeWordmark) {
-            welcomeWordmark.opacity = root.reducedMotionPreview ? 1 : 0;
+        if (pageId === "welcome" && wordmarkReveal) {
+            wordmarkReveal.progress = root.reducedMotionPreview ? 1 : 0;
             if (!root.reducedMotionPreview)
-                Qt.callLater(() => welcomeWordmark.opacity = 1);
+                Qt.callLater(() => wordmarkRevealAnimation.restart());
         }
         if (!pageStack || root.reducedMotionPreview)
             return;
@@ -96,6 +96,16 @@ Item {
             duration: Tokens.motionNormal
             easing.type: Tokens.emphasizedDecelerate
         }
+    }
+
+    NumberAnimation {
+        id: wordmarkRevealAnimation
+        target: wordmarkReveal
+        property: "progress"
+        from: 0
+        to: 1
+        duration: Tokens.motionSlow
+        easing.type: Tokens.emphasizedDecelerate
     }
 
     Rectangle {
@@ -203,17 +213,18 @@ Item {
                     Item {
                         ColumnLayout {
                             anchors.centerIn: parent
-                            width: Math.min(640, parent.width - Tokens.space48)
-                            spacing: Tokens.space16
+                            width: Math.min(760, parent.width - Tokens.space64)
+                            spacing: Tokens.space20
                             Icon {
                                 name: "klde"
-                                Layout.preferredWidth: 48
-                                Layout.preferredHeight: 48
+                                Layout.preferredWidth: 64
+                                Layout.preferredHeight: 64
                             }
                             Label {
+                                objectName: "welcomeLanguageTitle"
                                 text: I18n.t("welcome.language.bootstrap")
                                 color: Tokens.textPrimary
-                                font: Tokens.headline
+                                font: Tokens.display
                             }
                             Label {
                                 text: I18n.t("welcome.language.bootstrap.subtitle")
@@ -224,28 +235,24 @@ Item {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: Tokens.space12
+                                spacing: Tokens.space16
                                 ActionButton {
                                     objectName: "welcomeChinese"
                                     text: "简体中文"
+                                    font: Tokens.title
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 72
                                     emphasized: Shell.language.locale === "zh_CN"
-                                    onClicked: {
-                                        Shell.language.setLocale("zh_CN");
-                                        root.next();
-                                    }
+                                    onClicked: Shell.language.setLocale("zh_CN")
                                 }
                                 ActionButton {
                                     objectName: "welcomeEnglish"
                                     text: "English"
+                                    font: Tokens.title
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 72
                                     emphasized: Shell.language.locale === "en"
-                                    onClicked: {
-                                        Shell.language.setLocale("en");
-                                        root.next();
-                                    }
-                                }
-                                ActionButton {
-                                    text: I18n.t("welcome.accessibility")
-                                    onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
+                                    onClicked: Shell.language.setLocale("en")
                                 }
                             }
                             Label {
@@ -256,6 +263,22 @@ Item {
                                 wrapMode: Text.WordWrap
                                 Layout.fillWidth: true
                             }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                ActionButton {
+                                    text: I18n.t("welcome.accessibility")
+                                    onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
+                                }
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+                                ActionButton {
+                                    objectName: "welcomeLanguageContinue"
+                                    text: I18n.t("welcome.continue")
+                                    emphasized: true
+                                    onClicked: root.next()
+                                }
+                            }
                         }
                     }
                     Item {
@@ -264,15 +287,14 @@ Item {
                         Item {
                             id: waveClip
                             anchors.right: parent.right
-                            anchors.rightMargin: Tokens.space24
+                            anchors.rightMargin: Tokens.space8
                             anchors.verticalCenter: parent.verticalCenter
-                            width: 310
-                            height: 420
+                            width: Math.min(560, parent.width * 0.5)
+                            height: Math.min(500, parent.height * 0.72)
                             clip: true
                             Image {
                                 anchors.fill: parent
-                                source: "qrc:/assets/welcome/klde-guide-wave.png"
-                                sourceClipRect: Qt.rect(0, 0, 1024, 860)
+                                source: "qrc:/assets/welcome/klde-guide-hero-v2.png"
                                 fillMode: Image.PreserveAspectFit
                                 smooth: true
                                 mipmap: true
@@ -283,24 +305,32 @@ Item {
                             anchors.left: parent.left
                             anchors.leftMargin: Tokens.space24
                             anchors.verticalCenter: parent.verticalCenter
-                            width: Math.min(590, parent.width * 0.55)
-                            spacing: Tokens.space12
+                            width: Math.min(580, parent.width * 0.48)
+                            spacing: Tokens.space16
                             Label {
                                 text: I18n.t("welcome.title")
                                 color: Tokens.textPrimary
-                                font: Tokens.headline
+                                font: Tokens.display
                             }
-                            Image {
-                                id: welcomeWordmark
+                            Item {
+                                id: wordmarkReveal
+                                property real progress: root.reducedMotionPreview ? 1 : 0
                                 Layout.alignment: Qt.AlignLeft
-                                Layout.preferredWidth: Math.min(520, welcomeCopy.width)
-                                Layout.preferredHeight: 132
-                                source: "qrc:/assets/welcome/klde-wordmark.svg"
-                                fillMode: Image.PreserveAspectFit
-                                opacity: root.reducedMotionPreview ? 1 : 0
-                                Behavior on opacity {
-                                    NumberAnimation {
-                                        duration: Tokens.motionNormal
+                                Layout.preferredWidth: Math.min(560, welcomeCopy.width)
+                                Layout.preferredHeight: 182
+                                clip: true
+                                Item {
+                                    width: wordmarkReveal.width * wordmarkReveal.progress
+                                    height: parent.height
+                                    clip: true
+                                    Image {
+                                        id: welcomeWordmark
+                                        width: wordmarkReveal.width
+                                        height: wordmarkReveal.height
+                                        source: "qrc:/assets/welcome/klde-wordmark.svg"
+                                        fillMode: Image.PreserveAspectFit
+                                        smooth: true
+                                        mipmap: true
                                     }
                                 }
                             }

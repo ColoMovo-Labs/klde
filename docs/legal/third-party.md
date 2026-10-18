@@ -106,3 +106,13 @@ for the KLDE Welcome mock. They are replaceable artwork for the visual phase.
 Before a public release,
 record the final character author's permission and asset license here; do not
 assume that the reference screenshot alone grants redistribution rights.
+
+`assets/welcome/klde-guide-hero-v2.png` is an original transparent character
+variant generated from the same user-provided reference for the KLDE OOBE hero
+composition. It is kept as a separate versioned asset until the project owner
+records the final authorship and redistribution terms.
+
+`assets/welcome/klde-wordmark.svg` contains editable vector paths. The path
+shapes were developed from the SIL Open Font License 1.1 Iansui reference and
+then adjusted into a KLDE slanted, heavier treatment; the source font is not
+shipped. Preserve the OFL attribution when redistributing derived artwork.

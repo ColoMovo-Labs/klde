@@ -320,6 +320,13 @@ Item {
             english.forceActiveFocus();
             keyClick(Qt.Key_Space);
             compare(Shell.language.locale, "en");
+            const languageTitle = findChild(flow, "welcomeLanguageTitle");
+            verify(languageTitle !== null);
+            compare(languageTitle.text, "Choose your language");
+            const languageContinue = findChild(flow, "welcomeLanguageContinue");
+            verify(languageContinue !== null);
+            languageContinue.forceActiveFocus();
+            keyClick(Qt.Key_Space);
             compare(flow.pageId, "welcome");
             flow.next();
             compare(flow.pageId, "region");
@@ -335,6 +342,9 @@ Item {
             chinese.forceActiveFocus();
             keyClick(Qt.Key_Space);
             compare(Shell.language.locale, "zh_CN");
+            compare(languageTitle.text, "选择界面语言");
+            languageContinue.forceActiveFocus();
+            keyClick(Qt.Key_Space);
             compare(flow.pageTitle, "欢迎使用 KLDE");
         }
         function test_systemIslandHonorsEventPriority(): void {

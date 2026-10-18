@@ -53,6 +53,10 @@ def main():
     for page in range(11):
         cases.append(dict(id=f'welcome-page-{page}', view='welcome', welcome_page=page))
         cases.append(dict(id=f'welcome-en-page-{page}', view='welcome', welcome_page=page, locale='en'))
+    for locale in ('zh_CN', 'en'):
+        for page in (0, 1, 2):
+            cases.append(dict(id=f'welcome-{locale}-page-{page}-1366', view='welcome', welcome_page=page,
+                              locale=locale, size='1366x768'))
     cases.append(dict(id='welcome-offline-preparation', view='welcome', welcome_page=8, scenario='offline'))
     for island in ('notification', 'progress', 'privacy', 'authorization', 'media', 'device', 'critical'):
         cases.append(dict(id='system-island-'+island, view='desktop', island_state=island))
