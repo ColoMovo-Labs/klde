@@ -488,6 +488,7 @@
   "welcome.ready.title": "Welcome to your desktop",
   "welcome.step.welcome": "Welcome",
   "welcome.step.language": "Language",
+  "welcome.step.region": "Region",
   "welcome.step.input": "Keyboard",
   "welcome.step.appearance": "Appearance",
   "welcome.step.window": "Windows",

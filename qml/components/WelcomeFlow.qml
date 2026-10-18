@@ -259,15 +259,41 @@ Item {
                         }
                     }
                     Item {
+                        anchors.fill: parent
                         Item {
-                            anchors.fill: parent
+                            id: waveClip
+                            anchors.right: parent.right
+                            anchors.rightMargin: Tokens.space24
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 310
+                            height: 420
+                            clip: true
+                            Image {
+                                anchors.fill: parent
+                                source: "qrc:/assets/welcome/klde-guide-wave.png"
+                                sourceClipRect: Qt.rect(0, 0, 1024, 860)
+                                fillMode: Image.PreserveAspectFit
+                                smooth: true
+                                mipmap: true
+                            }
+                        }
+                        ColumnLayout {
+                            id: welcomeCopy
+                            anchors.left: parent.left
+                            anchors.leftMargin: Tokens.space24
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: Math.min(590, parent.width * 0.55)
+                            spacing: Tokens.space12
+                            Label {
+                                text: I18n.t("welcome.title")
+                                color: Tokens.textPrimary
+                                font: Tokens.headline
+                            }
                             Image {
                                 id: welcomeWordmark
-                                anchors.left: parent.left
-                                anchors.leftMargin: Tokens.space24
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: Math.min(520, parent.width * 0.57)
-                                height: width * 0.25
+                                Layout.alignment: Qt.AlignLeft
+                                Layout.preferredWidth: Math.min(520, welcomeCopy.width)
+                                Layout.preferredHeight: 132
                                 source: "qrc:/assets/welcome/klde-wordmark.svg"
                                 fillMode: Image.PreserveAspectFit
                                 opacity: root.reducedMotionPreview ? 1 : 0
@@ -277,58 +303,29 @@ Item {
                                     }
                                 }
                             }
-                            Item {
-                                id: waveClip
-                                anchors.right: parent.right
-                                anchors.rightMargin: Tokens.space24
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: 310
-                                height: 420
-                                clip: true
-                                Image {
-                                    anchors.fill: parent
-                                    source: "qrc:/assets/welcome/klde-guide-wave.png"
-                                    sourceClipRect: Qt.rect(0, 0, 1024, 860)
-                                    fillMode: Image.PreserveAspectFit
-                                    smooth: true
-                                    mipmap: true
-                                }
+                            Label {
+                                text: I18n.t("welcome.intro")
+                                color: Tokens.textSecondary
+                                font: Tokens.body
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
                             }
-                            ColumnLayout {
-                                anchors.left: parent.left
-                                anchors.leftMargin: Tokens.space24
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: Math.min(500, parent.width * 0.54)
-                                spacing: Tokens.space12
-                                Label {
-                                    text: I18n.t("welcome.title")
-                                    color: Tokens.textPrimary
-                                    font: Tokens.headline
+                            Label {
+                                text: I18n.t("welcome.placeholder")
+                                color: Tokens.textDisabled
+                                font: Tokens.caption
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                            }
+                            RowLayout {
+                                ActionButton {
+                                    text: I18n.t("welcome.get-started")
+                                    emphasized: true
+                                    onClicked: root.next()
                                 }
-                                Label {
-                                    text: I18n.t("welcome.intro")
-                                    color: Tokens.textSecondary
-                                    font: Tokens.body
-                                    wrapMode: Text.WordWrap
-                                    Layout.fillWidth: true
-                                }
-                                Label {
-                                    text: I18n.t("welcome.placeholder")
-                                    color: Tokens.textDisabled
-                                    font: Tokens.caption
-                                    wrapMode: Text.WordWrap
-                                    Layout.fillWidth: true
-                                }
-                                RowLayout {
-                                    ActionButton {
-                                        text: I18n.t("welcome.get-started")
-                                        emphasized: true
-                                        onClicked: root.next()
-                                    }
-                                    ActionButton {
-                                        text: I18n.t("welcome.accessibility")
-                                        onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
-                                    }
+                                ActionButton {
+                                    text: I18n.t("welcome.accessibility")
+                                    onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
                                 }
                             }
                         }

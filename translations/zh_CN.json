@@ -488,6 +488,7 @@
   "welcome.ready.title": "欢迎来到你的桌面",
   "welcome.step.welcome": "欢迎",
   "welcome.step.language": "语言",
+  "welcome.step.region": "地区",
   "welcome.step.input": "键盘",
   "welcome.step.appearance": "外观",
   "welcome.step.window": "窗口",
