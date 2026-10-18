@@ -318,7 +318,7 @@ Item {
             const english = findChild(flow, "welcomeEnglish");
             verify(english !== null);
             english.forceActiveFocus();
-            keyClick(Qt.Key_Return);
+            keyClick(Qt.Key_Space);
             compare(Shell.language.locale, "en");
             compare(flow.pageId, "welcome");
             flow.next();
