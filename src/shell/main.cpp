@@ -46,6 +46,8 @@ int main(int argc, char *argv[]) {
         "System Island mock state: idle, notification, progress, privacy, authorization, media, "
         "device or critical",
         "state", "idle");
+    const QCommandLineOption welcomePageOption(
+        "welcome-page", "Welcome/OOBE mock page index from 0 to 9", "page", "0");
     const QCommandLineOption debugGeometryOption("debug-geometry",
                                                  "Show the development-only alignment overlay");
     const QCommandLineOption viewOption(
@@ -78,8 +80,8 @@ int main(int argc, char *argv[]) {
     parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
                        developerOption});
     parser.addOptions({cropOption, focusOption, lockStateOption, islandStateOption,
-                       debugGeometryOption, smokeOption, captureOption, viewOption, darkOption,
-                       idleOption, localeOption, voiceOption});
+                       welcomePageOption, debugGeometryOption, smokeOption, captureOption,
+                       viewOption, darkOption, idleOption, localeOption, voiceOption});
     parser.process(app);
     if ((parser.isSet(captureOption) || parser.isSet(idleOption)) && !parser.isSet(smokeOption)) {
         qCritical() << "--capture and --audit-idle require --smoke-test";
@@ -132,6 +134,12 @@ int main(int argc, char *argv[]) {
         qCritical() << "Unsupported System Island state";
         return EXIT_FAILURE;
     }
+    bool welcomePageOk = false;
+    const int welcomePage = parser.value(welcomePageOption).toInt(&welcomePageOk);
+    if (!welcomePageOk || welcomePage < 0 || welcomePage > 9) {
+        qCritical() << "Unsupported Welcome page index";
+        return EXIT_FAILURE;
+    }
     if ((!parser.value(localeOption).isEmpty() && parser.value(localeOption) != "en" &&
          parser.value(localeOption) != "zh_CN") ||
         (!parser.value(voiceOption).isEmpty() && parser.value(voiceOption) != "standard" &&
@@ -179,6 +187,7 @@ int main(int argc, char *argv[]) {
          {"initialFocus", parser.isSet(focusOption)},
          {"initialLockState", parser.value(lockStateOption)},
          {"initialIslandState", parser.value(islandStateOption)},
+         {"initialWelcomePage", welcomePage},
          {"initialDebugGeometry", parser.isSet(debugGeometryOption)},
          {"developerTools", parser.isSet(developerOption)},
          {"width", logicalWidth},

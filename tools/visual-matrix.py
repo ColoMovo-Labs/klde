@@ -50,6 +50,12 @@ def main():
         dict(id='ribbon-debug', view='desktop', debug_geometry=True),
         dict(id='lock-compact-auth', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='auth', size='1366x768'),
     ])
+    for page in range(10):
+        cases.append(dict(id=f'welcome-page-{page}', view='welcome', welcome_page=page))
+    cases.append(dict(id='welcome-offline-preparation', view='welcome', welcome_page=8, scenario='offline'))
+    for island in ('notification', 'progress', 'privacy', 'authorization', 'media', 'device', 'critical'):
+        cases.append(dict(id='system-island-'+island, view='desktop', island_state=island))
+    cases.append(dict(id='system-ui-gallery', view='gallery'))
     cases.append(dict(id='temporal-study', view='temporal-study', size='1440x1000'))
     for name, size in [('hdplus','1600x900'), ('fhd','1920x1080'), ('qhd','2560x1440'), ('narrow','1366x768')]:
         cases.append(dict(id='axis-'+name, size=size))
@@ -59,11 +65,11 @@ def main():
                   dict(id='ribbon-narrow-detail', size='1366x768', region='ribbon')])
     records=[]
     for case in cases:
-        options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False, focus=False, region='full', lock_state='ambient', debug_geometry=False)
+        options=dict(locale='zh_CN', voice='standard', scenario='laptop-balanced', density='balanced', size='1920x1080', scale=1, dark=False, wallpaper='snow', view='desktop', ambient=False, focus=False, region='full', lock_state='ambient', debug_geometry=False, island_state='idle', welcome_page=0)
         options.update(case)
         stem=output / options['id']
         command=[str(binary), '--smoke-test', '--audit-idle', '--capture', str(stem)+'.png']
-        for key in ('locale','voice','scenario','density','size','wallpaper','view','lock_state'):
+        for key in ('locale','voice','scenario','density','size','wallpaper','view','lock_state','island_state','welcome_page'):
             command.extend(['--'+key.replace('_', '-'),options[key]])
         command.extend(['--capture-region',options['region']])
         for key in ('dark','ambient','focus'):

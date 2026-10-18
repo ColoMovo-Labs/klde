@@ -19,6 +19,7 @@ ApplicationWindow {
     property bool initialFocus: false
     property string initialLockState: "ambient"
     property string initialIslandState: "idle"
+    property int initialWelcomePage: 0
     property bool initialDebugGeometry: false
     property bool developerTools: false
     objectName: "shellWindow"
@@ -437,6 +438,8 @@ ApplicationWindow {
         visible: window.welcomeMode
         z: 1000
         backdropSource: wallpaper
+        pageIndex: window.initialWelcomePage
+        offline: !window.snapshot.network.internet
         onFinished: window.initialView = "desktop"
     }
     WaydroidSettings {
