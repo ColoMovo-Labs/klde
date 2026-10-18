@@ -533,5 +533,13 @@
   "gallery.system": "系统表面",
   "gallery.system-summary": "锁屏 · OSD · 系统对话框 · 输入法 · 窗口布局 · 焦点与拖拽状态都集中在这里，作为视觉冻结参考。",
   "common.default": "默认",
-  "common.disabled": "已禁用"
+  "common.disabled": "已禁用",
+  "welcome.language.bootstrap": "选择界面语言",
+  "welcome.language.bootstrap.subtitle": "KLDE 可以离线完成设置。请先选择界面语言；地区、时区和键盘布局彼此独立。",
+  "welcome.accessibility.detail": "支持键盘导航。辅助功能之后仍可在设置中调整。",
+  "welcome.sidebar": "开箱设置",
+  "welcome.region.title": "地区与时区",
+  "welcome.region.system": "使用系统设置",
+  "welcome.region.china": "中国大陆 · 亚洲/上海",
+  "welcome.region.us": "美国 · 太平洋时间"
 }

@@ -313,11 +313,17 @@ Item {
                 parent: testRoot
             });
             verify(flow !== null);
-            compare(flow.pageCount, 10);
+            compare(flow.pageCount, 11);
+            compare(flow.pageId, "language");
+            const english = findChild(flow, "welcomeEnglish");
+            verify(english !== null);
+            english.forceActiveFocus();
+            keyClick(Qt.Key_Return);
+            compare(Shell.language.locale, "en");
             compare(flow.pageId, "welcome");
             flow.next();
-            compare(flow.pageId, "language");
-            flow.pageIndex = 8;
+            compare(flow.pageId, "region");
+            flow.pageIndex = 9;
             compare(flow.pageId, "preparation");
             flow.offline = true;
             verify(flow.pageTitle.length > 0);

@@ -50,7 +50,7 @@ def main():
         dict(id='ribbon-debug', view='desktop', debug_geometry=True),
         dict(id='lock-compact-auth', scenario='lock-screen-blur-enabled', view='lock-screen', lock_state='auth', size='1366x768'),
     ])
-    for page in range(10):
+    for page in range(11):
         cases.append(dict(id=f'welcome-page-{page}', view='welcome', welcome_page=page))
     cases.append(dict(id='welcome-offline-preparation', view='welcome', welcome_page=8, scenario='offline'))
     for island in ('notification', 'progress', 'privacy', 'authorization', 'media', 'device', 'critical'):

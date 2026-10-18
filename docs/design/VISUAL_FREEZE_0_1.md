@@ -14,6 +14,10 @@ integration or assistive technology are complete.
 - System Island as a finite, priority-driven extension of the Temporal Capsule;
 - lock screen as a wallpaper-first visual layer with a separate future session-lock backend;
 - Welcome/OOBE as a ceremonial, offline-capable flow separate from installation;
+- language bootstrap before the branded Welcome page, with interface language
+  independent from region, timezone and keyboard/input choices;
+- reusable KLDE blue/violet handwritten wordmark with a finite reveal and a
+  replaceable upper-body guide asset;
 - original KLDE assets and replaceable character artwork with explicit provenance.
 
 ## Visual review gates

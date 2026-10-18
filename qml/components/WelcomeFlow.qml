@@ -11,18 +11,24 @@ Item {
     property bool offline: false
     property bool partialFailure: false
     property bool reducedMotionPreview: Tokens.reducedMotion
+    property bool accessibilityPanelVisible: false
+    property int privacyMask: 0
+    property string regionChoice: "system"
+    property string timezoneChoice: "system"
     property Item backdropSource: null
     signal finished
 
-    readonly property int pageCount: 10
-    readonly property var pageIds: ["welcome", "language", "input", "appearance", "window", "privacy", "accounts", "updates", "preparation", "ready"]
+    readonly property int pageCount: 11
+    readonly property var pageIds: ["language", "welcome", "region", "input", "appearance", "window", "privacy", "accounts", "updates", "preparation", "ready"]
     readonly property string pageId: pageIds[Math.max(0, Math.min(pageIndex, pageCount - 1))]
     readonly property string pageTitle: {
         switch (pageId) {
+        case "language":
+            return "KLDE · 选择语言 / Choose language";
         case "welcome":
             return I18n.t("welcome.title");
-        case "language":
-            return I18n.t("welcome.language.title");
+        case "region":
+            return I18n.t("welcome.region.title");
         case "input":
             return I18n.t("welcome.input.title");
         case "appearance":
@@ -46,12 +52,49 @@ Item {
         if (pageIndex < pageCount - 1)
             pageIndex += 1;
     }
+    function applyChoice(step: string, choiceIndex: int): void {
+        if (step === "input")
+            Shell.state.requestValue("input.currentId", choiceIndex === 0 ? "keyboard-us" : "pinyin");
+        else if (step === "appearance")
+            Shell.scenes.customize("theme", choiceIndex === 0 ? "light" : choiceIndex === 1 ? "dark" : "auto");
+        else if (step === "window") {
+            const layouts = Shell.state.snapshot.workspaces.layouts.slice();
+            layouts[Shell.state.snapshot.workspaces.active - 1] = choiceIndex === 0 ? 0 : choiceIndex === 1 ? 1 : choiceIndex === 2 ? 3 : 2;
+            Shell.state.requestValue("workspaces.layouts", layouts);
+        } else if (step === "region") {
+            regionChoice = choiceIndex === 0 ? "system" : choiceIndex === 1 ? "cn" : "us";
+            timezoneChoice = regionChoice === "cn" ? "Asia/Shanghai" : regionChoice === "us" ? "America/Los_Angeles" : "system";
+        }
+    }
     function back(): void {
         if (pageIndex > 0)
             pageIndex -= 1;
     }
     function skipToDesktop(): void {
         root.finished();
+    }
+
+    onPageIndexChanged: {
+        if (pageId === "welcome" && welcomeWordmark) {
+            welcomeWordmark.opacity = root.reducedMotionPreview ? 1 : 0;
+            if (!root.reducedMotionPreview)
+                Qt.callLater(() => welcomeWordmark.opacity = 1);
+        }
+        if (!pageStack || root.reducedMotionPreview)
+            return;
+        pageStack.opacity = 0;
+        pageMotion.restart();
+    }
+
+    SequentialAnimation {
+        id: pageMotion
+        NumberAnimation {
+            target: pageStack
+            property: "opacity"
+            to: 1
+            duration: Tokens.motionNormal
+            easing.type: Tokens.emphasizedDecelerate
+        }
     }
 
     Rectangle {
@@ -76,7 +119,7 @@ Item {
                 font: Tokens.headline
             }
             Label {
-                text: "Welcome"
+                text: I18n.t("welcome.sidebar")
                 color: Tokens.textSecondary
                 font: Tokens.body
             }
@@ -148,21 +191,118 @@ Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     currentIndex: root.pageIndex
+                    opacity: 1
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: root.reducedMotionPreview ? 0 : Tokens.motionNormal
+                            easing.type: Tokens.emphasizedDecelerate
+                        }
+                    }
 
                     Item {
-                        RowLayout {
+                        ColumnLayout {
+                            anchors.centerIn: parent
+                            width: Math.min(640, parent.width - Tokens.space48)
+                            spacing: Tokens.space16
+                            Icon {
+                                name: "klde"
+                                Layout.preferredWidth: 48
+                                Layout.preferredHeight: 48
+                            }
+                            Label {
+                                text: I18n.t("welcome.language.bootstrap")
+                                color: Tokens.textPrimary
+                                font: Tokens.headline
+                            }
+                            Label {
+                                text: I18n.t("welcome.language.bootstrap.subtitle")
+                                color: Tokens.textSecondary
+                                font: Tokens.body
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: Tokens.space12
+                                ActionButton {
+                                    objectName: "welcomeChinese"
+                                    text: "简体中文"
+                                    emphasized: Shell.language.locale === "zh_CN"
+                                    onClicked: {
+                                        Shell.language.setLocale("zh_CN");
+                                        root.next();
+                                    }
+                                }
+                                ActionButton {
+                                    objectName: "welcomeEnglish"
+                                    text: "English"
+                                    emphasized: Shell.language.locale === "en"
+                                    onClicked: {
+                                        Shell.language.setLocale("en");
+                                        root.next();
+                                    }
+                                }
+                                ActionButton {
+                                    text: I18n.t("welcome.accessibility")
+                                    onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
+                                }
+                            }
+                            Label {
+                                visible: root.accessibilityPanelVisible
+                                text: I18n.t("welcome.accessibility.detail")
+                                color: Tokens.textSecondary
+                                font: Tokens.caption
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                            }
+                        }
+                    }
+                    Item {
+                        Item {
                             anchors.fill: parent
-                            anchors.margins: Tokens.space24
-                            spacing: Tokens.space32
+                            Image {
+                                id: welcomeWordmark
+                                anchors.left: parent.left
+                                anchors.leftMargin: Tokens.space24
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: Math.min(520, parent.width * 0.57)
+                                height: width * 0.25
+                                source: "qrc:/assets/welcome/klde-wordmark.svg"
+                                fillMode: Image.PreserveAspectFit
+                                opacity: root.reducedMotionPreview ? 1 : 0
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Tokens.motionNormal
+                                    }
+                                }
+                            }
+                            Item {
+                                id: waveClip
+                                anchors.right: parent.right
+                                anchors.rightMargin: Tokens.space24
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 310
+                                height: 420
+                                clip: true
+                                Image {
+                                    anchors.fill: parent
+                                    source: "qrc:/assets/welcome/klde-guide-wave.png"
+                                    sourceClipRect: Qt.rect(0, 0, 1024, 860)
+                                    fillMode: Image.PreserveAspectFit
+                                    smooth: true
+                                    mipmap: true
+                                }
+                            }
                             ColumnLayout {
-                                Layout.preferredWidth: 340
+                                anchors.left: parent.left
+                                anchors.leftMargin: Tokens.space24
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: Math.min(500, parent.width * 0.54)
                                 spacing: Tokens.space12
                                 Label {
-                                    text: "Coding for Furry & Kemono."
-                                    color: Tokens.primary
-                                    font: Tokens.title
-                                    wrapMode: Text.WordWrap
-                                    Layout.fillWidth: true
+                                    text: I18n.t("welcome.title")
+                                    color: Tokens.textPrimary
+                                    font: Tokens.headline
                                 }
                                 Label {
                                     text: I18n.t("welcome.intro")
@@ -186,27 +326,18 @@ Item {
                                     }
                                     ActionButton {
                                         text: I18n.t("welcome.accessibility")
+                                        onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
                                     }
-                                }
-                            }
-                            Item {
-                                Layout.preferredWidth: 260
-                                Layout.preferredHeight: 360
-                                Image {
-                                    anchors.fill: parent
-                                    source: "qrc:/assets/welcome/klde-guide-wave.png"
-                                    fillMode: Image.PreserveAspectFit
-                                    smooth: true
-                                    mipmap: true
                                 }
                             }
                         }
                     }
                     Item {
                         WelcomeChoicePage {
-                            title: I18n.t("welcome.language.title")
-                            choices: ["中文（简体）", "English"]
+                            title: I18n.t("welcome.region.title")
+                            choices: [I18n.t("welcome.region.system"), I18n.t("welcome.region.china"), I18n.t("welcome.region.us")]
                             selected: 0
+                            onChoiceActivated: choiceIndex => root.applyChoice("region", choiceIndex)
                         }
                     }
                     Item {
@@ -214,6 +345,7 @@ Item {
                             title: I18n.t("welcome.input.title")
                             choices: ["English", "Pinyin", "Shuangpin", "Wubi"]
                             selected: 1
+                            onChoiceActivated: choiceIndex => root.applyChoice("input", choiceIndex)
                         }
                     }
                     Item {
@@ -221,6 +353,7 @@ Item {
                             title: I18n.t("welcome.appearance.title")
                             choices: [I18n.t("common.light"), I18n.t("common.dark"), I18n.t("common.auto")]
                             selected: 0
+                            onChoiceActivated: choiceIndex => root.applyChoice("appearance", choiceIndex)
                         }
                     }
                     Item {
@@ -228,6 +361,7 @@ Item {
                             title: I18n.t("welcome.window.title")
                             choices: [I18n.t("shell.workspace.floating"), I18n.t("shell.workspace.tiled"), I18n.t("lab.workspace.scrolling"), I18n.t("shell.workspace.mixed")]
                             selected: 3
+                            onChoiceActivated: choiceIndex => root.applyChoice("window", choiceIndex)
                         }
                     }
                     Item {
@@ -337,6 +471,7 @@ Item {
         property var choices: []
         property int selected: -1
         property bool toggles: false
+        signal choiceActivated(int choiceIndex)
         anchors.centerIn: parent
         width: Math.min(620, parent.width - Tokens.space32)
         spacing: Tokens.space12
@@ -357,8 +492,12 @@ Item {
                 implicitHeight: Tokens.controlHeight
                 text: modelData
                 checkable: true
-                checked: index === selected
-                onClicked: selected = index
+                checked: toggles ? false : index === selected
+                onClicked: {
+                    if (!toggles)
+                        selected = index;
+                    choiceActivated(index);
+                }
                 font: Tokens.label
                 contentItem: Text {
                     text: parent.text

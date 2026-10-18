@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
     }
     bool welcomePageOk = false;
     const int welcomePage = parser.value(welcomePageOption).toInt(&welcomePageOk);
-    if (!welcomePageOk || welcomePage < 0 || welcomePage > 9) {
+    if (!welcomePageOk || welcomePage < 0 || welcomePage > 10) {
         qCritical() << "Unsupported Welcome page index";
         return EXIT_FAILURE;
     }

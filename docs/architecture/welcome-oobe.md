@@ -4,6 +4,11 @@
 has installed KLDE. It is not an installer and never owns disks, partitions,
 accounts or package transactions.
 
+The opening sequence is intentionally language-first: an offline, restrained
+language bootstrap precedes the expressive branded Welcome page. Region/timezone
+and keyboard/input choices remain separate from interface language, and changing
+language immediately updates subsequent OOBE text through `Shell.language`.
+
 The flow keeps core KLDE steps independent from distribution services:
 
 ```text

@@ -533,5 +533,13 @@
   "gallery.system": "System surfaces",
   "gallery.system-summary": "Lock screen · OSD · dialogs · input method · window layout · focus and drag states are collected here as the visual freeze reference.",
   "common.default": "Default",
-  "common.disabled": "Disabled"
+  "common.disabled": "Disabled",
+  "welcome.language.bootstrap": "Choose your language",
+  "welcome.language.bootstrap.subtitle": "KLDE works offline. Choose the interface language first; region, timezone and keyboard remain independent.",
+  "welcome.accessibility.detail": "Keyboard navigation is available. Accessibility options can be adjusted again later.",
+  "welcome.sidebar": "Welcome setup",
+  "welcome.region.title": "Region & timezone",
+  "welcome.region.system": "Use system settings",
+  "welcome.region.china": "Mainland China · Asia/Shanghai",
+  "welcome.region.us": "United States · Pacific Time"
 }
