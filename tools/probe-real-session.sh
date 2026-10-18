@@ -8,6 +8,16 @@ printf '  session type: %s\n' "${XDG_SESSION_TYPE:-unset}"
 printf '  wayland display: %s\n' "${WAYLAND_DISPLAY:-unset}"
 printf '  dbus session: %s\n' "${DBUS_SESSION_BUS_ADDRESS:+present}${DBUS_SESSION_BUS_ADDRESS:-unset}"
 
+if command -v rpm >/dev/null 2>&1; then
+    for package in kwin layer-shell-qt layer-shell-qt-devel qt6-qtwayland-devel wayland-devel wayland-protocols-devel; do
+        if rpm -q "$package" >/dev/null 2>&1; then
+            printf '  package %-24s %s\n' "$package" "$(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}' "$package")"
+        else
+            printf '  package %-24s missing\n' "$package"
+        fi
+    done
+fi
+
 if command -v kwin_wayland >/dev/null 2>&1; then
     printf '  kwin_wayland: %s\n' "$(kwin_wayland --version 2>&1 | head -1)"
     printf '  kwin help flags:\n'

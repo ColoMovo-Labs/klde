@@ -32,7 +32,14 @@ socket_name=lomode-wayland-0
 help_text=$($kwin_bin --help 2>&1 || true)
 
 has_flag() { grep -Eq -- "$1" <<<"$help_text"; }
-args=(--socket="$socket_name")
+if has_flag '--socket'; then
+    args=(--socket="$socket_name")
+elif has_flag '--wayland-display'; then
+    args=(--wayland-display="$socket_name")
+else
+    echo "KWin does not advertise a named Wayland socket option; refusing to guess." >&2
+    exit 5
+fi
 has_flag '--virtual' && args+=(--virtual)
 has_flag '--xwayland' && args+=(--xwayland)
 has_flag '--no-global-shortcuts' && args+=(--no-global-shortcuts)
@@ -41,6 +48,7 @@ has_flag '--exit-with-session' && args+=(--exit-with-session)
 export XDG_CURRENT_DESKTOP=LoMoDE
 export XDG_SESSION_DESKTOP=LoMoDE
 export WAYLAND_DISPLAY="$socket_name"
+kwin_log=${LOMODE_SESSION_LOG:-/tmp/lomode-kwin.log}
 
 cleanup() {
     if [[ -n "${app_pid:-}" ]] && kill -0 "$app_pid" 2>/dev/null; then kill "$app_pid" 2>/dev/null || true; fi
@@ -50,14 +58,22 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "Starting isolated KWin: $kwin_bin ${args[*]}"
-"$kwin_bin" "${args[@]}" &
+"$kwin_bin" "${args[@]}" >"$kwin_log" 2>&1 &
 kwin_pid=$!
 for _ in $(seq 1 100); do
     [[ -S "$runtime_dir/$socket_name" ]] && break
-    kill -0 "$kwin_pid" 2>/dev/null || { echo "KWin exited before creating $socket_name" >&2; exit 5; }
+    kill -0 "$kwin_pid" 2>/dev/null || {
+        echo "KWin exited before creating $socket_name; log: $kwin_log" >&2
+        tail -80 "$kwin_log" >&2 || true
+        exit 6
+    }
     sleep 0.1
 done
-[[ -S "$runtime_dir/$socket_name" ]] || { echo "Timed out waiting for isolated Wayland socket" >&2; exit 6; }
+[[ -S "$runtime_dir/$socket_name" ]] || {
+    echo "Timed out waiting for isolated Wayland socket; log: $kwin_log" >&2
+    tail -80 "$kwin_log" >&2 || true
+    exit 7
+}
 
 echo "Starting LoMoDE shell on $WAYLAND_DISPLAY"
 QT_QPA_PLATFORM=wayland "$shell_bin" --view desktop &
