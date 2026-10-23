@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -euo pipefail
 
-printf 'LoMoDE Real Session probe\n'
+printf 'owoDE Real Session probe\n'
 printf '  host: %s\n' "$(uname -sr)"
 printf '  session type: %s\n' "${XDG_SESSION_TYPE:-unset}"
 printf '  wayland display: %s\n' "${WAYLAND_DISPLAY:-unset}"

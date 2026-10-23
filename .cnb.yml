@@ -1,0 +1,14 @@
+# CNB is a public mirror and an additional repository sanity check.
+# CircleCI remains the authoritative Qt/CMake build and test environment.
+main:
+  push:
+    - docker:
+        image: ubuntu:24.04
+      stages:
+        - name: verify public repository entry points
+          script: |
+            set -eu
+            test -s README.md
+            test -s README.en.md
+            test -s .circleci/config.yml
+            grep -q 'owoDE' README.md

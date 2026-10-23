@@ -1,4 +1,5 @@
 /build/
+/build-fedora/
 /artifacts/
 /.cache/
 /.venv/

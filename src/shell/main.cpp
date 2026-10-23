@@ -77,12 +77,19 @@ int main(int argc, char *argv[]) {
                                         "1440x900");
     const QCommandLineOption ambientOption("ambient", "Preview the ambient workspace layout");
     const QCommandLineOption developerOption("dev-tools", "Open the session-only Mock Lab");
+    const QCommandLineOption nativeSurfaceOption(
+        "native-shell-surfaces",
+        "Use LayerShellQt wallpaper, ribbon and dock surfaces (Wayland/KWin only)");
     parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
-                       developerOption});
+                       developerOption, nativeSurfaceOption});
     parser.addOptions({cropOption, focusOption, lockStateOption, islandStateOption,
                        welcomePageOption, debugGeometryOption, smokeOption, captureOption,
                        viewOption, darkOption, idleOption, localeOption, voiceOption});
     parser.process(app);
+    if (parser.isSet(nativeSurfaceOption) && parser.isSet(smokeOption)) {
+        qCritical() << "--native-shell-surfaces cannot be combined with --smoke-test";
+        return EXIT_FAILURE;
+    }
     if ((parser.isSet(captureOption) || parser.isSet(idleOption)) && !parser.isSet(smokeOption)) {
         qCritical() << "--capture and --audit-idle require --smoke-test";
         return EXIT_FAILURE;
@@ -190,6 +197,7 @@ int main(int argc, char *argv[]) {
          {"initialWelcomePage", welcomePage},
          {"initialDebugGeometry", parser.isSet(debugGeometryOption)},
          {"developerTools", parser.isSet(developerOption)},
+         {"nativeSurfaceMode", parser.isSet(nativeSurfaceOption)},
          {"width", logicalWidth},
          {"height", logicalHeight}});
     engine.loadFromModule(QStringLiteral("KLDE.Shell"), QStringLiteral("Main"));
@@ -201,6 +209,14 @@ int main(int argc, char *argv[]) {
     if (window == nullptr || services == nullptr || !services->language()->ready()) {
         qCritical() << "The shell window or services could not be created";
         return EXIT_FAILURE;
+    }
+    if (parser.isSet(nativeSurfaceOption)) {
+        if (!services->surface()->available() || services->surface()->attachedSurfaceCount() != 3) {
+            qCritical() << "Native shell surfaces requested but the three LayerShellQt surfaces"
+                        << "could not be attached:" << services->surface()->diagnostic();
+            return EXIT_FAILURE;
+        }
+        qInfo() << "owoDE native surfaces attached: wallpaper, ribbon, dock";
     }
     if (services->mockScenarios()->activeId() != parser.value(scenarioOption)) {
         qCritical() << "Unknown or invalid mock scenario";

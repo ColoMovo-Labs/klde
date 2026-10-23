@@ -13,6 +13,7 @@
 #include "models/PowerSceneController.h"
 #include "platform/common/DisplayServerBackend.h"
 #include "platform/common/SessionRuntimeBackend.h"
+#include "platform/wayland/NativeSurfaceController.h"
 #include "shortcuts/ShortcutRegistry.h"
 #include "status/StatusModuleRegistry.h"
 #include "weather/WeatherService.h"
@@ -36,6 +37,7 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::InputMethodBackend *input READ input CONSTANT)
     Q_PROPERTY(klde::DisplayServerBackend *displayServer READ displayServer CONSTANT)
     Q_PROPERTY(klde::SessionRuntimeBackend *session READ session CONSTANT)
+    Q_PROPERTY(klde::NativeSurfaceController *surface READ surface CONSTANT)
     Q_PROPERTY(klde::SystemStateModel *state READ state CONSTANT)
     Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
     Q_PROPERTY(klde::NotificationModel *notifications READ notifications CONSTANT)
@@ -60,6 +62,7 @@ class ShellServices final : public QObject {
     InputMethodBackend *input() { return &m_input; }
     DisplayServerBackend *displayServer() { return &m_displayServer; }
     SessionRuntimeBackend *session() { return &m_session; }
+    NativeSurfaceController *surface() { return &m_surface; }
     SystemStateModel *state() { return &m_state; }
     MockScenarioManager *mockScenarios() { return &m_mockScenarios; }
     NotificationModel *notifications() { return &m_notifications; }
@@ -98,6 +101,7 @@ class ShellServices final : public QObject {
     Fcitx5Backend m_input;
     DisplayServerBackend m_displayServer;
     SessionRuntimeBackend m_session;
+    NativeSurfaceController m_surface;
     SystemStateModel m_state;
     MockScenarioManager m_mockScenarios;
     MockTimeBackend m_time;

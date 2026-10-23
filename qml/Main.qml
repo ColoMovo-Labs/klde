@@ -22,12 +22,15 @@ ApplicationWindow {
     property int initialWelcomePage: 0
     property bool initialDebugGeometry: false
     property bool developerTools: false
+    property bool nativeSurfaceMode: false
     objectName: "shellWindow"
     width: Tokens.previewWidth
     height: Tokens.previewHeight
     minimumWidth: Tokens.previewMinimumWidth
     minimumHeight: Tokens.previewMinimumHeight
-    visible: true
+    // In native-surface mode this controller window is hidden; the wallpaper,
+    // ribbon and dock are separate LayerShellQt-backed QWindows below.
+    visible: !nativeSurfaceMode
     title: I18n.t("shell.title")
     color: Tokens.background
     font: Tokens.body
@@ -193,11 +196,12 @@ ApplicationWindow {
     WallpaperLayers {
         id: wallpaper
         anchors.fill: parent
+        visible: !window.nativeSurfaceMode
     }
     StatusRibbon {
         id: ribbon
         objectName: "statusRibbon"
-        visible: !window.welcomeMode && Shell.ribbon.enabled
+        visible: !window.nativeSurfaceMode && !window.welcomeMode && Shell.ribbon.enabled
         x: Shell.ribbon.margin
         y: Shell.ribbon.margin
         width: parent.width - x * 2
@@ -260,7 +264,7 @@ ApplicationWindow {
     WallpaperLayers {
         anchors.fill: parent
         foregroundOnly: true
-        visible: !window.welcomeMode && window.snapshot.appearance.ambient
+        visible: !window.nativeSurfaceMode && !window.welcomeMode && window.snapshot.appearance.ambient
     }
     Surface {
         visible: !window.welcomeMode && window.snapshot.scratchpad
@@ -286,7 +290,7 @@ ApplicationWindow {
     }
     Dock {
         id: dock
-        visible: !window.welcomeMode && !window.snapshot.appearance.focus
+        visible: !window.nativeSurfaceMode && !window.welcomeMode && !window.snapshot.appearance.focus
         backdropSource: wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -495,5 +499,94 @@ ApplicationWindow {
             else
                 Shell.previewAction(id);
         }
+    }
+
+    // These windows are intentionally small and explicit. They are the first
+    // native-surface slice; all panels/popups remain owned by the ordinary
+    // preview until their input/focus contracts are migrated separately.
+    // Keep these QWindows unloaded in preview mode. That prevents duplicate
+    // object names from changing Visual Lab geometry queries and keeps the
+    // ordinary preview a single xdg-toplevel window.
+    Component {
+        id: nativeWallpaperComponent
+        Window {
+            id: nativeWallpaperSurface
+            objectName: "nativeWallpaperSurface"
+            visible: false
+            flags: Qt.FramelessWindowHint | Qt.Tool
+            color: "transparent"
+            width: window.width
+            height: window.height
+            WallpaperLayers {
+                anchors.fill: parent
+                visible: true
+            }
+            Component.onCompleted: {
+                if (Shell.surface.attach(nativeWallpaperSurface, "wallpaper"))
+                    visible = true;
+            }
+        }
+    }
+    Loader {
+        id: nativeWallpaperLoader
+        active: window.nativeSurfaceMode
+        sourceComponent: nativeWallpaperComponent
+    }
+
+    Component {
+        id: nativeRibbonComponent
+        Window {
+            id: nativeRibbonSurface
+            objectName: "nativeRibbonSurface"
+            visible: false
+            flags: Qt.FramelessWindowHint | Qt.Tool
+            color: "transparent"
+            width: window.width
+            height: Tokens.ribbonBandHeight + Tokens.space32
+            StatusRibbon {
+                anchors.fill: parent
+                anchors.margins: Tokens.space16
+                islandState: window.initialIslandState
+                onAction: moduleId => window.moduleAction(moduleId)
+            }
+            Component.onCompleted: {
+                if (Shell.surface.attach(nativeRibbonSurface, "ribbon"))
+                    visible = true;
+            }
+        }
+    }
+    Loader {
+        id: nativeRibbonLoader
+        active: window.nativeSurfaceMode
+        sourceComponent: nativeRibbonComponent
+    }
+
+    Component {
+        id: nativeDockComponent
+        Window {
+            id: nativeDockSurface
+            objectName: "nativeDockSurface"
+            visible: false
+            flags: Qt.FramelessWindowHint | Qt.Tool
+            color: "transparent"
+            width: window.width
+            height: Tokens.dockHeight + Tokens.space32 + Tokens.space16
+            Dock {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Tokens.space24
+                onLauncherRequested: window.showView("launcher")
+                onSettingsRequested: window.showView("quick-settings")
+            }
+            Component.onCompleted: {
+                if (Shell.surface.attach(nativeDockSurface, "dock"))
+                    visible = true;
+            }
+        }
+    }
+    Loader {
+        id: nativeDockLoader
+        active: window.nativeSurfaceMode
+        sourceComponent: nativeDockComponent
     }
 }

@@ -1,4 +1,4 @@
-# LoMoDE Real Session 0.1
+# owoDE Real Session 0.1
 
 This checkpoint ends the mock-first visual milestone and starts the safe
 KWin/Wayland session path. It deliberately does not replace the host session.
@@ -15,11 +15,13 @@ service and LayerShellQt availability without starting processes or polling.
 
 ## Current host findings
 
-The development host used for this checkpoint has Qt 6.11 and DBus, but no
-`kwin_wayland` executable and no installed LayerShellQt QML module. Therefore a
-real nested KWin session cannot be honestly demonstrated on this host yet.
-This is a prerequisite blocker, not a reason to replace the shell with a fake
-window or to modify the user's display-manager configuration.
+The development host used for the original checkpoint has Qt 6.11 and DBus,
+but no `kwin_wayland` executable and no installed LayerShellQt QML module. The
+owner has since supplied photographic evidence of the first visible nested
+KWin run from Fedora 44 + niri; that evidence is preserved in
+[First Light](first-light.md). It demonstrates preview/client coexistence, but
+does not establish native layer-shell roles. The local host remains blocked for
+protocol verification until KWin and LayerShellQt are installed.
 
 Run the read-only probe with:
 
@@ -54,7 +56,8 @@ exits with a clear error.
 | --- | --- |
 | Repository and native-renderer inspection | verified |
 | Read-only Wayland/KWin capability probe | implemented |
-| Safe isolated KWin launcher | implemented, host-blocked until KWin is installed |
+| Safe isolated KWin launcher | implemented; First Light photograph supplied from Fedora 44 + niri |
+| Nested KWin preview alongside a genuine Qt client | owner-supplied photographic evidence; process log pending |
 | Proper LayerShellQt wallpaper/ribbon/dock surfaces | pending target-KWin probe |
 | Genuine application managed by nested KWin | pending target-KWin probe |
 | Real workspace/focus adapter | pending public/versioned KWin API probe |

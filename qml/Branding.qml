@@ -3,8 +3,11 @@ pragma Singleton
 import QtQuick
 
 QtObject {
-    readonly property string displayName: "LoMoDE"
-    readonly property string expandedName: "LoMo Desktop Environment · 洛陌桌面环境"
+    // Final public brand. KLDE/klde remain stable technical identifiers for
+    // modules, packages and migration compatibility.
+    readonly property string displayName: "owoDE"
+    readonly property string expandedName: "owo Desktop Envirment · owo 桌面环境"
+    readonly property string formalName: "owo Desktop Envirment"
     readonly property string iconName: "klde"
     // Stable technical IDs remain separate from replaceable public branding.
     readonly property string applicationId: "org.klde.shell.preview"

@@ -11,6 +11,16 @@ find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui DBus Network Qml Quick QuickCo
 qt_standard_project_setup(REQUIRES 6.8)
 include(CTest)
 include(GNUInstallDirs)
+
+# LayerShellQt is an optional runtime integration. The Visual Lab and ordinary
+# preview stay buildable on hosts that do not ship it; native-surface mode is
+# enabled only when the target provides the KDE interface package.
+find_package(LayerShellQt 6.0 CONFIG QUIET)
+if(TARGET LayerShellQt::Interface)
+    set(LOMODE_HAVE_LAYERSHELLQT ON)
+else()
+    set(LOMODE_HAVE_LAYERSHELLQT OFF)
+endif()
 add_subdirectory(src)
 
 set_source_files_properties(qml/Tokens.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
@@ -107,6 +117,14 @@ qt_add_executable(klde-shell src/shell/main.cpp)
 target_link_libraries(klde-shell PRIVATE klde_ui klde_uiplugin Qt6::Quick Qt6::QuickControls2)
 target_compile_definitions(klde-shell PRIVATE KLDE_VERSION="${PROJECT_VERSION}")
 target_compile_options(klde-shell PRIVATE -Wall -Wextra -Wpedantic)
+
+if(LOMODE_HAVE_LAYERSHELLQT)
+    # Runtime smoke test used only inside an isolated Wayland/KWin session. It
+    # is deliberately not part of the ordinary preview test matrix.
+    add_executable(klde-layer-shell-smoke tests/native-layer-shell-smoke.cpp)
+    target_link_libraries(klde-layer-shell-smoke PRIVATE LayerShellQt::Interface Qt6::Gui)
+    target_compile_options(klde-layer-shell-smoke PRIVATE -Wall -Wextra -Wpedantic)
+endif()
 
 if(BUILD_TESTING)
     find_package(Qt6 6.8 REQUIRED COMPONENTS Test QuickTest)

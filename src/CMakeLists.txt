@@ -22,6 +22,7 @@ qt_add_qml_module(klde_backends STATIC
         input/InputMethodBackend.h input/Fcitx5Backend.h input/Fcitx5Backend.cpp
         platform/common/DisplayServerBackend.h platform/common/DisplayServerBackend.cpp
         platform/common/SessionRuntimeBackend.h platform/common/SessionRuntimeBackend.cpp
+        platform/wayland/NativeSurfaceController.h platform/wayland/NativeSurfaceController.cpp
         mock/SystemStateModel.h mock/SystemStateModel.cpp
         models/NotificationModel.h models/NotificationModel.cpp
         status/StatusModuleRegistry.h status/StatusModuleRegistry.cpp
@@ -29,6 +30,10 @@ qt_add_qml_module(klde_backends STATIC
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Gui Qt6::DBus Qt6::Network Qt6::Qml)
+if(LOMODE_HAVE_LAYERSHELLQT)
+    target_link_libraries(klde_backends PUBLIC LayerShellQt::Interface)
+    target_compile_definitions(klde_backends PUBLIC LOMODE_HAVE_LAYERSHELLQT=1)
+endif()
 # qmltyperegistrar emits conditional includes by header basename.
 target_include_directories(klde_backends PRIVATE
     backends models i18n input mock platform/common shortcuts status weather)

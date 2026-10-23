@@ -7,7 +7,7 @@ image=${LOMODE_FEDORA_IMAGE:-localhost/lomode-fedora:44}
 runtime=${LOMODE_CONTAINER_RUNTIME:-podman}
 
 if ! command -v "$runtime" >/dev/null 2>&1; then
-    echo "LoMoDE Fedora setup: $runtime is required." >&2
+    echo "owoDE Fedora setup: $runtime is required." >&2
     echo "Install Podman or use Fedora Toolbx, then rerun this script." >&2
     exit 2
 fi

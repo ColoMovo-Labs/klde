@@ -26,7 +26,7 @@ class ShellStartupTest final : public QObject {
         auto *window = qobject_cast<QQuickWindow *>(engine.rootObjects().constFirst());
         QVERIFY(window != nullptr);
         QVERIFY(window->isVisible());
-        QVERIFY(window->title().contains(QStringLiteral("LoMoDE")));
+        QVERIFY(window->title().contains(QStringLiteral("owoDE")));
         QVERIFY(window->findChild<QObject *>(QStringLiteral("statusLabel")) != nullptr);
         QCoreApplication::processEvents();
         auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");

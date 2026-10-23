@@ -345,7 +345,7 @@ Item {
             compare(languageTitle.text, "选择界面语言");
             languageContinue.forceActiveFocus();
             keyClick(Qt.Key_Space);
-            compare(flow.pageTitle, "欢迎使用 KLDE");
+            compare(flow.pageTitle, "欢迎使用 owoDE");
         }
         function test_systemIslandHonorsEventPriority(): void {
             const island = createTemporaryObject(islandComponent, testRoot, {
