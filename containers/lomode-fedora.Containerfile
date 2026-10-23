@@ -12,6 +12,7 @@ RUN dnf install -y --setopt=install_weak_deps=False \
         qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
         kwin wayland-devel wayland-protocols-devel \
         mesa-dri-drivers mesa-libEGL mesa-libGL \
+        dejavu-sans-fonts google-noto-sans-cjk-vf-fonts google-noto-color-emoji-fonts \
         dbus-daemon dbus-tools xorg-x11-server-Xwayland \
         desktop-file-utils \
     && dnf clean all \
