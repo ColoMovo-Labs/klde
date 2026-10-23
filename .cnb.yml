@@ -26,6 +26,32 @@ main:
           script: |
             set -eu
             ctest --test-dir build/cnb --output-on-failure
+        - name: capture Monet visual previews
+          script: |
+            set -eu
+            mkdir -p artifacts/visual
+            runtime_dir="$(mktemp -d)"
+            chmod 700 "$runtime_dir"
+            trap 'rm -rf "$runtime_dir"' EXIT
+            for wallpaper in snow abstract quiet kemono; do
+              env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+                build/cnb/bin/klde-shell --smoke-test --view desktop \
+                --wallpaper "$wallpaper" --capture "artifacts/visual/monet-light-${wallpaper}.png" \
+                > "artifacts/visual/monet-light-${wallpaper}.log" 2>&1
+            done
+            env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+              build/cnb/bin/klde-shell --smoke-test --view desktop --dark --wallpaper kemono \
+              --capture artifacts/visual/monet-dark-kemono.png \
+              > artifacts/visual/monet-dark-kemono.log 2>&1
+            sha256sum artifacts/visual/*.png > artifacts/visual/SHA256SUMS
+            test -s artifacts/visual/monet-light-snow.png
+            test -s artifacts/visual/monet-dark-kemono.png
+        - name: attach Monet visual previews
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/visual/*.png"
+              - "./artifacts/visual/SHA256SUMS"
         - name: package Fedora user bundle
           script: |
             set -eu
