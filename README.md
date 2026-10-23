@@ -80,6 +80,7 @@ Floating、Classic Tiling、Scrolling Tiling 和 Mixed 的抽象，但高级平�
 
 - [总体架构](ARCHITECTURE.md)
 - [设计语言](DESIGN.md)
+- [Monet 色彩系统](docs/design/monet-palette.md)
 - [路线图](ROADMAP.md)
 - [KWin 适配边界](docs/architecture/kwin-adapter.md)
 - [Linux 后端边界](docs/architecture/linux-backend.md)

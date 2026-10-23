@@ -24,10 +24,11 @@ endif()
 add_subdirectory(src)
 
 set_source_files_properties(qml/Tokens.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(qml/MonetPalette.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set_source_files_properties(qml/Branding.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set_source_files_properties(qml/I18n.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set(klde_qml_files
-    qml/Main.qml qml/Tokens.qml qml/I18n.qml qml/Branding.qml
+    qml/Main.qml qml/Tokens.qml qml/MonetPalette.qml qml/I18n.qml qml/Branding.qml
     qml/components/RibbonGroup.qml qml/components/TelemetryCell.qml
     qml/components/TemporalCapsule.qml qml/components/TemporalLandscape.qml
     qml/components/SystemIsland.qml qml/components/WelcomeFlow.qml

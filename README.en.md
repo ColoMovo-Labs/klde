@@ -142,7 +142,8 @@ separately on real hardware.
 QML presentation → Qt models/controllers → system and compositor adapters.
 The shell owns its UI; existing system services and compositors retain their
 responsibilities. Start with [ARCHITECTURE.md](ARCHITECTURE.md),
-[DESIGN.md](DESIGN.md), [ROADMAP.md](ROADMAP.md) and the
+[DESIGN.md](DESIGN.md), [Monet palette](docs/design/monet-palette.md),
+[ROADMAP.md](ROADMAP.md) and the
 [decision records](docs/decisions/).
 
 The display strategy is **Wayland first, X11 compatible**, using Qt QPA for the

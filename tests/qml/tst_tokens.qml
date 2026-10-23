@@ -9,6 +9,7 @@ TestCase {
     function cleanup() {
         Tokens.darkMode = false;
         Tokens.accentChoice = "auto";
+        Tokens.wallpaperChoice = "snow";
         Tokens.textScale = 1.0;
         Tokens.reducedMotion = false;
     }
@@ -47,6 +48,30 @@ TestCase {
         Tokens.darkMode = true;
         verify(Tokens.background.toString() !== initialBackground);
         verify(Tokens.textPrimary.toString() !== Tokens.background.toString());
+    }
+
+    function test_monetPaletteFollowsWallpaper() {
+        Tokens.darkMode = false;
+        Tokens.accentChoice = "auto";
+        const seeds = [];
+        for (const wallpaper of ["snow", "abstract", "quiet", "kemono"]) {
+            Tokens.wallpaperChoice = wallpaper;
+            seeds.push(Tokens.primary.toString());
+            verify(Tokens.monetPalette.primary.toString() === Tokens.primary.toString());
+            verify(Tokens.primaryContainer.toString() !== Tokens.surface.toString());
+        }
+        verify(seeds[0] !== seeds[1] && seeds[0] !== seeds[2] && seeds[0] !== seeds[3]);
+        verify(seeds[1] !== seeds[2] && seeds[1] !== seeds[3] && seeds[2] !== seeds[3]);
+    }
+
+    function test_monetPaletteHasDarkAndLightRoles() {
+        Tokens.wallpaperChoice = "kemono";
+        Tokens.darkMode = false;
+        const lightSurface = Tokens.surface.toString();
+        Tokens.darkMode = true;
+        verify(Tokens.surface.toString() !== lightSurface);
+        verify(Tokens.monetPalette.onPrimary.toString() !== "");
+        verify(Tokens.surfaceContainerHigh.toString() !== Tokens.surfaceContainer.toString());
     }
 
     function test_textScalePropagates() {

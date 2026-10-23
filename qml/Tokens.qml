@@ -15,26 +15,34 @@ QtObject {
     property bool debugGeometry: false
     property string wallpaperChoice: "snow"
     property string accentChoice: "auto"
-    readonly property color accent: accentChoice === "teal" ? accentTeal : accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : darkMode ? "#99d1c8" : wallpaperChoice === "abstract" ? "#5545ad" : wallpaperChoice === "kemono" ? "#76518e" : "#07679e"
+    readonly property var monetPalette: MonetPalette.paletteFor(wallpaperChoice, darkMode)
+    readonly property color accent: accentChoice === "teal" ? accentTeal : accentChoice === "lilac" ? accentLilac : accentChoice === "apricot" ? accentApricot : monetPalette.primary
 
-    readonly property color background: darkMode ? "#10182b" : "#edf2ff"
-    readonly property color surface: darkMode ? "#19283e" : "#f9faff"
-    readonly property color surfaceContainer: darkMode ? "#263650" : "#e8eaff"
-    readonly property color surfaceElevated: darkMode ? "#223148" : "#ffffff"
+    // These are Material Expressive-style semantic roles.  The seed comes from
+    // the selected wallpaper so the entire shell moves together as one palette,
+    // instead of recoloring individual widgets independently.
+    readonly property color background: monetPalette.background
+    readonly property color surface: monetPalette.surface
+    readonly property color surfaceContainer: monetPalette.surfaceContainer
+    readonly property color surfaceElevated: monetPalette.surfaceElevated
+    readonly property color surfaceContainerHigh: Qt.tint(surfaceContainer, Qt.rgba(accent.r, accent.g, accent.b, darkMode ? 0.12 : 0.08))
+    readonly property color surfaceContainerHighest: Qt.tint(surfaceElevated, Qt.rgba(accent.r, accent.g, accent.b, darkMode ? 0.18 : 0.10))
+    readonly property color surfaceDim: darkMode ? Qt.darker(surface, 1.18) : Qt.darker(surface, 1.03)
+    readonly property color surfaceBright: darkMode ? Qt.lighter(surfaceElevated, 1.12) : surfaceElevated
     readonly property color primary: accent
-    readonly property color secondary: darkMode ? "#dfc0ff" : "#8554bf"
-    readonly property color tertiary: darkMode ? "#f0c49e" : "#8a5732"
+    readonly property color secondary: accentChoice === "auto" ? monetPalette.secondary : darkMode ? "#dfc0ff" : "#8554bf"
+    readonly property color tertiary: monetPalette.tertiary
     readonly property color error: darkMode ? "#ffb4ab" : "#a82d3b"
-    readonly property color outline: darkMode ? "#8fa5c5" : "#747fa6"
-    readonly property color textPrimary: darkMode ? "#eef3ff" : "#20264d"
-    readonly property color textSecondary: darkMode ? "#bacbe1" : "#566287"
-    readonly property color textDisabled: darkMode ? "#84949e" : "#75858e"
-    readonly property color textOnPrimary: darkMode ? "#152633" : "#ffffff"
-    readonly property color primaryContainer: Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
-    readonly property color surfaceVariant: surfaceContainer
-    readonly property color warning: darkMode ? "#f4ca86" : "#805200"
-    readonly property color success: darkMode ? "#9ed5ad" : "#27683a"
-    readonly property color shadow: darkMode ? "#070e20" : "#292e6b"
+    readonly property color outline: monetPalette.outline
+    readonly property color textPrimary: monetPalette.textPrimary
+    readonly property color textSecondary: monetPalette.textSecondary
+    readonly property color textDisabled: monetPalette.textDisabled
+    readonly property color textOnPrimary: accentChoice === "auto" ? monetPalette.onPrimary : darkMode ? "#152633" : "#ffffff"
+    readonly property color primaryContainer: accentChoice === "auto" ? monetPalette.primaryContainer : Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
+    readonly property color surfaceVariant: monetPalette.secondaryContainer
+    readonly property color warning: monetPalette.warning
+    readonly property color success: monetPalette.success
+    readonly property color shadow: monetPalette.shadow
     readonly property real outlineOpacity: 0.20
     readonly property real shadowOpacity: darkMode ? 0.30 : 0.14
     readonly property real mutedOpacity: 0.35

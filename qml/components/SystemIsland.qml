@@ -60,7 +60,7 @@ Item {
         width: parent.width
         height: parent.height
         radius: height / 2
-        color: Tokens.darkMode ? "#1b2c47" : "#f9faff"
+        color: Tokens.surfaceContainerHigh
         border.width: Tokens.capsuleBorderWidth
         border.color: Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
 
