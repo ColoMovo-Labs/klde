@@ -108,6 +108,29 @@ klde-shell --native-shell-surfaces
 [CircleCI 工作流](docs/development/circleci.md)、[Fedora 运行时](docs/development/fedora-runtime.md)
 和 [Real Session 0.2](docs/development/real-session-02.md)。
 
+### Fedora 云端安装包
+
+Fedora 版本由 CircleCI 的 `fedora-build` 在云端构建，不需要在本机编译。
+打开成功流水线的 `core → fedora-build → Artifacts`，下载
+`artifacts/fedora-package/` 下的 `klde-shell-preview-*.rpm`、匹配的
+`owode-shell-fedora44-*.tar.gz`、`SHA256SUMS` 和 manifest。Fedora 44 上优先安装 RPM：
+
+```sh
+sudo dnf install ./klde-shell-preview-*.rpm
+```
+
+如果需要无 root 的用户安装，则解压 tarball：
+
+```sh
+mkdir -p "$HOME/.local"
+tar -xzf owode-shell-fedora44-*.tar.gz -C "$HOME/.local" --strip-components=1
+"$HOME/.local/bin/klde-shell"
+```
+
+这是独立预览窗口，不会替换当前桌面。若要测试嵌套 KWin 原生表面，需使用
+匹配提交中的 `tools/run-lomode-session.sh`，并设置 `OWODE_MODE=native`；
+它仍然不会安装登录会话。Fedora 目前提供云端 RPM 和 tarball，尚未提供完整登录会话包。
+
 ## 贡献与许可
 
 请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)、[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)

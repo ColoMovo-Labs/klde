@@ -9,7 +9,7 @@ main:
           script: |
             set -eu
             dnf install -y --setopt=install_weak_deps=False \
-              @development-tools cmake ninja-build git file findutils \
+              @development-tools cmake ninja-build git file findutils rpm-build \
               qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtwayland-devel \
               qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
               wayland-devel wayland-protocols-devel mesa-dri-drivers \
@@ -26,6 +26,12 @@ main:
           script: |
             set -eu
             ctest --test-dir build/cnb --output-on-failure
+        - name: package Fedora user bundle
+          script: |
+            set -eu
+            bash tools/package-fedora-bundle.sh build/cnb artifacts/fedora-package
+            test -s artifacts/fedora-package/*.tar.gz
+            test -s artifacts/fedora-package/*.rpm
         - name: verify public repository entry points
           script: |
             set -eu

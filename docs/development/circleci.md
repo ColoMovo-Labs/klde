@@ -21,7 +21,7 @@ builds do not separately verify that minimum version.
 | unit-tests | Qt Test backend contracts and packaged QML startup without warnings | required |
 | qml-tests | Qt Quick Test tokens and keyboard interaction | required |
 | integration-smoke | offscreen/software, Weston/Wayland/software, Xvfb/OpenGL/llvmpipe | required |
-| fedora-build | Independent Fedora 44 configure/build, full CTest and offscreen/software startup | required for the expanded foundation |
+| fedora-build | Independent Fedora 44 configure/build, full CTest, offscreen/software startup and Fedora RPM/tarball artifacts | required for the expanded foundation |
 | packaging-check | CPack `.deb`, generated ELF dependencies and matching source archive | required for the expanded foundation |
 | deb-runtime | Clean Ubuntu container, apt dependency resolution, installed binary capture and package purge | required for the expanded foundation |
 
@@ -34,9 +34,9 @@ missing QML/plugin dependencies are not masked by the build environment.
 Ubuntu dependency archives and compiler outputs are cached; Fedora uses separate
 DNF and compiler cache keys. CMake/Ninja outputs are shared within a pipeline
 rather than reused from an unrelated revision. Test jobs emit JUnit reports.
-Environment inventories and Qt/tool versions, smoke logs/PNGs and package/source
-artifacts are retained. A configured job is not proof of success: record the
-exact commit and results for the current head.
+Environment inventories and Qt/tool versions, smoke logs/PNGs, Fedora user
+bundles and package/source artifacts are retained. A configured job is not proof
+of success: record the exact commit and results for the current head.
 
 The Ubuntu/Fedora tags and their package repositories receive updates. This is a distribution-following
 baseline, not a bit-for-bit reproducibility claim. Record an image digest and adopt

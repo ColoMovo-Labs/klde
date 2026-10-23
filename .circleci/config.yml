@@ -185,6 +185,23 @@ jobs:
               > artifacts/fedora-smoke/offscreen.log 2>&1
             test -s artifacts/fedora-smoke/offscreen.png
             desktop-file-validate packaging/org.klde.shell.preview.desktop
+      - run:
+          name: Package Fedora user bundle
+          command: bash tools/package-fedora-bundle.sh build/ci artifacts/fedora-package
+      - run:
+          name: Verify Fedora RPM installation
+          command: |
+            dnf install -y artifacts/fedora-package/*.rpm
+            rpm -q klde-shell-preview
+            test -x /usr/bin/klde-shell
+            runtime_dir="$(mktemp -d)"
+            chmod 700 "$runtime_dir"
+            trap 'rm -rf "$runtime_dir"' EXIT
+            env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+              /usr/bin/klde-shell --smoke-test --view quick-settings \
+              --capture "$PWD/artifacts/fedora-smoke/installed-rpm.png" \
+              > artifacts/fedora-smoke/installed-rpm.log 2>&1
+            test -s artifacts/fedora-smoke/installed-rpm.png
       - save_cache:
           key: ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -195,6 +212,8 @@ jobs:
           path: artifacts/environment
       - store_artifacts:
           path: artifacts/fedora-smoke
+      - store_artifacts:
+          path: artifacts/fedora-package
 
   packaging-check:
     executor: ubuntu-qt

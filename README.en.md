@@ -22,7 +22,7 @@ That would abbreviate to KDE and create unnecessary confusion with KDE Plasma
 and KDE e.V.; this independent project deliberately uses **KLDE**.
 
 Ubuntu Kylin / Ubuntu 26.04 LTS is the first-class target. Fedora is a serious
-secondary platform, with source portability and future RPM support. Arch,
+secondary platform, with source portability and cloud-built RPM support. Arch,
 EndeavourOS, CachyOS and other distributions may build from source; official
 packages and support are not implied. See the [platform policy](docs/development/platforms.md).
 
@@ -175,6 +175,30 @@ klde-shell --native-shell-surfaces
 The installed application opens a regular window alongside the current desktop.
 It does not register a login session or replace existing panels.
 See [development setup](docs/development/circleci.md).
+
+### Fedora cloud bundle
+
+The Fedora build is produced in CircleCI; local compilation is not required.
+Open the successful `core → fedora-build` job and download the files under
+`artifacts/fedora-package/`. On Fedora 44, install the RPM directly:
+
+```sh
+sudo dnf install ./klde-shell-preview-*.rpm
+```
+
+For a rootless install, extract the matching tarball instead:
+
+```sh
+mkdir -p "$HOME/.local"
+tar -xzf owode-shell-fedora44-*.tar.gz -C "$HOME/.local" --strip-components=1
+"$HOME/.local/bin/klde-shell"
+```
+
+This starts the standalone preview window. To test the nested KWin native
+surface path, use the matching source revision's
+`tools/run-lomode-session.sh` with `OWODE_MODE=native`; it does not install a
+login session. Fedora currently ships cloud-built RPM and tarball artifacts,
+not a complete login-session package.
 
 ## CircleCI
 

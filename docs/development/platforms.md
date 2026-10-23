@@ -7,7 +7,7 @@ uses Qt and capability interfaces rather than Ubuntu-specific commands.
 | Environment | Current validation | Package status |
 | --- | --- | --- |
 | Ubuntu 26.04 / Ubuntu Kylin lineage | Primary CircleCI build, analysis, CTest, QML and three rendering paths | Experimental `.deb`, install/runtime/removal checked in a fresh Ubuntu container |
-| Fedora 44 | Independent CircleCI CMake/Ninja build, full CTest and offscreen/software startup | RPM support planned; no RPM artifact yet |
+| Fedora 44 | Independent CircleCI CMake/Ninja build, full CTest, offscreen/software startup and cloud-built packages | Experimental `.rpm` and `.tar.gz` bundles; no login-session package |
 | Arch and other distributions | Public Qt 6.8+ / CMake source interface; not currently tested by CI | Community/source builds; no official package claim |
 
 These rows describe the configured acceptance checks. A platform is verified for
@@ -28,8 +28,9 @@ through `dpkg-shlibdeps`. See [packaging](../../packaging/README.md).
 CircleCI uses the pinned release family `fedora:44` with distribution updates,
 not Rawhide or an unversioned latest image. The
 [manifest](../../.circleci/fedora-packages.txt) names `gcc-c++`, `cmake`,
-`ninja-build`, `qt6-qtbase-devel`, `qt6-qtdeclarative-devel`, `qt6-qtsvg`,
-`dejavu-sans-fonts` and supporting checkout/cache/metadata tools.
+`ninja-build`, `qt6-qtbase-devel`, `qt6-qtdeclarative-devel`,
+`qt6-qtwayland-devel`, `qt6-qtsvg`, `layer-shell-qt-devel`, Wayland protocol
+headers, `dejavu-sans-fonts` and supporting checkout/cache/metadata tools.
 
 Fedora's [qt6-qtdeclarative package](https://packages.fedoraproject.org/pkgs/qt6-qtdeclarative/qt6-qtdeclarative/fedora-44-updates.html)
 contains QtQuick Controls/Basic, Effects, Layouts, Templates and QtTest imports.
@@ -42,7 +43,41 @@ The Fedora job builds from its own checkout and never consumes Ubuntu objects
 or plugins. It publishes the installed RPM inventory and Qt paths/version data.
 Compiler/dependency caches are separate from Ubuntu caches. Only software
 rendering is exercised in this Fedora job; Ubuntu's llvmpipe checks do not prove
-Fedora hardware acceleration or a compositor session works.
+Fedora hardware acceleration or a compositor session works. The same job stores
+experimental `klde-shell-preview-*.rpm` and `owode-shell-fedora44-*.tar.gz`
+user bundles as CircleCI artifacts. Neither registers a login session.
+
+## Fedora cloud bundle installation
+
+Open the successful CircleCI `core` workflow for the revision you want, open the
+`fedora-build` job, and download the files under `artifacts/fedora-package/`.
+On Fedora 44, the RPM is the normal installation path:
+
+```sh
+sudo dnf install ./klde-shell-preview-*.rpm
+```
+
+For a rootless install, use the matching tarball instead:
+
+```sh
+mkdir -p "$HOME/.local"
+tar -xzf owode-shell-fedora44-*.tar.gz -C "$HOME/.local" --strip-components=1
+hash -r
+"$HOME/.local/bin/klde-shell"
+```
+
+This launches the standalone preview window. To exercise the isolated nested
+KWin path, clone the matching source revision for the launcher script and run:
+
+```sh
+OWODE_SHELL="$HOME/.local/bin/klde-shell" \
+OWODE_MODE=native \
+OWODE_APP='your-wayland-application' \
+bash tools/run-lomode-session.sh
+```
+
+The native path still requires a Fedora KWin runtime and is not a replacement
+for the host login session.
 
 ## Build interface
 

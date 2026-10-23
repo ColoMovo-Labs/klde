@@ -20,6 +20,16 @@ set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
     "qml6-module-qtqml, qml6-module-qtqml-models, qml6-module-qtqml-workerscript, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-effects, qml6-module-qtquick-layouts, qml6-module-qtquick-templates, qml6-module-qtquick-window, qt6-qpa-plugins, qt6-svg-plugins, qt6-wayland, fonts-dejavu-core, fonts-noto-cjk, fonts-noto-color-emoji")
 
+# Fedora's cloud job also emits an experimental native RPM. The package keeps
+# the technical klde-shell-preview name for compatibility while the installed
+# desktop entry and UI use the public owoDE brand.
+set(CPACK_RPM_PACKAGE_NAME "klde-shell-preview")
+set(CPACK_RPM_PACKAGE_LICENSE "GPL-3.0-or-later")
+set(CPACK_RPM_PACKAGE_GROUP "User Interface/Desktops")
+set(CPACK_RPM_PACKAGE_REQUIRES
+    "qt6-qtbase-gui, qt6-qtdeclarative, qt6-qtsvg, qt6-qtwayland, layer-shell-qt, dejavu-sans-fonts, google-noto-sans-cjk-vf-fonts, google-noto-color-emoji-fonts")
+set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+
 install(FILES "${CMAKE_SOURCE_DIR}/packaging/debian/copyright"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/klde-shell-preview")
 install(FILES "${CMAKE_SOURCE_DIR}/packaging/README.md"
