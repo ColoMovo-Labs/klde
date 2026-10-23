@@ -58,6 +58,13 @@ main:
             bash tools/package-fedora-bundle.sh build/cnb artifacts/fedora-package
             test -s artifacts/fedora-package/*.tar.gz
             test -s artifacts/fedora-package/*.rpm
+        - name: attach Fedora packages
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/fedora-package/*.rpm"
+              - "./artifacts/fedora-package/*.tar.gz"
+              - "./artifacts/fedora-package/SHA256SUMS"
         - name: verify public repository entry points
           script: |
             set -eu
