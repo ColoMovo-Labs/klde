@@ -7,11 +7,12 @@ authoritative build path:
 - CircleCI: the existing `.circleci/config.yml` and project checks
 - CNB mirror: `https://cnb.cool/ColoMovo-lab/owo_desktop_envirment_owoDE`
 
-CNB is an additional public code host and a small repository-entry sanity
-check. It does not replace GitHub branch protection, GitHub issue/PR history or
-CircleCI's Qt/CMake validation. The root `.cnb.yml` deliberately checks only
-that both README languages, the CircleCI configuration and the final owoDE
-brand are present; it does not claim to reproduce the full CircleCI matrix.
+CNB is an additional public code host and a Fedora 44 cloud validation path. It
+does not replace GitHub branch protection, GitHub issue/PR history or CircleCI's
+authoritative Qt/CMake matrix. The root `.cnb.yml` installs the Fedora Qt and
+LayerShellQt development packages, configures/builds the project, runs CTest,
+and checks the public README/CircleCI entry points. It does not claim to
+reproduce every CircleCI job, packaging check or real KWin compositor test.
 
 ## Migration boundary
 
