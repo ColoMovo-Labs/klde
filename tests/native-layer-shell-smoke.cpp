@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     }
 
     QWindow window;
-    window.setTitle(QStringLiteral("LoMoDE LayerShellQt smoke: %1").arg(parser.value(roleOption)));
+    window.setTitle(QStringLiteral("owoDE LayerShellQt smoke: %1").arg(parser.value(roleOption)));
     window.resize(parser.value(roleOption) == QStringLiteral("wallpaper") ? QSize(1, 1)
                                                                         : QSize(960, 96));
     if (!configure(window, parser.value(roleOption))) {

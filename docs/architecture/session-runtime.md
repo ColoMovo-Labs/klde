@@ -1,4 +1,4 @@
-# LoMoDE session runtime boundary
+# owoDE session runtime boundary
 
 The production shell remains a Qt 6/QML application, but it now exposes a
 read-only `Shell.session` capability probe. `SessionRuntimeBackend` observes the

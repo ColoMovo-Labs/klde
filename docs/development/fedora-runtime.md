@@ -1,9 +1,9 @@
 # Fedora 44 runtime bring-up
 
-Fedora is the first runtime target for LoMoDE Real Session 0.1. The build
+Fedora is the first runtime target for owoDE Real Session 0.1. The build
 environment and the compositor runtime are intentionally separate. A successful
 container build proves dependency resolution and compilation; it does not prove
-that KWin manages LoMoDE windows.
+that KWin manages owoDE windows.
 
 ## Package mapping
 
@@ -58,7 +58,7 @@ It does not change the display manager or stop host compositor processes.
 
 ## Verification levels
 
-1. **Build:** the Fedora container configures and compiles LoMoDE.
+1. **Build:** the Fedora container configures and compiles owoDE.
 2. **Wayland client:** the Qt shell connects to a Wayland display.
 3. **Real compositor:** the exact nested KWin process owns the socket and
    creates the shell surfaces.

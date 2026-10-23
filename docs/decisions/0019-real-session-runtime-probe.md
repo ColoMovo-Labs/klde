@@ -2,7 +2,7 @@
 
 ## Context
 
-LoMoDE is moving from a mock-first visual shell to a real KWin-based Wayland
+owoDE is moving from a mock-first visual shell to a real KWin-based Wayland
 session. The current development host does not contain `kwin_wayland` or
 LayerShellQt, and KWin versions expose different command-line and scripting
 surfaces.

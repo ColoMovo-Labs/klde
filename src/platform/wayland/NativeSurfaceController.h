@@ -9,7 +9,7 @@ class QWindow;
 
 namespace klde {
 
-// Applies the smallest LoMoDE-specific policy on top of LayerShellQt. The
+// Applies the smallest owoDE-specific policy on top of LayerShellQt. The
 // controller is deliberately optional: the ordinary preview and Visual Lab do
 // not require a compositor-provided layer-shell protocol.
 class NativeSurfaceController : public QObject {
