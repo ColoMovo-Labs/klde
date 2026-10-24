@@ -75,6 +75,8 @@ cleanup() {
 }
 trap cleanup EXIT
 "$OWODE_KWIN_BIN" --version > "$out_dir/kwin-version.txt" 2>&1
+QT_FORCE_STDERR_LOGGING=1 QT_LOGGING_TO_CONSOLE=1 \
+QT_LOGGING_RULES='kwin_core.debug=true;KWIN_UTILS.debug=true' \
 "$OWODE_KWIN_BIN" --x11-display "$DISPLAY" --socket owode-ci --width 1600 --height 1000 \
     --no-global-shortcuts > "$out_dir/kwin.log" 2>&1 &
 kwin_pid=$!
