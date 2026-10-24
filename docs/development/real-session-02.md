@@ -136,7 +136,9 @@ surface scope. No compositor rewrite or advanced tiling is included.
 
 The isolated runner installs a private desktop entry for the test executable with
 `X-KDE-Wayland-Interfaces=org_kde_kwin_fake_input` and refreshes only its private
-service cache. KWin's normal permission checks remain enabled. The production
+service cache. A private minimal applications menu makes that entry discoverable
+even in cloud images without a desktop menu package. KWin's normal permission
+checks remain enabled. The production
 shell does not request input injection. This follows KWin's
 [service authorization](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/utils/serviceutils.h)
 and [Wayland interface filtering](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/wayland_server.cpp).

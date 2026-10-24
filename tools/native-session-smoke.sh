@@ -33,7 +33,7 @@ if hashlib.sha256(target.read_bytes()).hexdigest() != digest:
     'hardwarePerformanceBenchmark': False,
 }, indent=2) + '\n')
 PY
-mkdir -p "$runtime_dir/config" "$runtime_dir/cache" "$runtime_dir/data/applications"
+mkdir -p "$runtime_dir/config/menus" "$runtime_dir/cache" "$runtime_dir/data/applications"
 # KWin authorizes restricted interfaces through the executable's desktop entry.
 # Only this test client requests input injection, in this private data directory.
 cat > "$runtime_dir/data/applications/org.owode.NativeAudit.desktop" <<EOF
@@ -43,6 +43,15 @@ Name=owoDE isolated native test
 Exec=$build_dir/bin/klde-native-session-test
 NoDisplay=true
 X-KDE-Wayland-Interfaces=org_kde_kwin_fake_input
+EOF
+# Minimal images have no desktop menu package. Give KService an explicit menu
+# containing only this private test application's metadata.
+cat > "$runtime_dir/config/menus/applications.menu" <<EOF
+<Menu>
+  <Name>Applications</Name>
+  <AppDir>$runtime_dir/data/applications</AppDir>
+  <Include><All/></Include>
+</Menu>
 EOF
 # These bindings exist only in this runner's private config, never on the host.
 cat > "$runtime_dir/config/kwinrc" <<'EOF'
