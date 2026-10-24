@@ -82,6 +82,9 @@ ApplicationWindow {
             implicitHeight: Theme.margin * 3
             font.pixelSize: Theme.textSize * 2
             color: Theme.colors.textPrimary
+            placeholderTextColor: Theme.colors.textSecondary
+            leftPadding: Theme.space * 2
+            rightPadding: Theme.space * 2
             selectionColor: Theme.colors.primaryContainer
             selectedTextColor: Theme.colors.textPrimary
             horizontalAlignment: TextInput.AlignRight
