@@ -167,8 +167,9 @@ ApplicationWindow {
         padding: Theme.margin
         modal: true
         focus: true
-        Accessible.role: Accessible.Dialog
         contentItem: ColumnLayout {
+            Accessible.role: Accessible.Dialog
+            Accessible.name: Calculator.chinese ? "关于计算器" : "About Calculator"
             spacing: Theme.space * 2
             Label {
                 text: Calculator.chinese ? "关于计算器" : "About Calculator"

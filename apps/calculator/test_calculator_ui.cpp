@@ -7,6 +7,20 @@
 
 Q_IMPORT_QML_PLUGIN(OwoCalculatorPlugin)
 
+namespace {
+// Repeater delegates are visual children of the layout, while their QObject
+// ownership can remain with the delegate model. Walk the actual input tree.
+QQuickItem *findVisualItem(QQuickItem *root, const QString &name) {
+    if (root->objectName() == name)
+        return root;
+    for (auto *child : root->childItems()) {
+        if (auto *found = findVisualItem(child, name))
+            return found;
+    }
+    return nullptr;
+}
+} // namespace
+
 class CalculatorUiTest : public QObject {
     Q_OBJECT
   private slots:
@@ -27,8 +41,8 @@ class CalculatorUiTest : public QObject {
         QTRY_COMPARE(expression->property("text").toString(), QString("5"));
         for (const auto &key :
              {QString("C"), QString("9"), QString("×"), QString("8"), QString("=")}) {
-            auto *button = window->findChild<QQuickItem *>("calculatorKey-" + key);
-            QVERIFY(button);
+            auto *button = findVisualItem(window->contentItem(), "calculatorKey-" + key);
+            QVERIFY2(button, qPrintable("Missing keypad button: " + key));
             QTest::mouseClick(
                 window, Qt::LeftButton, Qt::NoModifier,
                 button->mapToScene(QPointF(button->width() / 2, button->height() / 2)).toPoint());
