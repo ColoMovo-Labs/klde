@@ -1,0 +1,9 @@
+.git
+.circleci
+build
+artifacts
+work
+outputs
+*.o
+*.a
+*.so

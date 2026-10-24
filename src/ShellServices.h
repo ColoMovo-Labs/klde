@@ -4,6 +4,7 @@
 #include "backends/BlurBackend.h"
 #include "backends/MockSystemBackend.h"
 #include "backends/MockWindowManagerBackend.h"
+#include "backends/PresentationBackends.h"
 #include "i18n/LocaleVoiceModel.h"
 #include "input/Fcitx5Backend.h"
 #include "mock/SystemStateModel.h"
@@ -11,6 +12,8 @@
 #include "models/NotificationModel.h"
 #include "models/PowerSceneController.h"
 #include "platform/common/DisplayServerBackend.h"
+#include "platform/common/SessionRuntimeBackend.h"
+#include "platform/wayland/NativeSurfaceController.h"
 #include "shortcuts/ShortcutRegistry.h"
 #include "status/StatusModuleRegistry.h"
 #include "weather/WeatherService.h"
@@ -33,10 +36,16 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::LocaleVoiceModel *language READ language CONSTANT)
     Q_PROPERTY(klde::InputMethodBackend *input READ input CONSTANT)
     Q_PROPERTY(klde::DisplayServerBackend *displayServer READ displayServer CONSTANT)
+    Q_PROPERTY(klde::SessionRuntimeBackend *session READ session CONSTANT)
+    Q_PROPERTY(klde::NativeSurfaceController *surface READ surface CONSTANT)
     Q_PROPERTY(klde::SystemStateModel *state READ state CONSTANT)
     Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
     Q_PROPERTY(klde::NotificationModel *notifications READ notifications CONSTANT)
     Q_PROPERTY(klde::StatusModuleRegistry *ribbon READ ribbon CONSTANT)
+    Q_PROPERTY(klde::TimeBackend *time READ time CONSTANT)
+    Q_PROPERTY(klde::TelemetryBackend *telemetry READ telemetry CONSTANT)
+    Q_PROPERTY(klde::WallpaperEffectsBackend *wallpaperEffects READ wallpaperEffects CONSTANT)
+    Q_PROPERTY(klde::WaydroidBackend *waydroid READ waydroid CONSTANT)
     Q_PROPERTY(QString message READ message NOTIFY messageChanged)
     Q_PROPERTY(int osdValue READ osdValue NOTIFY messageChanged)
   public:
@@ -52,12 +61,18 @@ class ShellServices final : public QObject {
     LocaleVoiceModel *language() { return &m_language; }
     InputMethodBackend *input() { return &m_input; }
     DisplayServerBackend *displayServer() { return &m_displayServer; }
+    SessionRuntimeBackend *session() { return &m_session; }
+    NativeSurfaceController *surface() { return &m_surface; }
     SystemStateModel *state() { return &m_state; }
     MockScenarioManager *mockScenarios() { return &m_mockScenarios; }
     NotificationModel *notifications() { return &m_notifications; }
     StatusModuleRegistry *ribbon() { return &m_ribbon; }
     Q_INVOKABLE bool previewAction(const QString &action);
     QVariantMap weather() const;
+    TimeBackend *time() { return &m_time; }
+    TelemetryBackend *telemetry() { return &m_telemetry; }
+    WallpaperEffectsBackend *wallpaperEffects() { return &m_wallpaperEffects; }
+    WaydroidBackend *waydroid() { return &m_waydroid; }
     QString message() const { return m_message; }
     int osdValue() const { return m_osdValue; }
     Q_INVOKABLE bool launch(const QString &appId);
@@ -85,8 +100,14 @@ class ShellServices final : public QObject {
     LocaleVoiceModel m_language;
     Fcitx5Backend m_input;
     DisplayServerBackend m_displayServer;
+    SessionRuntimeBackend m_session;
+    NativeSurfaceController m_surface;
     SystemStateModel m_state;
     MockScenarioManager m_mockScenarios;
+    MockTimeBackend m_time;
+    MockTelemetryBackend m_telemetry;
+    MockWallpaperEffectsBackend m_wallpaperEffects;
+    MockWaydroidBackend m_waydroid;
     NotificationModel m_notifications;
     StatusModuleRegistry m_ribbon;
     bool m_syncing = false;

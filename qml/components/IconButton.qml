@@ -8,6 +8,14 @@ Button {
     property bool emphasized: false
     implicitWidth: Tokens.controlHeight
     implicitHeight: Tokens.controlHeight
+    scale: root.down ? Tokens.pressScale : root.hovered ? Tokens.hoverScale : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
     Accessible.name: text
     ToolTip.visible: hovered && text.length > 0
     ToolTip.text: text
@@ -24,7 +32,9 @@ Button {
         border.color: Tokens.primary
         Behavior on color {
             ColorAnimation {
-                duration: Tokens.motionFast
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
         }
     }

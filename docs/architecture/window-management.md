@@ -1,6 +1,7 @@
 # Window management
 
 Status: contract for later implementation. Phase 0 does not manage host windows.
+KWin is the first engine candidate; see [the KWin adapter boundary](kwin-adapter.md).
 
 ## Interaction model
 
@@ -14,6 +15,11 @@ contain a floating dialog. A compositor that cannot support a policy should repo
 it as unavailable rather than pretending the screen changed. Scrolling tiling and
 multiple algorithms are future capabilities, not operations implemented by a mock.
 
+The product modes are **Floating**, **Classic Tiling**, **Scrolling Tiling** and
+**Mixed**. “Classic Tiling” is the neutral product name for a visible split or
+master/stack arrangement; it is not a Hyprland integration. “Scrolling Tiling” is
+the neutral name for a focus-following column arrangement; it is not a niri fork.
+
 ## WindowManagerBackend contract
 
 Expose Qt models and asynchronous requests through stable backend-owned IDs.
@@ -23,6 +29,7 @@ as identity or expose native handles in QML.
 | State or operation | Contract |
 | --- | --- |
 | Capabilities | workspace enumeration, activation, layout control, per-window floating, rules, remembered geometry, scrolling tiling are separate flags |
+| Engine identity | engine family, build/API version, Qt/KF major versions, tile-tree support, script support, protocol capabilities |
 | Workspace model | ID, accessible name, order, output association, preferred layout, effective layout, active state |
 | Window model | ID, application ID, title, workspace/output IDs, floating state, activation state, optional permitted geometry |
 | Activation/move | request ID and pending state; confirmation from compositor event or explicit rejection |
@@ -37,15 +44,19 @@ The table reserves concepts, not mandatory abstract methods without consumers.
 
 ## Adapter candidates
 
-Evaluate KWin/UKUI integration and existing Wayland compositors against documented
-window/workspace APIs, distribution support, licensing and failure recovery.
-wlroots is a compositor library, not one universal window-management protocol.
-Layer-shell placement alone does not grant window-management or tiling control.
-Avoid treating an X11 geometry operation as a portable Wayland operation.
+Evaluate the KWin adapter first against documented window/workspace APIs, exact
+engine family, distribution support, licensing and failure recovery. Upstream
+KWin 6 and the deepin/Lingmo KWin lineage are separate compatibility profiles;
+the adapter must not infer one from the other. Cutefish KWin6 plugins are useful
+KDecoration3/script/effect references but their binary effects are rebuilt per
+KWin ABI. wlroots remains a future alternative, not a universal window-management
+protocol. Layer-shell placement alone does not grant window-management or tiling
+control. Avoid treating an X11 geometry operation as a portable Wayland operation.
 
-Layout may be performed by the compositor or an explicitly supported policy API;
-the shell requests a policy. There is no compositor implementation or fork in this
-phase. A future compositor choice needs its own ADR and compatibility matrix.
+Layout may be performed by KWin's public script/tile API or an explicitly supported
+policy API; the shell requests a policy. Classic Tiling can map to a KWin tile tree.
+Scrolling Tiling first uses a KLDE-owned planner and only then maps to supported
+KWin operations. There is no compositor implementation or fork in this phase.
 
 ## Rules and failure behavior
 

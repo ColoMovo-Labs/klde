@@ -66,6 +66,13 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
     if (!original.isValid())
         return false;
     const QMap<QString, QStringList> choices{
+        {"temporal.phase",
+         {"auto", "clear-morning", "cloudy-day", "sunset", "rainy-evening", "starry-night",
+          "moonlit-night"}},
+        {"wallpaperEffects.mode", {"normal", "depth", "soft-blur"}},
+        {"wallpaperEffects.cacheState", {"empty", "ready", "failed"}},
+        {"wallpaperEffects.quality", {"power-saver", "standard", "refined"}},
+        {"wallpaperEffects.cachedWallpaper", {"snow", "abstract", "quiet", "kemono"}},
         {"locale", {"zh_CN", "en"}},
         {"voice", {"standard", "cute"}},
         {"powerScene", {"performance", "balanced", "power-saver"}},
@@ -74,7 +81,8 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
          {"clear", "partly-cloudy", "cloudy", "rain", "thunderstorm", "snow", "fog", "extreme-heat",
           "extreme-cold"}},
         {"appearance.wallpaper", {"snow", "abstract", "quiet", "kemono"}},
-        {"activeApp", {"desktop", "files", "web", "terminal", "notes", "music", "settings"}},
+        {"activeApp",
+         {"desktop", "files", "web", "terminal", "notes", "music", "settings", "android-sketch"}},
         {"policy.cpu", {"performance", "balanced", "efficient"}},
         {"policy.gpu", {"integrated", "hybrid", "discrete"}},
         {"policy.brightness", {"manual", "adaptive", "dim"}},
@@ -105,11 +113,14 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
                              value.metaType().id() == QMetaType::Double ||
                              value.metaType().id() == QMetaType::LongLong;
         const double number = value.toDouble();
-        const int maximum = path == "cpu.temperature" || path == "gpu.temperature" ? 120
-                            : path == "policy.refreshRate"                         ? 240
-                            : path == "notifications.count"                        ? 12
-                            : path == "workspaces.active"                          ? 5
-                                                                                   : 100;
+        const int maximum =
+            path == "wallpaperEffects.blurStrength" || path == "wallpaperEffects.lockBlurStrength"
+                ? 3
+            : path == "cpu.temperature" || path == "gpu.temperature" ? 120
+            : path == "policy.refreshRate"                           ? 240
+            : path == "notifications.count"                          ? 12
+            : path == "workspaces.active"                            ? 5
+                                                                     : 100;
         const int minimum = path == "weather.temperature" ? -60
                             : path == "workspaces.active" ? 1
                                                           : 0;
@@ -134,12 +145,20 @@ bool SystemStateModel::requestValue(const QString &path, const QVariant &input) 
         {"policy.refreshRate", "refreshRate"}};
     if (needs.contains(path) && !value("capabilities." + needs.value(path)).toBool())
         return false;
+    if (path == "waydroid.running" && newValue.toBool() && !value("waydroid.available").toBool())
+        return false;
     if (path == "policy.gpu" && newValue != "integrated" &&
         !value("capabilities.discreteGpu").toBool())
         return false;
     if (value(path) == newValue)
         return true;
     assign(m_snapshot, path, newValue);
+    if (path == "appearance.focus" && newValue.toBool())
+        assign(m_snapshot, "appearance.ambient", true);
+    if (path == "appearance.ambient" && !newValue.toBool())
+        assign(m_snapshot, "appearance.focus", false);
+    if (path == "waydroid.available" && !newValue.toBool())
+        assign(m_snapshot, "waydroid.running", false);
     if (path == "policy.gpu")
         assign(m_snapshot, "policy.discreteEnabled", newValue != "integrated");
     if (path == "network.enabled") {

@@ -158,6 +158,17 @@ llvmpipe capture. That verifies the public GPU API path and finite rendering,
 not Intel GPU speed, native backdrop correctness or memory budgets. Detailed
 pass/memory profiling and native surface request lifecycle remain future work.
 
+## Material study shader
+
+`--view material-study` adds the first custom fragment shader,
+`qml/effects/material.frag`, compiled to a `.qsb` pack by `qt_add_shaders` at
+build time and embedded in the module. It consumes the same non-live owned
+wallpaper capture and public MultiEffect blur, then applies rounded coverage,
+edge refraction, tint and rim in one pass. All inputs are uniforms; the only
+animated uniform is Glass press depth, driven by a finite spring. The software
+scene graph and blur Off use the opaque fallback. See
+[material and motion](../design/material-motion.md).
+
 ## Wayland and X11
 
 The public Qt owned-texture path is shared across QPA backends. Native compositor

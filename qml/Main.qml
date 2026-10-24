@@ -16,13 +16,21 @@ ApplicationWindow {
     property int initialDensity: 1
     property string initialWallpaper: "snow"
     property bool initialAmbient: false
+    property bool initialFocus: false
+    property string initialLockState: "ambient"
+    property string initialIslandState: "idle"
+    property int initialWelcomePage: 0
+    property bool initialDebugGeometry: false
     property bool developerTools: false
+    property bool nativeSurfaceMode: false
     objectName: "shellWindow"
     width: Tokens.previewWidth
     height: Tokens.previewHeight
     minimumWidth: Tokens.previewMinimumWidth
     minimumHeight: Tokens.previewMinimumHeight
-    visible: true
+    // In native-surface mode this controller window is hidden; the wallpaper,
+    // ribbon and dock are separate LayerShellQt-backed QWindows below.
+    visible: !nativeSurfaceMode
     title: I18n.t("shell.title")
     color: Tokens.background
     font: Tokens.body
@@ -41,9 +49,11 @@ ApplicationWindow {
     palette.shadow: Tokens.shadow
 
     readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
+    readonly property bool lockSurfaceMode: initialView === "lock-screen"
+    readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: ribbon.y + ribbon.height + Tokens.space16
-    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite]
+    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function applyScene(): void {
         const visual = Shell.scenes.current.visual;
@@ -58,6 +68,18 @@ ApplicationWindow {
     function showView(view: string): void {
         let target = null;
         switch (view) {
+        case "temporal":
+            target = temporalSettings;
+            break;
+        case "wallpaper-effects":
+            target = wallpaperSettings;
+            break;
+        case "lock-preview":
+            target = lockPreview;
+            break;
+        case "waydroid":
+            target = waydroidSettings;
+            break;
         case "launcher":
             target = launcher;
             break;
@@ -106,6 +128,9 @@ ApplicationWindow {
         case "app-suite":
             target = appSuite;
             break;
+        case "gallery":
+            target = systemUiGallery;
+            break;
         }
         const close = target && target.opened;
         for (const panel of panels)
@@ -125,7 +150,9 @@ ApplicationWindow {
             showView("input");
         else if (id === "scene")
             showView("power-scenes");
-        else if (id === "cpu" || id === "memory" || id === "temperature" || id === "battery" || id === "time")
+        else if (id === "time")
+            showView("temporal");
+        else if (id === "cpu" || id === "memory" || id === "temperature" || id === "battery")
             showView("ribbon");
         else if (id === "power")
             Shell.system.requestSessionAction("shutdown");
@@ -155,6 +182,9 @@ ApplicationWindow {
         Shell.state.requestValue("appearance.wallpaper", initialWallpaper);
         if (initialAmbient)
             Shell.state.requestValue("appearance.ambient", true);
+        if (initialFocus)
+            Shell.state.requestValue("appearance.focus", true);
+        Tokens.debugGeometry = initialDebugGeometry;
         applyScene();
         showView(developerTools ? "mock-lab" : initialView);
     }
@@ -163,28 +193,21 @@ ApplicationWindow {
         property: "wallpaperChoice"
         value: window.snapshot.appearance.wallpaper
     }
-    Item {
+    WallpaperLayers {
         id: wallpaper
         anchors.fill: parent
-        Image {
-            anchors.fill: parent
-            source: "qrc:/assets/wallpapers/" + (window.snapshot.appearance.wallpaper === "snow" ? "first-light" : window.snapshot.appearance.wallpaper) + ".svg"
-            sourceSize: Qt.size(width, height)
-            fillMode: Image.PreserveAspectCrop
-        }
-        Rectangle {
-            anchors.fill: parent
-            color: Tokens.background
-            opacity: Tokens.darkMode ? Tokens.darkWallpaperShade : 0
-        }
+        visible: !window.nativeSurfaceMode
     }
     StatusRibbon {
         id: ribbon
         objectName: "statusRibbon"
+        visible: !window.nativeSurfaceMode && !window.welcomeMode && Shell.ribbon.enabled
         x: Shell.ribbon.margin
         y: Shell.ribbon.margin
         width: parent.width - x * 2
         height: implicitHeight
+        backdropSource: wallpaper
+        islandState: window.initialIslandState
         onAction: moduleId => window.moduleAction(moduleId)
     }
     Label {
@@ -197,7 +220,7 @@ ApplicationWindow {
     }
     WidgetHost {
         widgetId: "weather"
-        visible: !window.snapshot.appearance.ambient
+        visible: !window.welcomeMode && !window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.controlHeight
         renderingAllowed: window.renderingAllowed
@@ -210,7 +233,7 @@ ApplicationWindow {
         }
     }
     ColumnLayout {
-        visible: !window.snapshot.appearance.ambient
+        visible: !window.welcomeMode && !window.snapshot.appearance.ambient && window.snapshot.activeApp === "desktop"
         x: Tokens.desktopMargin
         anchors.bottom: dock.top
         anchors.bottomMargin: Tokens.space32
@@ -232,14 +255,20 @@ ApplicationWindow {
         }
     }
     AmbientDesktop {
-        visible: window.snapshot.appearance.ambient
+        objectName: "desktopClockLayer"
+        visible: !window.welcomeMode && window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
         y: window.popupTop + Tokens.space24
         width: parent.width - Tokens.desktopMargin * 2
         height: dock.y - y - Tokens.space24
     }
+    WallpaperLayers {
+        anchors.fill: parent
+        foregroundOnly: true
+        visible: !window.nativeSurfaceMode && !window.welcomeMode && window.snapshot.appearance.ambient
+    }
     Surface {
-        visible: window.snapshot.scratchpad
+        visible: !window.welcomeMode && window.snapshot.scratchpad
         anchors.centerIn: parent
         width: Math.min(Tokens.panelWidth, parent.width - Tokens.space32)
         height: Tokens.widgetSize
@@ -262,6 +291,7 @@ ApplicationWindow {
     }
     Dock {
         id: dock
+        visible: !window.nativeSurfaceMode && !window.welcomeMode && !window.snapshot.appearance.focus
         backdropSource: wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -371,6 +401,59 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
+    SystemUiGallery {
+        id: systemUiGallery
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    TemporalSettings {
+        id: temporalSettings
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    WallpaperEffectsSettings {
+        id: wallpaperSettings
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+        onViewRequested: view => window.showView(view)
+    }
+    LockScreenPreview {
+        id: lockPreview
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    LockScreenSurface {
+        id: lockSurface
+        anchors.fill: parent
+        visible: window.lockSurfaceMode
+        z: 1000
+        stateName: window.initialLockState
+    }
+    WelcomeFlow {
+        id: welcomeFlow
+        anchors.fill: parent
+        visible: window.welcomeMode
+        z: 1000
+        backdropSource: wallpaper
+        pageIndex: window.initialWelcomePage
+        offline: !window.snapshot.network.internet
+        onFinished: window.initialView = "desktop"
+    }
+    WaydroidSettings {
+        id: waydroidSettings
+        parent: Overlay.overlay
+        backdropSource: wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
     Surface {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: dock.top
@@ -391,8 +474,23 @@ ApplicationWindow {
         }
         Behavior on opacity {
             NumberAnimation {
-                duration: Tokens.motionFast
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
+        }
+    }
+    TemporalStudy {
+        visible: window.initialView === "temporal-study"
+        anchors.fill: parent
+        z: 100
+    }
+    Loader {
+        anchors.fill: parent
+        z: 100
+        active: window.initialView === "material-study"
+        sourceComponent: Component {
+            MaterialStudy {}
         }
     }
     ApplicationShortcuts {
@@ -412,5 +510,94 @@ ApplicationWindow {
             else
                 Shell.previewAction(id);
         }
+    }
+
+    // These windows are intentionally small and explicit. They are the first
+    // native-surface slice; all panels/popups remain owned by the ordinary
+    // preview until their input/focus contracts are migrated separately.
+    // Keep these QWindows unloaded in preview mode. That prevents duplicate
+    // object names from changing Visual Lab geometry queries and keeps the
+    // ordinary preview a single xdg-toplevel window.
+    Component {
+        id: nativeWallpaperComponent
+        Window {
+            id: nativeWallpaperSurface
+            objectName: "nativeWallpaperSurface"
+            visible: false
+            flags: Qt.FramelessWindowHint | Qt.Tool
+            color: "transparent"
+            width: window.width
+            height: window.height
+            WallpaperLayers {
+                anchors.fill: parent
+                visible: true
+            }
+            Component.onCompleted: {
+                if (Shell.surface.attach(nativeWallpaperSurface, "wallpaper"))
+                    visible = true;
+            }
+        }
+    }
+    Loader {
+        id: nativeWallpaperLoader
+        active: window.nativeSurfaceMode
+        sourceComponent: nativeWallpaperComponent
+    }
+
+    Component {
+        id: nativeRibbonComponent
+        Window {
+            id: nativeRibbonSurface
+            objectName: "nativeRibbonSurface"
+            visible: false
+            flags: Qt.FramelessWindowHint | Qt.Tool
+            color: "transparent"
+            width: window.width
+            height: Tokens.ribbonBandHeight + Tokens.space32
+            StatusRibbon {
+                anchors.fill: parent
+                anchors.margins: Tokens.space16
+                islandState: window.initialIslandState
+                onAction: moduleId => window.moduleAction(moduleId)
+            }
+            Component.onCompleted: {
+                if (Shell.surface.attach(nativeRibbonSurface, "ribbon"))
+                    visible = true;
+            }
+        }
+    }
+    Loader {
+        id: nativeRibbonLoader
+        active: window.nativeSurfaceMode
+        sourceComponent: nativeRibbonComponent
+    }
+
+    Component {
+        id: nativeDockComponent
+        Window {
+            id: nativeDockSurface
+            objectName: "nativeDockSurface"
+            visible: false
+            flags: Qt.FramelessWindowHint | Qt.Tool
+            color: "transparent"
+            width: window.width
+            height: Tokens.dockHeight + Tokens.space32 + Tokens.space16
+            Dock {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Tokens.space24
+                onLauncherRequested: window.showView("launcher")
+                onSettingsRequested: window.showView("quick-settings")
+            }
+            Component.onCompleted: {
+                if (Shell.surface.attach(nativeDockSurface, "dock"))
+                    visible = true;
+            }
+        }
+    }
+    Loader {
+        id: nativeDockLoader
+        active: window.nativeSurfaceMode
+        sourceComponent: nativeDockComponent
     }
 }

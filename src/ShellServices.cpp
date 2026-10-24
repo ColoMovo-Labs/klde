@@ -9,7 +9,8 @@
 namespace klde {
 ShellServices::ShellServices(QObject *parent)
     : QObject(parent), m_search(&m_applications), m_scenes(&m_system, &m_blur), m_shortcuts(this),
-      m_mockScenarios(&m_state) {
+      m_mockScenarios(&m_state), m_time(&m_state), m_telemetry(&m_state),
+      m_wallpaperEffects(&m_state), m_waydroid(&m_state) {
     m_noticeTimer.setSingleShot(true);
     m_noticeTimer.setInterval(2400);
     connect(&m_noticeTimer, &QTimer::timeout, this, [this] {
@@ -140,6 +141,17 @@ void ShellServices::projectState(const QString &path) {
                                     : QString();
         m_notifications.seedDemo(m_state.value("notifications.count").toInt(), context);
     }
+    if (all || path.startsWith("waydroid.")) {
+        m_applications.setAndroidSource(m_state.value("waydroid.available").toBool() &&
+                                        m_state.value("waydroid.indexApps").toBool());
+        if ((!m_state.value("waydroid.available").toBool() ||
+             !m_state.value("waydroid.indexApps").toBool() ||
+             !m_state.value("waydroid.running").toBool()) &&
+            m_state.value("activeApp") == "android-sketch") {
+            m_state.requestValue("activeApp", QStringLiteral("desktop"));
+            m_applications.resetPreview(QStringLiteral("desktop"));
+        }
+    }
     if (all || path == "activeApp")
         m_applications.resetPreview(m_state.value("activeApp").toString());
     if (all || path == "workspaces.layouts")
@@ -205,6 +217,10 @@ bool ShellServices::eventFilter(QObject *watched, QEvent *event) {
 }
 QVariantMap ShellServices::weather() const { return m_weather.reading(); }
 bool ShellServices::launch(const QString &appId) {
+    if (appId == "android-sketch" && !m_waydroid.state().value("running").toBool()) {
+        showNotice(tr("Preview: start the Android session first"));
+        return false;
+    }
     if (!m_applications.activate(appId)) {
         showNotice(tr("That application is unavailable"));
         return false;

@@ -14,6 +14,20 @@ ShellPopup {
     readonly property var snapshot: Shell.state.snapshot
     width: Math.min(Tokens.panelWidth + (expanded ? Tokens.space32 : 0), parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
     height: Math.min(settingsColumn.implicitHeight + padding * 2, parent ? parent.height - y - Tokens.space24 : Tokens.previewHeight)
+    Behavior on width {
+        NumberAnimation {
+            duration: Tokens.springSpatial.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatial.curve
+        }
+    }
+    Behavior on height {
+        NumberAnimation {
+            duration: Tokens.springSpatial.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatial.curve
+        }
+    }
     contentItem: ScrollView {
         id: scroller
         clip: true
@@ -136,6 +150,23 @@ ShellPopup {
                 ActionButton {
                     text: I18n.t("lab.ribbon.customize")
                     onClicked: root.viewRequested("ribbon-settings")
+                }
+            }
+            Flow {
+                visible: root.expanded
+                Layout.fillWidth: true
+                spacing: Tokens.space8
+                ActionButton {
+                    text: I18n.t("temporal.title")
+                    onClicked: root.viewRequested("temporal")
+                }
+                ActionButton {
+                    text: I18n.t("wallpaper.title")
+                    onClicked: root.viewRequested("wallpaper-effects")
+                }
+                ActionButton {
+                    text: I18n.t("android.title")
+                    onClicked: root.viewRequested("waydroid")
                 }
             }
             ChoiceBox {

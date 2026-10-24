@@ -26,7 +26,15 @@ class WindowManagerBackend : public QObject {
     Q_PROPERTY(QVariantMap capabilities READ capabilities CONSTANT)
 
   public:
-    enum LayoutMode : quint8 { Floating, Tiled, Mixed, Scrolling, Custom };
+    // Keep the numeric layout IDs stable while exposing the neutral product name.
+    enum LayoutMode : quint8 {
+        Floating,
+        ClassicTiling,
+        Mixed,
+        Scrolling,
+        Custom,
+        Tiled = ClassicTiling // source/config compatibility for the earlier mock API
+    };
     Q_ENUM(LayoutMode)
     using QObject::QObject;
     virtual QVariantList workspaces() const = 0;

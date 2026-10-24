@@ -57,6 +57,39 @@ commands:
           at: /root/project
 
 jobs:
+  calculator-ubuntu:
+    executor: ubuntu-qt
+    steps:
+      - prepare
+      - run:
+          name: Build and verify the independent Lingmo calculator port
+          command: bash tools/cloud-calculator.sh
+      - store_test_results:
+          path: artifacts/calculator
+      - store_artifacts:
+          path: artifacts/calculator
+
+  calculator-fedora:
+    executor: fedora-qt
+    steps:
+      - run:
+          name: Install Fedora checkout tools
+          command: dnf install -y --setopt=install_weak_deps=False ca-certificates git openssh-clients tar gzip findutils
+      - checkout
+      - restore_cache:
+          keys:
+            - dnf-v1-fedora44-{{ arch }}-{{ checksum ".circleci/fedora-packages.txt" }}
+      - run:
+          name: Install Fedora development modules
+          command: xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
+      - run:
+          name: Build and verify the independent Lingmo calculator port
+          command: bash tools/cloud-calculator.sh
+      - store_test_results:
+          path: artifacts/calculator
+      - store_artifacts:
+          path: artifacts/calculator
+
   configure-build:
     executor: ubuntu-qt
     steps:
@@ -125,6 +158,9 @@ jobs:
     steps:
       - built-tree
       - run:
+          name: Default fusion materials through OpenGL
+          command: bash tools/capture-fusion-previews.sh build/ci/bin/klde-shell artifacts/smoke/fusion
+      - run:
           name: Offscreen, nested Wayland and llvmpipe startup
           command: bash tools/smoke-test.sh build/ci/bin/klde-shell
       - run:
@@ -173,6 +209,13 @@ jobs:
             cmake --build --preset ci --parallel 2
             ccache --show-stats > artifacts/environment/ccache.txt
       - run:
+          name: Fedora format and static analysis with LayerShellQt
+          command: |
+            clang-format --version > artifacts/environment/fedora-clang-format.txt
+            clang-tidy --version > artifacts/environment/fedora-clang-tidy.txt
+            CHECK_CPP_ONLY=1 bash tools/check-format.sh
+            BUILD_DIR=build/ci bash tools/check-tidy.sh
+      - run:
           name: Fedora unit, QML and offscreen startup tests
           command: |
             ctest --test-dir build/ci --output-on-failure --output-junit artifacts/tests/fedora.xml
@@ -185,6 +228,23 @@ jobs:
               > artifacts/fedora-smoke/offscreen.log 2>&1
             test -s artifacts/fedora-smoke/offscreen.png
             desktop-file-validate packaging/org.klde.shell.preview.desktop
+      - run:
+          name: Package Fedora user bundle
+          command: bash tools/package-fedora-bundle.sh build/ci artifacts/fedora-package
+      - run:
+          name: Verify Fedora RPM installation
+          command: |
+            dnf install -y artifacts/fedora-package/*.rpm
+            rpm -q klde-shell-preview
+            test -x /usr/bin/klde-shell
+            runtime_dir="$(mktemp -d)"
+            chmod 700 "$runtime_dir"
+            trap 'rm -rf "$runtime_dir"' EXIT
+            env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+              /usr/bin/klde-shell --smoke-test --view quick-settings \
+              --capture "$PWD/artifacts/fedora-smoke/installed-rpm.png" \
+              > artifacts/fedora-smoke/installed-rpm.log 2>&1
+            test -s artifacts/fedora-smoke/installed-rpm.png
       - save_cache:
           key: ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -195,6 +255,8 @@ jobs:
           path: artifacts/environment
       - store_artifacts:
           path: artifacts/fedora-smoke
+      - store_artifacts:
+          path: artifacts/fedora-package
 
   packaging-check:
     executor: ubuntu-qt
@@ -238,6 +300,8 @@ jobs:
 workflows:
   core:
     jobs:
+      - calculator-ubuntu
+      - calculator-fedora
       - configure-build
       - fedora-build
       - static-analysis:

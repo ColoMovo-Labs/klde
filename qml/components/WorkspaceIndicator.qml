@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import KLDE.Backends
@@ -6,11 +7,13 @@ import KLDE.Backends
 Surface {
     id: root
     property bool compact: false
+    property bool grouped: false
+    decorationVisible: !grouped
     implicitWidth: workspaceRow.implicitWidth + Tokens.space16
     width: implicitWidth
     implicitHeight: compact ? Tokens.ribbonHeight : Tokens.controlHeight + Tokens.space16
     height: implicitHeight
-    padding: Tokens.space8
+    padding: Tokens.capsuleHorizontalPadding
     cornerRadius: Tokens.radiusPill
 
     Row {
@@ -23,7 +26,7 @@ Surface {
                 id: workspaceButton
                 required property var modelData
                 readonly property bool selected: modelData.id === Shell.windowManager.activeWorkspace
-                readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? I18n.t("shell.workspace.floating") : modelData.layout === WindowManagerBackend.Tiled ? I18n.t("shell.workspace.tiled") : modelData.layout === WindowManagerBackend.Mixed ? I18n.t("shell.workspace.mixed") : modelData.layout === WindowManagerBackend.Scrolling ? I18n.t("lab.workspace.scrolling") : I18n.t("shell.workspace.custom")
+                readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? I18n.t("shell.workspace.floating") : modelData.layout === WindowManagerBackend.ClassicTiling ? I18n.t("shell.workspace.tiled") : modelData.layout === WindowManagerBackend.Mixed ? I18n.t("shell.workspace.mixed") : modelData.layout === WindowManagerBackend.Scrolling ? I18n.t("lab.workspace.scrolling") : I18n.t("shell.workspace.custom")
                 width: selected ? Tokens.controlHeight + Tokens.space12 : Tokens.densityMode === 2 ? Tokens.space16 : Tokens.space24
                 height: root.compact ? Tokens.ribbonHeight - Tokens.space8 : Tokens.controlHeight
                 text: selected ? modelData.name + " " + ["F", "T", "M", "S"][Math.min(modelData.layout, 3)] : Tokens.densityMode === 2 ? "•" : modelData.name
@@ -32,6 +35,14 @@ Surface {
                 ToolTip.visible: hovered
                 ToolTip.text: modeLabel
                 onClicked: Shell.windowManager.activateWorkspace(modelData.id)
+                scale: workspaceButton.down ? Tokens.pressScale : workspaceButton.hovered ? Tokens.hoverScale : 1
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: Tokens.springSpatialMicro.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Tokens.springSpatialMicro.curve
+                    }
+                }
                 contentItem: Text {
                     text: workspaceButton.text
                     font: workspaceButton.font
@@ -44,11 +55,26 @@ Surface {
                     color: workspaceButton.selected ? Tokens.primary : "transparent"
                     border.width: workspaceButton.visualFocus ? Tokens.space2 : 0
                     border.color: Tokens.primary
+                    Behavior on radius {
+                        NumberAnimation {
+                            duration: Tokens.springSpatialMicro.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Tokens.springSpatialMicro.curve
+                        }
+                    }
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: Tokens.springEffectsFast.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Tokens.springEffectsFast.curve
+                        }
+                    }
                 }
                 Behavior on width {
                     NumberAnimation {
-                        duration: Tokens.motionFast
-                        easing.type: Tokens.emphasizedDecelerate
+                        duration: Tokens.springSpatialMicro.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Tokens.springSpatialMicro.curve
                     }
                 }
             }

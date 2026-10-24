@@ -1,0 +1,113 @@
+# CNB is a public mirror and an additional Fedora cloud validation path.
+# CircleCI remains the authoritative Qt/CMake matrix and merge check.
+"(main|feat/temporal-shell)":
+  push:
+    - docker:
+        image: fedora:44
+      stages:
+        - name: install Fedora Qt toolchain
+          script: |
+            set -eu
+            dnf install -y --setopt=install_weak_deps=False \
+              @development-tools cmake ninja-build git file findutils rpm-build \
+              clang clang-tools-extra \
+              qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtshadertools-devel qt6-qtwayland-devel \
+              qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
+              wayland-devel wayland-protocols-devel mesa-dri-drivers \
+              mesa-libEGL mesa-libGL dbus-daemon dbus-tools \
+              dejavu-sans-fonts google-noto-sans-cjk-vf-fonts \
+              google-noto-color-emoji-fonts \
+              desktop-file-utils xorg-x11-server-Xvfb xorg-x11-xauth glx-utils
+        - name: configure and build
+          script: |
+            set -eu
+            cmake -S . -B build/cnb -G Ninja -DBUILD_TESTING=ON
+            cmake --build build/cnb --parallel 2
+        - name: run Qt and QML tests
+          script: |
+            set -eu
+            ctest --test-dir build/cnb --output-on-failure
+        - name: Fedora format and static analysis with LayerShellQt
+          script: |
+            set -eu
+            CHECK_CPP_ONLY=1 bash tools/check-format.sh
+            BUILD_DIR=build/cnb bash tools/check-tidy.sh
+        - name: capture Monet visual previews
+          script: |
+            set -eu
+            mkdir -p artifacts/visual
+            runtime_dir="$(mktemp -d)"
+            chmod 700 "$runtime_dir"
+            trap 'rm -rf "$runtime_dir"' EXIT
+            for wallpaper in snow abstract quiet kemono; do
+              env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+                build/cnb/bin/klde-shell --smoke-test --view desktop \
+                --wallpaper "$wallpaper" --capture "artifacts/visual/monet-light-${wallpaper}.png" \
+                > "artifacts/visual/monet-light-${wallpaper}.log" 2>&1
+            done
+            env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+              build/cnb/bin/klde-shell --smoke-test --view desktop --dark --wallpaper kemono \
+              --capture artifacts/visual/monet-dark-kemono.png \
+              > artifacts/visual/monet-dark-kemono.log 2>&1
+            env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+              build/cnb/bin/klde-shell --smoke-test --view material-study \
+              --capture artifacts/visual/material-study-light.png \
+              > artifacts/visual/material-study-light.log 2>&1
+            env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+              build/cnb/bin/klde-shell --smoke-test --view material-study --dark --wallpaper kemono \
+              --capture artifacts/visual/material-study-dark-kemono.png \
+              > artifacts/visual/material-study-dark-kemono.log 2>&1
+            sha256sum artifacts/visual/*.png > artifacts/visual/SHA256SUMS
+            test -s artifacts/visual/monet-light-snow.png
+            test -s artifacts/visual/monet-dark-kemono.png
+            test -s artifacts/visual/material-study-light.png
+            test -s artifacts/visual/material-study-dark-kemono.png
+        - name: attach Monet visual previews
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/visual/*.png"
+              - "./artifacts/visual/SHA256SUMS"
+        - name: capture default fusion materials through OpenGL
+          script: bash tools/capture-fusion-previews.sh build/cnb/bin/klde-shell artifacts/fusion
+        - name: attach fusion previews and rendering evidence
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/fusion/*.png"
+              - "./artifacts/fusion/*.log"
+              - "./artifacts/fusion/*.json"
+              - "./artifacts/fusion/*.txt"
+        - name: package Fedora user bundle
+          script: |
+            set -eu
+            bash tools/package-fedora-bundle.sh build/cnb artifacts/fedora-package
+            test -s artifacts/fedora-package/*.tar.gz
+            test -s artifacts/fedora-package/*.rpm
+        - name: attach Fedora packages
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/fedora-package/*.rpm"
+              - "./artifacts/fedora-package/*.tar.gz"
+              - "./artifacts/fedora-package/SHA256SUMS"
+              - "./artifacts/fedora-package/*.txt"
+        - name: build and verify the independent Lingmo calculator port
+          script: bash tools/cloud-calculator.sh
+        - name: attach themed calculator and corresponding source
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/calculator/*.png"
+              - "./artifacts/calculator/*.rpm"
+              - "./artifacts/calculator/*.tar.gz"
+              - "./artifacts/calculator/*.txt"
+              - "./artifacts/calculator/*.log"
+              - "./artifacts/calculator/SHA256SUMS"
+        - name: verify public repository entry points
+          script: |
+            set -eu
+            test -s README.md
+            test -s README.en.md
+            test -s .circleci/config.yml
+            grep -q 'owoDE' README.md

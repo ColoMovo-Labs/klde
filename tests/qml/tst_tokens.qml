@@ -9,6 +9,7 @@ TestCase {
     function cleanup() {
         Tokens.darkMode = false;
         Tokens.accentChoice = "auto";
+        Tokens.wallpaperChoice = "snow";
         Tokens.textScale = 1.0;
         Tokens.reducedMotion = false;
     }
@@ -23,6 +24,9 @@ TestCase {
     function test_embeddedGlowFontIsLoaded() {
         tryCompare(Tokens.glowRegular, "status", FontLoader.Ready);
         tryCompare(Tokens.glowMedium, "status", FontLoader.Ready);
+        tryCompare(Tokens.clockFace, "status", FontLoader.Ready);
+        verify(Tokens.displayClockFont.indexOf("Rubik") >= 0);
+        verify(Tokens.displayClockFont !== Tokens.fontFamily);
         verify(Tokens.fontFamily.indexOf("Glow") >= 0);
     }
 
@@ -44,6 +48,30 @@ TestCase {
         Tokens.darkMode = true;
         verify(Tokens.background.toString() !== initialBackground);
         verify(Tokens.textPrimary.toString() !== Tokens.background.toString());
+    }
+
+    function test_monetPaletteFollowsWallpaper() {
+        Tokens.darkMode = false;
+        Tokens.accentChoice = "auto";
+        const seeds = [];
+        for (const wallpaper of ["snow", "abstract", "quiet", "kemono"]) {
+            Tokens.wallpaperChoice = wallpaper;
+            seeds.push(Tokens.primary.toString());
+            verify(Tokens.monetPalette.primary.toString() === Tokens.primary.toString());
+            verify(Tokens.primaryContainer.toString() !== Tokens.surface.toString());
+        }
+        verify(seeds[0] !== seeds[1] && seeds[0] !== seeds[2] && seeds[0] !== seeds[3]);
+        verify(seeds[1] !== seeds[2] && seeds[1] !== seeds[3] && seeds[2] !== seeds[3]);
+    }
+
+    function test_monetPaletteHasDarkAndLightRoles() {
+        Tokens.wallpaperChoice = "kemono";
+        Tokens.darkMode = false;
+        const lightSurface = Tokens.surface.toString();
+        Tokens.darkMode = true;
+        verify(Tokens.surface.toString() !== lightSurface);
+        verify(Tokens.monetPalette.onPrimary.toString() !== "");
+        verify(Tokens.surfaceContainerHigh.toString() !== Tokens.surfaceContainer.toString());
     }
 
     function test_textScalePropagates() {

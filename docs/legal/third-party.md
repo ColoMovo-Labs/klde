@@ -2,8 +2,9 @@
 
 ## Original material
 
-This baseline is newly authored for KLDE. No UKUI, KWin, GNOME, Quickshell,
-end-4, LingmoOS or other shell source code has been copied or derived. No third-party
+The original shell baseline was newly authored for KLDE. No UKUI, KWin, GNOME,
+Quickshell, end-4 or Lingmo shell implementation is embedded in that baseline.
+The optional Lingmo Calculator engine port is documented separately below. No third-party
 artwork, icons, mascot or concept image is included. The separately licensed
 Glow Sans font evaluation is documented below.
 
@@ -18,6 +19,20 @@ Glow Sans font evaluation is documented below.
 These license texts are legal notices, not imported implementation code.
 
 ## External runtime and build dependencies
+
+### Optional Lingmo Calculator engine
+
+The [calculator provenance record](../../apps/calculator/README.md) identifies
+LingmoOS `lingmo-calculator` commit `c2fdb5c80049ce6ffb02571e4bbc64fca1c2366e`,
+the archive hash, original CuteOS/revenmartin, Ariya Hidayat/SpeedCrunch and GNU bc
+notices, and the exact adaptation. The cloud-only fetch script preserves all
+headers, corrects two allocator mismatches, and compiles only its engine into
+an independent owoDE application. GPL-2.0-or-later engine files are combined
+under GPL-3.0-or-later; the original GPL terms/notices remain in corresponding
+source. Packages carry the original source archive and complete reproducible
+adaptation; no Lingmo artwork, Qt platform plugin or session component is copied.
+Compilation and runtime acceptance are tracked by the dedicated Ubuntu/Fedora
+cloud jobs, not inferred from this source/license inspection.
 
 Qt Core, Gui, DBus, Network, Qml, Quick, Quick Controls and their plugins are consumed as Ubuntu
 packages. Qt Test and Quick Test are development dependencies. Qt libraries and
@@ -81,3 +96,38 @@ copyright 2020 Celestial Phineas, licensed under SIL OFL 1.1. The complete
 notice is in `assets/fonts/glow-sans/OFL.txt`, also installed with the application.
 See [font provenance](../../assets/fonts/README.md) for source commit and hashes.
 No MIT-licensed upstream font-building code is copied. No MiSans is bundled.
+
+Comfortaa Bold: unmodified Fedora 3.105 package asset, OFL-1.1; original notices,
+reserved name and FONTLOG retained. See [font provenance](../../assets/fonts/README.md).
+The project bundles no proprietary Google display font. New wallpaper layer
+studies are original vectors, not output copied from a segmentation model.
+
+## Rubik display correction
+
+The unmodified `Rubik[wght].ttf` is from Google Fonts commit
+`8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5`, copyright 2015 The Rubik Project Authors,
+SIL OFL 1.1. [Exact provenance and SHA-256](../../assets/fonts/rubik/README.md),
+original OFL, upstream metadata and source history are retained. Its notice is
+installed as `Rubik-OFL.txt` and verified in the clean runtime packaging job.
+This is an open font distribution, not permission to distribute Google Sans or
+use Google's marks. New landscape and night assets are original CC BY-SA 4.0
+vectors. No reference screenshot pixels or third-party illustration is copied.
+
+## Welcome guide reference
+
+`assets/welcome/klde-guide-wave.png` and its neutral fallback are transparent
+guide illustrations derived from a user-provided mint fox character reference
+for the KLDE Welcome mock. They are replaceable artwork for the visual phase.
+Before a public release,
+record the final character author's permission and asset license here; do not
+assume that the reference screenshot alone grants redistribution rights.
+
+`assets/welcome/klde-guide-hero-v2.png` is an original transparent character
+variant generated from the same user-provided reference for the KLDE OOBE hero
+composition. It is kept as a separate versioned asset until the project owner
+records the final authorship and redistribution terms.
+
+`assets/welcome/klde-wordmark.svg` contains editable vector paths. The path
+shapes were developed from the SIL Open Font License 1.1 Iansui reference and
+then adjusted into a KLDE slanted, heavier treatment; the source font is not
+shipped. Preserve the OFL attribution when redistributing derived artwork.

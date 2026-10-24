@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=owoDE Calculator
+Name[zh_CN]=owoDE 计算器
+Comment=Calculator adapted from the Lingmo engine
+Exec=owode-calculator
+Icon=accessories-calculator
+Categories=Utility;Calculator;
+Terminal=false
+StartupNotify=true

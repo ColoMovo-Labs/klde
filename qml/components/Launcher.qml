@@ -97,6 +97,7 @@ ShellPopup {
                 required property string appId
                 required property string displayName
                 required property string description
+                required property string origin
                 required property string iconName
                 width: results.width
                 height: Tokens.launcherRow * Tokens.textScale
@@ -117,7 +118,7 @@ ShellPopup {
                         Layout.fillWidth: true
                         spacing: Tokens.space4
                         Label {
-                            text: I18n.s(resultRow.displayName)
+                            text: I18n.s(resultRow.displayName) + (resultRow.origin === "android" ? " · " + I18n.t("android.origin") : "")
                             font: Tokens.body
                             color: Tokens.textPrimary
                         }

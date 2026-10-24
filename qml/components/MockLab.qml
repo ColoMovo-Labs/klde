@@ -26,6 +26,20 @@ LabPanel {
             text: I18n.t(modelData.titleId)
         }
     }
+    RowLayout {
+        ActionButton {
+            text: I18n.t("temporal.title")
+            onClicked: root.viewRequested("temporal")
+        }
+        ActionButton {
+            text: I18n.t("wallpaper.title")
+            onClicked: root.viewRequested("wallpaper-effects")
+        }
+        ActionButton {
+            text: I18n.t("android.title")
+            onClicked: root.viewRequested("waydroid")
+        }
+    }
     StateChoice {
         label: I18n.t("language.locale")
         path: "locale"

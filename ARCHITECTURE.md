@@ -1,7 +1,8 @@
 # Architecture
 
-Status: Phase 0 passed its cloud gate; Phase 1 implements an ordinary preview
-window and mock service contracts. See [the prototype guide](docs/development/phase-1.md).
+Status: Phase 1's mock-first shell prototype is implemented; Phase 2 backend
+preparation and Fedora/KWin validation are in progress. See [the prototype
+guide](docs/development/phase-1.md) and [the Fedora runtime record](docs/development/fedora-runtime.md).
 
 ## Boundaries and process model
 
@@ -91,8 +92,9 @@ KLDE is Wayland first and X11 compatible. Qt QPA supplies the ordinary applicati
 window path; QML does not call Xlib/XCB or raw Wayland APIs. DisplayServerBackend
 reports the active QPA path and explicit unsupported session capabilities. Native
 adapters stay under `src/platform`; no empty Wayland/X11 implementation is created.
-See [display-protocols.md](docs/architecture/display-protocols.md). KWin as a future
-engine remains possible without adopting Plasma UI. No compositor is selected.
+See [display-protocols.md](docs/architecture/display-protocols.md). KWin is the
+first engine candidate without adopting Plasma UI; the adapter must distinguish
+upstream KWin 6 from the deepin/Lingmo KWin lineage and probe capabilities.
 
 LocaleVoiceModel owns embedded ID catalogs, `en`/`zh_CN`, Standard/Cute fallback
 and tone locks. It changes shell presentation in memory, not the system locale.
@@ -122,9 +124,11 @@ Evaluate a compositor-supported public layer-shell integration, output tracking,
 fractional scaling, input regions, activation and keyboard interactivity together.
 Never pass native pointers through QML. Protocol availability is detected at runtime.
 
-No final compositor is selected. UKUI/KWin, wlroots-based and other Wayland
-adapters remain candidates. A future KLDE compositor requires its own decision
-record and maintenance argument. See [window management](docs/architecture/window-management.md).
+KWin is the first real adapter target. Upstream KWin 6, deepin/Lingmo KWin and
+other Wayland engines remain separate capability profiles. A new KLDE compositor
+is deferred unless a measured KWin blocker survives the adapter prototype. See
+[window management](docs/architecture/window-management.md) and the
+[KWin adapter boundary](docs/architecture/kwin-adapter.md).
 
 Shortcut actions have stable IDs and configurable application-local bindings;
 global shortcuts require a later compositor/portal adapter. See
@@ -181,3 +185,14 @@ policy. This adapter is not claimed to exist in Phase 0.
 Blur policy and caching are described in [blur.md](docs/architecture/blur.md).
 Performance acceptance is separate from build speed; see
 [the measurement strategy](docs/development/performance.md).
+
+## Temporal-axis presentation contracts
+
+The next mock-first pass adds typed time, composite telemetry, cached wallpaper
+and optional Android-source contracts. See [mock providers](docs/architecture/mock-backends.md),
+[cached wallpaper processing](docs/design/wallpaper-depth.md) and
+[Waydroid architecture](docs/architecture/waydroid.md). All heavy wallpaper work is
+outside the live shell. The current provider uses pre-authored resources only.
+Public branding is provisional and centralized; stable internal IDs stay separate.
+Future visual packs should supply validated tokens/assets, not arbitrary QML or
+privileged behavior. Premium packs, donations and commerce remain future planning.

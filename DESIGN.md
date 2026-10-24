@@ -25,6 +25,13 @@ with immediate text focus. A round weather widget demonstrates a built-in widget
 contract. Workspace indicators communicate both position and layout mode.
 No permanent full-width bottom panel is required.
 
+The future workspace language uses four neutral modes: Floating, Classic Tiling,
+Scrolling Tiling and Mixed. The shell presents the policy and effective state;
+KWin-specific scripts, tile trees or effects remain behind the backend boundary.
+“Classic” and “Scrolling” describe interaction models, not clones of Hyprland or
+niri. A KWin decoration/effect may supply compositor cooperation, but the KLDE
+surface must remain complete when that capability is absent.
+
 The snow-mountain preview establishes left circular weather, centered workspace
 pill, right controls and a compact bottom dock. The supplied colorful screenshot
 adds a concrete emphasis reference: saturated blue/purple, thick filled sliders,
@@ -130,3 +137,25 @@ future work.
 The preview offers user-selected accent presets; they remain session choices.
 Wallpaper extraction, arbitrary theme packs, persistent settings and complete
 contrast/accessibility acceptance are separate work.
+
+## Temporal axis direction
+
+The current product principle is **time as center, order as atmosphere**. KLDE is
+still a provisional codename. Chinese contemporary influence starts with central
+axis, hierarchy, rhythm, restraint and spacing; ornamental motifs and paid visual
+packs are future optional asset layers. There is no commerce or donation prompt
+in this milestone.
+
+The [grouped top ribbon](docs/design/top-ribbon-layout.md) and
+[Temporal Capsule](docs/design/temporal-capsule.md) organize time and system state.
+[Wallpaper depth](docs/design/wallpaper-depth.md) is an optional precomputation and
+cache contract. The prototype's pre-authored studies do not run segmentation.
+Display-clock typography is separate from normal UI typography. Default mode keeps time in the ribbon; Clock/Focus explicitly enable the large
+clock. [Night roles](docs/design/night-palette.md) have dedicated resources and
+colors. All surfaces use shared
+shape, group spacing, motion and color tokens. Wayland is primary; X11 testing is
+a compatibility check.
+
+The [material and motion study](docs/design/material-motion.md) explores a 0.2
+direction: Material Expressive springs and shape, Fluent-style Mica/Acrylic tiers
+and a little refracting glass, shown beside the 0.1 surfaces with `--view material-study`.

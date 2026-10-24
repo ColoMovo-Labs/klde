@@ -6,58 +6,57 @@ import KLDE.Backends
 Flow {
     id: root
     required property int section
+    property int degradation: 0
+    property Item backdropSource: null
     signal action(string moduleId)
-    readonly property var snapshot: Shell.state.snapshot
     property int layoutRevision: 0
     readonly property real naturalWidth: {
         const revision = layoutRevision;
-        let width = 0, visibleCount = 0;
-        for (let i = 0; i < modules.count; ++i) {
-            const cell = modules.itemAt(i);
-            if (cell && cell.visible) {
-                width += cell.width;
-                ++visibleCount;
+        let width = 0, count = 0;
+        for (let i = 0; i < groups.count; ++i) {
+            const item = groups.itemAt(i);
+            if (item && item.visible) {
+                width += item.width;
+                ++count;
             }
         }
-        return width + Math.max(0, visibleCount - 1) * spacing;
+        return width + Math.max(0, count - 1) * spacing;
     }
-    spacing: Shell.ribbon.spacing
+    spacing: Tokens.ribbonGroupGap + Math.max(0, Shell.ribbon.spacing - Tokens.space6)
+    // Flow moves the delegate wrapper, not its nested Surface. Refresh only
+    // after layout or section movement so cached wallpaper samples stay aligned.
+    function refreshBackdrops(): void {
+        for (let i = 0; i < groups.count; ++i) {
+            const item = groups.itemAt(i);
+            if (item && item.visible)
+                item.refreshBackdrop();
+        }
+    }
+    onPositioningComplete: Qt.callLater(refreshBackdrops)
+    onXChanged: Qt.callLater(refreshBackdrops)
+    onYChanged: Qt.callLater(refreshBackdrops)
     Repeater {
-        id: modules
+        id: groups
+        model: ["context", "date", "workspaces", "telemetry", "connectivity", "session", "extras"]
         onItemAdded: root.layoutRevision += 1
         onItemRemoved: root.layoutRevision += 1
-        model: Shell.ribbon.modules
-        delegate: Loader {
-            id: cell
-            required property var modelData
-            readonly property bool capable: modelData.id !== "battery" || root.snapshot.capabilities.battery
-            readonly property bool densityVisible: Tokens.densityMode !== 0 || modelData.priority <= 3
-            visible: modelData.enabled && modelData.section === root.section && capable && densityVisible
-            active: visible
-            width: item ? item.implicitWidth : 0
-            height: item ? item.implicitHeight : 0
-            sourceComponent: Component {
-                Item {
-                    implicitWidth: contentLoader.item ? contentLoader.item.implicitWidth : 0
-                    implicitHeight: Tokens.ribbonHeight
-                    Loader {
-                        id: contentLoader
-                        sourceComponent: cell.modelData.id === "workspaces" ? workspaceComponent : moduleComponent
-                    }
-                    Component {
-                        id: workspaceComponent
-                        WorkspaceIndicator {
-                            compact: true
-                        }
-                    }
-                    Component {
-                        id: moduleComponent
-                        StatusModule {
-                            module: cell.modelData
-                            onInvoked: moduleId => root.action(moduleId)
-                        }
-                    }
-                }
+        delegate: Item {
+            id: groupCell
+            required property string modelData
+            width: group.width
+            height: Tokens.ribbonBandHeight
+            visible: group.entries.length > 0
+            function refreshBackdrop(): void {
+                group.refreshCapture();
+            }
+            RibbonGroup {
+                id: group
+                degradation: root.degradation
+                section: root.section
+                groupId: groupCell.modelData
+                backdropSource: root.backdropSource
+                y: (parent.height - height) / 2
+                onAction: moduleId => root.action(moduleId)
             }
         }
     }

@@ -3,6 +3,7 @@
 #include "backends/MockSystemBackend.h"
 #include "backends/MockWindowManagerBackend.h"
 #include "models/ApplicationModel.h"
+#include "platform/common/SessionRuntimeBackend.h"
 #include <QSignalSpy>
 #include <QtTest>
 
@@ -54,6 +55,14 @@ class BackendTest final : public QObject {
         blur.setRenderingAllowed(false);
         QCOMPARE(blur.strategyFor(true), klde::BlurBackend::OpaqueFallback);
         QVERIFY(!blur.nativeAvailable());
+    }
+    void sessionProbeReportsEnvironmentWithoutClaimingMockIntegration() {
+        klde::SessionRuntimeBackend session;
+        const auto capabilities = session.capabilities();
+        QCOMPARE(capabilities.value("mock").toBool(), false);
+        QCOMPARE(capabilities.value("wayland").toBool(), session.waylandSession());
+        QCOMPARE(capabilities.value("kwinService").toBool(), session.kwinService());
+        QVERIFY(!session.diagnostic().isEmpty());
     }
 };
 QTEST_GUILESS_MAIN(BackendTest)

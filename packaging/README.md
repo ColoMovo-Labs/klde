@@ -45,6 +45,10 @@ represented as archive-ready, a signed release or an official stable package.
 Upgrade/downgrade tests, full lintian review, reproducibility and release signing
 remain packaging work.
 
-Fedora 44 has an independent source build, CTest and offscreen startup job.
-An RPM package is not produced yet. Source-build instructions and tested scope
-are documented in [platforms.md](../docs/development/platforms.md).
+Fedora 44 has an independent source build, CTest, offscreen startup job and
+cloud-built packages under the CircleCI `fedora-build` job's
+`artifacts/fedora-package/` directory. The preferred artifact is
+`klde-shell-preview-*.rpm`, installable with `dnf`; the matching
+`owode-shell-fedora44-*.tar.gz` is a rootless `~/.local` fallback. Neither
+registers a login session. Installation and tested scope are documented in
+[platforms.md](../docs/development/platforms.md).
