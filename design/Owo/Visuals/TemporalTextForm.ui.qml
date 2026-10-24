@@ -13,6 +13,7 @@ Item {
     property int timePixelSize: Tokens.temporalFont
     property alias textColumn: textColumn
     property alias timeLabel: timeLabel
+    property alias phaseLabel: phaseLabel
     Column {
         id: textColumn
         objectName: "temporalTextColumn"

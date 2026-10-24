@@ -6,6 +6,7 @@ import QtQuick.Layouts
 ColumnLayout {
     id: root
     width: 600
+    property alias title: languageTitle.text
     property alias chineseButton: chineseButton
     property alias englishButton: englishButton
     property alias accessibilityButton: accessibilityButton
@@ -18,6 +19,8 @@ ColumnLayout {
         height: 64
     }
     Text {
+        id: languageTitle
+        objectName: "welcomeLanguageTitle"
         Layout.alignment: Qt.AlignHCenter
         text: "选择语言 / Choose language"
         font: Tokens.headline

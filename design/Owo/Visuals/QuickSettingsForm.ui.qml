@@ -5,6 +5,7 @@ import QtQuick.Layouts
 
 Item {
     id: root
+    objectName: "quickSettingsForm"
     width: Tokens.panelWidth - Tokens.space32
     height: column.implicitHeight
     implicitHeight: column.implicitHeight

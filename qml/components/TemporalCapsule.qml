@@ -63,8 +63,8 @@ Button {
             anchors.fill: parent
             debugEnabled: Tokens.debugGeometry
             targetItems: [root]
-            contentItems: [textColumn]
-            textItems: [timeLabel, phaseLabel]
+            contentItems: [temporalText.textColumn]
+            textItems: [temporalText.timeLabel, temporalText.phaseLabel]
         }
     }
 }

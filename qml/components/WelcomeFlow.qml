@@ -253,6 +253,7 @@ Item {
                             id: languageForm
                             anchors.centerIn: parent
                             width: Math.min(600, parent.width - Tokens.space32)
+                            title: I18n.t("welcome.language.bootstrap")
                             selectedLocale: Shell.language.locale
                             chineseButton.objectName: "welcomeChinese"
                             englishButton.objectName: "welcomeEnglish"
