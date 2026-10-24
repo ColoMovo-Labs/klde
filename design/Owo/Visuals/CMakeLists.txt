@@ -25,9 +25,11 @@ qt_add_qml_module(owode_visuals STATIC
         QuickSettingsForm.ui.qml
         RibbonForm.ui.qml
         SettingsForm.ui.qml
-        SmallButton.ui.qml
+        SmallButton.qml
+        SmallButtonForm.ui.qml
         SurfaceForm.ui.qml
         TemporalTextForm.ui.qml
+        ThemeValues.ui.qml
         Tokens.qml
         WelcomeBrandForm.ui.qml
         WindowChromeForm.ui.qml

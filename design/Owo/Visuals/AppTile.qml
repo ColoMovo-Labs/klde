@@ -2,6 +2,14 @@
 import QtQuick
 
 AppTileForm {
+    scale: down ? Tokens.pressScale : hovered ? Tokens.hoverScale : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
     property string appId: ""
     property int index: 0
     property var actionTarget: null

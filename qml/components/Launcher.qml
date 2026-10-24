@@ -15,13 +15,17 @@ ShellPopup {
     property int currentIndex: 0
     readonly property var applicationNames: ({
             files: I18n.s("Files"),
-            browser: I18n.s("Browser"),
+            web: I18n.s("Browser"),
             terminal: I18n.s("Terminal"),
             notes: I18n.s("Notes"),
             music: I18n.s("Music"),
             settings: I18n.s("Settings")
         })
-    readonly property var applicationDescriptions: ({})
+    readonly property var applicationDescriptions: ({
+        files: I18n.s("Your everyday places"), web: I18n.s("A little window to the world"),
+        terminal: I18n.s("Make something happen"), notes: I18n.s("Keep a thought close"),
+        music: I18n.s("Find your rhythm"), settings: I18n.s("Make this space yours")
+    })
     width: Math.min(Math.max(Tokens.launcherWidth, integratedDock.width + padding * 2), parent ? parent.width - Tokens.space32 : Tokens.launcherWidth)
     height: Math.min(Tokens.launcherHeight + Tokens.dockHeight, parent ? parent.height - Tokens.space32 : Tokens.launcherHeight)
     onOpened: {

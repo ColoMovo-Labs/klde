@@ -4,6 +4,7 @@ pragma Singleton
 import QtQuick
 
 QtObject {
+    readonly property ThemeValues design: ThemeValues {}
     property bool darkMode: false
     property bool reducedMotion: false
     property real textScale: 1.0
@@ -21,24 +22,24 @@ QtObject {
     // These are Material Expressive-style semantic roles.  The seed comes from
     // the selected wallpaper so the entire shell moves together as one palette,
     // instead of recoloring individual widgets independently.
-    readonly property color background: monetPalette.background
-    readonly property color surface: monetPalette.surface
-    readonly property color surfaceContainer: monetPalette.surfaceContainer
-    readonly property color surfaceElevated: monetPalette.surfaceElevated
+    readonly property color background: design.manualColors ? (darkMode ? design.backgroundDark : design.backgroundLight) : (monetPalette.background)
+    readonly property color surface: design.manualColors ? (darkMode ? design.surfaceDark : design.surfaceLight) : (monetPalette.surface)
+    readonly property color surfaceContainer: design.manualColors ? (darkMode ? design.surfaceContainerDark : design.surfaceContainerLight) : (monetPalette.surfaceContainer)
+    readonly property color surfaceElevated: design.manualColors ? (darkMode ? design.surfaceElevatedDark : design.surfaceElevatedLight) : (monetPalette.surfaceElevated)
     readonly property color surfaceContainerHigh: Qt.tint(surfaceContainer, Qt.rgba(accent.r, accent.g, accent.b, darkMode ? 0.12 : 0.08))
     readonly property color surfaceContainerHighest: Qt.tint(surfaceElevated, Qt.rgba(accent.r, accent.g, accent.b, darkMode ? 0.18 : 0.10))
     readonly property color surfaceDim: darkMode ? Qt.darker(surface, 1.18) : Qt.darker(surface, 1.03)
     readonly property color surfaceBright: darkMode ? Qt.lighter(surfaceElevated, 1.12) : surfaceElevated
-    readonly property color primary: accent
-    readonly property color secondary: accentChoice === "auto" ? monetPalette.secondary : darkMode ? "#dfc0ff" : "#8554bf"
-    readonly property color tertiary: monetPalette.tertiary
-    readonly property color error: darkMode ? "#ffb4ab" : "#a82d3b"
-    readonly property color outline: monetPalette.outline
-    readonly property color textPrimary: monetPalette.textPrimary
-    readonly property color textSecondary: monetPalette.textSecondary
-    readonly property color textDisabled: monetPalette.textDisabled
-    readonly property color textOnPrimary: accentChoice === "auto" ? monetPalette.onPrimary : darkMode ? "#152633" : "#ffffff"
-    readonly property color primaryContainer: accentChoice === "auto" ? monetPalette.primaryContainer : Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14))
+    readonly property color primary: design.manualColors ? (darkMode ? design.primaryDark : design.primaryLight) : (accent)
+    readonly property color secondary: design.manualColors ? (darkMode ? design.secondaryDark : design.secondaryLight) : (accentChoice === "auto" ? monetPalette.secondary : darkMode ? "#dfc0ff" : "#8554bf")
+    readonly property color tertiary: design.manualColors ? (darkMode ? design.tertiaryDark : design.tertiaryLight) : (monetPalette.tertiary)
+    readonly property color error: design.manualColors ? (darkMode ? design.errorDark : design.errorLight) : (darkMode ? "#ffb4ab" : "#a82d3b")
+    readonly property color outline: design.manualColors ? (darkMode ? design.outlineDark : design.outlineLight) : (monetPalette.outline)
+    readonly property color textPrimary: design.manualColors ? (darkMode ? design.textPrimaryDark : design.textPrimaryLight) : (monetPalette.textPrimary)
+    readonly property color textSecondary: design.manualColors ? (darkMode ? design.textSecondaryDark : design.textSecondaryLight) : (monetPalette.textSecondary)
+    readonly property color textDisabled: design.manualColors ? (darkMode ? design.textDisabledDark : design.textDisabledLight) : (monetPalette.textDisabled)
+    readonly property color textOnPrimary: design.manualColors ? (darkMode ? design.textOnPrimaryDark : design.textOnPrimaryLight) : (accentChoice === "auto" ? monetPalette.onPrimary : darkMode ? "#152633" : "#ffffff")
+    readonly property color primaryContainer: design.manualColors ? (darkMode ? design.primaryContainerDark : design.primaryContainerLight) : (accentChoice === "auto" ? monetPalette.primaryContainer : Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, darkMode ? 0.22 : 0.14)))
     readonly property color surfaceVariant: monetPalette.secondaryContainer
     readonly property color warning: monetPalette.warning
     readonly property color success: monetPalette.success
@@ -59,24 +60,24 @@ QtObject {
     readonly property real surfaceOpacityLow: 0.72
     readonly property real surfaceOpacityMedium: 0.88
     readonly property real surfaceOpacityHigh: 0.97
-    readonly property int radiusXS: 4
-    readonly property int radiusS: 8
-    readonly property int radiusM: 14
-    readonly property int radiusL: 22
-    readonly property int radiusXL: 32
-    readonly property int radiusPill: 999
+    readonly property int radiusXS: design.radiusXS
+    readonly property int radiusS: design.radiusS
+    readonly property int radiusM: design.radiusM
+    readonly property int radiusL: design.radiusL
+    readonly property int radiusXL: design.radiusXL
+    readonly property int radiusPill: design.radiusPill
 
-    readonly property int space1: 1
-    readonly property int space2: 2
-    readonly property int space3: 3
-    readonly property int space4: 4
-    readonly property int space6: 6
-    readonly property int space8: 8
-    readonly property int space12: 12
-    readonly property int space16: 16
-    readonly property int space24: 24
-    readonly property int space32: 32
-    readonly property int space64: 64
+    readonly property int space1: design.space1
+    readonly property int space2: design.space2
+    readonly property int space3: design.space3
+    readonly property int space4: design.space4
+    readonly property int space6: design.space6
+    readonly property int space8: design.space8
+    readonly property int space12: design.space12
+    readonly property int space16: design.space16
+    readonly property int space24: design.space24
+    readonly property int space32: design.space32
+    readonly property int space64: design.space64
 
     property string locale: "zh_CN"
     readonly property bool cjk: locale === "zh_CN"
@@ -117,9 +118,9 @@ QtObject {
     })
 
     readonly property real motionScale: motionLevel === 3 ? 0.8 : motionLevel === 2 ? 1.2 : 1.0
-    readonly property int motionFast: reducedMotion ? 0 : 120 * motionScale
-    readonly property int motionNormal: reducedMotion ? 0 : 220 * motionScale
-    readonly property int motionSlow: reducedMotion ? 0 : 360 * motionScale
+    readonly property int motionFast: reducedMotion ? 0 : design.motionFastMs * motionScale
+    readonly property int motionNormal: reducedMotion ? 0 : design.motionNormalMs * motionScale
+    readonly property int motionSlow: reducedMotion ? 0 : design.motionSlowMs * motionScale
     readonly property int emphasized: Easing.InOutCubic
     readonly property int emphasizedDecelerate: Easing.OutCubic
     readonly property int emphasizedAccelerate: Easing.InCubic
@@ -269,9 +270,9 @@ QtObject {
     readonly property int iconL: 40
     readonly property int dockIcon: 34
     readonly property int dockItem: 56 * densityScale
-    readonly property int dockHeight: 80
+    readonly property int dockHeight: design.dockHeight
     readonly property int controlHeight: 44 * densityScale
-    readonly property int panelWidth: 408
+    readonly property int panelWidth: design.panelWidth
     readonly property int settingsWidth: 600
     readonly property int settingsHeight: 664
     readonly property int sceneCardHeight: 112
@@ -359,8 +360,8 @@ QtObject {
     readonly property int lockScreenContentWidth: 360
     readonly property int compactToggleHeight: 68
     readonly property int compactSliderHeight: 40 * densityScale
-    readonly property int launcherWidth: 600
-    readonly property int launcherHeight: 500
+    readonly property int launcherWidth: design.launcherWidth
+    readonly property int launcherHeight: design.launcherHeight
     readonly property int launcherRow: 64 * densityScale
     readonly property int widgetSize: 224
     readonly property int desktopMargin: 28

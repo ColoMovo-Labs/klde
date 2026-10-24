@@ -146,6 +146,7 @@ Item {
             spacing: Tokens.space8
             SmallButton {
                 id: nightButton
+                toggle: true
                 objectName: "quickNight"
                 Layout.fillWidth: true
                 iconName: "moon"
@@ -154,6 +155,7 @@ Item {
             }
             SmallButton {
                 id: motionButton
+                toggle: true
                 objectName: "quickMotion"
                 Layout.fillWidth: true
                 iconName: "leaf"
@@ -162,6 +164,7 @@ Item {
             }
             SmallButton {
                 id: dndButton
+                toggle: true
                 objectName: "quickDnd"
                 Layout.fillWidth: true
                 iconName: "bell"
@@ -171,6 +174,7 @@ Item {
             }
             SmallButton {
                 id: microphoneButton
+                toggle: true
                 objectName: "quickMicrophone"
                 Layout.fillWidth: true
                 iconName: "microphone"
