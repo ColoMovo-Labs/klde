@@ -76,15 +76,17 @@ QtObject {
     readonly property int space16: 16
     readonly property int space24: 24
     readonly property int space32: 32
+    readonly property int space64: 64
 
-    readonly property bool cjk: I18n.locale === "zh_CN"
+    property string locale: "zh_CN"
+    readonly property bool cjk: locale === "zh_CN"
     readonly property FontLoader glowRegular: FontLoader {
-        source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Regular.otf"
+        source: Assets.root + "fonts/glow-sans/GlowSansSC-Normal-Regular.otf"
     }
     readonly property FontLoader glowMedium: FontLoader {
-        source: "qrc:/assets/fonts/glow-sans/GlowSansSC-Normal-Medium.otf"
+        source: Assets.root + "fonts/glow-sans/GlowSansSC-Normal-Medium.otf"
     }
-    readonly property string fontFamily: glowRegular.status === FontLoader.Ready ? glowRegular.name : cjk ? "Noto Sans CJK SC" : Application.font.family
+    readonly property string fontFamily: glowRegular.status === FontLoader.Ready ? glowRegular.name : cjk ? "Noto Sans CJK SC" : "Sans Serif"
     readonly property font display: Qt.font({
         family: fontFamily,
         pixelSize: 48 * textScale,
@@ -280,7 +282,7 @@ QtObject {
     readonly property int ribbonHeight: densityMode === 0 ? 44 : 40
     readonly property int rowGap: densityMode === 0 ? space16 : densityMode === 2 ? space8 : space12
     readonly property FontLoader clockFace: FontLoader {
-        source: "qrc:/assets/fonts/rubik/Rubik[wght].ttf"
+        source: Assets.root + "fonts/rubik/Rubik[wght].ttf"
     }
     readonly property string displayClockFont: clockFace.status === FontLoader.Ready ? clockFace.name : "Sans Serif"
     readonly property int displayClockWeight: Font.ExtraBold
@@ -355,8 +357,10 @@ QtObject {
     })
     readonly property int lockScreenEdgeMargin: 48
     readonly property int lockScreenContentWidth: 360
+    readonly property int compactToggleHeight: 68
+    readonly property int compactSliderHeight: 40 * densityScale
     readonly property int launcherWidth: 600
-    readonly property int launcherHeight: 528
+    readonly property int launcherHeight: 500
     readonly property int launcherRow: 64 * densityScale
     readonly property int widgetSize: 224
     readonly property int desktopMargin: 28

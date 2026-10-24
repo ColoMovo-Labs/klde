@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 import KLDE.Backends
@@ -45,16 +46,15 @@ Item {
         color: Tokens.darkMode ? "#3210182b" : "#22ffffff"
     }
 
-    Item {
+    LockCompositionForm {
         id: ambientComposition
         visible: !root.authentication
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -Tokens.space24
-        width: Math.min(parent.width - Tokens.lockScreenEdgeMargin * 2, 720)
-        height: ambientStack.height
+        anchors.fill: parent
+        showSampleClock: false
         Column {
             id: ambientStack
+            parent: ambientComposition.clockHost
+            anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: Tokens.space12
             DisplayClock {

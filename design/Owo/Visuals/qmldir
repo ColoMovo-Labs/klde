@@ -1,0 +1,27 @@
+module Owo.Visuals
+AppTile 1.0 AppTile.qml
+AppTileForm 1.0 AppTileForm.ui.qml
+singleton Assets 1.0 Assets.qml
+BackgroundForm 1.0 BackgroundForm.ui.qml
+CompactSliderForm 1.0 CompactSliderForm.ui.qml
+DesktopForm 1.0 DesktopForm.ui.qml
+DockForm 1.0 DockForm.ui.qml
+DockItem 1.0 DockItem.qml
+DockItemForm 1.0 DockItemForm.ui.qml
+Glyph 1.0 Glyph.ui.qml
+LanguageForm 1.0 LanguageForm.ui.qml
+LauncherForm 1.0 LauncherForm.ui.qml
+LockCompositionForm 1.0 LockCompositionForm.ui.qml
+singleton MonetPalette 1.0 MonetPalette.qml
+NotificationCardForm 1.0 NotificationCardForm.ui.qml
+OsdForm 1.0 OsdForm.ui.qml
+PanelHeaderForm 1.0 PanelHeaderForm.ui.qml
+QuickSettingsForm 1.0 QuickSettingsForm.ui.qml
+RibbonForm 1.0 RibbonForm.ui.qml
+SettingsForm 1.0 SettingsForm.ui.qml
+SmallButton 1.0 SmallButton.ui.qml
+SurfaceForm 1.0 SurfaceForm.ui.qml
+TemporalTextForm 1.0 TemporalTextForm.ui.qml
+singleton Tokens 1.0 Tokens.qml
+WelcomeBrandForm 1.0 WelcomeBrandForm.ui.qml
+WindowChromeForm 1.0 WindowChromeForm.ui.qml

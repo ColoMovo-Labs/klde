@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma ComponentBehavior: Bound
 import QtQuick
+import Owo.Visuals
 import QtQuick.Effects
 import KLDE.Backends
 
@@ -101,13 +102,13 @@ Item {
             }
         }
     }
-    Rectangle {
+    SurfaceForm {
         visible: root.decorationVisible && !root.materialActive
         anchors.fill: parent
-        radius: root.cornerRadius
-        color: Qt.rgba(root.fill.r, root.fill.g, root.fill.b, root.hasBlur ? Tokens.frostedSurfaceOpacity : 1)
-        border.width: Tokens.space1
-        border.color: Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
+        cornerRadius: root.cornerRadius
+        tone: root.fill
+        fillOpacity: root.hasBlur ? Tokens.frostedSurfaceOpacity : 1
+        shadowOpacity: 0
     }
     Item {
         id: content

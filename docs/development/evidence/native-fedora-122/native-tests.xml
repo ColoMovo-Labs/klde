@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite name="NativeSessionTest" timestamp="2026&#x002D;10&#x002D;24T12:20:19" hostname="dcb3299c56e9" tests="3" failures="0" errors="0" skipped="0" time="6.194">
+  <properties>
+    <property name="QTestVersion" value="6.11.2"/>
+    <property name="QtVersion" value="6.11.2"/>
+    <property name="QtBuild" value="Qt 6.11.2 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 16.2.1 20260819 (Red Hat 16.2.1&#x002D;2))"/>
+  </properties>
+  <testcase name="initTestCase" classname="NativeSessionTest" time="0.000"/>
+  <testcase name="nativeSurfacesAndRealClient" classname="NativeSessionTest" time="6.194"/>
+  <testcase name="cleanupTestCase" classname="NativeSessionTest" time="0.000"/>
+</testsuite>
