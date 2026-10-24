@@ -57,6 +57,39 @@ commands:
           at: /root/project
 
 jobs:
+  calculator-ubuntu:
+    executor: ubuntu-qt
+    steps:
+      - prepare
+      - run:
+          name: Build and verify the independent Lingmo calculator port
+          command: bash tools/cloud-calculator.sh
+      - store_test_results:
+          path: artifacts/calculator
+      - store_artifacts:
+          path: artifacts/calculator
+
+  calculator-fedora:
+    executor: fedora-qt
+    steps:
+      - run:
+          name: Install Fedora checkout tools
+          command: dnf install -y --setopt=install_weak_deps=False ca-certificates git openssh-clients tar gzip findutils
+      - checkout
+      - restore_cache:
+          keys:
+            - dnf-v1-fedora44-{{ arch }}-{{ checksum ".circleci/fedora-packages.txt" }}
+      - run:
+          name: Install Fedora development modules
+          command: xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
+      - run:
+          name: Build and verify the independent Lingmo calculator port
+          command: bash tools/cloud-calculator.sh
+      - store_test_results:
+          path: artifacts/calculator
+      - store_artifacts:
+          path: artifacts/calculator
+
   configure-build:
     executor: ubuntu-qt
     steps:
@@ -267,6 +300,8 @@ jobs:
 workflows:
   core:
     jobs:
+      - calculator-ubuntu
+      - calculator-fedora
       - configure-build
       - fedora-build
       - static-analysis:

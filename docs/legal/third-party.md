@@ -2,8 +2,9 @@
 
 ## Original material
 
-This baseline is newly authored for KLDE. No UKUI, KWin, GNOME, Quickshell,
-end-4, LingmoOS or other shell source code has been copied or derived. No third-party
+The original shell baseline was newly authored for KLDE. No UKUI, KWin, GNOME,
+Quickshell, end-4 or Lingmo shell implementation is embedded in that baseline.
+The optional Lingmo Calculator engine port is documented separately below. No third-party
 artwork, icons, mascot or concept image is included. The separately licensed
 Glow Sans font evaluation is documented below.
 
@@ -18,6 +19,20 @@ Glow Sans font evaluation is documented below.
 These license texts are legal notices, not imported implementation code.
 
 ## External runtime and build dependencies
+
+### Optional Lingmo Calculator engine
+
+The [calculator provenance record](../../apps/calculator/README.md) identifies
+LingmoOS `lingmo-calculator` commit `c2fdb5c80049ce6ffb02571e4bbc64fca1c2366e`,
+the archive hash, original CuteOS/revenmartin, Ariya Hidayat/SpeedCrunch and GNU bc
+notices, and the exact adaptation. The cloud-only fetch script preserves all
+headers, corrects two allocator mismatches, and compiles only its engine into
+an independent owoDE application. GPL-2.0-or-later engine files are combined
+under GPL-3.0-or-later; the original GPL terms/notices remain in corresponding
+source. Packages carry the original source archive and complete reproducible
+adaptation; no Lingmo artwork, Qt platform plugin or session component is copied.
+Compilation and runtime acceptance are tracked by the dedicated Ubuntu/Fedora
+cloud jobs, not inferred from this source/license inspection.
 
 Qt Core, Gui, DBus, Network, Qml, Quick, Quick Controls and their plugins are consumed as Ubuntu
 packages. Qt Test and Quick Test are development dependencies. Qt libraries and

@@ -92,6 +92,18 @@
               - "./artifacts/fedora-package/*.tar.gz"
               - "./artifacts/fedora-package/SHA256SUMS"
               - "./artifacts/fedora-package/*.txt"
+        - name: build and verify the independent Lingmo calculator port
+          script: bash tools/cloud-calculator.sh
+        - name: attach themed calculator and corresponding source
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/calculator/*.png"
+              - "./artifacts/calculator/*.rpm"
+              - "./artifacts/calculator/*.tar.gz"
+              - "./artifacts/calculator/*.txt"
+              - "./artifacts/calculator/*.log"
+              - "./artifacts/calculator/SHA256SUMS"
         - name: verify public repository entry points
           script: |
             set -eu

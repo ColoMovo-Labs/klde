@@ -2,6 +2,13 @@
 
 Phases describe acceptance gates, not dates or release promises.
 
+The current product target is a basically usable daily desktop on Fedora 44,
+with Ubuntu retained as the primary supported distribution. Follow the
+[daily-use acceptance gates](docs/development/daily-use.md), including real
+native surfaces, application/window state and session essentials. The optional
+[Lingmo Calculator engine port](apps/calculator/README.md) starts app migration;
+headless CI or a preview RPM does not imply daily-use readiness.
+
 | Phase | Scope | Exit evidence |
 | --- | --- | --- |
 | 0 — Foundation | Public repository, license/provenance, architecture/design, contribution workflow, CircleCI, minimal Qt executable and startup tests | repository and CI configured; all core jobs pass for an identified commit; baseline reviewed |
