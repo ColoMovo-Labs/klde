@@ -119,6 +119,7 @@ ApplicationWindow {
                 delegate: Button {
                     id: keyButton
                     required property string modelData
+                    objectName: "calculatorKey-" + modelData
                     readonly property bool primary: modelData === "="
                     readonly property bool operation: ["C", "⌫", "%", "÷", "×", "−", "+", "(", ")"].indexOf(modelData) >= 0
                     Layout.fillWidth: true

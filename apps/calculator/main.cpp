@@ -7,7 +7,10 @@
 #include <QQuickWindow>
 #include <QTimer>
 #include <QVariant>
+#include <QtQml/QQmlExtensionPlugin>
 #include <cstdlib>
+
+Q_IMPORT_QML_PLUGIN(OwoCalculatorPlugin)
 
 int main(int argc, char **argv) {
     QGuiApplication app(argc, argv);

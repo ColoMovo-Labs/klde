@@ -32,19 +32,27 @@ qt_add_executable(owode-calculator main.cpp)
 set_source_files_properties(Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set_source_files_properties(../../qml/MonetPalette.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE QT_RESOURCE_ALIAS MonetPalette.qml)
-qt_add_qml_module(owode-calculator
-    URI OwoDE.Calculator VERSION 1.0
+qt_add_qml_module(owode_calculator_ui STATIC
+    URI OwoDE.Calculator VERSION 1.0 CLASS_NAME OwoCalculatorPlugin
+    OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml/OwoDE/Calculator"
     QML_FILES Main.qml Theme.qml ../../qml/MonetPalette.qml
     SOURCES CalculatorController.h CalculatorController.cpp)
-target_link_libraries(owode-calculator PRIVATE owode_calculator_engine
+target_link_libraries(owode_calculator_ui PUBLIC owode_calculator_engine
     Qt6::Gui Qt6::Quick Qt6::QuickControls2)
-target_compile_options(owode-calculator PRIVATE -Wall -Wextra -Wpedantic)
+target_include_directories(owode_calculator_ui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_compile_options(owode_calculator_ui PRIVATE -Wall -Wextra -Wpedantic)
+target_link_libraries(owode-calculator PRIVATE owode_calculator_uiplugin)
 
 if(BUILD_TESTING)
     qt_add_executable(owode-calculator-test test_calculator.cpp CalculatorController.cpp CalculatorController.h)
     target_link_libraries(owode-calculator-test PRIVATE owode_calculator_engine Qt6::Qml Qt6::Test)
     add_test(NAME calculator-engine COMMAND owode-calculator-test)
     set_tests_properties(calculator-engine PROPERTIES TIMEOUT 20)
+    qt_add_executable(owode-calculator-ui-test test_calculator_ui.cpp)
+    target_link_libraries(owode-calculator-ui-test PRIVATE owode_calculator_uiplugin Qt6::Test)
+    add_test(NAME calculator-keyboard-and-buttons COMMAND owode-calculator-ui-test)
+    set_tests_properties(calculator-keyboard-and-buttons PROPERTIES TIMEOUT 30
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;QT_QUICK_CONTROLS_STYLE=Basic")
 endif()
 install(TARGETS owode-calculator RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES org.owode.Calculator.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
