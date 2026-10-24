@@ -5,8 +5,9 @@ google-noto-sans-cjk-vf-fonts
 google-noto-color-emoji-fonts
 desktop-file-utils
 gcc-c++
-google-noto-sans-cjk-vf-fonts
-google-noto-color-emoji-fonts
+clang
+clang-tools-extra
+qt6-qttools-devel
 git
 ninja-build
 rpm-build

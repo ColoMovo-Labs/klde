@@ -18,10 +18,10 @@ builds do not separately verify that minimum version.
 | --- | --- | --- |
 | configure-build | Ubuntu CMake/Ninja, C++20, warnings, ccache, persist build tree | required |
 | static-analysis | clang-format, qmlformat, qmllint, clang-tidy, REUSE and desktop-file metadata | required |
+| fedora-build | Fedora 44 build, LayerShellQt-aware clang-format/clang-tidy, tests, smoke capture and RPM validation | required |
 | unit-tests | Qt Test backend contracts and packaged QML startup without warnings | required |
 | qml-tests | Qt Quick Test tokens and keyboard interaction | required |
 | integration-smoke | offscreen/software, Weston/Wayland/software, Xvfb/OpenGL/llvmpipe | required |
-| fedora-build | Independent Fedora 44 configure/build, full CTest, offscreen/software startup and Fedora RPM/tarball artifacts | required for the expanded foundation |
 | packaging-check | CPack `.deb`, generated ELF dependencies and matching source archive | required for the expanded foundation |
 | deb-runtime | Clean Ubuntu container, apt dependency resolution, installed binary capture and package purge | required for the expanded foundation |
 

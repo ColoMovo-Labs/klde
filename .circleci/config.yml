@@ -173,6 +173,13 @@ jobs:
             cmake --build --preset ci --parallel 2
             ccache --show-stats > artifacts/environment/ccache.txt
       - run:
+          name: Fedora format and static analysis with LayerShellQt
+          command: |
+            clang-format --version > artifacts/environment/fedora-clang-format.txt
+            clang-tidy --version > artifacts/environment/fedora-clang-tidy.txt
+            CHECK_CPP_ONLY=1 bash tools/check-format.sh
+            BUILD_DIR=build/ci bash tools/check-tidy.sh
+      - run:
           name: Fedora unit, QML and offscreen startup tests
           command: |
             ctest --test-dir build/ci --output-on-failure --output-junit artifacts/tests/fedora.xml
