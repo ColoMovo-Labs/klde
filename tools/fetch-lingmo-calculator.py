@@ -47,7 +47,10 @@ def main():
     text = hmath.read_text()
     if text.count("delete[] str;") != 2:
         raise SystemExit("Allocator fix no longer matches the audited source")
-    hmath.write_text(text.replace("delete[] str;", "free( str );"))
+    hmath.write_text(
+        "// Modified by owoDE contributors, 2026-10-24: correct two allocator mismatches.\n"
+        + text.replace("delete[] str;", "free( str );")
+    )
     (target / ".owode-upstream-commit").write_text(REVISION + "\n")
     print(f"Verified Lingmo Calculator {REVISION}; applied two allocator corrections")
 

@@ -10,6 +10,9 @@ not implemented yet. Windowing uses ordinary Qt Wayland/XCB application roles.
 
 ## Provenance and modifications
 
+Adaptation and allocator corrections by owoDE contributors, 2026-10-24.
+The patched engine file also carries a dated modification notice.
+
 Upstream: <https://github.com/LingmoOS/lingmo-calculator>, commit
 `c2fdb5c80049ce6ffb02571e4bbc64fca1c2366e`.
 Verified archive SHA256:
