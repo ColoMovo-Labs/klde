@@ -189,6 +189,7 @@ jobs:
           command: |
             bash tools/check-format.sh
             reuse lint
+            python3 tools/check-design-workspace.py
             python3 tools/check-translations.py
             python3 tools/check-fcitx-theme.py
             cmake --build build/ci --target all_qmllint --parallel 2
@@ -221,6 +222,10 @@ jobs:
     executor: ubuntu-qt
     steps:
       - built-tree
+      - run:
+          name: Shared visual workspace without shell backends
+          command: |
+            xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic OWODE_DESIGN_CAPTURES=artifacts/smoke/design build/ci/bin/owode-design-workspace-test
       - run:
           name: Default fusion materials through OpenGL
           command: bash tools/capture-fusion-previews.sh build/ci/bin/klde-shell artifacts/smoke/fusion

@@ -30,12 +30,12 @@ target_link_libraries(owode_calculator_engine PUBLIC Qt6::Core)
 
 qt_add_executable(owode-calculator main.cpp)
 set_source_files_properties(Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
-set_source_files_properties(../../qml/MonetPalette.qml PROPERTIES
+set_source_files_properties(../../design/Owo/Visuals/MonetPalette.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE QT_RESOURCE_ALIAS MonetPalette.qml)
 qt_add_qml_module(owode_calculator_ui STATIC
     URI OwoDE.Calculator VERSION 1.0 CLASS_NAME OwoCalculatorPlugin
     OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml/OwoDE/Calculator"
-    QML_FILES Main.qml Theme.qml ../../qml/MonetPalette.qml
+    QML_FILES Main.qml Theme.qml ../../design/Owo/Visuals/MonetPalette.qml
     SOURCES CalculatorController.h CalculatorController.cpp)
 target_link_libraries(owode_calculator_ui PUBLIC owode_calculator_engine
     Qt6::Gui Qt6::Quick Qt6::QuickControls2)
@@ -61,7 +61,7 @@ install(FILES README.md ../../LICENSE DESTINATION "${notices}")
 # Corresponding source travels with the binary: pinned upstream, modifications,
 # the independent frontend and the shared palette. No source offer can expire.
 install(DIRECTORY . DESTINATION "${notices}/source/apps/calculator")
-install(FILES ../../qml/MonetPalette.qml DESTINATION "${notices}/source/qml")
+install(FILES ../../design/Owo/Visuals/MonetPalette.qml DESTINATION "${notices}/source/qml")
 install(FILES ../../LICENSE DESTINATION "${notices}/source")
 install(FILES ../../tools/fetch-lingmo-calculator.py DESTINATION "${notices}/source/tools")
 install(FILES "${upstream}/../lingmo-calculator-source.tar.gz" DESTINATION "${notices}/source")

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma ComponentBehavior: Bound
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 import KLDE.Backends
@@ -100,55 +101,20 @@ LabPanel {
         }
         Repeater {
             model: Shell.notifications
-            delegate: Rectangle {
+            delegate: NotificationCardForm {
                 id: card
                 required property string notificationId
-                required property string sourceName
+                required sourceName
                 required property string titleId
                 required property string bodyId
-                required property int severity
+                required severity
                 Layout.fillWidth: true
-                implicitHeight: notificationColumn.implicitHeight + Tokens.space24
-                radius: severity === 2 ? Tokens.radiusM : Tokens.radiusL
-                color: severity === 2 ? Qt.tint(Tokens.surfaceContainer, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.12)) : Tokens.surfaceContainer
-                border.width: severity === 2 ? Tokens.space1 : 0
-                border.color: Tokens.error
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: Tokens.space12
-                    Icon {
-                        name: card.severity === 2 ? "info" : "bell"
-                        Layout.preferredWidth: Tokens.iconM
-                        Layout.preferredHeight: Tokens.iconM
-                    }
-                    ColumnLayout {
-                        id: notificationColumn
-                        Layout.fillWidth: true
-                        spacing: Tokens.space4
-                        Label {
-                            text: card.sourceName
-                            font: Tokens.caption
-                            color: Tokens.textSecondary
-                        }
-                        Label {
-                            text: I18n.t(card.titleId)
-                            font: Tokens.label
-                            color: card.severity === 2 ? Tokens.error : Tokens.textPrimary
-                            Layout.fillWidth: true
-                            wrapMode: Text.WordWrap
-                        }
-                        Label {
-                            text: I18n.t(card.bodyId)
-                            font: Tokens.body
-                            color: Tokens.textSecondary
-                            Layout.fillWidth: true
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    IconButton {
-                        iconName: "close"
-                        text: I18n.t("lab.center.dismiss")
-                        onClicked: Shell.notifications.dismiss(card.notificationId)
+                heading: I18n.t(titleId)
+                body: I18n.t(bodyId)
+                Connections {
+                    target: card.dismissButton
+                    function onClicked(): void {
+                        Shell.notifications.dismiss(card.notificationId);
                     }
                 }
             }

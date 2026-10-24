@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma ComponentBehavior: Bound
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
@@ -209,11 +210,22 @@ ApplicationWindow {
     }
     Binding {
         target: Tokens
+        property: "locale"
+        value: Shell.language.locale
+    }
+    Binding {
+        target: Tokens
         property: "wallpaperChoice"
         value: window.snapshot.appearance.wallpaper
     }
+    DesktopForm {
+        id: desktopLayout
+        anchors.fill: parent
+        showSamples: false
+    }
     WallpaperLayers {
         id: wallpaper
+        parent: desktopLayout.backgroundHost
         anchors.fill: parent
         visible: !window.nativeSurfaceMode
     }
@@ -310,11 +322,12 @@ ApplicationWindow {
     }
     Dock {
         id: dock
-        visible: !window.nativeSurfaceMode && !window.welcomeMode && !window.snapshot.appearance.focus
+        parent: desktopLayout.dockHost
+        visible: !window.nativeSurfaceMode && !window.welcomeMode && !window.snapshot.appearance.focus && !launcher.visible
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: Tokens.space24
+        anchors.bottomMargin: 0
         onLauncherRequested: window.showView("launcher")
         onSettingsRequested: window.showView("quick-settings")
     }
@@ -323,7 +336,8 @@ ApplicationWindow {
         parent: window.panelParent
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
+        y: parent ? Math.max(Tokens.space16, parent.height - height - Tokens.space24) : 0
+        onSettingsRequested: window.showView("quick-settings")
         onClosed: {
             if (!window.nativeSurfaceMode)
                 dock.focusLauncher();
@@ -476,24 +490,16 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
-    Surface {
+    OsdForm {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: dock.top
         anchors.bottomMargin: Tokens.space16
         width: Math.min(Tokens.panelWidth, parent.width - Tokens.space32)
-        height: noticeText.implicitHeight + Tokens.space32
+        height: Math.max(Tokens.dockHeight, Tokens.controlHeight * Tokens.textScale)
         opacity: Shell.message.length > 0 ? 1 : 0
         visible: opacity > 0
-        Label {
-            id: noticeText
-            anchors.fill: parent
-            text: I18n.s(Shell.message) + (Shell.osdValue >= 0 ? "  " + Shell.osdValue + "%" : "")
-            font: Tokens.label
-            color: Tokens.textPrimary
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            Accessible.role: Accessible.AlertMessage
-        }
+        text: I18n.s(Shell.message) + (Shell.osdValue >= 0 ? "  " + Shell.osdValue + "%" : "")
+        Accessible.role: Accessible.AlertMessage
         Behavior on opacity {
             NumberAnimation {
                 duration: Tokens.springEffectsFast.duration
@@ -614,7 +620,7 @@ ApplicationWindow {
             // the deliberately hidden preview window.
             transientParent: null
             property bool attached: false
-            visible: attached && !window.snapshot.appearance.focus
+            visible: attached && !window.snapshot.appearance.focus && !launcher.visible
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
             width: window.width

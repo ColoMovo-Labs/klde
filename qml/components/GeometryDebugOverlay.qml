@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 
 // Development-only geometry inspection. It is opt-in through Tokens.debugGeometry

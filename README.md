@@ -1,6 +1,6 @@
 # owoDE（技术仓库名：KLDE）
 
-**owoDE** 的正式名称是 **owo Desktop Envirment**（沿用项目确定的拼写），
+**owoDE** 的正式名称是 **owo Desktop Environment**，
 中文名为 **owo 桌面环境**。这是一个面向 Linux / Wayland 的实验性开源桌面
 环境，保留柔和的 Kylin 氛围、Material Expressive 式的形状与动效，以及可扩展
 的浮动 / 平铺工作流。
@@ -145,3 +145,11 @@ GitHub 和 CircleCI 继续保留；CNB 镜像不会替换 CircleCI 的权威检�
 
 项目与 Canonical、Ubuntu Kylin、Kylinsoft、KDE、GNOME、Google、Apple、Microsoft
 或其他灵感来源没有隶属、赞助或商标授权关系。
+
+## Visual Workspace · 可视化工作区
+
+首个计划版本：**v0.0.1 Alpha · YunShuang（云霜）**。现有开发包的技术版本不是正式发布承诺。
+
+在 Qt Design Studio 打开 [`design/owoDE.qmlproject`](design/owoDE.qmlproject)。
+桌面、背景、Ribbon、Dock、启动器、快捷设置、通知、锁屏视觉、语言/欢迎页、设置与窗口/OSD 可分别选择。
+[`中文操作与兼容性说明`](docs/development/visual-workspace.md)解释共享组件、保存与云端验收。

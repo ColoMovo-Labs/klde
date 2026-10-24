@@ -1,6 +1,6 @@
 # owoDE (technical repository identity: KLDE)
 
-**owoDE** (**owo Desktop Envirment · owo 桌面环境**) is an experimental
+**owoDE** (**owo Desktop Environment · owo 桌面环境**) is an experimental
 open-source Linux desktop environment. The repository and technical identifiers
 still use **KLDE** during the controlled migration. It is inspired by
 the visual spirit of early UKUI/Kylin desktops, modern expressive UI design,
@@ -230,3 +230,11 @@ KLDE is independent and is not affiliated with or endorsed by Canonical,
 Ubuntu Kylin, Kylinsoft, Google, KDE, GNOME, Microsoft, Apple, or the other
 projects referenced as inspiration. Names and visual references do not imply
 affiliation or permission to use their trademarks.
+
+## Visual Workspace · 可视化工作区
+
+首个计划版本：**v0.0.1 Alpha · YunShuang（云霜）**。现有开发包的技术版本不是正式发布承诺。
+
+在 Qt Design Studio 打开 [`design/owoDE.qmlproject`](design/owoDE.qmlproject)。
+桌面、背景、Ribbon、Dock、启动器、快捷设置、通知、锁屏视觉、语言/欢迎页、设置与窗口/OSD 可分别选择。
+[`中文操作与兼容性说明`](docs/development/visual-workspace.md)解释共享组件、保存与云端验收。

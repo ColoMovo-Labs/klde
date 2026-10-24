@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma ComponentBehavior: Bound
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 import KLDE.Backends
@@ -85,6 +86,43 @@ Item {
             return;
         pageStack.opacity = 0;
         pageMotion.restart();
+    }
+
+    Connections {
+        target: languageForm.chineseButton
+        function onClicked(): void {
+            Shell.language.setLocale("zh_CN");
+        }
+    }
+    Connections {
+        target: languageForm.englishButton
+        function onClicked(): void {
+            Shell.language.setLocale("en");
+        }
+    }
+    Connections {
+        target: languageForm.continueButton
+        function onClicked(): void {
+            root.next();
+        }
+    }
+    Connections {
+        target: languageForm.accessibilityButton
+        function onClicked(): void {
+            root.accessibilityPanelVisible = !root.accessibilityPanelVisible;
+        }
+    }
+    Connections {
+        target: wordmarkReveal.startButton
+        function onClicked(): void {
+            root.next();
+        }
+    }
+    Connections {
+        target: wordmarkReveal.accessibilityButton
+        function onClicked(): void {
+            root.accessibilityPanelVisible = !root.accessibilityPanelVisible;
+        }
     }
 
     SequentialAnimation {
@@ -211,155 +249,37 @@ Item {
                     }
 
                     Item {
-                        ColumnLayout {
+                        LanguageForm {
+                            id: languageForm
                             anchors.centerIn: parent
-                            width: Math.min(760, parent.width - Tokens.space64)
-                            spacing: Tokens.space16
-                            Icon {
-                                name: "klde"
-                                Layout.preferredWidth: 64
-                                Layout.preferredHeight: 64
-                            }
-                            Label {
-                                objectName: "welcomeLanguageTitle"
-                                text: I18n.t("welcome.language.bootstrap")
-                                color: Tokens.textPrimary
-                                font: Tokens.display
-                            }
-                            Label {
-                                text: I18n.t("welcome.language.bootstrap.subtitle")
-                                color: Tokens.textSecondary
-                                font: Tokens.body
-                                wrapMode: Text.WordWrap
-                                Layout.fillWidth: true
-                            }
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Tokens.space16
-                                ActionButton {
-                                    objectName: "welcomeChinese"
-                                    text: "简体中文"
-                                    font: Tokens.title
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 72
-                                    emphasized: Shell.language.locale === "zh_CN"
-                                    onClicked: Shell.language.setLocale("zh_CN")
-                                }
-                                ActionButton {
-                                    objectName: "welcomeEnglish"
-                                    text: "English"
-                                    font: Tokens.title
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 72
-                                    emphasized: Shell.language.locale === "en"
-                                    onClicked: Shell.language.setLocale("en")
-                                }
-                            }
-                            Label {
-                                visible: root.accessibilityPanelVisible
-                                text: I18n.t("welcome.accessibility.detail")
-                                color: Tokens.textSecondary
-                                font: Tokens.caption
-                                wrapMode: Text.WordWrap
-                                Layout.fillWidth: true
-                            }
-                            RowLayout {
-                                Layout.fillWidth: true
-                                ActionButton {
-                                    text: I18n.t("welcome.accessibility")
-                                    onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
-                                }
-                                Item {
-                                    Layout.fillWidth: true
-                                }
-                                ActionButton {
-                                    objectName: "welcomeLanguageContinue"
-                                    text: I18n.t("welcome.continue")
-                                    emphasized: true
-                                    onClicked: root.next()
-                                }
-                            }
+                            width: Math.min(600, parent.width - Tokens.space32)
+                            selectedLocale: Shell.language.locale
+                            chineseButton.objectName: "welcomeChinese"
+                            englishButton.objectName: "welcomeEnglish"
+                            continueButton.objectName: "welcomeLanguageContinue"
+                        }
+                        Label {
+                            anchors.top: languageForm.bottom
+                            anchors.topMargin: Tokens.space16
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: languageForm.width
+                            visible: root.accessibilityPanelVisible
+                            text: I18n.t("welcome.accessibility.detail")
+                            color: Tokens.textSecondary
+                            font: Tokens.caption
+                            wrapMode: Text.WordWrap
                         }
                     }
-                    Item {
+                    WelcomeBrandForm {
+                        id: wordmarkReveal
+                        property real progress: root.reducedMotionPreview ? 1 : 0
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Item {
-                            id: waveClip
-                            anchors.right: parent.right
-                            anchors.rightMargin: Tokens.space8
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: Math.min(560, parent.width * 0.5)
-                            height: Math.min(500, parent.height * 0.72)
-                            clip: true
-                            Image {
-                                anchors.fill: parent
-                                source: "qrc:/assets/welcome/klde-guide-hero-v2.png"
-                                fillMode: Image.PreserveAspectFit
-                                smooth: true
-                                mipmap: true
-                            }
-                        }
-                        ColumnLayout {
-                            id: welcomeCopy
-                            anchors.left: parent.left
-                            anchors.leftMargin: Tokens.space24
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: Math.min(580, parent.width * 0.48)
-                            spacing: Tokens.space16
-                            Label {
-                                text: I18n.t("welcome.title")
-                                color: Tokens.textPrimary
-                                font: Tokens.display
-                            }
-                            Item {
-                                id: wordmarkReveal
-                                property real progress: root.reducedMotionPreview ? 1 : 0
-                                Layout.alignment: Qt.AlignLeft
-                                Layout.preferredWidth: Math.min(560, welcomeCopy.width)
-                                Layout.preferredHeight: 182
-                                clip: true
-                                Item {
-                                    width: wordmarkReveal.width * wordmarkReveal.progress
-                                    height: parent.height
-                                    clip: true
-                                    Image {
-                                        id: welcomeWordmark
-                                        width: wordmarkReveal.width
-                                        height: wordmarkReveal.height
-                                        source: "qrc:/assets/welcome/klde-wordmark.svg"
-                                        fillMode: Image.PreserveAspectFit
-                                        smooth: true
-                                        mipmap: true
-                                    }
-                                }
-                            }
-                            Label {
-                                text: I18n.t("welcome.intro")
-                                color: Tokens.textSecondary
-                                font: Tokens.body
-                                wrapMode: Text.WordWrap
-                                Layout.fillWidth: true
-                            }
-                            Label {
-                                text: I18n.t("welcome.placeholder")
-                                color: Tokens.textDisabled
-                                font: Tokens.caption
-                                wrapMode: Text.WordWrap
-                                Layout.fillWidth: true
-                            }
-                            RowLayout {
-                                ActionButton {
-                                    text: I18n.t("welcome.get-started")
-                                    emphasized: true
-                                    onClicked: root.next()
-                                }
-                                ActionButton {
-                                    text: I18n.t("welcome.accessibility")
-                                    onClicked: root.accessibilityPanelVisible = !root.accessibilityPanelVisible
-                                }
-                            }
-                        }
+                        revealProgress: progress
+                        headline: I18n.t("welcome.title")
+                        intro: I18n.t("welcome.intro")
+                        startText: I18n.t("welcome.get-started")
+                        accessibilityText: I18n.t("welcome.accessibility")
                     }
                     Item {
                         WelcomeChoicePage {
