@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
+#include <QHash>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QtQml/qqmlregistration.h>
 
 class QWindow;
+class QQuickItem;
 
 namespace klde {
 
@@ -28,7 +31,7 @@ class NativeSurfaceController : public QObject {
     bool compiledIn() const;
     bool wayland() const;
     bool available() const;
-    int attachedSurfaceCount() const { return m_attachedSurfaceCount; }
+    int attachedSurfaceCount() const { return static_cast<int>(m_roles.size()); }
     QString diagnostic() const { return m_diagnostic; }
 
     // The object must be a QWindow that has not been shown yet. Calling this
@@ -36,14 +39,20 @@ class NativeSurfaceController : public QObject {
     // before the first Wayland surface commit.
     Q_INVOKABLE bool attach(QObject *object, const QString &role);
     Q_INVOKABLE bool supportsRole(const QString &role) const;
+    Q_INVOKABLE bool hasRole(const QString &role) const;
 
   signals:
     void changed();
 
   private:
     void setDiagnostic(const QString &diagnostic);
+    void observeInputTree(QQuickItem *item, QWindow *window);
+    void queueInputRegion(QWindow *window);
+    void updateInputRegion(QWindow *window);
 
-    int m_attachedSurfaceCount = 0;
+    QHash<QWindow *, QString> m_roles;
+    QSet<QQuickItem *> m_observedItems;
+    QSet<QWindow *> m_pendingRegions;
     QString m_diagnostic;
 };
 

@@ -6,6 +6,7 @@ import KLDE.Backends
 
 Item {
     id: root
+    readonly property bool nativeInputSurface: true
     property string stateName: "idle"
     property string sizeMode: "standard"
     property bool expanded: false

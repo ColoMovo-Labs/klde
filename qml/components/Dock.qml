@@ -7,6 +7,7 @@ import KLDE.Backends
 
 Surface {
     id: root
+    readonly property bool nativeInputSurface: true
     signal launcherRequested
     signal settingsRequested
     width: dockRow.implicitWidth + Tokens.space24

@@ -5,6 +5,7 @@ import KLDE.Backends
 
 Surface {
     id: root
+    readonly property bool nativeInputSurface: true
     required property int section
     property int degradation: 0
     required property string groupId

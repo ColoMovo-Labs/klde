@@ -9,9 +9,10 @@ Do not replace the host session or install privileged helpers during bring-up.
 ## Current gap, not a release claim
 
 The preview has working cloud packages, bilingual UI and native surface source,
-but most system and window state is still mock. Native ribbon/Dock actions open
-popups owned by a hidden preview window; those need actual native popup/focus
-integration. Native input regions, exclusive zones, maximized clients and
+but most system and window state is still mock. A separate native popup host
+and rounded input regions now replace hidden-preview popup ownership and
+full-window pointer interception in the source. Exact-commit KWin evidence is
+still required before accepting them. Native input regions, exclusive zones, maximized clients and
 multi-output behavior still need protocol evidence and real interaction tests.
 This is not yet a desktop suitable for ordinary daily use.
 

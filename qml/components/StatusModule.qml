@@ -4,6 +4,7 @@ import KLDE.Backends
 
 StatusCapsule {
     id: root
+    objectName: "statusModule-" + module.id
     required property var module
     property bool condensed: false
     readonly property var snapshot: Shell.state.snapshot

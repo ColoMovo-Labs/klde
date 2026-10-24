@@ -13,6 +13,7 @@ g++
 libegl-mesa0
 libgl1-mesa-dri
 libglx-mesa0
+liblayershellqtinterface-dev
 libqt6svg6
 libxcb-cursor0
 mesa-utils

@@ -10,14 +10,15 @@ runtime compatibility finding to keep in the log, not a reason to modify niri
 or patch KWin.
 
 The next implementation boundary is to turn the existing ordinary Qt
-`ApplicationWindow` composition into three independent LayerShellQt-backed
+`ApplicationWindow` composition into independent LayerShellQt-backed
 surfaces without redesigning the approved UI:
 
 | Surface | Intended layer | Intended anchors | Input contract |
 | --- | --- | --- | --- |
-| wallpaper | background | all edges | transparent for input; never focusable |
-| top ribbon + Temporal Capsule | top | top / left / right | pointer input only where controls exist; no keyboard focus |
-| dock | top | bottom / left / right during the first slice | pointer input on dock; no keyboard focus |
+| wallpaper | background | all edges; exclusive zone -1 | transparent for input; never focusable |
+| top ribbon + Temporal Capsule | top | top / left / right | rounded input masks around visible groups; no keyboard focus |
+| dock | top | bottom / left / right | rounded input mask around dock; no keyboard focus |
+| popup host | overlay | all edges; exclusive zone -1 | mapped only while a dismissible panel is open; temporary keyboard focus |
 
 `src/platform/wayland/NativeSurfaceController.*` is the optional adapter. It
 uses the public LayerShellQt interface when CMake finds
@@ -53,8 +54,20 @@ OWODE_MODE=native OWODE_APP='your-qt-wayland-app' \
   bash tools/run-owode-session.sh
 ```
 
-Each invocation chooses a unique socket name and cleans up only its own KWin,
-shell and optional application PIDs. It does not remove a pre-existing socket.
+Each invocation uses its own private runtime directory, configuration, cache,
+data home and D-Bus session; it cleans up only its own KWin, shell and optional
+application PIDs. Logs remain in the printed evidence directory (override with
+`OWODE_EVIDENCE_DIR`). It does not remove a pre-existing socket.
+
+The launcher chooses a visible X11-hosted viewport when a parent `DISPLAY`
+exists, otherwise an explicit parent Wayland display. Select
+`OWODE_BACKEND=virtual` only for deliberate headless use. It never silently
+switches a visible test to a virtual output. The `--exit-with-session` option
+requires a program argument and is not used by this separately managed runner.
+The nested children receive only the inner Wayland display. X11 applications
+are not supported by this launcher yet: an inner Xwayland display and environment
+handoff remain a daily-use requirement. No host X11 application is launched as
+a misleading substitute.
 The historical `wayland-2` name and the reported PIDs 38175 / 41961 are
 evidence labels only, never configuration.
 
@@ -70,12 +83,84 @@ change the host niri cursor.
 | --- | --- |
 | Nested KWin 6.7.5 starts beside niri | verified by owner report |
 | Real Qt client and owoDE preview coexist | verified by owner report |
-| LayerShellQt smoke test source and explicit mode | implemented; Fedora execution pending |
-| Wallpaper background role | source adapter implemented; protocol/log evidence pending |
-| Ribbon anchoring and exclusive zone | source adapter implemented; KWin verification pending |
-| Dock anchoring and pointer region | source adapter implemented; input verification pending |
-| Maximization, focus and popup placement | pending target-host evidence |
+| LayerShellQt smoke test source and explicit mode | implemented; uses the production controller |
+| Wallpaper background role | source uses background / all anchors / zone -1; KWin protocol validation required |
+| Ribbon anchoring and exclusive zone | source reserves actual surface height, updates on resize; KWin validation required |
+| Dock anchoring and pointer region | event-driven rounded input masks implemented; KWin input validation required |
+| Popup placement and keyboard | independent native host implemented; hidden preview is no longer the popup parent; KWin validation required |
+| Maximization and focus restoration | covered by the new isolated cloud test; current-commit results still required |
 | Mock/Visual Lab regression path | preserved in CircleCI configuration |
 
-No LingmoOS application migration, compositor rewrite or advanced tiling work is
-part of this milestone.
+## Isolated cloud acceptance
+
+`tools/native-session-smoke.sh` runs a nested X11-backend KWin over Xvfb/Mesa,
+inside a private `dbus-run-session`, runtime directory and configuration. It
+never connects to the owner's niri session. Dedicated Ubuntu/Fedora jobs build
+`OWODE_BUILD_NATIVE_TESTS=ON`; the tools refuse a normal host environment.
+
+The test loads the production QML surfaces, starts a separate ordinary Qt
+Wayland application, queries actual KWin window geometry/types through a
+temporary script, and injects pointer/keyboard input through KWin's test
+protocol. It checks maximization, transparent gaps, launcher search input,
+Escape/outside dismissal, focus restoration, modifier-drag and ordinary close.
+Screenshots show the actual nested compositor output, not an assembled mockup.
+It also launches the actual `klde-shell --native-shell-surfaces` CLI. Raw
+Wayland requests, configure acknowledgements, KWin snapshots/version/support
+information, interaction results and shutdown evidence accompany the captures.
+
+The copied test-only protocol is documented in [third-party notices](../legal/third-party.md).
+It is never linked into the production shell and must not be used as an input
+backend. No Plasma Shell, host settings, privileged helper or display-manager
+entry is installed. Ubuntu also builds the C++ LayerShellQt interface now;
+its QML module is not a prerequisite for our C++ adapter.
+
+KWin interprets the layer-shell namespace as a window-type hint. The adapter
+uses canonical `desktop`, `dock` and `on-screen-display` namespaces while
+retaining owoDE object names for role diagnostics. A branded namespace would
+fall back to KWin's Normal type, despite requesting the background layer; see
+[KWin's implementation](https://github.com/KDE/kwin/blob/Plasma/6.7/src/layershellv1window.cpp).
+Protocol verification therefore checks namespace, layer and anchors together.
+
+Distribution KWin binaries may carry `cap_sys_nice`, which restricted cloud
+containers do not grant. The runner copies only the binary bytes into its own
+temporary runtime, verifies an identical hash and absence of file capabilities,
+and leaves the distribution binary unchanged. It does not add container
+capabilities or claim representative scheduling/GPU performance.
+
+This is single-output cloud correctness evidence. Owner-host interaction,
+multi-output/hotplug, session services, locking and daily-use acceptance remain
+separate gates. Native panels use the opaque material fallback because they do
+not capture unrelated application content. Native compositor blur is later work.
+The independent calculator engine port does not change this milestone's native
+surface scope. No compositor rewrite or advanced tiling is included.
+
+The isolated runner installs a private desktop entry for the test executable with
+`X-KDE-Wayland-Interfaces=org_kde_kwin_fake_input` and refreshes only its private
+service cache. A private minimal applications menu makes that entry discoverable
+even in cloud images without a desktop menu package. KWin's normal permission
+checks remain enabled. The production
+shell does not request input injection. This follows KWin's
+[service authorization](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/utils/serviceutils.h)
+and [Wayland interface filtering](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/wayland_server.cpp).
+
+Input masks are double-buffered Wayland surface state. After a geometry or
+visibility change, the controller requests one Quick update so the new mask is
+committed even when the scene has become static. This is event-driven, not a
+repeating repaint timer. Raw `set_input_region` requests alone are insufficient
+proof; the acceptance test also clicks both a visible Dock control and its
+transparent surroundings with a genuine application underneath.
+
+The capture helper requests the isolated compositor's actual output through
+[KWin ScreenShot2](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/plugins/screenshot/screenshotdbusinterface2.cpp).
+Its private desktop entry requests only that D-Bus interface. No host root
+window or screen is captured. Each PNG includes compositor metadata in a JSON
+sidecar; output comes from KWin. When KWin confirms a QPainter compositor, an explicitly labelled X11 viewport
+capture is used instead. KWin 6.6 does not register ScreenShot2 in that mode;
+KWin 6.7 registers it but its capture implementation requires `EglBackend` and
+returns a cancellation without one. This is a renderer capability check,
+not a fallback from a rejected permission request. The helper matches that viewport's PID with the private
+KWin D-Bus owner before capturing; it never captures an X11 root window. Each
+sidecar identifies the actual transport. Neither transport replaces protocol
+and interaction assertions, and images still require visual inspection. This test-only API does not add a production screenshot service.
+KWin's handled SIGTERM produces exit status 15; the runner records that status
+and additionally requires its socket to disappear before accepting shutdown.
