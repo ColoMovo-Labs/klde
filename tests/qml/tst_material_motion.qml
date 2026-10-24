@@ -35,12 +35,12 @@ Item {
         }
 
         function test_springsAreFiniteMonotonicSplines() {
-            const springs = [Tokens.springSpatialFast, Tokens.springSpatialMicro, Tokens.springHover,
-                             Tokens.springPopup, Tokens.springSpatial, Tokens.springSpatialSlow,
-                             Tokens.springEffectsFast, Tokens.springEffects, Tokens.springEffectsSlow];
+            const springs = [Tokens.springSpatialFast, Tokens.springSpatialMicro, Tokens.springHover, Tokens.springPopup, Tokens.springSpatial, Tokens.springSpatialSlow, Tokens.springEffectsFast, Tokens.springEffects, Tokens.springEffectsSlow];
             for (const spring of springs) {
                 verify(spring.duration > 0 && spring.duration < 1000, "spring duration " + spring.duration);
                 compare(spring.curve.length % 6, 0);
+                // QEasingCurve preallocates ten BezierSpline segments; more corrupts the heap.
+                verify(spring.curve.length / 6 <= 10, "at most ten spline segments");
                 compare(spring.curve[spring.curve.length - 2], 1);
                 compare(spring.curve[spring.curve.length - 1], 1);
                 let previous = 0;

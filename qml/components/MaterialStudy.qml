@@ -268,6 +268,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
         background: Rectangle {
+            id: buttonShape
             radius: button.down ? Tokens.radiusS : height / 2
             color: button.down ? Qt.darker(Tokens.primary, 1.1) : button.hovered ? Qt.lighter(Tokens.primary, 1.08) : Tokens.primary
             Behavior on radius {
@@ -289,7 +290,7 @@ Item {
                 visible: button.visualFocus
                 anchors.fill: parent
                 anchors.margins: -Tokens.space3
-                radius: parent.radius + Tokens.space3
+                radius: buttonShape.radius + Tokens.space3
                 color: "transparent"
                 border.width: Tokens.space2
                 border.color: Tokens.textPrimary

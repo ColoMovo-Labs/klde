@@ -138,7 +138,9 @@ QtObject {
         let settle = 0.004;
         while (envelope(settle) > springSettleError && settle < 2)
             settle += 0.004;
-        const segments = 12;
+        // QEasingCurve's BezierSpline preallocates ten segments and writes past
+        // them without bounds checks (Qt 6.10/6.11), so never exceed springSegments.
+        const segments = springSegments;
         const curve = [];
         for (let i = 1; i <= segments; ++i) {
             const start = (i - 1) / segments, end = i / segments, step = 1 / segments;
@@ -160,6 +162,7 @@ QtObject {
         };
     }
     readonly property real springSettleError: 0.0008
+    readonly property int springSegments: 10
     readonly property bool expressiveMotion: motionLevel === 2
     readonly property real springSpeed: motionLevel === 3 ? 0.8 : 1.0
     // Spatial springs move and resize. Keep production overshoot restrained: the

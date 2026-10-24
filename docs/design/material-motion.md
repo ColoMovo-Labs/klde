@@ -19,7 +19,7 @@ and the study labels its tiers as references rather than product names.
 ## Motion tokens
 
 `Tokens.spring(dampingRatio, stiffness)` evaluates the damped unit-mass spring
-response and bakes it into a 12-segment Bezier spline that settles within 0.08%.
+response and bakes it into a 10-segment Bezier spline (the most QEasingCurve can hold safely) that settles within 0.08%.
 Durations stay finite, reduced motion collapses them to zero and the idle audit
 sees a definite end. The values follow the Material Expressive physics schemes:
 
