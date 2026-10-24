@@ -26,7 +26,7 @@ ColumnLayout {
         font: Tokens.headline
         color: Tokens.textPrimary
     }
-    Action {
+    AnimatedAction {
         id: chineseButton
         Layout.fillWidth: true
         text: "简体中文"
@@ -35,7 +35,7 @@ ColumnLayout {
         emphasized: checked
         font: Tokens.body
     }
-    Action {
+    AnimatedAction {
         id: englishButton
         Layout.fillWidth: true
         text: "English"
@@ -54,7 +54,7 @@ ColumnLayout {
         Item {
             Layout.fillWidth: true
         }
-        Action {
+        AnimatedAction {
             id: continueButton
             text: root.selectedLocale === "zh_CN" ? "继续" : "Continue"
             emphasized: true

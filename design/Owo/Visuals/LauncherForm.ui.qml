@@ -6,6 +6,7 @@ import QtQuick.Layouts
 
 Item {
     id: root
+    objectName: "launcherForm"
     width: 600
     height: 432
     property bool gridMode: true

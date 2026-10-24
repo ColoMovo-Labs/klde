@@ -64,7 +64,7 @@ Item {
             Layout.fillWidth: true
         }
         RowLayout {
-            Action {
+            AnimatedAction {
                 id: startButton
                 text: root.startText
                 font: Tokens.label
@@ -72,7 +72,7 @@ Item {
                 palette.buttonText: Tokens.textOnPrimary
                 palette.button: Tokens.primary
             }
-            Action {
+            AnimatedAction {
                 id: accessibilityButton
                 text: root.accessibilityText
                 font: Tokens.label

@@ -1,6 +1,6 @@
 module Owo.Visuals
-Action 1.0 Action.qml
 ActionForm 1.0 ActionForm.ui.qml
+AnimatedAction 1.0 AnimatedAction.qml
 AppTile 1.0 AppTile.qml
 AppTileForm 1.0 AppTileForm.ui.qml
 singleton Assets 1.0 Assets.qml

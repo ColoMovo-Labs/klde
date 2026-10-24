@@ -69,7 +69,7 @@ ApplicationWindow {
     }
     PreviewController {
         id: controller
-        scene: scene.item
+        scene: sceneLoader.item
         onSceneRequested: name => root.sceneName = name
     }
     ScrollView {
@@ -90,7 +90,7 @@ ApplicationWindow {
                 text: controller.notice
             }
             Loader {
-                id: scene
+                id: sceneLoader
                 anchors.fill: parent
                 source: "scenes/" + root.sceneName + ".ui.qml"
             }

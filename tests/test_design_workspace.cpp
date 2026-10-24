@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <QDir>
 #include <QFileInfo>
+#include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickView>
@@ -12,6 +13,33 @@
 class DesignWorkspaceTest : public QObject {
     Q_OBJECT
   private slots:
+    void previewInteraction() {
+        QQmlApplicationEngine engine;
+        engine.addImportPath(QStringLiteral(OWODE_DESIGN_DIR));
+        const QSignalSpy warnings(&engine, &QQmlApplicationEngine::warnings);
+        engine.load(QUrl::fromLocalFile(QStringLiteral(OWODE_DESIGN_DIR "/Preview.qml")));
+        QCOMPARE(engine.rootObjects().size(), 1);
+        auto *window = qobject_cast<QQuickWindow *>(engine.rootObjects().first());
+        QVERIFY(window);
+        window->setProperty("sceneName", QStringLiteral("QuickSettings"));
+        QTRY_VERIFY(window->findChild<QQuickItem *>(QStringLiteral("quickDnd")));
+        auto *dnd = window->findChild<QQuickItem *>(QStringLiteral("quickDnd"));
+        QVERIFY(!dnd->property("selected").toBool());
+        dnd->forceActiveFocus();
+        QTest::keyClick(window, Qt::Key_Space);
+        QTRY_VERIFY(dnd->property("selected").toBool());
+        window->setProperty("sceneName", QStringLiteral("Launcher"));
+        QTRY_VERIFY(window->findChild<QQuickItem *>(QStringLiteral("launcherForm")));
+        auto *launcher = window->findChild<QQuickItem *>(QStringLiteral("launcherForm"));
+        QVERIFY(launcher->property("gridMode").toBool());
+        auto *list = window->findChild<QQuickItem *>(QStringLiteral("launcherListButton"));
+        QVERIFY(list);
+        list->forceActiveFocus();
+        QTest::keyClick(window, Qt::Key_Space);
+        QTRY_VERIFY(!launcher->property("gridMode").toBool());
+        QCOMPARE(warnings.count(), 0);
+        window->close();
+    }
     void scenes_data() {
         QTest::addColumn<QString>("scene");
         const QDir directory(QStringLiteral(OWODE_DESIGN_DIR "/scenes"));

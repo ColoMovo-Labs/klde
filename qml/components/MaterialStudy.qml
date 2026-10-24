@@ -86,7 +86,7 @@ Item {
         onCaptureRevisionChanged: refreshCapture()
         SequentialAnimation {
             id: cubicEntrance
-            ScriptAction {
+            ScriptAnimatedAction {
                 script: {
                     card.opacity = 0;
                     card.scale = Tokens.popupStartScale;
@@ -110,13 +110,13 @@ Item {
                     easing.type: Tokens.emphasizedDecelerate
                 }
             }
-            ScriptAction {
+            ScriptAnimatedAction {
                 script: card.refreshCapture()
             }
         }
         SequentialAnimation {
             id: springEntrance
-            ScriptAction {
+            ScriptAnimatedAction {
                 script: {
                     card.opacity = 0;
                     card.scale = Tokens.revealScale;
@@ -152,7 +152,7 @@ Item {
                     easing.bezierCurve: Tokens.springSpatial.curve
                 }
             }
-            ScriptAction {
+            ScriptAnimatedAction {
                 script: card.refreshCapture()
             }
         }

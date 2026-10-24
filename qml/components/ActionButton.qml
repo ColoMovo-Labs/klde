@@ -2,4 +2,4 @@
 import QtQuick
 import Owo.Visuals
 
-Action {}
+AnimatedAction {}

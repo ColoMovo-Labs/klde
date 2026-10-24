@@ -95,12 +95,12 @@ Item {
         }
         RowLayout {
             Layout.fillWidth: true
-            Action {
+            AnimatedAction {
                 id: languageButton
                 text: "语言与输入 / Language & input"
                 Layout.fillWidth: true
             }
-            Action {
+            AnimatedAction {
                 id: effectsButton
                 text: "高级效果 / Advanced effects"
                 Layout.fillWidth: true
