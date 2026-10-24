@@ -16,4 +16,20 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Tokens.space24
     }
+    states: [
+        State {
+            name: "light"
+            PropertyChanges {
+                target: Tokens
+                darkMode: false
+            }
+        },
+        State {
+            name: "dark"
+            PropertyChanges {
+                target: Tokens
+                darkMode: true
+            }
+        }
+    ]
 }

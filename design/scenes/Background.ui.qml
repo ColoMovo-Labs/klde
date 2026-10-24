@@ -5,4 +5,21 @@ import QtQuick.Layouts
 import Owo.Visuals
 import ".."
 
-BackgroundForm {}
+BackgroundForm {
+    states: [
+        State {
+            name: "light"
+            PropertyChanges {
+                target: Tokens
+                darkMode: false
+            }
+        },
+        State {
+            name: "dark"
+            PropertyChanges {
+                target: Tokens
+                darkMode: true
+            }
+        }
+    ]
+}

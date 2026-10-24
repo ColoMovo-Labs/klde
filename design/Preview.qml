@@ -17,6 +17,9 @@ ApplicationWindow {
     property int viewportHeight: 900
     readonly property var scenes: ["Desktop", "Background", "TopRibbon", "Dock", "Launcher", "QuickSettings", "NotificationCenter", "LockScreen", "Language", "Welcome", "Settings", "WindowOsd"]
     palette.window: Tokens.surface
+    palette.windowText: Tokens.textPrimary
+    palette.base: Tokens.surfaceElevated
+    palette.button: Tokens.surfaceContainer
     palette.text: Tokens.textPrimary
     palette.buttonText: Tokens.textPrimary
     palette.highlight: Tokens.primaryContainer
@@ -45,6 +48,10 @@ ApplicationWindow {
             ComboBox {
                 model: ["100%", "125%", "150%", "200%"]
                 onActivated: Tokens.textScale = [1, 1.25, 1.5, 2][currentIndex]
+            }
+            ComboBox {
+                model: ["画布 100%", "画布 125%", "画布 150%"]
+                onActivated: root.previewScale = [1, 1.25, 1.5][currentIndex]
             }
             Switch {
                 text: "Dark"

@@ -8,6 +8,18 @@ Item {
     width: 720
     height: 200
     property bool manualColors: false
+    property int displaySize: 48
+    property int headlineSize: 30
+    property int titleSize: 22
+    property int bodySize: 16
+    property int labelSize: 14
+    property int captionSize: 12
+    property real surfaceOpacityLow: 0.72
+    property real surfaceOpacityMedium: 0.88
+    property real surfaceOpacityHigh: 0.97
+    property int elevationLow: 2
+    property int elevationMedium: 6
+    property int elevationHigh: 12
     property int radiusXS: 4
     property int radiusS: 8
     property int radiusM: 14

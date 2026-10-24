@@ -17,4 +17,20 @@ Item {
         id: interactiveForm
         anchors.centerIn: parent
     }
+    states: [
+        State {
+            name: "light"
+            PropertyChanges {
+                target: Tokens
+                darkMode: false
+            }
+        },
+        State {
+            name: "dark"
+            PropertyChanges {
+                target: Tokens
+                darkMode: true
+            }
+        }
+    ]
 }

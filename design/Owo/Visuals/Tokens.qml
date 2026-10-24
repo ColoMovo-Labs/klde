@@ -57,9 +57,9 @@ QtObject {
     readonly property color accentLilac: darkMode ? "#d6b8ed" : "#76518e"
     readonly property color accentApricot: darkMode ? "#efc29f" : "#885834"
 
-    readonly property real surfaceOpacityLow: 0.72
-    readonly property real surfaceOpacityMedium: 0.88
-    readonly property real surfaceOpacityHigh: 0.97
+    readonly property real surfaceOpacityLow: design.surfaceOpacityLow
+    readonly property real surfaceOpacityMedium: design.surfaceOpacityMedium
+    readonly property real surfaceOpacityHigh: design.surfaceOpacityHigh
     readonly property int radiusXS: design.radiusXS
     readonly property int radiusS: design.radiusS
     readonly property int radiusM: design.radiusM
@@ -90,31 +90,31 @@ QtObject {
     readonly property string fontFamily: glowRegular.status === FontLoader.Ready ? glowRegular.name : cjk ? "Noto Sans CJK SC" : "Sans Serif"
     readonly property font display: Qt.font({
         family: fontFamily,
-        pixelSize: 48 * textScale,
+        pixelSize: design.displaySize * textScale,
         weight: Font.DemiBold
     })
     readonly property font headline: Qt.font({
         family: fontFamily,
-        pixelSize: 30 * textScale,
+        pixelSize: design.headlineSize * textScale,
         weight: Font.DemiBold
     })
     readonly property font title: Qt.font({
         family: fontFamily,
-        pixelSize: 22 * textScale,
+        pixelSize: design.titleSize * textScale,
         weight: Font.Medium
     })
     readonly property font body: Qt.font({
         family: fontFamily,
-        pixelSize: 16 * textScale
+        pixelSize: design.bodySize * textScale
     })
     readonly property font label: Qt.font({
         family: fontFamily,
-        pixelSize: (cjk ? 15 : 14) * textScale,
+        pixelSize: (design.labelSize + (cjk ? 1 : 0)) * textScale,
         weight: Font.Medium
     })
     readonly property font caption: Qt.font({
         family: fontFamily,
-        pixelSize: (cjk ? 13 : 12) * textScale
+        pixelSize: (design.captionSize + (cjk ? 1 : 0)) * textScale
     })
 
     readonly property real motionScale: motionLevel === 3 ? 0.8 : motionLevel === 2 ? 1.2 : 1.0
@@ -257,9 +257,9 @@ QtObject {
     readonly property int materialThumbPressed: 28
     readonly property int materialHoverLift: space4
     readonly property int elevationFlat: 0
-    readonly property int elevationLow: 2
-    readonly property int elevationMedium: 6
-    readonly property int elevationHigh: 12
+    readonly property int elevationLow: design.elevationLow
+    readonly property int elevationMedium: design.elevationMedium
+    readonly property int elevationHigh: design.elevationHigh
     readonly property int blurNone: 0
     readonly property int blurLow: 8
     readonly property int blurMedium: 16

@@ -52,7 +52,7 @@ bash tools/design-preview.sh
 ## 统一颜色、尺寸与主题
 
 打开 `design/Owo/Visuals/ThemeValues.ui.qml`，选中根项目，在自定义属性区域调整
-`radius*`、`space*`、`panelWidth`、`dockHeight`、`launcherWidth/Height` 和动画时长。
+`radius*`、`space*`、`panelWidth`、`dockHeight`、`launcherWidth/Height`、字体尺寸、透明度、层级和动画时长。
 这些是 `Tokens` 真正读取的默认值，不是另一份设计样例。
 
 默认继续使用原有 Monet 壁纸取色。需要手动配置颜色时，将 `manualColors` 设为 true，
@@ -68,6 +68,8 @@ bash tools/design-preview.sh
 1. `Ctrl+S` 保存共享表单，2D 画布更新；使用 Preview 查看实际 Qt Quick 渲染。
 2. `design/Preview.qml` 的顶部控件切换场景、逻辑分辨率、文字缩放和浅/深色。
    设计场景使用明确标注的模拟数据，没有系统服务写操作。
+   画布缩放和文字缩放可分别调整；系统 DPI 可用 `QT_SCALE_FACTOR=1.25 bash tools/design-preview.sh` 检查。
+   每个场景根对象的 States 含 `light` / `dark`，可在 2D 画布直接切换。
 3. 启动器预览支持网格/列表与搜索；快捷设置预览的切换只改设计状态。
 4. 独立命令行预览重新运行可读取保存后的文件；Qt Design Studio 自身的实时预览由设计器管理。
 5. 提交共享文件并推送功能分支，让 CircleCI / CNB 云端构建、测试、截图和打包。

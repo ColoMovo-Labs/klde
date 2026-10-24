@@ -43,4 +43,20 @@ Item {
             decorationVisible: false
         }
     }
+    states: [
+        State {
+            name: "light"
+            PropertyChanges {
+                target: Tokens
+                darkMode: false
+            }
+        },
+        State {
+            name: "dark"
+            PropertyChanges {
+                target: Tokens
+                darkMode: true
+            }
+        }
+    ]
 }

@@ -16,4 +16,20 @@ Item {
         anchors.top: parent.top
         width: parent.width
     }
+    states: [
+        State {
+            name: "light"
+            PropertyChanges {
+                target: Tokens
+                darkMode: false
+            }
+        },
+        State {
+            name: "dark"
+            PropertyChanges {
+                target: Tokens
+                darkMode: true
+            }
+        }
+    ]
 }
