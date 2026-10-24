@@ -33,7 +33,17 @@ if hashlib.sha256(target.read_bytes()).hexdigest() != digest:
     'hardwarePerformanceBenchmark': False,
 }, indent=2) + '\n')
 PY
-mkdir -p "$runtime_dir/config" "$runtime_dir/cache" "$runtime_dir/data"
+mkdir -p "$runtime_dir/config" "$runtime_dir/cache" "$runtime_dir/data/applications"
+# KWin authorizes restricted interfaces through the executable's desktop entry.
+# Only this test client requests input injection, in this private data directory.
+cat > "$runtime_dir/data/applications/org.owode.NativeAudit.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=owoDE isolated native test
+Exec=$build_dir/bin/klde-native-session-test
+NoDisplay=true
+X-KDE-Wayland-Interfaces=org_kde_kwin_fake_input;
+EOF
 # These bindings exist only in this runner's private config, never on the host.
 cat > "$runtime_dir/config/kwinrc" <<'EOF'
 [MouseBindings]
@@ -56,6 +66,7 @@ set -euo pipefail
 build_dir=$1
 out_dir=$2
 kwin_pid=
+kbuildsycoca6 --noincremental > "$out_dir/desktop-cache.log" 2>&1
 cleanup() {
     if [[ -n "$kwin_pid" ]] && kill -0 "$kwin_pid" 2>/dev/null; then
         kill -TERM "$kwin_pid"
