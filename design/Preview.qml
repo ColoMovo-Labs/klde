@@ -60,6 +60,11 @@ ApplicationWindow {
             }
         }
     }
+    PreviewController {
+        id: controller
+        scene: scene.item
+        onSceneRequested: name => root.sceneName = name
+    }
     ScrollView {
         anchors.fill: parent
         contentWidth: Math.max(width, root.viewportWidth * root.previewScale)
@@ -69,6 +74,14 @@ ApplicationWindow {
             height: root.viewportHeight
             scale: root.previewScale
             transformOrigin: Item.TopLeft
+            OsdForm {
+                z: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Tokens.space24
+                visible: controller.notice.length > 0
+                text: controller.notice
+            }
             Loader {
                 id: scene
                 anchors.fill: parent

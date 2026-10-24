@@ -6,15 +6,16 @@ import Owo.Visuals
 import ".."
 
 Item {
+    property alias controls: interactiveForm
     width: 600
     height: 620
     SurfaceForm {
         anchors.centerIn: parent
         width: 432
-        height: form.implicitHeight + Tokens.space32
+        height: interactiveForm.implicitHeight + Tokens.space32
     }
     QuickSettingsForm {
-        id: form
+        id: interactiveForm
         anchors.centerIn: parent
         width: 400
     }

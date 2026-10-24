@@ -322,12 +322,10 @@ ApplicationWindow {
     }
     Dock {
         id: dock
-        parent: desktopLayout.dockHost
         visible: !window.nativeSurfaceMode && !window.welcomeMode && !window.snapshot.appearance.focus && !launcher.visible
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
+        y: desktopLayout.dockHost.y
         onLauncherRequested: window.showView("launcher")
         onSettingsRequested: window.showView("quick-settings")
     }

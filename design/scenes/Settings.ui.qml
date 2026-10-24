@@ -6,6 +6,7 @@ import Owo.Visuals
 import ".."
 
 Item {
+    property alias settings: interactiveForm
     width: 760
     height: 700
     SurfaceForm {
@@ -20,6 +21,7 @@ Item {
             subtitle: "视觉预览 / Design Preview"
         }
         SettingsForm {
+            id: interactiveForm
             Layout.fillWidth: true
         }
         Item {

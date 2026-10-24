@@ -30,7 +30,7 @@ class ShellStartupTest final : public QObject {
         QVERIFY(window->findChild<QObject *>(QStringLiteral("statusLabel")) != nullptr);
         QCoreApplication::processEvents();
         auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
-        auto *tokens = engine.singletonInstance<QObject *>("KLDE.Shell", "Tokens");
+        auto *tokens = engine.singletonInstance<QObject *>("Owo.Visuals", "Tokens");
         QVERIFY(services != nullptr && tokens != nullptr);
         QVERIFY(services->language()->setLocale(QStringLiteral("zh_CN")));
         QTRY_VERIFY(window->title().contains(QStringLiteral("桌面外壳")));

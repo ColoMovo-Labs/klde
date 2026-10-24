@@ -2,6 +2,21 @@
 import QtQuick
 
 ListModel {
+    id: root
+    property var sourceRows: []
+    Component.onCompleted: {
+        const rows = [];
+        for (let i = 0; i < count; ++i)
+            rows.push(JSON.parse(JSON.stringify(get(i))));
+        sourceRows = rows;
+    }
+    function filter(query: string): void {
+        clear();
+        for (const row of sourceRows)
+            if ((row.displayName + row.description + row.appId).toLowerCase().indexOf(query.toLowerCase()) >= 0)
+                append(row);
+    }
+
     ListElement {
         appId: "files"
         displayName: "文件管理器"

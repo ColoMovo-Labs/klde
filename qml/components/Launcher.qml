@@ -13,6 +13,15 @@ ShellPopup {
     transformOrigin: Item.Bottom
     property bool gridMode: true
     property int currentIndex: 0
+    readonly property var applicationNames: ({
+            files: I18n.s("Files"),
+            browser: I18n.s("Browser"),
+            terminal: I18n.s("Terminal"),
+            notes: I18n.s("Notes"),
+            music: I18n.s("Music"),
+            settings: I18n.s("Settings")
+        })
+    readonly property var applicationDescriptions: ({})
     width: Math.min(Math.max(Tokens.launcherWidth, integratedDock.width + padding * 2), parent ? parent.width - Tokens.space32 : Tokens.launcherWidth)
     height: Math.min(Tokens.launcherHeight + Tokens.dockHeight, parent ? parent.height - Tokens.space32 : Tokens.launcherHeight)
     onOpened: {
@@ -42,6 +51,8 @@ ShellPopup {
             Layout.fillHeight: true
             gridMode: root.gridMode
             applications: Shell.search
+            appNames: root.applicationNames
+            appDescriptions: root.applicationDescriptions
             actionTarget: root
             currentIndex: root.currentIndex
             searchPlaceholder: I18n.t("shell.launcher.placeholder")

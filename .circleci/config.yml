@@ -180,6 +180,19 @@ jobs:
       - store_artifacts:
           path: artifacts/environment
 
+  designer-compat:
+    executor: fedora-qt
+    steps:
+      - run:
+          name: Install QML Designer runtime and isolated X server
+          command: dnf install -y --setopt=install_weak_deps=False git openssh-clients qt-creator qt6-qtsvg mesa-dri-drivers mesa-libGL mesa-libEGL xorg-x11-server-Xvfb xorg-x11-xauth google-noto-sans-cjk-vf-fonts
+      - checkout
+      - run:
+          name: Render every form scene with QML Designer's own renderer
+          command: bash tools/check-designer-renderer.sh artifacts/designer
+      - store_artifacts:
+          path: artifacts/designer
+
   static-analysis:
     executor: ubuntu-qt
     steps:
@@ -381,6 +394,7 @@ workflows:
           filters:
             branches:
               ignore: feat/native-session-surfaces
+      - designer-compat
       - configure-build
       - fedora-build
       - native-ubuntu:

@@ -6,6 +6,7 @@ import Owo.Visuals
 import ".."
 
 Item {
+    property alias language: interactiveForm
     width: 1440
     height: 900
     Rectangle {
@@ -13,6 +14,7 @@ Item {
         color: Tokens.background
     }
     LanguageForm {
+        id: interactiveForm
         anchors.centerIn: parent
     }
 }

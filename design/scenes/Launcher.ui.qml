@@ -6,6 +6,9 @@ import Owo.Visuals
 import ".."
 
 Item {
+    property alias launcher: launcherForm
+    property alias dock: previewDock
+    property alias applications: apps
     width: 1000
     height: 760
     MockApplications {
@@ -22,6 +25,7 @@ Item {
         height: 572
         spacing: Tokens.space12
         LauncherForm {
+            id: launcherForm
             Layout.fillWidth: true
             Layout.fillHeight: true
             applications: apps
@@ -32,6 +36,7 @@ Item {
             color: Tokens.surfaceEdge
         }
         DockForm {
+            id: previewDock
             Layout.alignment: Qt.AlignHCenter
             applications: apps
             decorationVisible: false

@@ -3,8 +3,9 @@ import QtQuick
 import Owo.Visuals
 import KLDE.Backends
 
-Item {
+RibbonForm {
     id: root
+    showSamples: false
     signal action(string moduleId)
     property Item backdropSource: null
     property string islandState: "idle"

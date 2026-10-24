@@ -61,7 +61,7 @@ install(FILES README.md ../../LICENSE DESTINATION "${notices}")
 # Corresponding source travels with the binary: pinned upstream, modifications,
 # the independent frontend and the shared palette. No source offer can expire.
 install(DIRECTORY . DESTINATION "${notices}/source/apps/calculator")
-install(FILES ../../design/Owo/Visuals/MonetPalette.qml DESTINATION "${notices}/source/qml")
+install(FILES ../../design/Owo/Visuals/MonetPalette.qml DESTINATION "${notices}/source/design/Owo/Visuals")
 install(FILES ../../LICENSE DESTINATION "${notices}/source")
 install(FILES ../../tools/fetch-lingmo-calculator.py DESTINATION "${notices}/source/tools")
 install(FILES "${upstream}/../lingmo-calculator-source.tar.gz" DESTINATION "${notices}/source")

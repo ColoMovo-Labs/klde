@@ -6,6 +6,7 @@ import Owo.Visuals
 import ".."
 
 Item {
+    property alias welcome: interactiveForm
     width: 1440
     height: 900
     BackgroundForm {
@@ -16,6 +17,7 @@ Item {
         anchors.margins: Tokens.space32
     }
     WelcomeBrandForm {
+        id: interactiveForm
         anchors.fill: parent
         anchors.margins: Tokens.space64
     }
