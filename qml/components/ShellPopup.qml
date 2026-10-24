@@ -13,6 +13,7 @@ Popup {
     background: Surface {
         id: popupSurface
         padding: 0
+        material: "acrylic"
         backdropSource: root.backdropSource
     }
     enter: Transition {

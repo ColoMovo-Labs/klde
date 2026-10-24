@@ -5,6 +5,7 @@ import KLDE.Backends
 Item {
     id: root
     signal action(string moduleId)
+    property Item backdropSource: null
     property string islandState: "idle"
     visible: Shell.ribbon.enabled
     readonly property bool stacked: width < Tokens.ribbonStackThreshold
@@ -16,6 +17,7 @@ Item {
         objectName: "ribbonLeft"
         degradation: root.degradation
         section: 0
+        backdropSource: root.backdropSource
         width: Math.min(naturalWidth, root.sideWidth)
         y: root.stacked ? Tokens.ribbonBandHeight + Tokens.ribbonGroupGap : 0
         height: implicitHeight
@@ -35,6 +37,7 @@ Item {
         objectName: "ribbonRight"
         degradation: root.degradation
         section: 2
+        backdropSource: root.backdropSource
         x: parent.width - width
         y: left.y
         width: Math.min(naturalWidth, root.sideWidth)

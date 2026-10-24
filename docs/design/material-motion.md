@@ -54,6 +54,13 @@ opaque fill and border. Glass refracts only KLDE-owned wallpaper. Over real
 application windows it must fall back to Acrylic until a compositor backdrop
 adapter exists; see [blur architecture](../architecture/blur.md).
 
+## Default shell mapping
+
+The approved shell keeps its existing composition while using the tiers as
+details: top-ribbon groups use Mica, popups and ChoiceBox menus use Acrylic, and
+the Dock uses Glass. The Temporal Capsule keeps its expressive landscape artwork
+and remains the visual anchor rather than becoming a generic glass panel.
+
 ## Acceptance
 
 The CircleCI visual matrix captures the study in light, dark, English 1440×900

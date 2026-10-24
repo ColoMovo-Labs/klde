@@ -13,6 +13,7 @@ Surface {
     height: Tokens.dockHeight
     padding: Tokens.space12
     cornerRadius: Tokens.radiusXL
+    material: "glass"
     function focusLauncher(): void {
         launcherButton.forceActiveFocus();
     }

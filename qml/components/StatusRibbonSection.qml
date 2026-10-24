@@ -7,6 +7,7 @@ Flow {
     id: root
     required property int section
     property int degradation: 0
+    property Item backdropSource: null
     signal action(string moduleId)
     property int layoutRevision: 0
     readonly property real naturalWidth: {
@@ -38,6 +39,7 @@ Flow {
                 degradation: root.degradation
                 section: root.section
                 groupId: groupCell.modelData
+                backdropSource: root.backdropSource
                 y: (parent.height - height) / 2
                 onAction: moduleId => root.action(moduleId)
             }

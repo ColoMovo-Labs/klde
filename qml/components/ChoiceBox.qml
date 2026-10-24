@@ -94,6 +94,7 @@ ComboBox {
         }
         background: Surface {
             padding: 0
+            material: "acrylic"
         }
     }
     background: Rectangle {

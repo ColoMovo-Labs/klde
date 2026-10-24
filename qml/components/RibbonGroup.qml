@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import KLDE.Backends
 
-Rectangle {
+Surface {
     id: root
     required property int section
     property int degradation: 0
@@ -20,11 +20,11 @@ Rectangle {
     // centered inside it instead of producing a two-pixel-short capsule.
     height: Tokens.ribbonBandHeight
     objectName: "ribbonGroup-" + groupId
-    radius: height / 2
-    color: Tokens.surface
+    cornerRadius: height / 2
+    padding: 0
+    material: "mica"
+    backdropSource: root.backdropSource
     opacity: Tokens.transparencyEnabled ? Tokens.surfaceOpacityHigh : 1
-    border.width: Tokens.capsuleBorderWidth
-    border.color: Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
     Grid {
         id: telemetry
         visible: root.groupId === "telemetry"

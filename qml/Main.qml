@@ -206,6 +206,7 @@ ApplicationWindow {
         y: Shell.ribbon.margin
         width: parent.width - x * 2
         height: implicitHeight
+        backdropSource: wallpaper
         islandState: window.initialIslandState
         onAction: moduleId => window.moduleAction(moduleId)
     }
