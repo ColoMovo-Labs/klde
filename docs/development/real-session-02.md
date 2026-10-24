@@ -154,9 +154,11 @@ The capture helper requests the isolated compositor's actual output through
 [KWin ScreenShot2](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/plugins/screenshot/screenshotdbusinterface2.cpp).
 Its private desktop entry requests only that D-Bus interface. No host root
 window or screen is captured. Each PNG includes compositor metadata in a JSON
-sidecar; output comes from KWin. When ScreenShot2 is absent and KWin confirms a
-QPainter compositor (Ubuntu's KWin 6.6), an explicitly labelled X11 viewport
-capture is used instead. The helper matches that viewport's PID with the private
+sidecar; output comes from KWin. When KWin confirms a QPainter compositor, an explicitly labelled X11 viewport
+capture is used instead. KWin 6.6 does not register ScreenShot2 in that mode;
+KWin 6.7 registers it but its capture implementation requires `EglBackend` and
+returns a cancellation without one. This is a renderer capability check,
+not a fallback from a rejected permission request. The helper matches that viewport's PID with the private
 KWin D-Bus owner before capturing; it never captures an X11 root window. Each
 sidecar identifies the actual transport. Neither transport replaces protocol
 and interaction assertions, and images still require visual inspection. This test-only API does not add a production screenshot service.

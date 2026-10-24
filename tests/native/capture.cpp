@@ -33,16 +33,17 @@ int main(int argc, char **argv) {
         bus.interface()->isServiceRegistered("org.kde.KWin.ScreenShot2");
     if (!screenshotRegistered.isValid())
         return 3;
-    if (!screenshotRegistered.value()) {
-        // KWin 6.6 does not expose ScreenShot2 with its QPainter compositor.
+    QDBusInterface kwin("org.kde.KWin", "/KWin", "org.kde.KWin");
+    const QDBusReply<QString> support = kwin.call("supportInformation");
+    if (!support.isValid())
+        return 3;
+    if (support.value().contains("Compositing Type: QPainter")) {
+        // ScreenShot2 requires an EGL backend, even when registered in KWin 6.7.
         // Capture only the X11 viewport verified to belong to this private KWin.
-        QDBusInterface kwin("org.kde.KWin", "/KWin", "org.kde.KWin");
-        const QDBusReply<QString> support = kwin.call("supportInformation");
         const auto viewport = qEnvironmentVariable("OWODE_NATIVE_CAPTURE_WINDOW");
         bool validId = false;
         const auto id = viewport.toULongLong(&validId, 0);
-        if (!support.isValid() || !support.value().contains("Compositing Type: QPainter") ||
-            !validId || id == 0)
+        if (!validId || id == 0)
             return 10;
         QProcess owner;
         owner.start("xdotool", {"getwindowpid", viewport});
@@ -63,7 +64,7 @@ int main(int argc, char **argv) {
         evidence.write(
             QJsonDocument::fromVariant(
                 QVariantMap{
-                    {"backend", "owned X11 viewport; KWin QPainter, ScreenShot2 unavailable"},
+                    {"backend", "owned X11 viewport; KWin QPainter, ScreenShot2 requires EGL"},
                     {"hostCapture", false},
                     {"width", captured.width()},
                     {"height", captured.height()},
@@ -71,6 +72,10 @@ int main(int argc, char **argv) {
                     {"viewport", viewport}})
                 .toJson());
         return 0;
+    }
+    if (!screenshotRegistered.value()) {
+        qCritical("ScreenShot2 is unavailable for this compositor backend");
+        return 3;
     }
     QTemporaryFile pixels;
     if (!pixels.open())

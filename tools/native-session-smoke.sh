@@ -83,8 +83,13 @@ set -euo pipefail
 build_dir=$1
 out_dir=$2
 kwin_pid=
+shell_pid=
 kbuildsycoca6 --noincremental > "$out_dir/desktop-cache.log" 2>&1
 cleanup() {
+    if [[ -n "$shell_pid" ]] && kill -0 "$shell_pid" 2>/dev/null; then
+        kill -TERM "$shell_pid"
+        wait "$shell_pid" || true
+    fi
     if [[ -n "$kwin_pid" ]] && kill -0 "$kwin_pid" 2>/dev/null; then
         kill -TERM "$kwin_pid"
         wait "$kwin_pid" || true
@@ -130,6 +135,7 @@ kill -0 "$shell_pid"
 "$build_dir/bin/owode-native-capture" "$out_dir/native-main.png"
 kill -TERM "$shell_pid"
 wait "$shell_pid" || [[ $? == 143 ]]
+shell_pid=
 python3 tools/verify-native-protocol.py "$out_dir"
 kill -TERM "$kwin_pid"
 kwin_status=0
