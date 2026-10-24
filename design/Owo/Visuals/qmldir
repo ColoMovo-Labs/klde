@@ -21,9 +21,13 @@ RibbonForm 1.0 RibbonForm.ui.qml
 SettingsForm 1.0 SettingsForm.ui.qml
 SmallButton 1.0 SmallButton.qml
 SmallButtonForm 1.0 SmallButtonForm.ui.qml
+StatusCapsuleForm 1.0 StatusCapsuleForm.ui.qml
 SurfaceForm 1.0 SurfaceForm.ui.qml
+TelemetryCellForm 1.0 TelemetryCellForm.ui.qml
+TemporalLandscapeForm 1.0 TemporalLandscapeForm.ui.qml
 TemporalTextForm 1.0 TemporalTextForm.ui.qml
 ThemeValues 1.0 ThemeValues.ui.qml
 singleton Tokens 1.0 Tokens.qml
+WeatherForm 1.0 WeatherForm.ui.qml
 WelcomeBrandForm 1.0 WelcomeBrandForm.ui.qml
 WindowChromeForm 1.0 WindowChromeForm.ui.qml

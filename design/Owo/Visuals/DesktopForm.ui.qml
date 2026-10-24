@@ -42,26 +42,9 @@ Item {
             anchors.fill: parent
             visible: root.showSamples
             cornerRadius: width / 2
-            Column {
-                anchors.centerIn: parent
-                spacing: Tokens.space8
-                Glyph {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    name: "weather"
-                    width: Tokens.weatherIcon
-                    height: width
-                }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "21°"
-                    font: Tokens.weatherTemperature
-                    color: Tokens.primary
-                }
-                Text {
-                    text: "Snowline · 模拟天气"
-                    font: Tokens.caption
-                    color: Tokens.textSecondary
-                }
+            tone: Tokens.surfaceContainerHigh
+            WeatherForm {
+                anchors.fill: parent
             }
         }
     }

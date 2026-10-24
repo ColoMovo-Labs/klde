@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -47,17 +48,48 @@ Item {
                 color: Tokens.textPrimary
             }
         }
+        SurfaceForm {
+            visible: root.showSamples && root.width >= Tokens.ribbonFoldThreshold
+            width: 192
+            height: Tokens.ribbonBandHeight
+            cornerRadius: height / 2
+            Row {
+                anchors.centerIn: parent
+                spacing: Tokens.space4
+                Repeater {
+                    model: ["1 F", "2", "3", "4", "5"]
+                    delegate: Button {
+                        required property string modelData
+                        required property int index
+                        width: index === 0 ? 56 : 24
+                        height: 32
+                        text: modelData
+                        font: Tokens.label
+                        contentItem: Text {
+                            text: parent.text
+                            font: parent.font
+                            color: index === 0 ? Tokens.textOnPrimary : Tokens.textPrimary
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        background: Rectangle {
+                            radius: Tokens.radiusPill
+                            color: index === 0 ? Tokens.primary : "transparent"
+                        }
+                    }
+                }
+            }
+        }
     }
+
     Item {
         id: centerHost
         anchors.centerIn: parent
         width: Tokens.temporalWidth
         height: Tokens.temporalHeight
-        SurfaceForm {
+        TemporalLandscapeForm {
             anchors.fill: parent
             visible: root.showSamples
-            cornerRadius: height / 2
-            tone: "#91c8df"
         }
         TemporalTextForm {
             anchors.fill: parent
@@ -70,6 +102,33 @@ Item {
         anchors.rightMargin: Tokens.space16
         anchors.verticalCenter: parent.verticalCenter
         spacing: Tokens.ribbonGroupGap
+        SurfaceForm {
+            visible: root.showSamples && root.width >= Tokens.ribbonFoldThreshold
+            width: 152
+            height: Tokens.ribbonBandHeight
+            cornerRadius: height / 2
+            Grid {
+                anchors.centerIn: parent
+                columns: 2
+                spacing: Tokens.space2
+                TelemetryCellForm {
+                    iconName: "cpu"
+                    valueText: "18%"
+                }
+                TelemetryCellForm {
+                    iconName: "memory"
+                    valueText: "57%"
+                }
+                TelemetryCellForm {
+                    iconName: "thermometer"
+                    valueText: "62°"
+                }
+                TelemetryCellForm {
+                    iconName: "battery"
+                    valueText: "74%"
+                }
+            }
+        }
         SurfaceForm {
             visible: root.showSamples
             width: 168

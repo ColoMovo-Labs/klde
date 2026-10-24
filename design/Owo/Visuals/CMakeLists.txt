@@ -27,10 +27,14 @@ qt_add_qml_module(owode_visuals STATIC
         SettingsForm.ui.qml
         SmallButton.qml
         SmallButtonForm.ui.qml
+        StatusCapsuleForm.ui.qml
         SurfaceForm.ui.qml
+        TelemetryCellForm.ui.qml
+        TemporalLandscapeForm.ui.qml
         TemporalTextForm.ui.qml
         ThemeValues.ui.qml
         Tokens.qml
+        WeatherForm.ui.qml
         WelcomeBrandForm.ui.qml
         WindowChromeForm.ui.qml
 )
