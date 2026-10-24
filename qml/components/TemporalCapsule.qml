@@ -88,7 +88,7 @@ Button {
         }
         GeometryDebugOverlay {
             anchors.fill: parent
-            enabled: Tokens.debugGeometry
+            debugEnabled: Tokens.debugGeometry
             targetItems: [root]
             contentItems: [textColumn]
             textItems: [timeLabel, phaseLabel]

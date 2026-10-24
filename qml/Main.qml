@@ -48,13 +48,23 @@ ApplicationWindow {
     palette.light: Tokens.surfaceElevated
     palette.shadow: Tokens.shadow
 
-    readonly property bool renderingAllowed: visible && visibility !== Window.Minimized
+    readonly property bool renderingAllowed: nativeSurfaceMode ? nativeWallpaperLoader.item !== null && (nativeWallpaperLoader.item as Window).visible : visible && visibility !== Window.Minimized
+    property var pendingNativePanel: null
+    readonly property bool nativePanelVisible: panels ? panels.some(panel => panel.visible) : false
+    readonly property Item panelParent: nativeSurfaceMode ? (nativePopupLoader.item ? (nativePopupLoader.item as ApplicationWindow).contentItem : null) : Overlay.overlay
     readonly property bool lockSurfaceMode: initialView === "lock-screen"
     readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
-    readonly property real popupTop: ribbon.y + ribbon.height + Tokens.space16
+    readonly property real popupTop: nativeSurfaceMode && nativeRibbonLoader.item ? (nativeRibbonLoader.item as Window).height : ribbon.y + ribbon.height + Tokens.space16
     readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
+    function openPendingNativePanel(): void {
+        if (pendingNativePanel && nativePopupLoader.item && (nativePopupLoader.item as Window).visible) {
+            const panel = pendingNativePanel;
+            panel.open();
+            pendingNativePanel = null;
+        }
+    }
     function applyScene(): void {
         const visual = Shell.scenes.current.visual;
         Tokens.darkMode = visual.theme === "auto" ? initialDark : visual.theme === "dark";
@@ -136,8 +146,17 @@ ApplicationWindow {
         for (const panel of panels)
             if (panel !== target)
                 panel.close();
-        if (target)
-            close ? target.close() : target.open();
+        if (target) {
+            if (close) {
+                pendingNativePanel = null;
+                target.close();
+            } else if (nativeSurfaceMode) {
+                pendingNativePanel = target;
+                Qt.callLater(openPendingNativePanel);
+            } else {
+                target.open();
+            }
+        }
     }
     function moduleAction(id: string): void {
         if (id === "launcher")
@@ -206,7 +225,7 @@ ApplicationWindow {
         y: Shell.ribbon.margin
         width: parent.width - x * 2
         height: implicitHeight
-        backdropSource: wallpaper
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         islandState: window.initialIslandState
         onAction: moduleId => window.moduleAction(moduleId)
     }
@@ -227,7 +246,7 @@ ApplicationWindow {
         sourceComponent: Component {
             WeatherWidget {
                 weather: Shell.weather
-                backdropSource: wallpaper
+                backdropSource: window.nativeSurfaceMode ? null : wallpaper
                 onSettingsRequested: window.showView("weather")
             }
         }
@@ -292,7 +311,7 @@ ApplicationWindow {
     Dock {
         id: dock
         visible: !window.nativeSurfaceMode && !window.welcomeMode && !window.snapshot.appearance.focus
-        backdropSource: wallpaper
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Tokens.space24
@@ -301,16 +320,19 @@ ApplicationWindow {
     }
     Launcher {
         id: launcher
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-        onClosed: dock.focusLauncher()
+        onClosed: {
+            if (!window.nativeSurfaceMode)
+                dock.focusLauncher();
+        }
     }
     QuickSettings {
         id: quickSettings
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? parent.width - width - Shell.ribbon.margin : 0
         y: window.popupTop
         onBlurRequested: window.showView("blur")
@@ -319,46 +341,46 @@ ApplicationWindow {
     }
     BlurLab {
         id: blurLab
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
     SceneSettings {
         id: preferences
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onLanguageInputRequested: window.showView("language")
     }
     WeatherSettings {
         id: weatherPreferences
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
     LanguageInputSettings {
         id: languagePreferences
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onCandidateRequested: window.showView("input-candidate")
     }
     InputPopup {
         id: inputPopup
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? parent.width - width - Shell.ribbon.margin : 0
         y: window.popupTop
         onSettingsRequested: window.showView("language")
     }
     NotificationCenter {
         id: notificationCenter
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: Shell.ribbon.margin
         y: window.popupTop
         height: parent ? parent.height - y - Tokens.space24 : Tokens.settingsHeight
@@ -366,67 +388,67 @@ ApplicationWindow {
     }
     StatusDashboard {
         id: statusDashboard
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: window.popupTop
         onCustomizeRequested: window.showView("ribbon-settings")
     }
     RibbonSettings {
         id: ribbonSettings
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
     CandidatePreview {
         id: candidate
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
     MockLab {
         id: mockLab
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onViewRequested: view => window.showView(view)
     }
     AppSuitePreview {
         id: appSuite
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
     SystemUiGallery {
         id: systemUiGallery
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
     TemporalSettings {
         id: temporalSettings
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
     WallpaperEffectsSettings {
         id: wallpaperSettings
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
         onViewRequested: view => window.showView(view)
     }
     LockScreenPreview {
         id: lockPreview
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
@@ -442,15 +464,15 @@ ApplicationWindow {
         anchors.fill: parent
         visible: window.welcomeMode
         z: 1000
-        backdropSource: wallpaper
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         pageIndex: window.initialWelcomePage
         offline: !window.snapshot.network.internet
         onFinished: window.initialView = "desktop"
     }
     WaydroidSettings {
         id: waydroidSettings
-        parent: Overlay.overlay
-        backdropSource: wallpaper
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
@@ -512,9 +534,8 @@ ApplicationWindow {
         }
     }
 
-    // These windows are intentionally small and explicit. They are the first
-    // native-surface slice; all panels/popups remain owned by the ordinary
-    // preview until their input/focus contracts are migrated separately.
+    // Core surfaces never take keyboard focus. A separate, dismissible popup
+    // host is mapped only while a panel is visible; it releases focus on close.
     // Keep these QWindows unloaded in preview mode. That prevents duplicate
     // object names from changing Visual Lab geometry queries and keeps the
     // ordinary preview a single xdg-toplevel window.
@@ -531,6 +552,13 @@ ApplicationWindow {
             WallpaperLayers {
                 anchors.fill: parent
                 visible: true
+            }
+            Label {
+                x: Tokens.desktopMargin
+                y: window.popupTop
+                text: I18n.t("lab.preview")
+                color: Tokens.textSecondary
+                font: Tokens.caption
             }
             Component.onCompleted: {
                 if (Shell.surface.attach(nativeWallpaperSurface, "wallpaper"))
@@ -549,21 +577,20 @@ ApplicationWindow {
         Window {
             id: nativeRibbonSurface
             objectName: "nativeRibbonSurface"
-            visible: false
+            property bool attached: false
+            visible: attached && Shell.ribbon.enabled
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
             width: window.width
-            height: Tokens.ribbonBandHeight + Tokens.space32
+            height: nativeRibbon.implicitHeight + Shell.ribbon.margin * 2
             StatusRibbon {
+                id: nativeRibbon
                 anchors.fill: parent
-                anchors.margins: Tokens.space16
+                anchors.margins: Shell.ribbon.margin
                 islandState: window.initialIslandState
                 onAction: moduleId => window.moduleAction(moduleId)
             }
-            Component.onCompleted: {
-                if (Shell.surface.attach(nativeRibbonSurface, "ribbon"))
-                    visible = true;
-            }
+            Component.onCompleted: attached = Shell.surface.attach(nativeRibbonSurface, "ribbon")
         }
     }
     Loader {
@@ -577,7 +604,8 @@ ApplicationWindow {
         Window {
             id: nativeDockSurface
             objectName: "nativeDockSurface"
-            visible: false
+            property bool attached: false
+            visible: attached && !window.snapshot.appearance.focus
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
             width: window.width
@@ -589,15 +617,38 @@ ApplicationWindow {
                 onLauncherRequested: window.showView("launcher")
                 onSettingsRequested: window.showView("quick-settings")
             }
-            Component.onCompleted: {
-                if (Shell.surface.attach(nativeDockSurface, "dock"))
-                    visible = true;
-            }
+            Component.onCompleted: attached = Shell.surface.attach(nativeDockSurface, "dock")
         }
     }
     Loader {
         id: nativeDockLoader
         active: window.nativeSurfaceMode
         sourceComponent: nativeDockComponent
+    }
+
+    Component {
+        id: nativePopupComponent
+        ApplicationWindow {
+            id: nativePopupSurface
+            objectName: "nativePopupSurface"
+            property bool attached: false
+            visible: attached && (window.pendingNativePanel !== null || window.nativePanelVisible)
+            flags: Qt.FramelessWindowHint | Qt.Tool
+            color: "transparent"
+            width: window.width
+            height: window.height
+            palette: window.palette
+            font: window.font
+            onVisibleChanged: {
+                if (visible)
+                    Qt.callLater(window.openPendingNativePanel);
+            }
+            Component.onCompleted: attached = Shell.surface.attach(nativePopupSurface, "popup")
+        }
+    }
+    Loader {
+        id: nativePopupLoader
+        active: window.nativeSurfaceMode
+        sourceComponent: nativePopupComponent
     }
 }

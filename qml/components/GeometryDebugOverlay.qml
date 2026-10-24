@@ -6,12 +6,12 @@ import QtQuick.Controls
 // and is never visible in normal previews.
 Item {
     id: root
-    property bool enabled: false
+    property bool debugEnabled: false
     property var targetItems: []
     property var contentItems: []
     property var textItems: []
     property var iconItems: []
-    visible: enabled
+    visible: debugEnabled
     z: 10000
     clip: false
     function localPosition(item: Item): point {

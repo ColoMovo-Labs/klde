@@ -4,20 +4,17 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusReply>
-#include <QFileInfo>
 #include <QProcessEnvironment>
-#include <algorithm>
 
 namespace klde {
 
 namespace {
-bool hasLayerShellQmlModule() {
-    const QStringList candidates{
-        QStringLiteral("/usr/lib64/qt6/qml/org/kde/layershell/qmldir"),
-        QStringLiteral("/usr/lib/qt6/qml/org/kde/layershell/qmldir"),
-        QStringLiteral("/usr/lib/qt6/qml/org/kde/layershell/liblayershellplugin.so")};
-    return std::any_of(candidates.cbegin(), candidates.cend(),
-                       [](const QString &path) { return QFileInfo::exists(path); });
+bool hasLayerShellInterface() {
+#if defined(OWODE_HAVE_LAYERSHELLQT)
+    return true;
+#else
+    return false;
+#endif
 }
 } // namespace
 
@@ -39,7 +36,9 @@ bool SessionRuntimeBackend::refresh() {
     }
     const bool kwinHint = kwinService || !env.value(QStringLiteral("KWIN_VERSION")).isEmpty() ||
                           env.value(QStringLiteral("KDE_SESSION_VERSION")) == QStringLiteral("6");
-    const bool layerShell = hasLayerShellQmlModule();
+    // Native surfaces use the linked C++ Interface, not a LayerShellQt QML
+    // plugin. These are prerequisites; protocol roles still need verification.
+    const bool layerShell = hasLayerShellInterface();
     const QString display = env.value(QStringLiteral("WAYLAND_DISPLAY"));
     QString compositor = env.value(QStringLiteral("XDG_CURRENT_DESKTOP"));
     if (compositor.isEmpty() && kwinService)

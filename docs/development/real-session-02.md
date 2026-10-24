@@ -15,9 +15,10 @@ surfaces without redesigning the approved UI:
 
 | Surface | Intended layer | Intended anchors | Input contract |
 | --- | --- | --- | --- |
-| wallpaper | background | all edges | transparent for input; never focusable |
-| top ribbon + Temporal Capsule | top | top / left / right | pointer input only where controls exist; no keyboard focus |
-| dock | top | bottom / left / right during the first slice | pointer input on dock; no keyboard focus |
+| wallpaper | background | all edges; exclusive zone -1 | transparent for input; never focusable |
+| top ribbon + Temporal Capsule | top | top / left / right | rounded input masks around visible groups; no keyboard focus |
+| dock | top | bottom / left / right | rounded input mask around dock; no keyboard focus |
+| popup host | overlay | all edges; exclusive zone -1 | mapped only while a dismissible panel is open; temporary keyboard focus |
 
 `src/platform/wayland/NativeSurfaceController.*` is the optional adapter. It
 uses the public LayerShellQt interface when CMake finds
@@ -70,12 +71,40 @@ change the host niri cursor.
 | --- | --- |
 | Nested KWin 6.7.5 starts beside niri | verified by owner report |
 | Real Qt client and owoDE preview coexist | verified by owner report |
-| LayerShellQt smoke test source and explicit mode | implemented; Fedora execution pending |
-| Wallpaper background role | source adapter implemented; protocol/log evidence pending |
-| Ribbon anchoring and exclusive zone | source adapter implemented; KWin verification pending |
-| Dock anchoring and pointer region | source adapter implemented; input verification pending |
-| Maximization, focus and popup placement | pending target-host evidence |
+| LayerShellQt smoke test source and explicit mode | implemented; uses the production controller |
+| Wallpaper background role | source uses background / all anchors / zone -1; KWin protocol validation required |
+| Ribbon anchoring and exclusive zone | source reserves actual surface height, updates on resize; KWin validation required |
+| Dock anchoring and pointer region | event-driven rounded input masks implemented; KWin input validation required |
+| Popup placement and keyboard | independent native host implemented; hidden preview is no longer the popup parent; KWin validation required |
+| Maximization and focus restoration | covered by the new isolated cloud test; current-commit results still required |
 | Mock/Visual Lab regression path | preserved in CircleCI configuration |
 
-No LingmoOS application migration, compositor rewrite or advanced tiling work is
-part of this milestone.
+## Isolated cloud acceptance
+
+`tools/native-session-smoke.sh` runs a nested X11-backend KWin over Xvfb/Mesa,
+inside a private `dbus-run-session`, runtime directory and configuration. It
+never connects to the owner's niri session. Dedicated Ubuntu/Fedora jobs build
+`OWODE_BUILD_NATIVE_TESTS=ON`; the tools refuse a normal host environment.
+
+The test loads the production QML surfaces, starts a separate ordinary Qt
+Wayland application, queries actual KWin window geometry/types through a
+temporary script, and injects pointer/keyboard input through KWin's test
+protocol. It checks maximization, transparent gaps, launcher search input,
+Escape/outside dismissal, focus restoration, modifier-drag and ordinary close.
+Screenshots show the actual nested compositor output, not an assembled mockup.
+It also launches the actual `klde-shell --native-shell-surfaces` CLI. Raw
+Wayland requests, configure acknowledgements, KWin snapshots/version/support
+information, interaction results and shutdown evidence accompany the captures.
+
+The copied test-only protocol is documented in [third-party notices](../legal/third-party.md).
+It is never linked into the production shell and must not be used as an input
+backend. No Plasma Shell, host settings, privileged helper or display-manager
+entry is installed. Ubuntu also builds the C++ LayerShellQt interface now;
+its QML module is not a prerequisite for our C++ adapter.
+
+This is single-output cloud correctness evidence. Owner-host interaction,
+multi-output/hotplug, session services, locking and daily-use acceptance remain
+separate gates. Native panels use the opaque material fallback because they do
+not capture unrelated application content. Native compositor blur is later work.
+The independent calculator engine port does not change this milestone's native
+surface scope. No compositor rewrite or advanced tiling is included.

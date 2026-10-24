@@ -54,6 +54,17 @@ in CI artifacts. Future distribution or code vendoring requires its own review.
 
 ## New reuse checklist
 
+### Test-only KWin input protocol
+
+`tests/native/protocols/fake-input.xml` is copied without modification from
+[KDE plasma-wayland-protocols](https://github.com/KDE/plasma-wayland-protocols/blob/1db07441870d54157e937674b99380a7dcc0fb32/src/protocols/fake-input.xml),
+commit `1db07441870d54157e937674b99380a7dcc0fb32`. Copyright 2015 Martin
+Gräßlin, LGPL-2.1-or-later; original notices and the full license are retained.
+Wayland-scanner generates its client binding in the cloud build directory.
+Only the isolated native test executable links this protocol. It is neither a
+production input backend nor installed with the shell. KWin/LayerShellQt source
+was inspected to understand public APIs; no compositor implementation was copied.
+
 The [application assessment](../architecture/apps.md) and
 [shortcut study](../architecture/shortcuts.md) record pinned research references;
 they import no implementation or assets. Qt Network is used for the optional

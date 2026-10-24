@@ -211,7 +211,7 @@ Item {
 
     GeometryDebugOverlay {
         anchors.fill: parent
-        enabled: Tokens.debugGeometry
+        debugEnabled: Tokens.debugGeometry
         targetItems: root.authentication ? [authPanel, passwordField] : [ambientComposition, lockClock, lockDate]
         contentItems: root.authentication ? [authColumn] : [ambientStack]
         textItems: root.authentication ? [passwordField] : [lockDate]

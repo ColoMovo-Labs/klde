@@ -29,7 +29,7 @@ qt_add_qml_module(klde_backends STATIC
         ShellServices.h ShellServices.cpp
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Gui Qt6::DBus Qt6::Network Qt6::Qml)
+target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Gui Qt6::DBus Qt6::Network Qt6::Qml Qt6::Quick)
 if(OWODE_HAVE_LAYERSHELLQT)
     target_link_libraries(klde_backends PUBLIC LayerShellQt::Interface)
     target_compile_definitions(klde_backends PUBLIC OWODE_HAVE_LAYERSHELLQT=1)
