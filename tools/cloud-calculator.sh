@@ -34,10 +34,14 @@ release="1.$(git show -s --format=%ct HEAD).git${revision:0:12}"
 if command -v dnf >/dev/null; then
     cpack --config "$build_dir/CPackConfig.cmake" -G RPM -B "$out_dir" \
         -D "CPACK_RPM_PACKAGE_RELEASE=$release"
-    dnf install -y "$PWD/$out_dir/"*.rpm
+    # Minimal Fedora cloud images default to nodocs; this job verifies the
+    # corresponding source too, so retain this package's documentation.
+    dnf install -y --setopt=tsflags= "$PWD/$out_dir/"*.rpm
 else
     cpack --config "$build_dir/CPackConfig.cmake" -G DEB -B "$out_dir" \
         -D "CPACK_DEBIAN_PACKAGE_RELEASE=$release"
+    mkdir -p /etc/dpkg/dpkg.cfg.d
+    printf '%s\n' 'path-include=/usr/share/doc/owode-calculator' 'path-include=/usr/share/doc/owode-calculator/*' > /etc/dpkg/dpkg.cfg.d/zz-owode-calculator-docs
     apt-get install -y "$PWD/$out_dir/"*.deb
 fi
 env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
