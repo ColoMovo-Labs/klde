@@ -27,6 +27,8 @@ def main():
     with tarfile.open(archive) as source:
         prefix = f"lingmo-calculator-{REVISION}/"
         for member in source.getmembers():
+            if member.isdir() and member.name.rstrip("/") == prefix.rstrip("/"):
+                continue
             if not member.name.startswith(prefix):
                 raise SystemExit("Unexpected archive prefix")
             member.name = member.name[len(prefix):]
