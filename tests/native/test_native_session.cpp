@@ -250,10 +250,13 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
                           {"--state", statePath});
         QVERIFY(application.waitForStarted());
         QTRY_VERIFY(!readObject(statePath).isEmpty());
-        QTest::qWait(300);
+        // QWidget Show/state-file creation can precede KWin mapping the surface,
+        // especially while a target host starts its private portal services.
+        // Wait for the compositor-observed client before issuing its action.
+        QTRY_VERIFY(snapshot() && client().value("normal").toBool());
         QVERIFY(snapshot("maximize"));
-        QTest::qWait(300);
-        QVERIFY(snapshot());
+        QTRY_VERIFY(snapshot() &&
+                    client().value("geometry").toObject().value("width").toInt() == screen.width());
         QVERIFY(client().value("normal").toBool());
         auto geometry = client().value("geometry").toObject();
         QCOMPARE(geometry.value("x").toInt(), 0);
