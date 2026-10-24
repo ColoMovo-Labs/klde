@@ -103,6 +103,16 @@ for _ in $(seq 1 150); do
     sleep 0.1
 done
 test -S "$XDG_RUNTIME_DIR/owode-ci"
+# X11 readback is permitted only for the viewport owned by this isolated KWin.
+# The capture helper independently matches its PID against the private D-Bus owner.
+for _ in $(seq 1 100); do
+    viewport=$(xdotool search --onlyvisible --pid "$kwin_pid" 2>/dev/null | head -1 || true)
+    [[ -n "$viewport" ]] && break
+    sleep 0.1
+done
+[[ -n "$viewport" ]]
+export OWODE_NATIVE_CAPTURE_WINDOW="$viewport"
+printf '%s %s\n' "$kwin_pid" "$viewport" > "$out_dir/owned-viewport.txt"
 export WAYLAND_DISPLAY=owode-ci XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=owoDE
 if ! timeout 180s env QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=wayland QT_QUICK_BACKEND=software WAYLAND_DEBUG=client \
     "$build_dir/bin/klde-native-session-test" -o "$out_dir/native-tests.xml,junitxml" -o -,txt \

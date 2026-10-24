@@ -154,7 +154,11 @@ The capture helper requests the isolated compositor's actual output through
 [KWin ScreenShot2](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/plugins/screenshot/screenshotdbusinterface2.cpp).
 Its private desktop entry requests only that D-Bus interface. No host root
 window or screen is captured. Each PNG includes compositor metadata in a JSON
-sidecar; output comes from KWin, avoiding stale GL readback from an X11 parent
-viewport. This test-only API does not add a production screenshot service.
+sidecar; output comes from KWin. When ScreenShot2 is absent and KWin confirms a
+QPainter compositor (Ubuntu's KWin 6.6), an explicitly labelled X11 viewport
+capture is used instead. The helper matches that viewport's PID with the private
+KWin D-Bus owner before capturing; it never captures an X11 root window. Each
+sidecar identifies the actual transport. Neither transport replaces protocol
+and interaction assertions, and images still require visual inspection. This test-only API does not add a production screenshot service.
 KWin's handled SIGTERM produces exit status 15; the runner records that status
 and additionally requires its socket to disappear before accepting shutdown.

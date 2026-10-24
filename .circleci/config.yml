@@ -61,9 +61,13 @@ jobs:
     executor: ubuntu-qt
     steps:
       - built-tree
+      - restore_cache:
+          keys:
+            - ccache-v1-26.04-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - ccache-v1-26.04-{{ arch }}-{{ .Branch }}-
       - run:
           name: Install isolated KWin and native test dependencies
-          command: apt-get install -y --no-install-recommends kwin-wayland libwayland-dev libwayland-bin pkg-config dbus-daemon dbus-bin libkf6service-bin
+          command: apt-get install -y --no-install-recommends kwin-wayland libwayland-dev libwayland-bin pkg-config imagemagick xdotool dbus-daemon dbus-bin libkf6service-bin
       - run:
           name: Build native integration tools against Ubuntu LayerShellQt
           command: |
@@ -94,9 +98,13 @@ jobs:
           name: Install Fedora Qt and isolated KWin tools
           command: |
             xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
-            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config dbus-daemon dbus-tools kf6-kservice
+            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick xdotool mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config imagemagick xdotool dbus-daemon dbus-tools kf6-kservice
       - attach_workspace:
           at: /root/project
+      - restore_cache:
+          keys:
+            - ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-
       - run:
           name: Build native integration tools against Fedora LayerShellQt
           command: |

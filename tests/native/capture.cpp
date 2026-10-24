@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <QCoreApplication>
+#include <QDBusConnectionInterface>
 #include <QDBusInterface>
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+#include <QDBusReply>
 #include <QDBusUnixFileDescriptor>
+#include <QDebug>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include <QFile>
 #include <QImage>
 #include <QJsonDocument>
+#include <QProcess>
 #include <QTemporaryFile>
 #include <QThread>
 #include <QTimer>
@@ -22,6 +26,51 @@ int main(int argc, char **argv) {
              .startsWith(QDir::tempPath() + "/owode-native-ci-")) {
         qCritical("Capture is restricted to the isolated native test compositor");
         return 2;
+    }
+    const auto output = app.arguments().at(1);
+    const auto bus = QDBusConnection::sessionBus();
+    const QDBusReply<bool> screenshotRegistered =
+        bus.interface()->isServiceRegistered("org.kde.KWin.ScreenShot2");
+    if (!screenshotRegistered.isValid())
+        return 3;
+    if (!screenshotRegistered.value()) {
+        // KWin 6.6 does not expose ScreenShot2 with its QPainter compositor.
+        // Capture only the X11 viewport verified to belong to this private KWin.
+        QDBusInterface kwin("org.kde.KWin", "/KWin", "org.kde.KWin");
+        const QDBusReply<QString> support = kwin.call("supportInformation");
+        const auto viewport = qEnvironmentVariable("OWODE_NATIVE_CAPTURE_WINDOW");
+        bool validId = false;
+        const auto id = viewport.toULongLong(&validId, 0);
+        if (!support.isValid() || !support.value().contains("Compositing Type: QPainter") ||
+            !validId || id == 0)
+            return 10;
+        QProcess owner;
+        owner.start("xdotool", {"getwindowpid", viewport});
+        if (!owner.waitForFinished(3000) || owner.exitCode() != 0)
+            return 11;
+        const QDBusReply<uint> kwinPid = bus.interface()->servicePid("org.kde.KWin");
+        if (!kwinPid.isValid() ||
+            owner.readAllStandardOutput().trimmed().toUInt() != kwinPid.value())
+            return 12;
+        if (QProcess::execute("import", {"-window", viewport, output}) != 0)
+            return 13;
+        const QImage captured(output);
+        if (captured.isNull())
+            return 14;
+        QFile evidence(output + ".json");
+        if (!evidence.open(QIODevice::WriteOnly))
+            return 15;
+        evidence.write(
+            QJsonDocument::fromVariant(
+                QVariantMap{
+                    {"backend", "owned X11 viewport; KWin QPainter, ScreenShot2 unavailable"},
+                    {"hostCapture", false},
+                    {"width", captured.width()},
+                    {"height", captured.height()},
+                    {"kwinPid", kwinPid.value()},
+                    {"viewport", viewport}})
+                .toJson());
+        return 0;
     }
     QTemporaryFile pixels;
     if (!pixels.open())
