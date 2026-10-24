@@ -42,7 +42,7 @@ Wayland / KWin 验证平台。长期目标是保持对普通 Ubuntu 和其他 De
 级桌面环境**，也不能单独证明 LayerShellQt 的 surface role、exclusive zone 或
 输入区域已经正确。
 
-![First Light：嵌套 KWin 与真实 Qt 客户端](docs/development/evidence/lomode-first-light-nested-kwin.png)
+![First Light：嵌套 KWin 与真实 Qt 客户端](docs/development/evidence/owode-first-light-nested-kwin.png)
 
 完整的边界、复现命令和待验证项见 [First Light 记录](docs/development/first-light.md)
 与 [Real Session 0.1](docs/development/real-session-0.1.md)。当前安全启动器会
@@ -71,7 +71,7 @@ Qt models/controllers
 system and compositor adapters
 ```
 
-当前代码分为 `src/ui`、`src/models`、`src/services`、`src/backends` 和
+当前代码分为 `qml`、`src/shell`、`src/models`、`src/backends` 和
 `src/platform` 的职责边界。KWin / LayerShellQt 集成通过可选的原生表面控制器
 进入；LayerShellQt 不存在时，普通预览路径仍然可构建。窗口布局继续保留
 Floating、Classic Tiling、Scrolling Tiling 和 Mixed 的抽象，但高级平铺尚未实现。
@@ -129,7 +129,7 @@ tar -xzf owode-shell-fedora44-*.tar.gz -C "$HOME/.local" --strip-components=1
 ```
 
 这是独立预览窗口，不会替换当前桌面。若要测试嵌套 KWin 原生表面，需使用
-匹配提交中的 `tools/run-lomode-session.sh`，并设置 `OWODE_MODE=native`；
+匹配提交中的 `tools/run-owode-session.sh`，并设置 `OWODE_MODE=native`；
 它仍然不会安装登录会话。Fedora 目前提供云端 RPM 和 tarball，尚未提供完整登录会话包。
 
 ## 贡献与许可

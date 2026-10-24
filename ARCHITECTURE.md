@@ -1,7 +1,8 @@
 # Architecture
 
-Status: Phase 0 passed its cloud gate; Phase 1 implements an ordinary preview
-window and mock service contracts. See [the prototype guide](docs/development/phase-1.md).
+Status: Phase 1's mock-first shell prototype is implemented; Phase 2 backend
+preparation and Fedora/KWin validation are in progress. See [the prototype
+guide](docs/development/phase-1.md) and [the Fedora runtime record](docs/development/fedora-runtime.md).
 
 ## Boundaries and process model
 

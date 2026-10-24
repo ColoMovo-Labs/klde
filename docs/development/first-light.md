@@ -10,7 +10,7 @@ niri as the protected host compositor and a nested KWin Wayland session. The
 session showed the current owoDE desktop preview together with a genuine Qt 6
 test application. The captured image is 1918 × 1078 RGB PNG:
 
-![First Light — nested KWin proof of concept](evidence/lomode-first-light-nested-kwin.png)
+![First Light — nested KWin proof of concept](evidence/owode-first-light-nested-kwin.png)
 
 This is an **early nested KWin proof of concept**, not a production desktop
 environment. The preview is still an ordinary Qt application window at this
@@ -23,9 +23,9 @@ wallpaper, panel, dock or layer-shell roles.
 The safe runner remains:
 
 ```sh
-LOMODE_SHELL=/path/to/klde-shell \
-LOMODE_APP='your-real-wayland-application' \
-bash tools/run-lomode-session.sh
+OWODE_SHELL=/path/to/klde-shell \
+OWODE_APP='your-real-wayland-application' \
+bash tools/run-owode-session.sh
 ```
 
 The runner creates a private session bus, uses a private Wayland socket and

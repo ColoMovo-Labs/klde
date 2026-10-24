@@ -46,11 +46,11 @@ The full launcher keeps the proven, isolated path and supports both modes:
 ```sh
 # Compatibility preview mode (default)
 OWODE_MODE=preview OWODE_APP='your-qt-wayland-app' \
-  bash tools/run-lomode-session.sh
+  bash tools/run-owode-session.sh
 
 # Native surface mode; fails safely if LayerShellQt is not available
 OWODE_MODE=native OWODE_APP='your-qt-wayland-app' \
-  bash tools/run-lomode-session.sh
+  bash tools/run-owode-session.sh
 ```
 
 Each invocation chooses a unique socket name and cleans up only its own KWin,

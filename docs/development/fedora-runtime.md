@@ -34,7 +34,7 @@ From the repository root:
 bash tools/setup-fedora-container.sh
 podman run --rm -it --userns=keep-id \
   -v "$PWD:/workspace:Z" -w /workspace \
-  localhost/lomode-fedora:44
+  localhost/owode-fedora:44
 ```
 
 The container does not mount the host Wayland socket, `/dev/dri`, the host
@@ -47,9 +47,9 @@ Inside the Fedora host or a deliberately configured test environment:
 
 ```sh
 bash tools/probe-real-session.sh
-LOMODE_SHELL=/path/to/cloud-built/klde-shell \
-LOMODE_APP='a-real-wayland-application' \
-bash tools/run-lomode-session.sh
+OWODE_SHELL=/path/to/cloud-built/klde-shell \
+OWODE_APP='a-real-wayland-application' \
+bash tools/run-owode-session.sh
 ```
 
 The launcher creates a private session D-Bus, checks `kwin_wayland --help`,

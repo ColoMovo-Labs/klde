@@ -73,7 +73,7 @@ KWin path, clone the matching source revision for the launcher script and run:
 OWODE_SHELL="$HOME/.local/bin/klde-shell" \
 OWODE_MODE=native \
 OWODE_APP='your-wayland-application' \
-bash tools/run-lomode-session.sh
+bash tools/run-owode-session.sh
 ```
 
 The native path still requires a Fedora KWin runtime and is not a replacement

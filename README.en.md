@@ -77,7 +77,7 @@ demonstrated a nested KWin Wayland session inside Fedora 44 + niri with the
 current owoDE desktop preview and a genuine Qt 6 test application visible at
 the same time:
 
-![owoDE First Light — nested KWin with a Qt test client](docs/development/evidence/lomode-first-light-nested-kwin.png)
+![owoDE First Light — nested KWin with a Qt test client](docs/development/evidence/owode-first-light-nested-kwin.png)
 
 This is an early nested KWin proof of concept, **not a production desktop
 environment**. The photograph proves that the isolated runtime can show the
@@ -197,7 +197,7 @@ tar -xzf owode-shell-fedora44-*.tar.gz -C "$HOME/.local" --strip-components=1
 
 This starts the standalone preview window. To test the nested KWin native
 surface path, use the matching source revision's
-`tools/run-lomode-session.sh` with `OWODE_MODE=native`; it does not install a
+`tools/run-owode-session.sh` with `OWODE_MODE=native`; it does not install a
 login session. Fedora currently ships cloud-built RPM and tarball artifacts,
 not a complete login-session package.
 

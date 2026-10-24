@@ -17,9 +17,9 @@ include(GNUInstallDirs)
 # enabled only when the target provides the KDE interface package.
 find_package(LayerShellQt 6.0 CONFIG QUIET)
 if(TARGET LayerShellQt::Interface)
-    set(LOMODE_HAVE_LAYERSHELLQT ON)
+    set(OWODE_HAVE_LAYERSHELLQT ON)
 else()
-    set(LOMODE_HAVE_LAYERSHELLQT OFF)
+    set(OWODE_HAVE_LAYERSHELLQT OFF)
 endif()
 add_subdirectory(src)
 
@@ -119,7 +119,7 @@ target_link_libraries(klde-shell PRIVATE klde_ui klde_uiplugin Qt6::Quick Qt6::Q
 target_compile_definitions(klde-shell PRIVATE KLDE_VERSION="${PROJECT_VERSION}")
 target_compile_options(klde-shell PRIVATE -Wall -Wextra -Wpedantic)
 
-if(LOMODE_HAVE_LAYERSHELLQT)
+if(OWODE_HAVE_LAYERSHELLQT)
     # Runtime smoke test used only inside an isolated Wayland/KWin session. It
     # is deliberately not part of the ordinary preview test matrix.
     add_executable(klde-layer-shell-smoke tests/native-layer-shell-smoke.cpp)

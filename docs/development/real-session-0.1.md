@@ -35,9 +35,9 @@ Once a compatible KWin Wayland package and a cloud-built shell binary exist,
 run the isolated harness:
 
 ```sh
-LOMODE_SHELL=/path/to/klde-shell \
-LOMODE_APP='your-real-wayland-application' \
-bash tools/run-lomode-session.sh
+OWODE_SHELL=/path/to/klde-shell \
+OWODE_APP='your-real-wayland-application' \
+bash tools/run-owode-session.sh
 ```
 
 The harness creates a private session D-Bus, requests a named Wayland socket,

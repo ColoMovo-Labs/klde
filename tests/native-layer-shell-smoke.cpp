@@ -13,7 +13,7 @@ bool configure(QWindow &window, const QString &role) {
         return false;
 
     window.setFlag(Qt::FramelessWindowHint, true);
-    surface->setScope(QStringLiteral("lomode-smoke-%1").arg(role));
+    surface->setScope(QStringLiteral("owode-smoke-%1").arg(role));
     surface->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
     surface->setActivateOnShow(false);
     surface->setCloseOnDismissed(true);
@@ -21,23 +21,19 @@ bool configure(QWindow &window, const QString &role) {
 
     if (role == QStringLiteral("wallpaper")) {
         surface->setLayer(LayerShellQt::Window::LayerBackground);
-        surface->setAnchors({LayerShellQt::Window::AnchorTop,
-                             LayerShellQt::Window::AnchorBottom,
-                             LayerShellQt::Window::AnchorLeft,
-                             LayerShellQt::Window::AnchorRight});
+        surface->setAnchors({LayerShellQt::Window::AnchorTop, LayerShellQt::Window::AnchorBottom,
+                             LayerShellQt::Window::AnchorLeft, LayerShellQt::Window::AnchorRight});
         window.setFlag(Qt::WindowTransparentForInput, true);
     } else if (role == QStringLiteral("ribbon")) {
         surface->setLayer(LayerShellQt::Window::LayerTop);
-        surface->setAnchors({LayerShellQt::Window::AnchorTop,
-                             LayerShellQt::Window::AnchorLeft,
+        surface->setAnchors({LayerShellQt::Window::AnchorTop, LayerShellQt::Window::AnchorLeft,
                              LayerShellQt::Window::AnchorRight});
         surface->setMargins(QMargins(16, 16, 16, 0));
         surface->setExclusiveZone(window.height() + 16);
         surface->setExclusiveEdge(LayerShellQt::Window::AnchorTop);
     } else if (role == QStringLiteral("dock")) {
         surface->setLayer(LayerShellQt::Window::LayerTop);
-        surface->setAnchors({LayerShellQt::Window::AnchorBottom,
-                             LayerShellQt::Window::AnchorLeft,
+        surface->setAnchors({LayerShellQt::Window::AnchorBottom, LayerShellQt::Window::AnchorLeft,
                              LayerShellQt::Window::AnchorRight});
         surface->setMargins(QMargins(0, 0, 0, 24));
     } else {
@@ -73,14 +69,13 @@ int main(int argc, char **argv) {
     QWindow window;
     window.setTitle(QStringLiteral("owoDE LayerShellQt smoke: %1").arg(parser.value(roleOption)));
     window.resize(parser.value(roleOption) == QStringLiteral("wallpaper") ? QSize(1, 1)
-                                                                        : QSize(960, 96));
+                                                                          : QSize(960, 96));
     if (!configure(window, parser.value(roleOption))) {
         qCritical("LayerShellQt could not create the requested surface");
         return 3;
     }
     qInfo().noquote() << "configured role=" << parser.value(roleOption)
-                      << "wayland=" << QGuiApplication::platformName()
-                      << "size=" << window.size();
+                      << "wayland=" << QGuiApplication::platformName() << "size=" << window.size();
     window.show();
     QTimer::singleShot(holdMs, &app, &QCoreApplication::quit);
     return app.exec();

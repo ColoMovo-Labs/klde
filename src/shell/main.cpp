@@ -10,6 +10,7 @@
 #include <QQuickWindow>
 #include <QRegularExpression>
 #include <QSGRendererInterface>
+#include <QStringList>
 #include <QStyleHints>
 #include <QTimer>
 #include <QtMath>
@@ -30,6 +31,19 @@ int main(int argc, char *argv[]) {
     parser.setApplicationDescription(QStringLiteral("KLDE standalone desktop-shell preview"));
     parser.addHelpOption();
     parser.addVersionOption();
+    const QStringList previewViews{
+        QStringLiteral("desktop"),           QStringLiteral("launcher"),
+        QStringLiteral("quick-settings"),    QStringLiteral("blur"),
+        QStringLiteral("power-scenes"),      QStringLiteral("weather"),
+        QStringLiteral("language"),          QStringLiteral("input"),
+        QStringLiteral("temporal-study"),    QStringLiteral("temporal"),
+        QStringLiteral("wallpaper-effects"), QStringLiteral("lock-preview"),
+        QStringLiteral("lock-screen"),       QStringLiteral("welcome"),
+        QStringLiteral("gallery"),           QStringLiteral("waydroid"),
+        QStringLiteral("weather-preview"),   QStringLiteral("quick-settings-expanded"),
+        QStringLiteral("notifications"),     QStringLiteral("ribbon"),
+        QStringLiteral("ribbon-settings"),   QStringLiteral("input-candidate"),
+        QStringLiteral("mock-lab"),          QStringLiteral("app-suite")};
     const QCommandLineOption smokeOption(
         QStringLiteral("smoke-test"), QStringLiteral("Capture a settled preview frame and exit"));
     const QCommandLineOption captureOption(QStringLiteral("capture"),
@@ -47,14 +61,12 @@ int main(int argc, char *argv[]) {
         "device or critical",
         "state", "idle");
     const QCommandLineOption welcomePageOption(
-        "welcome-page", "Welcome/OOBE mock page index from 0 to 9", "page", "0");
+        "welcome-page", "Welcome/OOBE mock page index from 0 to 10", "page", "0");
     const QCommandLineOption debugGeometryOption("debug-geometry",
                                                  "Show the development-only alignment overlay");
     const QCommandLineOption viewOption(
         QStringLiteral("view"),
-        QStringLiteral("Initial preview: desktop, launcher, quick-settings, blur, power-scenes, "
-                       "weather, language, input, temporal, wallpaper-effects, lock-preview, "
-                       "lock-screen, welcome, gallery, waydroid"),
+        QStringLiteral("Initial preview: %1").arg(previewViews.join(QStringLiteral(", "))),
         QStringLiteral("view"), QStringLiteral("desktop"));
     const QCommandLineOption darkOption(QStringLiteral("dark"),
                                         QStringLiteral("Start with dark appearance"));
@@ -98,31 +110,7 @@ int main(int argc, char *argv[]) {
         qCritical() << "Invalid capture region";
         return EXIT_FAILURE;
     }
-    const QStringList views{QStringLiteral("desktop"),
-                            QStringLiteral("launcher"),
-                            QStringLiteral("quick-settings"),
-                            QStringLiteral("blur"),
-                            QStringLiteral("power-scenes"),
-                            QStringLiteral("weather"),
-                            QStringLiteral("language"),
-                            QStringLiteral("input"),
-                            "temporal-study",
-                            "temporal",
-                            "wallpaper-effects",
-                            "lock-preview",
-                            "lock-screen",
-                            "welcome",
-                            "gallery",
-                            "waydroid",
-                            "weather-preview",
-                            "quick-settings-expanded",
-                            "notifications",
-                            "ribbon",
-                            "ribbon-settings",
-                            "input-candidate",
-                            "mock-lab",
-                            "app-suite"};
-    if (!views.contains(parser.value(viewOption))) {
+    if (!previewViews.contains(parser.value(viewOption))) {
         qCritical() << "Unknown preview view";
         return EXIT_FAILURE;
     }

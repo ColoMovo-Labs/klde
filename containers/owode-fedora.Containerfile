@@ -7,7 +7,7 @@ ENV LANG=C.UTF-8 \
 
 RUN dnf install -y --setopt=install_weak_deps=False \
         @development-tools \
-        ccache cmake ninja-build git file findutils \
+        ccache cmake ninja-build git file findutils clang clang-tools-extra \
         qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtwayland-devel \
         qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
         kwin wayland-devel wayland-protocols-devel \

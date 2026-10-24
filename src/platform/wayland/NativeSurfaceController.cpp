@@ -5,7 +5,7 @@
 #include <QPointer>
 #include <QWindow>
 
-#if defined(LOMODE_HAVE_LAYERSHELLQT)
+#if defined(OWODE_HAVE_LAYERSHELLQT)
 #include <LayerShellQt/Window>
 #endif
 
@@ -24,11 +24,12 @@ NativeSurfaceController::NativeSurfaceController(QObject *parent) : QObject(pare
     else if (!wayland())
         m_diagnostic = QStringLiteral("Native shell surfaces require a Wayland QPA platform.");
     else
-        m_diagnostic = QStringLiteral("LayerShellQt is available; no native surfaces are attached.");
+        m_diagnostic =
+            QStringLiteral("LayerShellQt is available; no native surfaces are attached.");
 }
 
 bool NativeSurfaceController::compiledIn() const {
-#if defined(LOMODE_HAVE_LAYERSHELLQT)
+#if defined(OWODE_HAVE_LAYERSHELLQT)
     return true;
 #else
     return false;
@@ -62,14 +63,15 @@ bool NativeSurfaceController::attach(QObject *object, const QString &role) {
         return false;
     }
     if (!available()) {
-        setDiagnostic(compiledIn()
-                          ? QStringLiteral("LayerShellQt is present but the current QPA is not Wayland.")
-                          : QStringLiteral("LayerShellQt is unavailable; native surface role '%1' is gated.")
-                                .arg(role));
+        setDiagnostic(
+            compiledIn()
+                ? QStringLiteral("LayerShellQt is present but the current QPA is not Wayland.")
+                : QStringLiteral("LayerShellQt is unavailable; native surface role '%1' is gated.")
+                      .arg(role));
         return false;
     }
 
-#if defined(LOMODE_HAVE_LAYERSHELLQT)
+#if defined(OWODE_HAVE_LAYERSHELLQT)
     // Qt 6.5+ selects the layer-shell client integration automatically when a
     // LayerShellQt Window is requested. The target Fedora/KWin package is
     // expected to provide that supported path; no private Qt API is used here.
@@ -80,7 +82,7 @@ bool NativeSurfaceController::attach(QObject *object, const QString &role) {
     }
 
     window->setFlag(Qt::FramelessWindowHint, true);
-    surface->setScope(QStringLiteral("lomode-%1").arg(role));
+    surface->setScope(QStringLiteral("owode-%1").arg(role));
     surface->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
     surface->setActivateOnShow(false);
     surface->setCloseOnDismissed(true);
@@ -88,26 +90,22 @@ bool NativeSurfaceController::attach(QObject *object, const QString &role) {
 
     if (role == QStringLiteral("wallpaper")) {
         surface->setLayer(LayerShellQt::Window::LayerBackground);
-        surface->setAnchors({LayerShellQt::Window::AnchorTop,
-                             LayerShellQt::Window::AnchorBottom,
-                             LayerShellQt::Window::AnchorLeft,
-                             LayerShellQt::Window::AnchorRight});
+        surface->setAnchors({LayerShellQt::Window::AnchorTop, LayerShellQt::Window::AnchorBottom,
+                             LayerShellQt::Window::AnchorLeft, LayerShellQt::Window::AnchorRight});
         surface->setMargins(QMargins());
         surface->setExclusiveZone(0);
         // The background must never steal clicks from application windows.
         window->setFlag(Qt::WindowTransparentForInput, true);
     } else if (role == QStringLiteral("ribbon")) {
         surface->setLayer(LayerShellQt::Window::LayerTop);
-        surface->setAnchors({LayerShellQt::Window::AnchorTop,
-                             LayerShellQt::Window::AnchorLeft,
+        surface->setAnchors({LayerShellQt::Window::AnchorTop, LayerShellQt::Window::AnchorLeft,
                              LayerShellQt::Window::AnchorRight});
         surface->setMargins(QMargins(16, 16, 16, 0));
         surface->setExclusiveZone(window->height() + 16);
         surface->setExclusiveEdge(LayerShellQt::Window::AnchorTop);
     } else {
         surface->setLayer(LayerShellQt::Window::LayerTop);
-        surface->setAnchors({LayerShellQt::Window::AnchorBottom,
-                             LayerShellQt::Window::AnchorLeft,
+        surface->setAnchors({LayerShellQt::Window::AnchorBottom, LayerShellQt::Window::AnchorLeft,
                              LayerShellQt::Window::AnchorRight});
         surface->setMargins(QMargins(0, 0, 0, 24));
         surface->setExclusiveZone(0);

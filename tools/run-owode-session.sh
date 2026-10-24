@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Start a nested KWin session without changing the host display manager/session.
-# The filename is retained for compatibility; the public runtime is owoDE.
+# The public runtime and its isolated session launcher are named owoDE.
 set -euo pipefail
 
 root_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-shell_bin=${OWODE_SHELL:-${LOMODE_SHELL:-$root_dir/build/ci/bin/klde-shell}}
+shell_bin=${OWODE_SHELL:-$root_dir/build/ci/bin/klde-shell}
 kwin_bin=${KWIN_WAYLAND_BIN:-kwin_wayland}
-app_command=${OWODE_APP:-${LOMODE_APP:-}}
-session_mode=${OWODE_MODE:-${LOMODE_MODE:-preview}}
+app_command=${OWODE_APP:-}
+session_mode=${OWODE_MODE:-preview}
 
 if ! command -v dbus-run-session >/dev/null 2>&1; then
     echo "owoDE session: dbus-run-session is required." >&2
@@ -20,7 +20,7 @@ if ! command -v "$kwin_bin" >/dev/null 2>&1; then
 fi
 if [[ ! -x "$shell_bin" ]]; then
     echo "owoDE session: shell binary not found at $shell_bin." >&2
-    echo "Set OWODE_SHELL (or legacy LOMODE_SHELL) to a cloud-built klde-shell binary." >&2
+    echo "Set OWODE_SHELL to a cloud-built klde-shell binary." >&2
     exit 4
 fi
 
@@ -53,7 +53,7 @@ has_flag '--exit-with-session' && args+=(--exit-with-session)
 export XDG_CURRENT_DESKTOP=owoDE
 export XDG_SESSION_DESKTOP=owoDE
 export WAYLAND_DISPLAY="$socket_name"
-kwin_log=${OWODE_SESSION_LOG:-${LOMODE_SESSION_LOG:-/tmp/owode-kwin.log}}
+kwin_log=${OWODE_SESSION_LOG:-/tmp/owode-kwin.log}
 
 cleanup() {
     if [[ -n "${app_pid:-}" ]] && kill -0 "$app_pid" 2>/dev/null; then kill "$app_pid" 2>/dev/null || true; fi
@@ -85,7 +85,7 @@ shell_args=(--view desktop)
 if [[ "$session_mode" == "native" ]]; then
     shell_args=(--native-shell-surfaces)
 elif [[ "$session_mode" != "preview" ]]; then
-    echo "Unsupported OWODE_MODE/LOMODE_MODE: $session_mode" >&2
+    echo "Unsupported OWODE_MODE: $session_mode" >&2
     exit 8
 fi
 XCURSOR_THEME=${XCURSOR_THEME:-Bibata-Modern-Classic} \
