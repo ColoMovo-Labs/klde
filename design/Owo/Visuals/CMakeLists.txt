@@ -5,10 +5,14 @@ qt_add_qml_module(owode_visuals STATIC
     RESOURCE_PREFIX /qt/qml
     OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml/Owo/Visuals"
     QML_FILES
+        Action.qml
+        ActionForm.ui.qml
         AppTile.qml
         AppTileForm.ui.qml
         Assets.qml
         BackgroundForm.ui.qml
+        ChoiceAction.qml
+        ChoicePageForm.ui.qml
         CompactSliderForm.ui.qml
         DesktopForm.ui.qml
         DockForm.ui.qml

@@ -64,15 +64,15 @@ Item {
             Layout.fillWidth: true
         }
         RowLayout {
-            Button {
+            Action {
                 id: startButton
                 text: root.startText
                 font: Tokens.label
-                highlighted: true
+                emphasized: true
                 palette.buttonText: Tokens.textOnPrimary
                 palette.button: Tokens.primary
             }
-            Button {
+            Action {
                 id: accessibilityButton
                 text: root.accessibilityText
                 font: Tokens.label

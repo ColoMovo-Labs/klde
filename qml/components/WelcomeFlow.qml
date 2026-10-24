@@ -415,54 +415,16 @@ Item {
         }
     }
 
-    component WelcomeChoicePage: ColumnLayout {
-        property string title
-        property string subtitle: ""
-        property var choices: []
-        property int selected: -1
-        property bool toggles: false
+    component WelcomeChoicePage: ChoicePageForm {
+        id: choicePage
         signal choiceActivated(int choiceIndex)
         anchors.centerIn: parent
         width: Math.min(620, parent.width - Tokens.space32)
-        spacing: Tokens.space12
-        Label {
-            text: subtitle
-            visible: text.length > 0
-            color: Tokens.textSecondary
-            font: Tokens.body
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-        }
-        Repeater {
-            model: choices
-            delegate: Button {
-                required property string modelData
-                required property int index
-                Layout.fillWidth: true
-                implicitHeight: Tokens.controlHeight
-                text: modelData
-                checkable: true
-                checked: toggles ? false : index === selected
-                onClicked: {
-                    if (!toggles)
-                        selected = index;
-                    choiceActivated(index);
-                }
-                font: Tokens.label
-                contentItem: Text {
-                    text: parent.text
-                    color: Tokens.textPrimary
-                    font: parent.font
-                    verticalAlignment: Text.AlignVCenter
-                    leftPadding: Tokens.space16
-                }
-                background: Rectangle {
-                    radius: Tokens.radiusM
-                    color: parent.checked ? Tokens.primaryContainer : Tokens.surfaceContainer
-                    border.width: parent.visualFocus ? Tokens.space2 : Tokens.space1
-                    border.color: parent.checked ? Tokens.primary : Tokens.outline
-                }
-            }
+        actionTarget: choicePage
+        function selectChoice(index: int): void {
+            if (!toggles)
+                selected = index;
+            choiceActivated(index);
         }
     }
 }

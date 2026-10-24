@@ -15,7 +15,7 @@ ApplicationWindow {
     property real previewScale: 1
     property int viewportWidth: 1440
     property int viewportHeight: 900
-    readonly property var scenes: ["Desktop", "Background", "TopRibbon", "Dock", "Launcher", "QuickSettings", "NotificationCenter", "LockScreen", "Language", "Welcome", "Settings", "WindowOsd"]
+    readonly property var scenes: ["Desktop", "Background", "TopRibbon", "Dock", "Launcher", "QuickSettings", "NotificationCenter", "LockScreen", "Language", "Welcome", "OobeConfiguration", "Settings", "WindowOsd"]
     palette.window: Tokens.surface
     palette.windowText: Tokens.textPrimary
     palette.base: Tokens.surfaceElevated

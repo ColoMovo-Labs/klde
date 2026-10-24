@@ -38,6 +38,7 @@ bash tools/design-preview.sh
 | LockScreen | 锁屏视觉，`LockCompositionForm.ui.qml`；不是安全认证实现 |
 | Language | 克制的第一屏，`LanguageForm.ui.qml` |
 | Welcome | 语言确认后的品牌欢迎，`WelcomeBrandForm.ui.qml` |
+| OobeConfiguration | 地区/输入/外观/窗口/隐私等配置选择，`ChoicePageForm.ui.qml` |
 | Settings | 通用设置控件，`SettingsForm.ui.qml` |
 | WindowOsd | 窗口视觉与屏幕提示，`WindowChromeForm.ui.qml`、`OsdForm.ui.qml` |
 

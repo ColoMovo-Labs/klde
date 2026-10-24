@@ -26,20 +26,22 @@ ColumnLayout {
         font: Tokens.headline
         color: Tokens.textPrimary
     }
-    Button {
+    Action {
         id: chineseButton
         Layout.fillWidth: true
         text: "简体中文"
         checkable: true
         checked: root.selectedLocale === "zh_CN"
+        emphasized: checked
         font: Tokens.body
     }
-    Button {
+    Action {
         id: englishButton
         Layout.fillWidth: true
         text: "English"
         checkable: true
         checked: root.selectedLocale === "en"
+        emphasized: checked
         font: Tokens.body
     }
     RowLayout {
@@ -52,10 +54,10 @@ ColumnLayout {
         Item {
             Layout.fillWidth: true
         }
-        Button {
+        Action {
             id: continueButton
             text: root.selectedLocale === "zh_CN" ? "继续" : "Continue"
-            highlighted: true
+            emphasized: true
         }
     }
 }

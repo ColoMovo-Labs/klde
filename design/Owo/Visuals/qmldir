@@ -1,8 +1,12 @@
 module Owo.Visuals
+Action 1.0 Action.qml
+ActionForm 1.0 ActionForm.ui.qml
 AppTile 1.0 AppTile.qml
 AppTileForm 1.0 AppTileForm.ui.qml
 singleton Assets 1.0 Assets.qml
 BackgroundForm 1.0 BackgroundForm.ui.qml
+ChoiceAction 1.0 ChoiceAction.qml
+ChoicePageForm 1.0 ChoicePageForm.ui.qml
 CompactSliderForm 1.0 CompactSliderForm.ui.qml
 DesktopForm 1.0 DesktopForm.ui.qml
 DockForm 1.0 DockForm.ui.qml
