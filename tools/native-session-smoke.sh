@@ -42,7 +42,7 @@ Type=Application
 Name=owoDE isolated native test
 Exec=$build_dir/bin/klde-native-session-test
 NoDisplay=true
-X-KDE-Wayland-Interfaces=org_kde_kwin_fake_input;
+X-KDE-Wayland-Interfaces=org_kde_kwin_fake_input
 EOF
 # These bindings exist only in this runner's private config, never on the host.
 cat > "$runtime_dir/config/kwinrc" <<'EOF'

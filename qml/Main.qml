@@ -544,6 +544,9 @@ ApplicationWindow {
         Window {
             id: nativeWallpaperSurface
             objectName: "nativeWallpaperSurface"
+            // These are independent shell surfaces, not transient children of
+            // the deliberately hidden preview window.
+            transientParent: null
             visible: false
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
@@ -577,6 +580,9 @@ ApplicationWindow {
         Window {
             id: nativeRibbonSurface
             objectName: "nativeRibbonSurface"
+            // These are independent shell surfaces, not transient children of
+            // the deliberately hidden preview window.
+            transientParent: null
             property bool attached: false
             visible: attached && Shell.ribbon.enabled
             flags: Qt.FramelessWindowHint | Qt.Tool
@@ -604,6 +610,9 @@ ApplicationWindow {
         Window {
             id: nativeDockSurface
             objectName: "nativeDockSurface"
+            // These are independent shell surfaces, not transient children of
+            // the deliberately hidden preview window.
+            transientParent: null
             property bool attached: false
             visible: attached && !window.snapshot.appearance.focus
             flags: Qt.FramelessWindowHint | Qt.Tool
@@ -631,6 +640,9 @@ ApplicationWindow {
         ApplicationWindow {
             id: nativePopupSurface
             objectName: "nativePopupSurface"
+            // These are independent shell surfaces, not transient children of
+            // the deliberately hidden preview window.
+            transientParent: null
             property bool attached: false
             visible: attached && (window.pendingNativePanel !== null || window.nativePanelVisible)
             flags: Qt.FramelessWindowHint | Qt.Tool
