@@ -14,3 +14,6 @@ target_link_libraries(klde-native-session-test PRIVATE klde_ui klde_uiplugin Qt6
 qt_add_executable(owode-native-test-client test_client.cpp)
 target_link_libraries(owode-native-test-client PRIVATE Qt6::Widgets)
 # Deliberately not an ordinary CTest entry: it requires the isolated KWin runner.
+
+qt_add_executable(owode-native-capture capture.cpp)
+target_link_libraries(owode-native-capture PRIVATE Qt6::Gui Qt6::DBus)

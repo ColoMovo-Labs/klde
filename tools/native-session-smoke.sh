@@ -44,6 +44,14 @@ Exec=$build_dir/bin/klde-native-session-test
 NoDisplay=true
 X-KDE-Wayland-Interfaces=org_kde_kwin_fake_input
 EOF
+cat > "$runtime_dir/data/applications/org.owode.NativeCapture.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=owoDE isolated compositor capture
+Exec=$build_dir/bin/owode-native-capture
+NoDisplay=true
+X-KDE-DBUS-Restricted-Interfaces=org.kde.KWin.ScreenShot2
+EOF
 # Minimal images have no desktop menu package. Give KService an explicit menu
 # containing only this private test application's metadata.
 cat > "$runtime_dir/config/menus/applications.menu" <<EOF
@@ -96,25 +104,29 @@ for _ in $(seq 1 150); do
 done
 test -S "$XDG_RUNTIME_DIR/owode-ci"
 export WAYLAND_DISPLAY=owode-ci XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=owoDE
-if ! timeout 180s env QT_QPA_PLATFORM=wayland QT_QUICK_BACKEND=software WAYLAND_DEBUG=client \
+if ! timeout 180s env QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=wayland QT_QUICK_BACKEND=software WAYLAND_DEBUG=client \
     "$build_dir/bin/klde-native-session-test" -o "$out_dir/native-tests.xml,junitxml" -o -,txt \
     > "$out_dir/native-test.log" 2>&1; then
     tail -100 "$out_dir/native-test.log"
     exit 1
 fi
 # Also launch the real CLI, rather than inferring main.cpp behavior from the test.
-env -u QT_QUICK_BACKEND QT_QPA_PLATFORM=wayland QSG_RHI_BACKEND=opengl WAYLAND_DEBUG=client \
+env -u QT_QUICK_BACKEND QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=wayland QSG_RHI_BACKEND=opengl WAYLAND_DEBUG=client \
     "$build_dir/bin/klde-shell" --native-shell-surfaces --view quick-settings \
     > "$out_dir/native-main.log" 2>&1 &
 shell_pid=$!
 sleep 3
 kill -0 "$shell_pid"
-import -window root "$out_dir/native-main.png"
+"$build_dir/bin/owode-native-capture" "$out_dir/native-main.png"
 kill -TERM "$shell_pid"
 wait "$shell_pid" || [[ $? == 143 ]]
 python3 tools/verify-native-protocol.py "$out_dir"
 kill -TERM "$kwin_pid"
-wait "$kwin_pid"
+kwin_status=0
+wait "$kwin_pid" || kwin_status=$?
+# KWin forwards the handled signal number to QCoreApplication::exit (15).
+[[ "$kwin_status" == 0 || "$kwin_status" == 15 ]]
+printf '%s\n' "$kwin_status" > "$out_dir/kwin-stop-status.txt"
 kwin_pid=
 test ! -S "$XDG_RUNTIME_DIR/owode-ci"
 printf '%s\n' 'Owned KWin and shell processes exited; private Wayland socket removed.' > "$out_dir/shutdown.txt"

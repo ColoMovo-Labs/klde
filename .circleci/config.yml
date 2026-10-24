@@ -63,14 +63,14 @@ jobs:
       - built-tree
       - run:
           name: Install isolated KWin and native test dependencies
-          command: apt-get install -y --no-install-recommends kwin-wayland libwayland-dev libwayland-bin pkg-config imagemagick dbus-daemon dbus-bin libkf6service-bin
+          command: apt-get install -y --no-install-recommends kwin-wayland libwayland-dev libwayland-bin pkg-config dbus-daemon dbus-bin libkf6service-bin
       - run:
           name: Build native integration tools against Ubuntu LayerShellQt
           command: |
             cmake -S . -B build/ci -DOWODE_BUILD_NATIVE_TESTS=ON
-            cmake --build build/ci --target klde-native-session-test owode-native-test-client --parallel 2
+            cmake --build build/ci --target klde-native-session-test owode-native-test-client owode-native-capture --parallel 2
             mkdir -p artifacts/native-session
-            tar -C build/ci/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client
+            tar -C build/ci/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
             git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
       - run:
           name: Verify native KWin roles, input, focus and maximization
@@ -94,16 +94,16 @@ jobs:
           name: Install Fedora Qt and isolated KWin tools
           command: |
             xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
-            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config dbus-daemon dbus-tools kf6-kservice
+            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config dbus-daemon dbus-tools kf6-kservice
       - attach_workspace:
           at: /root/project
       - run:
           name: Build native integration tools against Fedora LayerShellQt
           command: |
             cmake -S . -B build/fedora -DOWODE_BUILD_NATIVE_TESTS=ON
-            cmake --build build/fedora --target klde-native-session-test owode-native-test-client --parallel 2
+            cmake --build build/fedora --target klde-native-session-test owode-native-test-client owode-native-capture --parallel 2
             mkdir -p artifacts/native-session
-            tar -C build/fedora/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client
+            tar -C build/fedora/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
             git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
       - run:
           name: Verify native KWin roles, input, focus and maximization

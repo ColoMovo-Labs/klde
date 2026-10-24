@@ -149,3 +149,12 @@ committed even when the scene has become static. This is event-driven, not a
 repeating repaint timer. Raw `set_input_region` requests alone are insufficient
 proof; the acceptance test also clicks both a visible Dock control and its
 transparent surroundings with a genuine application underneath.
+
+The capture helper requests the isolated compositor's actual output through
+[KWin ScreenShot2](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/plugins/screenshot/screenshotdbusinterface2.cpp).
+Its private desktop entry requests only that D-Bus interface. No host root
+window or screen is captured. Each PNG includes compositor metadata in a JSON
+sidecar; output comes from KWin, avoiding stale GL readback from an X11 parent
+viewport. This test-only API does not add a production screenshot service.
+KWin's handled SIGTERM produces exit status 15; the runner records that status
+and additionally requires its socket to disappear before accepting shutdown.
