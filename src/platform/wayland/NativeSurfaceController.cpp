@@ -122,9 +122,18 @@ void NativeSurfaceController::updateInputRegion(QWindow *window) {
     region &= QRect(QPoint(), window->size());
     // An empty QWindow mask means "unrestricted", not "no input". Use the
     // public transparent-input flag while a section contains no controls.
+    const bool transparentChanged =
+        window->flags().testFlag(Qt::WindowTransparentForInput) != region.isEmpty();
+    const bool maskChanged = window->mask() != region;
     window->setFlag(Qt::WindowTransparentForInput, region.isEmpty());
-    if (window->mask() != region)
+    if (maskChanged)
         window->setMask(region);
+    // Wayland input regions are double-buffered. A static Quick scene might
+    // otherwise send set_input_region without a following surface commit,
+    // leaving a newly visible dock completely click-through until it animates.
+    // Request one event-driven frame, never an idle repaint loop.
+    if (maskChanged || transparentChanged)
+        quick->update();
 }
 
 void NativeSurfaceController::setDiagnostic(const QString &diagnostic) {

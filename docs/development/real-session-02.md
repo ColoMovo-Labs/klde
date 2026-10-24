@@ -142,3 +142,10 @@ checks remain enabled. The production
 shell does not request input injection. This follows KWin's
 [service authorization](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/utils/serviceutils.h)
 and [Wayland interface filtering](https://invent.kde.org/plasma/kwin/-/blob/Plasma/6.7/src/wayland_server.cpp).
+
+Input masks are double-buffered Wayland surface state. After a geometry or
+visibility change, the controller requests one Quick update so the new mask is
+committed even when the scene has become static. This is event-driven, not a
+repeating repaint timer. Raw `set_input_region` requests alone are insufficient
+proof; the acceptance test also clicks both a visible Dock control and its
+transparent surroundings with a genuine application underneath.
