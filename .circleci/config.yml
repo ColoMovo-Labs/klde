@@ -63,7 +63,7 @@ jobs:
       - built-tree
       - run:
           name: Install isolated KWin and native test dependencies
-          command: apt-get install -y --no-install-recommends kwin-wayland libwayland-dev imagemagick
+          command: apt-get install -y --no-install-recommends kwin-wayland libwayland-dev libwayland-bin pkg-config imagemagick
       - run:
           name: Build native integration tools against Ubuntu LayerShellQt
           command: |
@@ -91,7 +91,7 @@ jobs:
           name: Install Fedora Qt and isolated KWin tools
           command: |
             xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
-            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick mesa-dri-drivers mesa-libEGL mesa-libGL
+            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config
       - attach_workspace:
           at: /root/project
       - run:
