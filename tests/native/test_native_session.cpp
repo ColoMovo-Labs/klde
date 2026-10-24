@@ -289,7 +289,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_VERIFY(!popup->isVisible());
         QTRY_VERIFY(readObject(statePath).value("active").toBool());
 
-        auto *wifi = findItem(ribbon->contentItem(), "statusModule-wifi");
+        auto *wifi = findItem(ribbon->contentItem(), "statusModule-network");
         QVERIFY(wifi);
         const auto wifiPoint = wifi->mapToScene(QPointF(wifi->width() / 2, wifi->height() / 2));
         input.click(wifiPoint.toPoint());
