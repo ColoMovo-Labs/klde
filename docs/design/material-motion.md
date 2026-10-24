@@ -63,7 +63,10 @@ and remains the visual anchor rather than becoming a generic glass panel.
 
 ## Acceptance
 
-The CircleCI visual matrix captures the study in light, dark, English 1440×900
-and the kemono wallpaper on the llvmpipe GPU path. Owner review compares the two
-columns before any tier or spring replaces 0.1 tokens in the shell. Real GPU cost
-on Intel UHD 620-class hardware has not been measured.
+CircleCI and CNB run `tools/capture-fusion-previews.sh` against cloud-built
+binaries. Its 1920×1080 PNGs cover the default desktop, Quick Settings, Launcher,
+Temporal detail and the study on the OpenGL/llvmpipe shader path. Source revision,
+renderer information and bounded idle-rendering logs accompany the images.
+Separate software-scene-graph previews cover the opaque fallback; they are not
+evidence of working Glass refraction. Real GPU cost on Intel UHD 620-class
+hardware has not been measured. Owner review of the captures is still required.

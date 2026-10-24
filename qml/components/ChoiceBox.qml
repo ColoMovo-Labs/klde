@@ -9,6 +9,7 @@ ComboBox {
     delegate: ItemDelegate {
         id: option
         required property int index
+        required property var modelData
         width: control.popup.width - control.popup.leftPadding - control.popup.rightPadding
         implicitHeight: Tokens.controlHeight
         text: modelData

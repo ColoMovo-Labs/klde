@@ -114,10 +114,14 @@ Item {
             verify(toggle.checked);
             mouseClick(toggle);
             verify(!toggle.checked);
+            // Re-enter from another control: forceActiveFocus on an already
+            // mouse-focused item does not deliver a new keyboard focus event.
+            findChild(study, "materialReplay").forceActiveFocus(Qt.TabFocusReason);
             toggle.forceActiveFocus(Qt.TabFocusReason);
+            tryCompare(toggle, "activeFocus", true);
+            tryCompare(toggle, "visualFocus", true);
             keyClick(Qt.Key_Space);
             verify(toggle.checked);
-            verify(toggle.visualFocus);
         }
     }
 }

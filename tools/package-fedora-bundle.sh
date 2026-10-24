@@ -36,7 +36,11 @@ surface mode additionally requires KWin and LayerShellQt.
 EOF
 
 (cd "$stage_dir" && tar -czf "$out_dir/$archive" owode)
-cpack --config "$build_dir/CPackConfig.cmake" -G RPM -B "$out_dir"
+# Give each preview revision a distinct, increasing release so dnf can upgrade
+# an older Mock build instead of silently keeping an identically named RPM.
+release="1.$(git show -s --format=%ct "$commit").git${short_commit}"
+cpack --config "$build_dir/CPackConfig.cmake" -G RPM -B "$out_dir" \
+    -D "CPACK_RPM_PACKAGE_RELEASE=$release"
 rm -rf "$out_dir/_CPack_Packages"
 mapfile -t rpms < <(find "$out_dir" -maxdepth 1 -name '*.rpm' -type f -print)
 test "${#rpms[@]}" -eq 1

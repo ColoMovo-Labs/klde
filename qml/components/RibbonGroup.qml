@@ -23,7 +23,6 @@ Surface {
     cornerRadius: height / 2
     padding: 0
     material: "mica"
-    backdropSource: root.backdropSource
     opacity: Tokens.transparencyEnabled ? Tokens.surfaceOpacityHigh : 1
     Grid {
         id: telemetry

@@ -1,6 +1,6 @@
 # CNB is a public mirror and an additional Fedora cloud validation path.
 # CircleCI remains the authoritative Qt/CMake matrix and merge check.
-main:
+"(main|feat/temporal-shell)":
   push:
     - docker:
         image: fedora:44
@@ -17,7 +17,7 @@ main:
               mesa-libEGL mesa-libGL dbus-daemon dbus-tools \
               dejavu-sans-fonts google-noto-sans-cjk-vf-fonts \
               google-noto-color-emoji-fonts \
-              desktop-file-utils
+              desktop-file-utils xorg-x11-server-Xvfb xorg-x11-xauth glx-utils
         - name: configure and build
           script: |
             set -eu
@@ -68,6 +68,16 @@ main:
             attachments:
               - "./artifacts/visual/*.png"
               - "./artifacts/visual/SHA256SUMS"
+        - name: capture default fusion materials through OpenGL
+          script: bash tools/capture-fusion-previews.sh build/cnb/bin/klde-shell artifacts/fusion
+        - name: attach fusion previews and rendering evidence
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/fusion/*.png"
+              - "./artifacts/fusion/*.log"
+              - "./artifacts/fusion/*.json"
+              - "./artifacts/fusion/*.txt"
         - name: package Fedora user bundle
           script: |
             set -eu
@@ -81,6 +91,7 @@ main:
               - "./artifacts/fedora-package/*.rpm"
               - "./artifacts/fedora-package/*.tar.gz"
               - "./artifacts/fedora-package/SHA256SUMS"
+              - "./artifacts/fedora-package/*.txt"
         - name: verify public repository entry points
           script: |
             set -eu
