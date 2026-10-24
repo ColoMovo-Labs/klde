@@ -160,17 +160,32 @@ ApplicationWindow {
             }
         }
     }
-    Dialog {
+    Popup {
         id: about
         anchors.centerIn: parent
-        width: parent.width - Theme.margin * 2
+        width: root.width - Theme.margin * 2
+        padding: Theme.margin
         modal: true
-        title: Calculator.chinese ? "关于计算器" : "About Calculator"
-        standardButtons: Dialog.Ok
-        contentItem: Label {
-            text: (Calculator.chinese ? "owoDE 主题化的 Lingmo Calculator 引擎移植。\n\n" : "An owoDE-themed port of the Lingmo Calculator engine.\n\n") + "LingmoOS / CuteOS · revenmartin\nSpeedCrunch · Ariya Hidayat\nGNU bc · Free Software Foundation / Philip A. Nelson\n\nGPL-3.0-or-later\n/usr/share/doc/owode-calculator/source"
-            wrapMode: Text.WordWrap
-            color: Theme.colors.textPrimary
+        focus: true
+        Accessible.role: Accessible.Dialog
+        contentItem: ColumnLayout {
+            spacing: Theme.space * 2
+            Label {
+                text: Calculator.chinese ? "关于计算器" : "About Calculator"
+                color: Theme.colors.textPrimary
+                font.bold: true
+            }
+            Label {
+                Layout.fillWidth: true
+                text: (Calculator.chinese ? "owoDE 主题化的 Lingmo Calculator 引擎移植。\n\n" : "An owoDE-themed port of the Lingmo Calculator engine.\n\n") + "LingmoOS / CuteOS · revenmartin\nSpeedCrunch · Ariya Hidayat\nGNU bc · Free Software Foundation / Philip A. Nelson\n\nGPL-3.0-or-later\n/usr/share/doc/owode-calculator/source"
+                wrapMode: Text.WordWrap
+                color: Theme.colors.textPrimary
+            }
+            Button {
+                text: Calculator.chinese ? "关闭" : "Close"
+                onClicked: about.close()
+                Layout.alignment: Qt.AlignRight
+            }
         }
         background: Rectangle {
             radius: Theme.keyRadius
