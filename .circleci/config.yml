@@ -98,7 +98,7 @@ jobs:
           name: Install Fedora Qt and isolated KWin tools
           command: |
             xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
-            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick xdotool mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config imagemagick xdotool dbus-daemon dbus-tools kf6-kservice
+            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick xdotool mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config dbus-daemon dbus-tools kf6-kservice
       - attach_workspace:
           at: /root/project
       - restore_cache:
