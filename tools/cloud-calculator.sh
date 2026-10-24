@@ -34,11 +34,11 @@ release="1.$(git show -s --format=%ct HEAD).git${revision:0:12}"
 if command -v dnf >/dev/null; then
     cpack --config "$build_dir/CPackConfig.cmake" -G RPM -B "$out_dir" \
         -D "CPACK_RPM_PACKAGE_RELEASE=$release"
-    dnf install -y "$out_dir/"*.rpm
+    dnf install -y "$PWD/$out_dir/"*.rpm
 else
     cpack --config "$build_dir/CPackConfig.cmake" -G DEB -B "$out_dir" \
         -D "CPACK_DEBIAN_PACKAGE_RELEASE=$release"
-    apt-get install -y "$out_dir/"*.deb
+    apt-get install -y "$PWD/$out_dir/"*.deb
 fi
 env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
     /usr/bin/owode-calculator --smoke-test --capture "$PWD/$out_dir/installed.png"
