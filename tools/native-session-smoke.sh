@@ -71,9 +71,18 @@ cat > "$runtime_dir/config/kdeglobals" <<'EOF'
 [KDE]
 AnimationDurationFactor=0
 EOF
-git rev-parse HEAD > "$out_dir/source-commit.txt"
-xvfb-run -a -s '-screen 0 1600x1000x24 -nolisten tcp' \
-    env -u WAYLAND_DISPLAY XDG_RUNTIME_DIR="$runtime_dir" \
+runner_revision=$(git rev-parse HEAD)
+binary_revision=${OWODE_NATIVE_BINARY_REVISION:-$runner_revision}
+[[ "$binary_revision" =~ ^[0-9a-f]{40}$ ]]
+printf '%s\n' "$runner_revision" > "$out_dir/runner-revision.txt"
+printf '%s\n' "$binary_revision" > "$out_dir/source-commit.txt"
+display_runner=(xvfb-run -a -s '-screen 0 1600x1000x24 -nolisten tcp')
+if [[ "${OWODE_NATIVE_VISIBLE:-0}" == 1 ]]; then
+    [[ -n "${DISPLAY:-}" ]] || { echo 'Visible nested tests require a parent X11 display.' >&2; exit 2; }
+    display_runner=()
+fi
+printf '%s\n' "${OWODE_NATIVE_VISIBLE:-0}" > "$out_dir/visible-parent.txt"
+"${display_runner[@]}" env -u WAYLAND_DISPLAY XDG_RUNTIME_DIR="$runtime_dir" \
     XDG_CONFIG_HOME="$runtime_dir/config" XDG_CACHE_HOME="$runtime_dir/cache" \
     XDG_DATA_HOME="$runtime_dir/data" LIBGL_ALWAYS_SOFTWARE=1 \
     OWODE_KWIN_BIN="$runtime_dir/kwin_wayland" \
@@ -130,7 +139,9 @@ env -u QT_QUICK_BACKEND QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=wayland QSG_RH
     "$build_dir/bin/klde-shell" --native-shell-surfaces --view quick-settings \
     > "$out_dir/native-main.log" 2>&1 &
 shell_pid=$!
-sleep 3
+python3 tools/wait-native-buffers.py "$out_dir/native-main.log" "$out_dir/first-buffers.json"
+# First buffers are real now; let the approved finite popup transition settle.
+sleep 1
 kill -0 "$shell_pid"
 "$build_dir/bin/owode-native-capture" "$out_dir/native-main.png"
 kill -TERM "$shell_pid"
