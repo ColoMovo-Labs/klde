@@ -30,6 +30,9 @@ Packages contain the original upstream source archive, the complete port source,
 the shared palette, reproducible fetch/patch script and GPL text under
 `/usr/share/doc/owode-calculator/`. Cloud artifacts also provide corresponding
 source archives next to each binary. Preserve all notices when redistributing.
+The fetch script accepts `--archive /path/to/lingmo-calculator-source.tar.gz`
+to reconstruct the patched engine offline. The cloud job also configures a new
+build from the source installed with the package to check its completeness.
 
 ## Cloud validation
 
@@ -38,7 +41,8 @@ optional app in an Ubuntu or Fedora cloud container. It does not run as part
 of the default shell build. CMake never downloads dependencies on its own.
 
 The cloud jobs check precedence, parentheses, decimals, Unicode operators,
-invalid input and recovery; render light/dark Chinese/English windows; build
+invalid input and recovery; exercise keyboard entry, Return, keypad clicks and Escape in the real QML
+window; render light/dark Chinese/English windows; build
 and install a `.deb` or RPM; then start the installed executable. Headless
 correctness does not establish interactive Wayland, screen-reader or long-term
 daily-use acceptance. Those remain explicit target-host checks.
