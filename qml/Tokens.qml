@@ -123,6 +123,133 @@ QtObject {
     readonly property int emphasizedAccelerate: Easing.InCubic
     readonly property int standard: Easing.InOutQuad
     readonly property int springLike: Easing.OutBack
+
+    // Damped-spring motion from the Material Expressive physics model. Each spring
+    // is baked into a finite Bezier spline, so animations keep a fixed duration,
+    // honour reduced motion and settle for the idle audit like every other token.
+    function springCurve(dampingRatio: real, stiffness: real): var {
+        const omega = Math.sqrt(stiffness);
+        const zeta = Math.min(dampingRatio, 1.0);
+        const decay = zeta * omega;
+        const damped = omega * Math.sqrt(Math.max(1 - zeta * zeta, 0));
+        const position = t => zeta < 1 ? 1 - Math.exp(-decay * t) * (Math.cos(damped * t) + decay / damped * Math.sin(damped * t)) : 1 - Math.exp(-omega * t) * (1 + omega * t);
+        const velocity = t => zeta < 1 ? omega / Math.sqrt(1 - zeta * zeta) * Math.exp(-decay * t) * Math.sin(damped * t) : omega * omega * t * Math.exp(-omega * t);
+        const envelope = t => zeta < 1 ? Math.exp(-decay * t) / Math.sqrt(1 - zeta * zeta) : Math.exp(-omega * t) * (1 + omega * t);
+        let settle = 0.004;
+        while (envelope(settle) > springSettleError && settle < 2)
+            settle += 0.004;
+        const segments = 12;
+        const curve = [];
+        for (let i = 1; i <= segments; ++i) {
+            const start = (i - 1) / segments, end = i / segments, step = 1 / segments;
+            const y0 = position(start * settle), d0 = velocity(start * settle) * settle;
+            const y1 = i === segments ? 1 : position(end * settle);
+            const d1 = i === segments ? 0 : velocity(end * settle) * settle;
+            curve.push(start + step / 3, y0 + d0 * step / 3, end - step / 3, y1 - d1 * step / 3, end, y1);
+        }
+        return {
+            duration: Math.round(settle * 1000),
+            curve: curve
+        };
+    }
+    function spring(dampingRatio: real, stiffness: real): var {
+        const baked = springCurve(dampingRatio, stiffness);
+        return {
+            duration: reducedMotion ? 0 : Math.round(baked.duration * springSpeed),
+            curve: baked.curve
+        };
+    }
+    readonly property real springSettleError: 0.0008
+    readonly property bool expressiveMotion: motionLevel === 2
+    readonly property real springSpeed: motionLevel === 3 ? 0.8 : 1.0
+    // Spatial springs move and resize. Keep production overshoot restrained: the
+    // large 9% bounce of the old fast curve read as a jelly-like UI on controls.
+    readonly property var springSpatialFast: expressiveMotion ? spring(0.72, 1500) : spring(0.9, 1400)
+    readonly property var springSpatialMicro: expressiveMotion ? spring(0.80, 2200) : spring(0.94, 2600)
+    readonly property var springHover: expressiveMotion ? spring(0.88, 1200) : spring(0.96, 1500)
+    readonly property var springPopup: expressiveMotion ? spring(0.82, 480) : spring(0.94, 650)
+    readonly property var springSpatial: expressiveMotion ? spring(0.8, 380) : spring(0.9, 700)
+    readonly property var springSpatialSlow: expressiveMotion ? spring(0.8, 200) : spring(0.9, 300)
+    // Effect springs drive colour and opacity and are always critically damped.
+    readonly property var springEffectsFast: spring(1.0, 3800)
+    readonly property var springEffects: spring(1.0, 1600)
+    readonly property var springEffectsSlow: spring(1.0, 800)
+    readonly property int springStagger: reducedMotion ? 0 : 40
+    readonly property real pressScale: 0.975
+    readonly property real hoverScale: 1.012
+    readonly property real hoverLift: 1
+
+    // Material tiers for the fusion study. Mica is a calm wallpaper-tinted base,
+    // Acrylic a grained transient layer with an elevation rim, Glass a refracting
+    // floating control. All sample only KLDE-owned wallpaper; see blur.md.
+    readonly property var materials: ({
+            "mica": {
+                tint: surface,
+                captureScale: 0.125,
+                blur: 1.0,
+                blurMax: 64,
+                tintOpacity: darkMode ? 0.80 : 0.70,
+                saturation: 0.75,
+                grain: 0.0,
+                rim: 0.12,
+                specular: 0.0,
+                refraction: 0.0,
+                edge: 0.0,
+                dispersion: 0.0,
+                shadow: 0
+            },
+            "acrylic": {
+                tint: surfaceElevated,
+                captureScale: 0.25,
+                blur: 1.0,
+                blurMax: 40,
+                tintOpacity: darkMode ? 0.66 : 0.58,
+                saturation: 1.0,
+                grain: 0.035,
+                rim: 0.34,
+                specular: 0.0,
+                refraction: 0.0,
+                edge: 0.0,
+                dispersion: 0.0,
+                shadow: 2
+            },
+            "glass": {
+                tint: darkMode ? "#1b2333" : "#ffffff",
+                captureScale: 0.5,
+                blur: 0.3,
+                blurMax: 16,
+                tintOpacity: darkMode ? 0.20 : 0.14,
+                saturation: 1.18,
+                grain: 0.0,
+                rim: 0.65,
+                specular: 1.0,
+                refraction: 16.0,
+                edge: 22.0,
+                dispersion: 0.22,
+                shadow: 1
+            }
+        })
+    readonly property point materialLight: Qt.point(-0.45, -0.89)
+    readonly property real glassPressScale: 0.97
+    readonly property real expressivePressScale: 0.94
+    readonly property real revealScale: 0.92
+    readonly property int revealLift: space24
+    readonly property int materialLabelWidth: 184
+    readonly property int materialSpecimenWidth: 440
+    readonly property int materialFlyoutWidth: 280
+    readonly property int materialPanelHeight: 212
+    readonly property int materialFlyoutHeight: 148
+    readonly property int materialDockHeight: 76
+    readonly property int materialMotionHeight: 84
+    readonly property int materialMenuRow: 36
+    readonly property int materialIndicatorWidth: 3
+    readonly property int materialIndicatorHeight: 16
+    readonly property int materialSwitchWidth: 52
+    readonly property int materialSwitchHeight: 32
+    readonly property int materialThumbOff: 16
+    readonly property int materialThumbOn: 24
+    readonly property int materialThumbPressed: 28
+    readonly property int materialHoverLift: space4
     readonly property int elevationFlat: 0
     readonly property int elevationLow: 2
     readonly property int elevationMedium: 6

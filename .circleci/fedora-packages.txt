@@ -13,6 +13,7 @@ ninja-build
 rpm-build
 qt6-qtbase-devel
 qt6-qtdeclarative-devel
+qt6-qtshadertools-devel
 qt6-qtwayland-devel
 qt6-qtsvg
 layer-shell-qt

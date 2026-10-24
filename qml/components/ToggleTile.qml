@@ -11,6 +11,14 @@ Button {
     signal toggleRequested
     checkable: true
     checked: selected
+    scale: root.down ? Tokens.pressScale : root.hovered ? Tokens.hoverScale : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
     implicitHeight: Tokens.toggleHeight
     leftPadding: Tokens.space12
     rightPadding: Tokens.space12
@@ -32,7 +40,9 @@ Button {
             }
             Behavior on radius {
                 NumberAnimation {
-                    duration: Tokens.motionFast
+                    duration: Tokens.springSpatialMicro.duration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Tokens.springSpatialMicro.curve
                 }
             }
         }
@@ -59,12 +69,16 @@ Button {
         border.color: Tokens.primary
         Behavior on radius {
             NumberAnimation {
-                duration: Tokens.motionFast
+                duration: Tokens.springSpatialMicro.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springSpatialMicro.curve
             }
         }
         Behavior on color {
             ColorAnimation {
-                duration: Tokens.motionFast
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
         }
     }

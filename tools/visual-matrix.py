@@ -62,6 +62,10 @@ def main():
         cases.append(dict(id='system-island-'+island, view='desktop', island_state=island))
     cases.append(dict(id='system-ui-gallery', view='gallery'))
     cases.append(dict(id='temporal-study', view='temporal-study', size='1440x1000'))
+    cases.extend([dict(id='material-study-light', view='material-study'),
+                  dict(id='material-study-dark', view='material-study', dark=True),
+                  dict(id='material-study-en-1440', view='material-study', locale='en', size='1440x900'),
+                  dict(id='material-study-kemono', view='material-study', wallpaper='kemono')])
     for name, size in [('hdplus','1600x900'), ('fhd','1920x1080'), ('qhd','2560x1440'), ('narrow','1366x768')]:
         cases.append(dict(id='axis-'+name, size=size))
     cases.extend([dict(id='night-desktop', scenario='moonlit-night', dark=True),

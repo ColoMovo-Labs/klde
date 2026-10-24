@@ -473,7 +473,9 @@ ApplicationWindow {
         }
         Behavior on opacity {
             NumberAnimation {
-                duration: Tokens.motionFast
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
         }
     }
@@ -481,6 +483,14 @@ ApplicationWindow {
         visible: window.initialView === "temporal-study"
         anchors.fill: parent
         z: 100
+    }
+    Loader {
+        anchors.fill: parent
+        z: 100
+        active: window.initialView === "material-study"
+        sourceComponent: Component {
+            MaterialStudy {}
+        }
     }
     ApplicationShortcuts {
         onAction: id => {

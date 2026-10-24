@@ -155,3 +155,7 @@ clock. [Night roles](docs/design/night-palette.md) have dedicated resources and
 colors. All surfaces use shared
 shape, group spacing, motion and color tokens. Wayland is primary; X11 testing is
 a compatibility check.
+
+The [material and motion study](docs/design/material-motion.md) explores a 0.2
+direction: Material Expressive springs and shape, Fluent-style Mica/Acrylic tiers
+and a little refracting glass, shown beside the 0.1 surfaces with `--view material-study`.

@@ -43,6 +43,20 @@ Item {
     implicitHeight: idle ? capsule.implicitHeight : expanded ? 80 : 48
     width: implicitWidth
     height: implicitHeight
+    Behavior on width {
+        NumberAnimation {
+            duration: Tokens.springSpatial.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatial.curve
+        }
+    }
+    Behavior on height {
+        NumberAnimation {
+            duration: Tokens.springSpatial.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatial.curve
+        }
+    }
 
     TemporalCapsule {
         id: capsule
@@ -63,6 +77,13 @@ Item {
         color: Tokens.surfaceContainerHigh
         border.width: Tokens.capsuleBorderWidth
         border.color: Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
+        Behavior on color {
+            ColorAnimation {
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
+            }
+        }
 
         RowLayout {
             anchors.fill: parent

@@ -7,6 +7,7 @@ Popup {
     property Item backdropSource: null
     padding: Tokens.space24
     focus: true
+    transformOrigin: Item.Center
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     onOpened: popupSurface.refreshCapture()
     background: Surface {
@@ -20,14 +21,17 @@ Popup {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: Tokens.motionNormal
+                duration: Tokens.springEffects.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffects.curve
             }
             NumberAnimation {
                 property: "scale"
                 from: Tokens.popupStartScale
                 to: 1
-                duration: Tokens.motionNormal
-                easing.type: Tokens.emphasizedDecelerate
+                duration: Tokens.springPopup.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springPopup.curve
             }
         }
     }
@@ -37,8 +41,9 @@ Popup {
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: Tokens.motionFast
-                easing.type: Tokens.emphasizedAccelerate
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
             NumberAnimation {
                 property: "scale"

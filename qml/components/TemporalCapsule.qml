@@ -18,6 +18,20 @@ Button {
     readonly property Item debugTextItem: timeLabel
     implicitWidth: expanded ? Tokens.temporalExpandedWidth : sizeMode === "compact" ? Tokens.temporalCompactWidth : Tokens.temporalWidth
     implicitHeight: expanded ? Tokens.temporalExpandedHeight : sizeMode === "compact" ? Tokens.temporalCompactHeight : Tokens.temporalHeight
+    Behavior on width {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
+    Behavior on height {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
     padding: 0
     Accessible.name: reading.timeText + ", " + I18n.t("temporal.phase." + reading.phase) + ", " + I18n.t("temporal.season." + reading.season) + ", " + I18n.t("temporal.mock")
     ToolTip.visible: hovered
@@ -48,13 +62,21 @@ Button {
             }
             Label {
                 id: phaseLabel
-                visible: root.expanded
+                visible: root.expanded || opacity > 0.001
+                opacity: root.expanded ? 1 : 0
                 objectName: "temporalPhaseText"
                 width: parent.width
                 text: I18n.t("temporal.phase." + root.reading.phase)
                 color: Tokens.temporalText
                 horizontalAlignment: Text.AlignHCenter
                 font: Tokens.caption
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Tokens.springEffectsFast.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Tokens.springEffectsFast.curve
+                    }
+                }
             }
         }
         Rectangle {

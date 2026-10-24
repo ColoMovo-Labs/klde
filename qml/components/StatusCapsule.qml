@@ -25,6 +25,14 @@ Button {
     Accessible.name: label + ", " + valueText + (unavailable ? ", " + I18n.t("lab.unavailable") : "")
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
+    scale: root.down ? Tokens.pressScale : root.hovered ? Tokens.hoverScale : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
     contentItem: Item {
         implicitWidth: contentRow.implicitWidth
         implicitHeight: contentRow.implicitHeight
@@ -94,14 +102,16 @@ Button {
         border.color: root.visualFocus || root.severity > 0 ? root.ink : Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)
         Behavior on radius {
             NumberAnimation {
-                duration: Tokens.motionFast
-                easing.type: Tokens.emphasizedDecelerate
+                duration: Tokens.springSpatialMicro.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springSpatialMicro.curve
             }
         }
         Behavior on color {
             ColorAnimation {
-                duration: Tokens.motionFast
-                easing.type: Tokens.standard
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
         }
     }

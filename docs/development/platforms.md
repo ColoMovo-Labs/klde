@@ -28,7 +28,7 @@ through `dpkg-shlibdeps`. See [packaging](../../packaging/README.md).
 CircleCI uses the pinned release family `fedora:44` with distribution updates,
 not Rawhide or an unversioned latest image. The
 [manifest](../../.circleci/fedora-packages.txt) names `gcc-c++`, `cmake`,
-`ninja-build`, `qt6-qtbase-devel`, `qt6-qtdeclarative-devel`,
+`ninja-build`, `qt6-qtbase-devel`, `qt6-qtdeclarative-devel`, `qt6-qtshadertools-devel`,
 `qt6-qtwayland-devel`, `qt6-qtsvg`, `layer-shell-qt-devel`, Wayland protocol
 headers, `dejavu-sans-fonts` and supporting checkout/cache/metadata tools.
 

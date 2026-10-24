@@ -37,10 +37,50 @@ ComboBox {
         rightPadding: Tokens.space24
     }
     popup: Popup {
+        transformOrigin: Item.Top
         y: control.height
         width: control.width
         height: Math.min(contentItem.implicitHeight + padding * 2, Tokens.launcherHeight)
         padding: Tokens.space4
+        enter: Transition {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: Tokens.springEffectsFast.duration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Tokens.springEffectsFast.curve
+                }
+                NumberAnimation {
+                    property: "scale"
+                    from: Tokens.popupStartScale
+                    to: 1
+                    duration: Tokens.springPopup.duration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Tokens.springPopup.curve
+                }
+            }
+        }
+        exit: Transition {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "opacity"
+                    from: 1
+                    to: 0
+                    duration: Tokens.springEffectsFast.duration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Tokens.springEffectsFast.curve
+                }
+                NumberAnimation {
+                    property: "scale"
+                    from: 1
+                    to: Tokens.popupStartScale
+                    duration: Tokens.motionFast
+                    easing.type: Tokens.emphasizedAccelerate
+                }
+            }
+        }
         contentItem: ListView {
             clip: true
             implicitHeight: contentHeight
@@ -63,8 +103,9 @@ ComboBox {
         border.color: Tokens.primary
         Behavior on color {
             ColorAnimation {
-                duration: Tokens.motionFast
-                easing.type: Tokens.standard
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
         }
     }

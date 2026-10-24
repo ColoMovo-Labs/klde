@@ -10,6 +10,14 @@ Button {
     rightPadding: Tokens.space16
     font: Tokens.label
     opacity: enabled ? 1 : Tokens.mutedOpacity
+    scale: control.down ? Tokens.pressScale : control.hovered ? Tokens.hoverScale : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
     contentItem: Text {
         text: control.text
         font: control.font
@@ -25,8 +33,16 @@ Button {
         border.color: Tokens.primary
         Behavior on radius {
             NumberAnimation {
-                duration: Tokens.motionFast
-                easing.type: Tokens.emphasizedDecelerate
+                duration: Tokens.springSpatialMicro.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springSpatialMicro.curve
+            }
+        }
+        Behavior on color {
+            ColorAnimation {
+                duration: Tokens.springEffectsFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springEffectsFast.curve
             }
         }
     }

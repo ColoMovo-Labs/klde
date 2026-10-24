@@ -35,6 +35,14 @@ Surface {
                 ToolTip.visible: hovered
                 ToolTip.text: modeLabel
                 onClicked: Shell.windowManager.activateWorkspace(modelData.id)
+                scale: workspaceButton.down ? Tokens.pressScale : workspaceButton.hovered ? Tokens.hoverScale : 1
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: Tokens.springSpatialMicro.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Tokens.springSpatialMicro.curve
+                    }
+                }
                 contentItem: Text {
                     text: workspaceButton.text
                     font: workspaceButton.font
@@ -47,11 +55,26 @@ Surface {
                     color: workspaceButton.selected ? Tokens.primary : "transparent"
                     border.width: workspaceButton.visualFocus ? Tokens.space2 : 0
                     border.color: Tokens.primary
+                    Behavior on radius {
+                        NumberAnimation {
+                            duration: Tokens.springSpatialMicro.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Tokens.springSpatialMicro.curve
+                        }
+                    }
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: Tokens.springEffectsFast.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Tokens.springEffectsFast.curve
+                        }
+                    }
                 }
                 Behavior on width {
                     NumberAnimation {
-                        duration: Tokens.motionFast
-                        easing.type: Tokens.emphasizedDecelerate
+                        duration: Tokens.springSpatialMicro.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Tokens.springSpatialMicro.curve
                     }
                 }
             }

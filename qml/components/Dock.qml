@@ -49,6 +49,14 @@ Surface {
                 required property bool active
                 width: Tokens.dockItem
                 height: Tokens.dockItem
+                scale: appButton.down ? Tokens.pressScale : appButton.hovered ? Tokens.hoverScale : 1
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: Tokens.springSpatialMicro.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Tokens.springSpatialMicro.curve
+                    }
+                }
                 Accessible.name: I18n.s(displayName) + (active ? I18n.t("common.active") : running ? I18n.t("common.running") : "")
                 ToolTip.visible: hovered
                 ToolTip.text: I18n.s(displayName)
@@ -67,7 +75,21 @@ Surface {
                         height: Tokens.space3
                         radius: Tokens.radiusPill
                         color: Tokens.primary
-                        visible: appButton.running
+                        opacity: appButton.running ? 1 : 0
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: Tokens.springSpatialMicro.duration
+                                easing.type: Easing.BezierSpline
+                                easing.bezierCurve: Tokens.springSpatialMicro.curve
+                            }
+                        }
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: Tokens.springEffectsFast.duration
+                                easing.type: Easing.BezierSpline
+                                easing.bezierCurve: Tokens.springEffectsFast.curve
+                            }
+                        }
                     }
                 }
                 background: Rectangle {
@@ -77,7 +99,16 @@ Surface {
                     border.color: Tokens.primary
                     Behavior on color {
                         ColorAnimation {
-                            duration: Tokens.motionFast
+                            duration: Tokens.springEffectsFast.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Tokens.springEffectsFast.curve
+                        }
+                    }
+                    Behavior on radius {
+                        NumberAnimation {
+                            duration: Tokens.springSpatialMicro.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Tokens.springSpatialMicro.curve
                         }
                     }
                 }

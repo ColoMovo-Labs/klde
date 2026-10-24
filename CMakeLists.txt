@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui DBus Network Qml Quick QuickControls2)
+find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui DBus Network Qml Quick QuickControls2 ShaderTools)
 qt_standard_project_setup(REQUIRES 6.8)
 include(CTest)
 include(GNUInstallDirs)
@@ -34,6 +34,7 @@ set(klde_qml_files
     qml/components/SystemIsland.qml qml/components/WelcomeFlow.qml
     qml/components/SystemUiGallery.qml
     qml/components/TemporalStudy.qml qml/components/DisplayClock.qml
+    qml/components/MaterialStudy.qml
     qml/components/GeometryDebugOverlay.qml
     qml/components/TemporalSettings.qml qml/components/WallpaperLayers.qml
     qml/components/WallpaperEffectsSettings.qml qml/components/LockScreenPreview.qml
@@ -65,6 +66,7 @@ set(klde_qml_files
     qml/components/LanguageInputSettings.qml qml/components/InputPopup.qml
     qml/widgets/WidgetHost.qml qml/widgets/WeatherWidget.qml
     qml/effects/OwnedBlurSample.qml qml/effects/BlurLab.qml qml/effects/OwnedBackdrop.qml
+    qml/effects/MaterialBackdrop.qml
 )
 foreach(qml_file IN LISTS klde_qml_files)
     get_filename_component(qml_name "${qml_file}" NAME)
@@ -81,6 +83,14 @@ qt_add_qml_module(klde_ui STATIC
     QML_FILES ${klde_qml_files}
 )
 target_link_libraries(klde_ui PUBLIC klde_backends klde_backendsplugin Qt6::Quick Qt6::QuickControls2)
+
+# Build-time shader packs for public ShaderEffect use (blur.md). Runtime
+# packages need no shader compiler; the baked .qsb files are embedded.
+qt_add_shaders(klde_ui klde_shaders
+    PREFIX /shaders
+    BASE qml/effects
+    FILES qml/effects/material.frag
+)
 
 qt_add_resources(klde_backends klde_translations PREFIX / FILES
     translations/en.json translations/zh_CN.json

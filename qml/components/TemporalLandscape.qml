@@ -24,7 +24,6 @@ Item {
         id: sceneTransition
         target: root
         property: "opacity"
-        from: 0.8
         to: 1
         duration: Tokens.motionNormal
         easing.type: Tokens.emphasizedDecelerate
@@ -54,15 +53,17 @@ Item {
         Behavior on x {
             enabled: root.activeMotion
             NumberAnimation {
-                duration: Tokens.motionNormal
-                easing.type: Tokens.emphasizedDecelerate
+                duration: Tokens.springSpatialMicro.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springSpatialMicro.curve
             }
         }
         Behavior on y {
             enabled: root.activeMotion
             NumberAnimation {
-                duration: Tokens.motionNormal
-                easing.type: Tokens.emphasizedDecelerate
+                duration: Tokens.springSpatialMicro.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Tokens.springSpatialMicro.curve
             }
         }
     }
