@@ -215,6 +215,28 @@ Item {
             currentIndex: 1
             Accessible.name: "电源模式 / Power profile"
             font: Tokens.label
+            implicitHeight: Tokens.controlHeight
+            background: Rectangle {
+                radius: Tokens.radiusM
+                color: Tokens.surfaceContainer
+                border.width: profileChoice.visualFocus ? Tokens.space2 : 0
+                border.color: Tokens.primary
+            }
+            contentItem: Text {
+                text: profileChoice.currentText
+                font: Tokens.label
+                color: Tokens.textPrimary
+                verticalAlignment: Text.AlignVCenter
+                leftPadding: Tokens.space12
+                rightPadding: Tokens.space32
+                elide: Text.ElideRight
+            }
+            indicator: Glyph {
+                name: "next"
+                rotation: 90
+                x: profileChoice.width - width - Tokens.space12
+                anchors.verticalCenter: parent.verticalCenter
+            }
             palette.text: Tokens.textPrimary
             palette.buttonText: Tokens.textPrimary
             palette.highlight: Tokens.primaryContainer

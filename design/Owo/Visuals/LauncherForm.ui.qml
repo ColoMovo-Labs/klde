@@ -79,8 +79,8 @@ Item {
                 clip: true
                 model: root.applications
                 currentIndex: root.currentIndex
-                cellWidth: width / Math.max(2, Math.floor(width / 112))
-                cellHeight: 100 * Tokens.textScale
+                cellWidth: width / Math.max(2, Math.floor(width / Tokens.launcherGridMinimumCell))
+                cellHeight: Tokens.launcherGridCellHeight * Tokens.textScale
                 boundsBehavior: Flickable.StopAtBounds
                 highlightMoveDuration: 0
                 delegate: AppTile {

@@ -362,6 +362,8 @@ QtObject {
     readonly property int compactSliderHeight: 40 * densityScale
     readonly property int launcherWidth: design.launcherWidth
     readonly property int launcherHeight: design.launcherHeight
+    readonly property int launcherGridMinimumCell: 112
+    readonly property int launcherGridCellHeight: 100
     readonly property int launcherRow: 64 * densityScale
     readonly property int widgetSize: 224
     readonly property int desktopMargin: 28

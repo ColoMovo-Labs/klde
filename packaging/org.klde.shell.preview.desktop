@@ -2,8 +2,8 @@
 Type=Application
 Name=owoDE Shell Preview
 Name[zh_CN]=owoDE 桌面外壳预览
-Comment=Experimental owo Desktop Envirment foundation
-Comment[zh_CN]=owo Desktop Envirment 的实验性外壳
+Comment=Experimental owo Desktop Environment foundation
+Comment[zh_CN]=owo Desktop Environment 的实验性外壳
 Exec=klde-shell
 Icon=klde
 Terminal=false

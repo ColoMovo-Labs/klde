@@ -16,13 +16,14 @@ Item {
     }
     SurfaceForm {
         anchors.centerIn: parent
-        width: 680
-        height: 620
+        width: Tokens.launcherWidth
+        height: body.height + Tokens.space32
     }
     ColumnLayout {
+        id: body
         anchors.centerIn: parent
-        width: 632
-        height: 572
+        width: Tokens.launcherWidth - Tokens.space32
+        height: Tokens.controlHeight + Tokens.space12 + Math.max(1, Math.ceil(apps.count / Math.max(2, Math.floor(width / Tokens.launcherGridMinimumCell)))) * Tokens.launcherGridCellHeight + Tokens.dockHeight + Tokens.space24
         spacing: Tokens.space12
         LauncherForm {
             id: launcherForm
