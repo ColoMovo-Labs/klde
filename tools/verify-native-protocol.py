@@ -9,10 +9,13 @@ import sys
 output = Path(sys.argv[1])
 log = (output / "native-test.log").read_text()
 roles = {}
+layers = {"wallpaper": 0, "ribbon": 2, "dock": 2, "popup": 3}
 for line in log.splitlines():
     if "get_layer_surface(" in line:
         match = re.search(r"new id (zwlr_layer_surface_v1[@#]\d+).*\"owode-(wallpaper|ribbon|dock|popup)\"", line)
         if match:
+            if not re.search(rf",\s*{layers[match[2]]},\s*\"owode-{match[2]}\"", line):
+                raise SystemExit(f"Incorrect actual layer for {match[2]}")
             roles.setdefault(match[2], []).append(match[1])
 expected = {"wallpaper": (15, -1, 0), "ribbon": (13, None, 0), "dock": (14, 0, 0), "popup": (15, -1, 1)}
 for role, (anchor, zone, keyboard) in expected.items():
@@ -37,6 +40,7 @@ if "owoDE native roles attached:" not in main or "QML " in main or "Binding loop
 (output / "protocol-evidence.json").write_text(json.dumps({
     "revision": (output / "source-commit.txt").read_text().strip(),
     "actualWaylandRoles": roles,
+    "layers": layers,
     "normalQtClient": True,
     "inputAndFocus": "See native-tests.xml, KWin snapshots and native-test.log",
     "renderer": "Nested X11 KWin over Xvfb/Mesa software; correctness only",

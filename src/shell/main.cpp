@@ -161,6 +161,17 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     bool qmlWarnings = false;
+    if (parser.isSet(nativeSurfaceOption)) {
+        const klde::NativeSurfaceController surfaceProbe;
+        const klde::SessionRuntimeBackend sessionProbe;
+        if (!surfaceProbe.available() ||
+            !sessionProbe.capabilities().value("kwinService").toBool()) {
+            qCritical()
+                << "Native surfaces require the linked LayerShellQt Interface, a Wayland QPA"
+                << "and the KWin service on the same isolated session bus.";
+            return EXIT_FAILURE;
+        }
+    }
     bool frameHandled = false;
     bool settlingEnabled = false;
     bool auditStarted = false;
