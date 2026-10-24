@@ -163,8 +163,8 @@ QtObject {
     // Keep the lower media affordance out of the central clock's short-surface budget.
     readonly property int ambientMediaMinimumHeight: 520
     readonly property int ribbonGroupGap: densityMode === 2 ? space12 : space16
-    readonly property int ribbonInnerGap: space2
-    readonly property int ribbonGroupPadding: space4
+    readonly property int ribbonInnerGap: space1
+    readonly property int ribbonGroupPadding: space3
     readonly property int telemetryCellWidth: 72
     readonly property int telemetryCompactWidth: 60
     readonly property int telemetryIcon: 14
@@ -211,10 +211,18 @@ QtObject {
     readonly property int ribbonIcon: 22
     readonly property int ribbonPadding: densityMode === 2 ? space6 : space8
     readonly property int capsuleBorderWidth: 1
-    readonly property int capsuleHorizontalPadding: space8
+    readonly property int capsuleHorizontalPadding: space12
     readonly property int capsuleVerticalPadding: space4
     readonly property int capsuleIconSize: 22
-    readonly property int capsuleIconTextGap: space4
+    readonly property int capsuleIconTextGap: space3
+    readonly property int weatherWidgetSize: 184
+    readonly property int weatherWidgetPadding: 20
+    readonly property int weatherIcon: 32
+    readonly property font weatherTemperature: Qt.font({
+        family: fontFamily,
+        pixelSize: 40 * textScale,
+        weight: Font.DemiBold
+    })
     readonly property int lockScreenEdgeMargin: 48
     readonly property int lockScreenContentWidth: 360
     readonly property int launcherWidth: 600

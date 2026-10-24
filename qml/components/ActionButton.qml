@@ -26,6 +26,7 @@ Button {
         Behavior on radius {
             NumberAnimation {
                 duration: Tokens.motionFast
+                easing.type: Tokens.emphasizedDecelerate
             }
         }
     }

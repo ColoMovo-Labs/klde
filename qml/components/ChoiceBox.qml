@@ -6,6 +6,27 @@ ComboBox {
     id: control
     implicitHeight: Tokens.controlHeight
     font: Tokens.body
+    delegate: ItemDelegate {
+        id: option
+        required property int index
+        width: control.popup.width - control.popup.leftPadding - control.popup.rightPadding
+        implicitHeight: Tokens.controlHeight
+        text: modelData
+        highlighted: control.highlightedIndex === index
+        leftPadding: Tokens.space12
+        rightPadding: Tokens.space12
+        contentItem: Text {
+            text: option.text
+            font: control.font
+            color: option.highlighted ? Tokens.textOnPrimary : Tokens.textPrimary
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+        background: Rectangle {
+            radius: Tokens.radiusS
+            color: option.highlighted ? Tokens.primary : option.hovered ? Tokens.primaryContainer : "transparent"
+        }
+    }
     contentItem: Text {
         text: control.displayText
         font: control.font
@@ -40,5 +61,11 @@ ComboBox {
         color: control.hovered ? Tokens.primaryContainer : Tokens.surfaceContainer
         border.width: control.visualFocus ? Tokens.space2 : 0
         border.color: Tokens.primary
+        Behavior on color {
+            ColorAnimation {
+                duration: Tokens.motionFast
+                easing.type: Tokens.standard
+            }
+        }
     }
 }

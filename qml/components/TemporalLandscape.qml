@@ -27,6 +27,7 @@ Item {
         from: 0.8
         to: 1
         duration: Tokens.motionNormal
+        easing.type: Tokens.emphasizedDecelerate
     }
     Rectangle {
         anchors.fill: parent
@@ -54,12 +55,14 @@ Item {
             enabled: root.activeMotion
             NumberAnimation {
                 duration: Tokens.motionNormal
+                easing.type: Tokens.emphasizedDecelerate
             }
         }
         Behavior on y {
             enabled: root.activeMotion
             NumberAnimation {
                 duration: Tokens.motionNormal
+                easing.type: Tokens.emphasizedDecelerate
             }
         }
     }

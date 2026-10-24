@@ -95,11 +95,13 @@ Button {
         Behavior on radius {
             NumberAnimation {
                 duration: Tokens.motionFast
+                easing.type: Tokens.emphasizedDecelerate
             }
         }
         Behavior on color {
             ColorAnimation {
                 duration: Tokens.motionFast
+                easing.type: Tokens.standard
             }
         }
     }

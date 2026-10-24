@@ -32,11 +32,21 @@ Popup {
         }
     }
     exit: Transition {
-        NumberAnimation {
-            property: "opacity"
-            from: 1
-            to: 0
-            duration: Tokens.motionFast
+        ParallelAnimation {
+            NumberAnimation {
+                property: "opacity"
+                from: 1
+                to: 0
+                duration: Tokens.motionFast
+                easing.type: Tokens.emphasizedAccelerate
+            }
+            NumberAnimation {
+                property: "scale"
+                from: 1
+                to: Tokens.popupStartScale
+                duration: Tokens.motionFast
+                easing.type: Tokens.emphasizedAccelerate
+            }
         }
     }
 }

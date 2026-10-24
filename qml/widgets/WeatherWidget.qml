@@ -8,10 +8,11 @@ Surface {
     required property var weather
     readonly property string conditionLabel: weather.available ? I18n.t(weather.conditionId) : I18n.t("friendly.weather.unavailable")
     signal settingsRequested
-    width: Tokens.widgetSize
-    height: Tokens.widgetSize
-    cornerRadius: Tokens.widgetSize / 2
-    padding: Tokens.space24
+    width: Tokens.weatherWidgetSize
+    height: Tokens.weatherWidgetSize
+    cornerRadius: Tokens.weatherWidgetSize / 2
+    padding: Tokens.weatherWidgetPadding
+    tone: Tokens.surfaceContainerHigh
 
     ColumnLayout {
         anchors.centerIn: parent
@@ -19,21 +20,21 @@ Surface {
         Icon {
             name: root.weather.available && root.weather.conditionId !== "weather.condition.unknown" ? "weather-" + root.weather.conditionId.split(".").pop() : "weather"
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: Tokens.iconL
-            Layout.preferredHeight: Tokens.iconL
+            Layout.preferredWidth: Tokens.weatherIcon
+            Layout.preferredHeight: Tokens.weatherIcon
         }
         Label {
             Layout.alignment: Qt.AlignHCenter
             text: root.weather.available ? root.weather.temperature + "°" : "—"
-            font: Tokens.display
-            color: Tokens.primary
+            font: Tokens.weatherTemperature
+            color: Tokens.secondary
             Accessible.name: root.weather.available ? I18n.t("shell.weather.degrees").arg(root.weather.temperature).arg(root.conditionLabel) : I18n.t("friendly.weather.unavailable")
         }
         Label {
             Layout.alignment: Qt.AlignHCenter
             text: root.weather.location
             textFormat: Text.PlainText
-            Layout.maximumWidth: Tokens.widgetSize - Tokens.space32
+            Layout.maximumWidth: Tokens.weatherWidgetSize - Tokens.space32
             elide: Text.ElideRight
             font: Tokens.label
             color: Tokens.textPrimary
@@ -42,7 +43,7 @@ Surface {
             Layout.alignment: Qt.AlignHCenter
             text: root.conditionLabel
             textFormat: Text.PlainText
-            Layout.maximumWidth: Tokens.widgetSize - Tokens.space32
+            Layout.maximumWidth: Tokens.weatherWidgetSize - Tokens.space32
             elide: Text.ElideRight
             font: Tokens.caption
             color: Tokens.textSecondary
@@ -51,7 +52,7 @@ Surface {
             Layout.alignment: Qt.AlignHCenter
             text: I18n.s(root.weather.sourceLabel) + (root.weather.stale ? I18n.t("shell.weather.stale") : "")
             textFormat: Text.PlainText
-            Layout.maximumWidth: Tokens.widgetSize - Tokens.space32
+            Layout.maximumWidth: Tokens.weatherWidgetSize - Tokens.space32
             elide: Text.ElideRight
             font: Tokens.caption
             color: Tokens.textSecondary
