@@ -23,6 +23,18 @@ Flow {
         return width + Math.max(0, count - 1) * spacing;
     }
     spacing: Tokens.ribbonGroupGap + Math.max(0, Shell.ribbon.spacing - Tokens.space6)
+    // Flow moves the delegate wrapper, not its nested Surface. Refresh only
+    // after layout or section movement so cached wallpaper samples stay aligned.
+    function refreshBackdrops(): void {
+        for (let i = 0; i < groups.count; ++i) {
+            const item = groups.itemAt(i);
+            if (item && item.visible)
+                item.refreshBackdrop();
+        }
+    }
+    onPositioningComplete: Qt.callLater(refreshBackdrops)
+    onXChanged: Qt.callLater(refreshBackdrops)
+    onYChanged: Qt.callLater(refreshBackdrops)
     Repeater {
         id: groups
         model: ["context", "date", "workspaces", "telemetry", "connectivity", "session", "extras"]
@@ -34,6 +46,9 @@ Flow {
             width: group.width
             height: Tokens.ribbonBandHeight
             visible: group.entries.length > 0
+            function refreshBackdrop(): void {
+                group.refreshCapture();
+            }
             RibbonGroup {
                 id: group
                 degradation: root.degradation
