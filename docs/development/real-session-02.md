@@ -10,7 +10,7 @@ runtime compatibility finding to keep in the log, not a reason to modify niri
 or patch KWin.
 
 The next implementation boundary is to turn the existing ordinary Qt
-`ApplicationWindow` composition into three independent LayerShellQt-backed
+`ApplicationWindow` composition into independent LayerShellQt-backed
 surfaces without redesigning the approved UI:
 
 | Surface | Intended layer | Intended anchors | Input contract |
@@ -54,8 +54,20 @@ OWODE_MODE=native OWODE_APP='your-qt-wayland-app' \
   bash tools/run-owode-session.sh
 ```
 
-Each invocation chooses a unique socket name and cleans up only its own KWin,
-shell and optional application PIDs. It does not remove a pre-existing socket.
+Each invocation uses its own private runtime directory, configuration, cache,
+data home and D-Bus session; it cleans up only its own KWin, shell and optional
+application PIDs. Logs remain in the printed evidence directory (override with
+`OWODE_EVIDENCE_DIR`). It does not remove a pre-existing socket.
+
+The launcher chooses a visible X11-hosted viewport when a parent `DISPLAY`
+exists, otherwise an explicit parent Wayland display. Select
+`OWODE_BACKEND=virtual` only for deliberate headless use. It never silently
+switches a visible test to a virtual output. The `--exit-with-session` option
+requires a program argument and is not used by this separately managed runner.
+The nested children receive only the inner Wayland display. X11 applications
+are not supported by this launcher yet: an inner Xwayland display and environment
+handoff remain a daily-use requirement. No host X11 application is launched as
+a misleading substitute.
 The historical `wayland-2` name and the reported PIDs 38175 / 41961 are
 evidence labels only, never configuration.
 
