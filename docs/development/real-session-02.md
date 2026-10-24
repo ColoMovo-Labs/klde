@@ -88,7 +88,7 @@ change the host niri cursor.
 | Ribbon anchoring and exclusive zone | source reserves actual surface height, updates on resize; KWin validation required |
 | Dock anchoring and pointer region | event-driven rounded input masks implemented; KWin input validation required |
 | Popup placement and keyboard | independent native host implemented; hidden preview is no longer the popup parent; KWin validation required |
-| Maximization and focus restoration | covered by the new isolated cloud test; current-commit results still required |
+| Maximization and focus restoration | verified on Ubuntu at b0ae620 / job 976 and Fedora at 3ec750b / job 992; host verification pending |
 | Mock/Visual Lab regression path | preserved in CircleCI configuration |
 
 ## Isolated cloud acceptance
@@ -164,3 +164,14 @@ sidecar identifies the actual transport. Neither transport replaces protocol
 and interaction assertions, and images still require visual inspection. This test-only API does not add a production screenshot service.
 KWin's handled SIGTERM produces exit status 15; the runner records that status
 and additionally requires its socket to disappear before accepting shutdown.
+
+## Verified cloud runs
+
+[CircleCI 120 / native-ubuntu 976 evidence](evidence/native-ubuntu-120/README.md)
+preserves the passing single-output Ubuntu run at `b0ae620` (KWin 6.6, QPainter
+viewport capture), and [CircleCI 122 / native-fedora 992
+evidence](evidence/native-fedora-122/README.md) preserves the passing
+single-output Fedora 44 run at `3ec750b` (KWin 6.7.5). Each bundle includes raw
+protocol logs, JUnit results, KWin window snapshots, an actual screenshot and
+shutdown status. Neither run accepts the owner-host, multi-output or
+hardware-rendering gate by implication.

@@ -1,0 +1,38 @@
+{
+  "revision": "b0ae620a052524e27b408ccf7a99cc4ed0da5297",
+  "testWaylandRoles": {
+    "dock": [
+      "zwlr_layer_surface_v1#44"
+    ],
+    "ribbon": [
+      "zwlr_layer_surface_v1#49"
+    ],
+    "wallpaper": [
+      "zwlr_layer_surface_v1#54"
+    ],
+    "popup": [
+      "zwlr_layer_surface_v1#45",
+      "zwlr_layer_surface_v1#45"
+    ]
+  },
+  "actualShellWaylandRoles": {
+    "dock": [
+      "zwlr_layer_surface_v1#48"
+    ],
+    "ribbon": [
+      "zwlr_layer_surface_v1#53"
+    ],
+    "wallpaper": [
+      "zwlr_layer_surface_v1#58"
+    ],
+    "popup": [
+      "zwlr_layer_surface_v1#63"
+    ]
+  },
+  "normalQtClient": true,
+  "inputAndFocus": "See native-tests.xml, KWin snapshots and native-test.log",
+  "renderer": "See kwin-support.txt; cloud Xvfb runs use Mesa software",
+  "hardwarePerformanceBenchmark": false,
+  "hostSessionChanged": false,
+  "scope": "Single output integration; not daily-use acceptance"
+}

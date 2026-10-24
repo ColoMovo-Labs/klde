@@ -1,0 +1,1 @@
+Owned KWin and shell processes exited; private Wayland socket removed.

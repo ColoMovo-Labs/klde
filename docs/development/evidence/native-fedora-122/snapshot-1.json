@@ -1,0 +1,44 @@
+[
+    {
+        "active": false,
+        "caption": "",
+        "desktop": false,
+        "dock": true,
+        "geometry": {
+            "height": 80,
+            "width": 1600,
+            "x": 0,
+            "y": 0
+        },
+        "normal": false,
+        "resourceClass": "klde-native-session-test"
+    },
+    {
+        "active": false,
+        "caption": "",
+        "desktop": false,
+        "dock": true,
+        "geometry": {
+            "height": 128,
+            "width": 1600,
+            "x": 0,
+            "y": 872
+        },
+        "normal": false,
+        "resourceClass": "klde-native-session-test"
+    },
+    {
+        "active": false,
+        "caption": "",
+        "desktop": true,
+        "dock": false,
+        "geometry": {
+            "height": 1000,
+            "width": 1600,
+            "x": 0,
+            "y": 0
+        },
+        "normal": false,
+        "resourceClass": "klde-native-session-test"
+    }
+]
