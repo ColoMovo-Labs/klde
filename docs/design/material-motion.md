@@ -1,7 +1,9 @@
 # Material and motion study
 
-Status: mock-first study for a possible 0.2 visual freeze. The 0.1 surfaces stay
-the default; nothing outside `--view material-study` changes appearance.
+Status: mock-first study for a possible 0.2 visual freeze. The 0.1 layout, colour
+roles and material tiers stay the default; the production controls now consume
+the restrained motion tokens below, while the new material tiers remain limited
+to `--view material-study`.
 
 The fusion gives each influence one job so the three do not blur together:
 
