@@ -8,6 +8,31 @@ out_dir="$(realpath "$out_dir")"
 runtime_dir="$(mktemp -d /tmp/owode-native-ci-XXXXXX)"
 chmod 700 "$runtime_dir"
 trap 'rm -rf "$runtime_dir"' EXIT
+kwin_source="$(command -v kwin_wayland)"
+# Distribution file capabilities can make exec fail in restricted containers.
+# Copy only bytes, never privilege xattrs, and leave the system binary intact.
+python3 - "$kwin_source" "$runtime_dir/kwin_wayland" "$out_dir" <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+source, target, output = map(Path, sys.argv[1:])
+shutil.copyfile(source, target)
+target.chmod(0o700)
+if 'security.capability' in os.listxattr(target):
+    raise SystemExit('The private test copy must not carry file capabilities')
+digest = hashlib.sha256(source.read_bytes()).hexdigest()
+if hashlib.sha256(target.read_bytes()).hexdigest() != digest:
+    raise SystemExit('KWin copy differs from the distribution binary')
+(output / 'kwin-binary.json').write_text(json.dumps({
+    'distributionBinary': str(source), 'sha256': digest,
+    'privateCopyHasFileCapabilities': False,
+    'distributionBinaryModified': False,
+    'hardwarePerformanceBenchmark': False,
+}, indent=2) + '\n')
+PY
 mkdir -p "$runtime_dir/config" "$runtime_dir/cache" "$runtime_dir/data"
 # These bindings exist only in this runner's private config, never on the host.
 cat > "$runtime_dir/config/kwinrc" <<'EOF'
@@ -24,6 +49,7 @@ xvfb-run -a -s '-screen 0 1600x1000x24 -nolisten tcp' \
     env -u WAYLAND_DISPLAY XDG_RUNTIME_DIR="$runtime_dir" \
     XDG_CONFIG_HOME="$runtime_dir/config" XDG_CACHE_HOME="$runtime_dir/cache" \
     XDG_DATA_HOME="$runtime_dir/data" LIBGL_ALWAYS_SOFTWARE=1 \
+    OWODE_KWIN_BIN="$runtime_dir/kwin_wayland" \
     OWODE_NATIVE_TEST_ISOLATED=1 OWODE_NATIVE_EVIDENCE="$out_dir" \
     dbus-run-session -- bash -s -- "$build_dir" "$out_dir" <<'INNER'
 set -euo pipefail
@@ -37,8 +63,8 @@ cleanup() {
     fi
 }
 trap cleanup EXIT
-kwin_wayland --version > "$out_dir/kwin-version.txt" 2>&1
-kwin_wayland --x11-display "$DISPLAY" --socket owode-ci --width 1600 --height 1000 \
+"$OWODE_KWIN_BIN" --version > "$out_dir/kwin-version.txt" 2>&1
+"$OWODE_KWIN_BIN" --x11-display "$DISPLAY" --socket owode-ci --width 1600 --height 1000 \
     --no-global-shortcuts > "$out_dir/kwin.log" 2>&1 &
 kwin_pid=$!
 for _ in $(seq 1 150); do

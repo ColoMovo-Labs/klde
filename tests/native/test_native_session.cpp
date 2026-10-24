@@ -177,7 +177,8 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         return {};
     }
     bool capture(const QString &name) const {
-        return QProcess::execute("import", {"-window", "root", m_output + "/" + name + ".png"}) ==
+        const auto target = qEnvironmentVariable("OWODE_NATIVE_CAPTURE_WINDOW", "root");
+        return QProcess::execute("import", {"-window", target, m_output + "/" + name + ".png"}) ==
                0;
     }
     QString m_output;
