@@ -170,7 +170,12 @@ bool NativeSurfaceController::attach(QObject *object, const QString &role) {
     }
 
     window->setFlag(Qt::FramelessWindowHint, true);
-    surface->setScope(QStringLiteral("owode-%1").arg(role));
+    // KWin 6.6/6.7 uses canonical namespaces as window-type hints. A branded
+    // namespace defaults to Normal even when the layer is Background. Keep
+    // project identity in object names and use KWin's Desktop/Dock/OSD types.
+    surface->setScope(role == QStringLiteral("wallpaper") ? QStringLiteral("desktop")
+                      : role == QStringLiteral("popup")   ? QStringLiteral("on-screen-display")
+                                                          : QStringLiteral("dock"));
     surface->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
     surface->setActivateOnShow(role == QStringLiteral("popup"));
     surface->setCloseOnDismissed(true);

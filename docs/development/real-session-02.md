@@ -102,6 +102,19 @@ backend. No Plasma Shell, host settings, privileged helper or display-manager
 entry is installed. Ubuntu also builds the C++ LayerShellQt interface now;
 its QML module is not a prerequisite for our C++ adapter.
 
+KWin interprets the layer-shell namespace as a window-type hint. The adapter
+uses canonical `desktop`, `dock` and `on-screen-display` namespaces while
+retaining owoDE object names for role diagnostics. A branded namespace would
+fall back to KWin's Normal type, despite requesting the background layer; see
+[KWin's implementation](https://github.com/KDE/kwin/blob/Plasma/6.7/src/layershellv1window.cpp).
+Protocol verification therefore checks namespace, layer and anchors together.
+
+Distribution KWin binaries may carry `cap_sys_nice`, which restricted cloud
+containers do not grant. The runner copies only the binary bytes into its own
+temporary runtime, verifies an identical hash and absence of file capabilities,
+and leaves the distribution binary unchanged. It does not add container
+capabilities or claim representative scheduling/GPU performance.
+
 This is single-output cloud correctness evidence. Owner-host interaction,
 multi-output/hotplug, session services, locking and daily-use acceptance remain
 separate gates. Native panels use the opaque material fallback because they do

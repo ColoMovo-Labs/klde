@@ -17,15 +17,20 @@ expected = {
 
 def inspect(log, label):
     roles = {}
+    namespaces = {'desktop': ['wallpaper'], 'dock': ['ribbon', 'dock'], 'on-screen-display': ['popup']}
     for line in log.splitlines():
         if 'get_layer_surface(' not in line:
             continue
-        match = re.search(r'new id (zwlr_layer_surface_v1[@#]\d+).*"owode-(wallpaper|ribbon|dock|popup)"', line)
-        if match:
-            layer = expected[match[2]][0]
-            if not re.search(rf',\s*{layer},\s*"owode-{match[2]}"', line):
-                raise SystemExit(f'{label}: incorrect actual layer for {match[2]}')
-            roles.setdefault(match[2], []).append(match[1])
+        match = re.search(r'new id (zwlr_layer_surface_v1[@#]\d+).*?,\s*(\d+),\s*"(desktop|dock|on-screen-display)"', line)
+        if not match:
+            continue
+        identifier, layer, namespace = match.groups()
+        requests = '\n'.join(entry for entry in log.splitlines() if identifier + '.' in entry)
+        candidates = [role for role in namespaces[namespace]
+                      if expected[role][0] == int(layer) and f'.set_anchor({expected[role][1]})' in requests]
+        if len(candidates) != 1:
+            raise SystemExit(f'{label}: unrecognized layer/namespace/anchor combination: {line}')
+        roles.setdefault(candidates[0], []).append(identifier)
     for role, (_, anchor, zone, keyboard) in expected.items():
         if role not in roles:
             raise SystemExit(f'{label}: missing actual Wayland layer role: {role}')
