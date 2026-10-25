@@ -418,6 +418,10 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         input.key(KEY_DOWN);
         input.key(KEY_ENTER);
         QTRY_VERIFY(services->applications()->isPinned("owode-launch-fixture.desktop"));
+        QTRY_VERIFY(!menu->property("visible").toBool());
+        auto *search = findItem(popup->contentItem(), "launcherSearch");
+        QVERIFY(search);
+        QTRY_VERIFY(search->hasActiveFocus());
         QCOMPARE(services->dockApplications()->rowCount(), 1);
         QVERIFY(capture("native-catalog-launcher"));
         QSignalSpy launched(services->desktopApplications(),

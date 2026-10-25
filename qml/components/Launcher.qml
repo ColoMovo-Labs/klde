@@ -30,7 +30,7 @@ ShellPopup {
             music: I18n.s("Find your rhythm"),
             settings: I18n.s("Make this space yours")
         })
-    width: Math.min(Math.max(Tokens.launcherWidth, integratedDock.width + padding * 2), parent ? parent.width - Tokens.space32 : Tokens.launcherWidth)
+    width: Math.min(Math.max(Tokens.launcherWidth, integratedDock.implicitWidth + padding * 2), parent ? parent.width - Tokens.space32 : Tokens.launcherWidth)
     readonly property int gridColumns: Math.max(2, Math.floor((width - padding * 2) / Tokens.launcherGridMinimumCell))
     readonly property real resultsHeight: gridMode ? Math.max(1, Math.min(3, Math.ceil(Shell.search.count / gridColumns))) * Tokens.launcherGridCellHeight * Tokens.textScale : Math.max(1, Math.min(6, Shell.search.count)) * (Tokens.launcherRow * Tokens.textScale + Tokens.space4)
     height: Math.min(Math.min(resultsHeight, Tokens.launcherHeight) + Tokens.controlHeight + Tokens.dockHeight + padding * 2 + Tokens.space32 + Tokens.space1, parent ? parent.height - Tokens.space32 : Tokens.previewHeight)
