@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 
 // Edit these root properties in QDS Properties. Manual color override is opt-in;
 // wallpaper-derived Monet colors remain the default in both runtimes.

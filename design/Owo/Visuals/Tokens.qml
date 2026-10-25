@@ -2,6 +2,7 @@
 pragma Singleton
 
 import QtQuick
+import Owo.Visuals
 
 QtObject {
     readonly property ThemeValues design: ThemeValues {}

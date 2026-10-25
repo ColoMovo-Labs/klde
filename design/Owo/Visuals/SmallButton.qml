@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 
 SmallButtonForm {
     scale: down ? Tokens.pressScale : hovered ? Tokens.hoverScale : 1
