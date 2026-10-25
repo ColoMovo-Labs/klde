@@ -241,7 +241,9 @@ jobs:
             xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic OWODE_DESIGN_CAPTURES=artifacts/smoke/design build/ci/bin/owode-design-workspace-test
       - run:
           name: Default fusion materials through OpenGL
-          command: bash tools/capture-fusion-previews.sh build/ci/bin/klde-shell artifacts/smoke/fusion
+          command: bash tools/capture-fusion-previews.sh build/ci/bin/klde-shell artifacts/fusion
+      - store_artifacts:
+          path: artifacts/fusion
       - run:
           name: Offscreen, nested Wayland and llvmpipe startup
           command: bash tools/smoke-test.sh build/ci/bin/klde-shell
