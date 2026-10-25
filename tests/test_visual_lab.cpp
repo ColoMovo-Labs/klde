@@ -9,7 +9,7 @@ class VisualLabTest final : public QObject {
     Q_OBJECT
   private slots:
     void temporalCacheAndOptionalAppContracts() {
-        klde::ShellServices shell;
+        klde::ShellServices shell(nullptr);
         QVERIFY(shell.mockScenarios()->apply("starry-night"));
         QCOMPARE(shell.time()->reading().value("phase").toString(), QStringLiteral("starry-night"));
         QCOMPARE(shell.time()->reading().value("season").toString(), QStringLiteral("winter"));
@@ -52,7 +52,7 @@ class VisualLabTest final : public QObject {
         QCOMPARE(shell.applications()->activeId(), QStringLiteral("desktop"));
     }
     void temporalAutoPhaseFollowsWeatherLayer() {
-        klde::ShellServices shell;
+        klde::ShellServices shell(nullptr);
         QVERIFY(
             shell.state()->requestValue(QStringLiteral("temporal.phase"), QStringLiteral("auto")));
         QVERIFY(shell.state()->requestValue(QStringLiteral("time"),
@@ -73,7 +73,7 @@ class VisualLabTest final : public QObject {
         QCOMPARE(shell.time()->reading().value("phase").toString(), QStringLiteral("cloudy-day"));
     }
     void scenarioProjectionAndEditsStayCoherent() {
-        klde::ShellServices shell;
+        klde::ShellServices shell(nullptr);
         QVERIFY(shell.mockScenarios()->apply("offline"));
         QVERIFY(!shell.system()->wifi());
         shell.system()->setWifi(true);

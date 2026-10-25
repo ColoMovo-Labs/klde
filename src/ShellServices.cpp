@@ -9,7 +9,7 @@
 
 namespace klde {
 ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
-    auto *services = new ShellServices;
+    auto *services = new ShellServices(nullptr);
     engine->addImageProvider("applications",
                              new ApplicationIconProvider(services->desktopApplications()));
     if (engine->property("owodeSystemApplications").toBool()) {

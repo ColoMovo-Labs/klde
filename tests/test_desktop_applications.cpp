@@ -193,7 +193,7 @@ class DesktopApplicationsTest final : public QObject {
         QVERIFY(!services->applications()->preview());
         QTRY_VERIFY(services->desktopApplications()->ready());
         QVERIFY(!services->applications()->nameFor("suite-child.desktop").isEmpty());
-        klde::ShellServices preview;
+        klde::ShellServices preview(nullptr);
         QVERIFY(preview.applications()->preview());
         QVERIFY(!preview.applications()->nameFor("terminal").isEmpty());
     }

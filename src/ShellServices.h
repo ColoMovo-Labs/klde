@@ -56,7 +56,7 @@ class ShellServices final : public QObject {
     Q_PROPERTY(QString message READ message NOTIFY messageChanged)
     Q_PROPERTY(int osdValue READ osdValue NOTIFY messageChanged)
   public:
-    explicit ShellServices(QObject *parent = nullptr);
+    explicit ShellServices(QObject *parent);
     static ShellServices *create(QQmlEngine *engine, QJSEngine *scriptEngine);
     SystemBackend *system() { return &m_system; }
     WindowManagerBackend *windowManager() { return &m_windowManager; }
