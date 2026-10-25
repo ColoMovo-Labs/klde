@@ -293,10 +293,13 @@ Item {
                             }
                         }
                     }
-                    console.info("axis-geometry", screenWidth, density, ribbon.x + centerPosition.x + center.width / 2 - screenWidth / 2, "right-edge", rightPosition.x + right.width);
                     verify(right !== null);
-                    verify(Math.abs(rightPosition.x + right.width - width) < 1);
-                    verify(Math.abs(centerPosition.x + center.width / 2 - width / 2) < 1);
+                    // Flow polish may update a slot width while the per-group
+                    // assertions yield. Read mapped positions after that polish;
+                    // a saved QPointF describes the previous layout, not this one.
+                    tryVerify(() => Math.abs(right.mapToItem(ribbon, 0, 0).x + right.width - ribbon.width) < 1, 1000, "right lane reaches the ribbon edge");
+                    tryVerify(() => Math.abs(center.mapToItem(ribbon, center.width / 2, center.height / 2).x - ribbon.width / 2) < 1, 1000, "clock stays on the screen axis");
+                    console.info("axis-geometry", screenWidth, density, ribbon.x + center.mapToItem(ribbon, center.width / 2, center.height / 2).x - screenWidth / 2, "right-edge", right.mapToItem(ribbon, right.width, 0).x);
                     for (const section of ribbon.children) {
                         verify(section.x >= 0);
                         verify(section.x + section.width <= width + 1);
