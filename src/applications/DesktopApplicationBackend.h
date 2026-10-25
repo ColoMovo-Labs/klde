@@ -10,7 +10,7 @@
 
 namespace klde {
 // Desktop metadata and launch requests stay outside the presentation model.
-class DesktopApplicationBackend final : public QObject {
+class DesktopApplicationBackend : public QObject {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.desktopApplications")

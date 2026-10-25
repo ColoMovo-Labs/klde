@@ -48,7 +48,7 @@ class ApplicationModel : public QAbstractListModel {
     bool m_preview = true;
 };
 
-class DockApplicationModel final : public QSortFilterProxyModel {
+class DockApplicationModel : public QSortFilterProxyModel {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.dockApplications")
