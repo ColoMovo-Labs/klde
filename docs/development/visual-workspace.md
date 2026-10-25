@@ -10,8 +10,22 @@
 Qt Design Studio 需要带 Qt Quick Controls 的 Qt 6.8 或更新的运行环境；本工程不依赖
 `QtQuick.Studio.*` 商业扩展、KWin、LayerShellQt 或自己编译的 C++ 插件来显示设计场景。
 
-Qt Design Studio 需从 Qt 官方安装渠道另行安装。Fedora 上的 Qt Creator 和 Qt Design Studio
-是不同产品；只有 Qt Creator 不能据此宣称装好了 Qt Design Studio。
+本机已实测 Flatpak **Qt Design Studio 4.8.2 / Qt 6.10.3**，应用 ID 为
+`io.qt.qtdesignstudio`。在仓库根目录可直接运行：
+
+```sh
+flatpak run io.qt.qtdesignstudio "$PWD/design/owoDE.qmlproject"
+```
+
+如果出现 **No valid settings file could be found**，先关闭当前工程，再把
+`design/owoDE.qmlproject.qtds` 及其同名前缀备份文件移到工程外保留，然后重新打开
+`design/owoDE.qmlproject`。`.qtds` 是设计器生成的本机配置，不是工程入口；
+不要删除 `.qmlproject` 或 `.ui.qml`。切换 `-settingspath` 会产生不同的设置环境，
+日常打开请使用上面的默认设置命令。这些本机配置已加入 Git 忽略。
+
+Qt Creator 与 Qt Design Studio 是不同产品。其他机器没有安装设计器时，可使用
+[Qt 官方安装说明](https://doc.qt.io/qtdesignstudio/studio-installation.html)安装；
+本机 Flatpak 版本来自 Flathub，不是 Qt 官方安装器提供的二进制。
 
 只看完整交互预览，可安装发行版 Qt 6 QML runtime、Qt Quick Controls 和 SVG 支持后运行：
 
@@ -45,6 +59,10 @@ bash tools/design-preview.sh
 先选场景看整体；要改一个组件所有实例，继续打开表中对应的共享 `.ui.qml`。
 只改 `scenes` 里的实例属性只会改变设计场景；**要让 Native Runtime 也改变，应编辑共享表单或令牌**。
 
+在 Projects 中双击场景文件。若场景根节点是共享组件实例，点击 Properties 中的
+**Edit Component** 进入真正的共享文件。使用 2D 工具栏的 **Zoom screen to fit all content**
+查看完整场景；Desktop/Background 场景明确指定 1440×900，避免设计器按 640×480 解释继承尺寸。
+
 在 Navigator 中选中 Rectangle、Text、Image 或布局项，使用 Properties 修改位置、尺寸、
 锚点、布局边距、圆角、颜色、透明度、字体和文字。选中 Image 可以更换原有资产路径。
 被布局管理的项目应改 Layout 属性，不能一边保留 anchors/Layout 一边强行拖 x/y。
@@ -55,6 +73,8 @@ bash tools/design-preview.sh
 打开 `design/Owo/Visuals/ThemeValues.ui.qml`，选中根项目，在自定义属性区域调整
 `radius*`、`space*`、`panelWidth`、`dockHeight`、`launcherWidth/Height`、字体尺寸、透明度、层级和动画时长。
 这些是 `Tokens` 真正读取的默认值，不是另一份设计样例。
+共享组件显式 `import Owo.Visuals`，使设计器单独编辑组件时也能解析这些令牌。
+带蓝色绑定标记的属性直接输入数值会替换绑定；要修改全部实例的默认值，应优先编辑 ThemeValues。
 
 默认继续使用原有 Monet 壁纸取色。需要手动配置颜色时，将 `manualColors` 设为 true，
 再修改 `primaryLight/Dark`、`surface*Light/Dark`、文字、轮廓等角色；应同时检查浅色和深色的文字对比度。
@@ -102,8 +122,14 @@ bash tools/design-preview.sh
   `qmlpuppet --qml-renderer` 渲染每个场景，核验实际 import、资源与组件加载。
 - 正式 Qt Test / QML / 原生 KWin 测试继续检查运行时，没有用设计预览替换它们。
 
-Qt Creator 的 QML Designer renderer 验收与“在某个 Qt Design Studio 版本中手工拖拽并保存”
-是两项不同证据。后者在取得相应版本实测记录之前仍不能宣称完成。
+已在本机 Qt Design Studio 4.8.2 中打开同一项目并看到 2D 桌面画布、Navigator、Properties。
+通过鼠标在属性面板将共享 `SurfaceForm.ui.qml` 中两个 Rectangle 的圆角设为 28，
+通过设计器 Save 保存，随后读取到了文件中 `radius: 28` 的实际差异；
+再通过设计器 Undo + Save 撤销这次验收用修改。没有在本机运行 CMake/C++ 编译。
+
+Qt Creator 的云端 QML Designer renderer 验收和上述 Qt Design Studio 实体编辑/保存验收
+分别记录，不能相互替代。后续 Qt Design Studio 版本仍需复验。
+[本次实体设计器记录](evidence/visual-workspace-qds482/README.md)。
 
 参考：[Qt 官方 UI Form 支持范围](https://doc.qt.io/qtdesignstudio/creator-quick-ui-forms.html)、
 [Designer/developer workflow](https://doc.qt.io/qtdesignstudio/qtquick-design-development.html)、
