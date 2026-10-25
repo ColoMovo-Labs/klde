@@ -4,6 +4,20 @@ import Owo.Visuals
 
 StatusCapsuleForm {
     id: root
+    Behavior on shapeRadius {
+        NumberAnimation {
+            duration: Tokens.springSpatialMicro.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatialMicro.curve
+        }
+    }
+    Behavior on shapeColor {
+        ColorAnimation {
+            duration: Tokens.springEffectsFast.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springEffectsFast.curve
+        }
+    }
     unavailableText: I18n.t("lab.unavailable")
     scale: down ? Tokens.pressScale : hovered ? Tokens.hoverScale : 1
     Behavior on scale {

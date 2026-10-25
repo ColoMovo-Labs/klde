@@ -5,6 +5,8 @@ import QtQuick.Layouts
 
 Item {
     id: root
+    width: Tokens.panelWidth
+    height: Tokens.widgetSize
     property real cornerRadius: Tokens.radiusXL
     property color tone: Tokens.surfaceElevated
     property color edge: Tokens.surfaceEdge

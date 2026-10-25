@@ -26,8 +26,10 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: Tokens.ribbonBandHeight + Tokens.space32
+        anchors.margins: Tokens.space16
+        height: sampleRibbon.implicitHeight
         RibbonForm {
+            id: sampleRibbon
             anchors.fill: parent
             visible: root.showSamples
         }
@@ -35,7 +37,7 @@ Item {
     Item {
         id: widgetHost
         x: Tokens.desktopMargin
-        y: ribbonHost.height + Tokens.controlHeight
+        y: ribbonHost.y + ribbonHost.height + Tokens.space16 + Tokens.controlHeight
         width: Tokens.weatherWidgetSize
         height: width
         SurfaceForm {

@@ -6,6 +6,8 @@ import Owo.Visuals
 import ".."
 
 DesktopForm {
+    width: 1440
+    height: 900
     MockApplications {
         id: apps
     }

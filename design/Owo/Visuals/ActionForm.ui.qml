@@ -4,6 +4,8 @@ import QtQuick.Controls
 
 Button {
     id: control
+    property real shapeRadius: control.down ? Tokens.radiusM : Tokens.radiusPill
+    property color shapeColor: control.emphasized ? Tokens.primary : control.hovered ? Tokens.primaryContainer : Tokens.surfaceContainer
     property bool emphasized: false
     implicitHeight: Tokens.controlHeight
     leftPadding: Tokens.space16
@@ -20,8 +22,8 @@ Button {
         elide: Text.ElideRight
     }
     background: Rectangle {
-        radius: control.down ? Tokens.radiusM : Tokens.radiusPill
-        color: control.emphasized ? Tokens.primary : control.hovered ? Tokens.primaryContainer : Tokens.surfaceContainer
+        radius: control.shapeRadius
+        color: control.shapeColor
         border.width: control.visualFocus ? Tokens.space2 : 0
         border.color: Tokens.primary
     }

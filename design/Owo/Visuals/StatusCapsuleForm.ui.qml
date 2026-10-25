@@ -5,6 +5,8 @@ import QtQuick.Layouts
 
 Button {
     id: root
+    property real shapeRadius: root.active || root.prominent ? Tokens.radiusPill : root.hovered ? Tokens.radiusL : Tokens.radiusM
+    property color shapeColor: root.grouped && !root.hovered && !root.visualFocus && root.severity === 0 ? "transparent" : root.prominent ? Tokens.primary : root.severity === 2 ? Qt.tint(Tokens.surface, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.14)) : root.active || root.hovered ? Tokens.primaryContainer : Tokens.surface
     property alias meterHost: meterSlot
     property string unavailableText: "Unavailable"
     property string label: "Status"
@@ -66,8 +68,8 @@ Button {
         }
     }
     background: Rectangle {
-        radius: root.active || root.prominent ? Tokens.radiusPill : root.hovered ? Tokens.radiusL : Tokens.radiusM
-        color: root.grouped && !root.hovered && !root.visualFocus && root.severity === 0 ? "transparent" : root.prominent ? Tokens.primary : root.severity === 2 ? Qt.tint(Tokens.surface, Qt.rgba(Tokens.error.r, Tokens.error.g, Tokens.error.b, 0.14)) : root.active || root.hovered ? Tokens.primaryContainer : Tokens.surface
+        radius: root.shapeRadius
+        color: root.shapeColor
         opacity: root.unavailable ? Tokens.surfaceOpacityLow : Tokens.transparencyEnabled ? Tokens.surfaceOpacityMedium : 1
         border.width: root.visualFocus || root.severity === 2 ? Tokens.space2 : root.grouped ? 0 : Tokens.capsuleBorderWidth
         border.color: root.visualFocus || root.severity > 0 ? root.ink : Qt.rgba(Tokens.outline.r, Tokens.outline.g, Tokens.outline.b, Tokens.outlineOpacity)

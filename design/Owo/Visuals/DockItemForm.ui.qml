@@ -5,6 +5,8 @@ import QtQuick.Layouts
 
 Button {
     id: root
+    property real shapeRadius: root.hovered || root.activeState ? Tokens.radiusL : Tokens.radiusM
+    property color shapeColor: root.activeState || root.down ? Tokens.primaryContainer : root.hovered ? Tokens.surfaceContainer : "transparent"
     property string label: "Application"
     property string glyph: "folder"
     property bool runningState: false
@@ -14,8 +16,8 @@ Button {
     ToolTip.text: root.label
     hoverEnabled: true
     background: Rectangle {
-        radius: root.hovered || root.activeState ? Tokens.radiusL : Tokens.radiusM
-        color: root.activeState || root.down ? Tokens.primaryContainer : root.hovered ? Tokens.surfaceContainer : "transparent"
+        radius: root.shapeRadius
+        color: root.shapeColor
         border.width: root.visualFocus ? Tokens.space2 : 0
         border.color: Tokens.primary
     }

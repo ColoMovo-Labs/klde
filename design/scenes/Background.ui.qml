@@ -6,6 +6,8 @@ import Owo.Visuals
 import ".."
 
 BackgroundForm {
+    width: 1440
+    height: 900
     states: [
         State {
             name: "light"
