@@ -50,5 +50,14 @@ Item {
             verify(findChild(popup, "quickMicrophone") !== null);
             verify(findChild(popup, "quickPowerProfile") !== null);
         }
+        function test_networkButtonsRemainBalancedAcrossLanguages(): void {
+            const wifi = findChild(popup, "quickWifi");
+            const bluetooth = findChild(popup, "quickBluetooth");
+            for (const locale of ["zh_CN", "en"]) {
+                Shell.language.setLocale(locale);
+                tryVerify(() => Math.abs(wifi.width - bluetooth.width) <= 1);
+                verify(wifi.width >= 120);
+            }
+        }
     }
 }

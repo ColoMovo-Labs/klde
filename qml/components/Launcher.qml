@@ -10,6 +10,7 @@ ShellPopup {
     id: root
     objectName: "launcher"
     modal: true
+    dim: false
     transformOrigin: Item.Bottom
     property bool gridMode: true
     property int currentIndex: 0
@@ -67,6 +68,7 @@ ShellPopup {
     }
     Menu {
         id: applicationMenu
+        objectName: "applicationContextMenu"
         MenuItem {
             text: root.menuPinned ? I18n.t("shell.launcher.unpin") : I18n.t("shell.launcher.pin")
             onTriggered: Shell.applications.setPinned(root.menuApplication, !root.menuPinned)
