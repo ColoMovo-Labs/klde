@@ -10,6 +10,7 @@ ShellPopup {
     id: root
     objectName: "launcher"
     modal: true
+    dim: false
     transformOrigin: Item.Bottom
     property bool gridMode: true
     property int currentIndex: 0
