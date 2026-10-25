@@ -362,7 +362,8 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         const auto state = m_output + "/catalog-client-state.json";
         QFile desktop(fixture);
         QVERIFY(desktop.open(QIODevice::WriteOnly));
-        const auto command = QStringLiteral("\"%1/owode-native-test-client\" --state \"%2\"")
+        const auto command = QStringLiteral("\"%1/owode-native-test-client\" --state \"%2\" "
+                                            "--desktop-file owode-launch-fixture")
                                  .arg(QCoreApplication::applicationDirPath(), state);
         desktop.write(("[Desktop Entry]\nType=Application\nName=Catalog Launch Fixture\nExec=" +
                        command + "\nIcon=utilities-terminal\nStartupNotify=true\n")
@@ -396,6 +397,15 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_VERIFY(dock->isExposed() && wallpaper->isExposed());
         auto *button = findItem(dock->contentItem(), "launcherButton");
         QVERIFY(button);
+        QTRY_VERIFY(!dock->mask().isEmpty());
+        QTRY_VERIFY(dock->mask().contains(
+            button->mapToScene(QPointF(button->width() / 2, button->height() / 2)).toPoint()));
+        // Exposed precedes the first committed input mask. Wait for a frame after
+        // that mask is installed, then inject exactly one click (no click retry).
+        QSignalSpy committed(dock, &QQuickWindow::frameSwapped);
+        dock->update();
+        QTRY_VERIFY(!committed.isEmpty());
+        QVERIFY(capture("native-catalog-background"));
         Input input;
         QVERIFY(input.valid());
         const auto point = button->mapToScene(QPointF(button->width() / 2, button->height() / 2));
@@ -432,7 +442,9 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_VERIFY(!popup->isVisible());
         QTRY_VERIFY(snapshot() && client().value("normal").toBool());
         // No click or script activation: focus must result from the real launcher request.
+        QCOMPARE(client().value("resourceClass").toString(), QString("owode-launch-fixture"));
         QTRY_VERIFY(readObject(state).value("active").toBool());
+        QCOMPARE(readObject(state).value("platform").toString(), QString("wayland"));
         QVERIFY(capture("native-catalog-application"));
         QVERIFY(snapshot("close"));
         QTRY_VERIFY(snapshot() && client().isEmpty());

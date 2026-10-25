@@ -52,6 +52,8 @@ class AuditClient final : public QWidget {
             QSaveFile file(m_path);
             if (file.open(QIODevice::WriteOnly)) {
                 file.write(QJsonDocument(QJsonObject{{"active", isActiveWindow()},
+                                                     {"platform", QGuiApplication::platformName()},
+                                                     {"pid", QCoreApplication::applicationPid()},
                                                      {"clicks", m_clicks},
                                                      {"text", m_input->text()},
                                                      {"width", width()},
@@ -74,7 +76,10 @@ int main(int argc, char **argv) {
         return 2;
     QCommandLineParser parser;
     parser.addOption({"state", "Cloud test state file", "path"});
+    parser.addOption({"desktop-file", "Desktop application ID for launcher matching", "id"});
     parser.process(app);
+    if (parser.isSet("desktop-file"))
+        app.setDesktopFileName(parser.value("desktop-file"));
     if (parser.value("state").isEmpty())
         return 3;
     AuditClient client(parser.value("state"));
