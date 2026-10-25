@@ -8,10 +8,10 @@ Item {
     id: root
     width: 1100
     height: 640
-    property string headline: "欢迎使用 owoDE"
-    property string intro: "一个安静、富有表现力，为想法留出空间的桌面。"
-    property string startText: "开始设置"
-    property string accessibilityText: "辅助功能"
+    property string headline: Tokens.locale === "zh_CN" ? "欢迎使用 owoDE" : "Welcome to owoDE"
+    property string intro: Tokens.locale === "zh_CN" ? "一个安静、富有表现力，为想法留出空间的桌面。" : "A calm, expressive desktop with room for your ideas."
+    property string startText: Tokens.locale === "zh_CN" ? "开始设置" : "Get started"
+    property string accessibilityText: Tokens.locale === "zh_CN" ? "辅助功能" : "Accessibility"
     property real revealProgress: 1
     property alias startButton: startButton
     property alias accessibilityButton: accessibilityButton

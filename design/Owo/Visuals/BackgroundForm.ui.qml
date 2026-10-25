@@ -8,7 +8,7 @@ Item {
     id: root
     width: Tokens.previewWidth
     height: Tokens.previewHeight
-    property url wallpaper: Assets.root + "wallpapers/first-light.svg"
+    property url wallpaper: Assets.root + "wallpapers/" + (Tokens.wallpaperChoice === "snow" ? Tokens.darkMode ? "first-night" : "first-light" : Tokens.wallpaperChoice + (Tokens.darkMode ? "-night" : "")) + ".svg"
     property alias dim: dimLayer.opacity
     Image {
         id: wallpaperImage
