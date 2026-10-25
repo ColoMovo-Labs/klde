@@ -5,3 +5,6 @@
 /.venv/
 *.user
 __pycache__/
+
+# Qt Design Studio machine-local settings and environment backups.
+*.qmlproject.qtds*

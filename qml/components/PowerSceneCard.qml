@@ -2,6 +2,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 import KLDE.Backends

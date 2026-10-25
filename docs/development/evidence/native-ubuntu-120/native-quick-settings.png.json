@@ -1,0 +1,8 @@
+{
+    "backend": "owned X11 viewport; KWin QPainter, ScreenShot2 unavailable",
+    "height": 1000,
+    "hostCapture": false,
+    "kwinPid": 9554,
+    "viewport": "2097152",
+    "width": 1600
+}

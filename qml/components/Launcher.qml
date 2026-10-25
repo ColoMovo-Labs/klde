@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma ComponentBehavior: Bound
-
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 import KLDE.Backends
@@ -10,154 +10,137 @@ ShellPopup {
     id: root
     objectName: "launcher"
     modal: true
-    width: Math.min(Tokens.launcherWidth, parent ? parent.width - Tokens.space32 : Tokens.launcherWidth)
-    height: Math.min(Tokens.launcherHeight, parent ? parent.height - Tokens.space32 : Tokens.launcherHeight)
+    dim: false
+    transformOrigin: Item.Bottom
+    property bool gridMode: true
+    property int currentIndex: 0
+    readonly property var applicationNames: ({
+            files: I18n.s("Files"),
+            web: I18n.s("Browser"),
+            terminal: I18n.s("Terminal"),
+            notes: I18n.s("Notes"),
+            music: I18n.s("Music"),
+            settings: I18n.s("Settings")
+        })
+    readonly property var applicationDescriptions: ({
+            files: I18n.s("Your everyday places"),
+            web: I18n.s("A little window to the world"),
+            terminal: I18n.s("Make something happen"),
+            notes: I18n.s("Keep a thought close"),
+            music: I18n.s("Find your rhythm"),
+            settings: I18n.s("Make this space yours")
+        })
+    width: Math.min(Math.max(Tokens.launcherWidth, integratedDock.width + padding * 2), parent ? parent.width - Tokens.space32 : Tokens.launcherWidth)
+    readonly property int gridColumns: Math.max(2, Math.floor((width - padding * 2) / Tokens.launcherGridMinimumCell))
+    readonly property real resultsHeight: gridMode ? Math.max(1, Math.min(3, Math.ceil(Shell.search.count / gridColumns))) * Tokens.launcherGridCellHeight * Tokens.textScale : Math.max(1, Math.min(6, Shell.search.count)) * (Tokens.launcherRow * Tokens.textScale + Tokens.space4)
+    height: Math.min(Math.min(resultsHeight, Tokens.launcherHeight) + Tokens.controlHeight + Tokens.dockHeight + padding * 2 + Tokens.space32 + Tokens.space1, parent ? parent.height - Tokens.space32 : Tokens.previewHeight)
+    Behavior on height {
+        NumberAnimation {
+            duration: Tokens.springSpatial.duration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Tokens.springSpatial.curve
+        }
+    }
     onOpened: {
         Shell.search.query = "";
-        results.currentIndex = 0;
-        searchField.forceActiveFocus();
+        currentIndex = 0;
+        form.searchField.forceActiveFocus();
     }
-    function activateSelected(): void {
-        if (Shell.launch(Shell.search.idAt(results.currentIndex)))
+    function activateApp(appId: string, index: int): void {
+        if (appId === "settings") {
             close();
+            settingsRequested();
+        } else if (Shell.launch(appId)) {
+            close();
+        }
+    }
+    signal settingsRequested
+    function moveSelection(delta: int): void {
+        currentIndex = Math.max(0, Math.min(Shell.search.count - 1, currentIndex + delta));
+        const view = gridMode ? form.gridView : form.listView;
+        view.positionViewAtIndex(currentIndex, ListView.Contain);
     }
     contentItem: ColumnLayout {
-        spacing: Tokens.space16
-        RowLayout {
-            Layout.fillWidth: true
-            Label {
-                text: I18n.t("shell.launcher.title")
-                font: Tokens.title
-                color: Tokens.textPrimary
-                Layout.fillWidth: true
-            }
-            IconButton {
-                iconName: "close"
-                text: I18n.t("shell.launcher.close")
-                onClicked: root.close()
-            }
-        }
-        TextField {
-            id: searchField
-            objectName: "launcherSearch"
-            Layout.fillWidth: true
-            implicitHeight: Tokens.controlHeight + Tokens.space8
-            placeholderText: I18n.t("shell.launcher.placeholder")
-            font: Tokens.body
-            color: Tokens.textPrimary
-            selectionColor: Tokens.primaryContainer
-            selectedTextColor: Tokens.textPrimary
-            text: Shell.search.query
-            Accessible.name: I18n.t("shell.launcher.search")
-            selectByMouse: true
-            background: Rectangle {
-                radius: Tokens.radiusM
-                color: Tokens.surface
-                border.width: searchField.activeFocus ? Tokens.space2 : Tokens.space1
-                border.color: searchField.activeFocus ? Tokens.primary : Tokens.outline
-            }
-            onTextEdited: Shell.search.query = text
-            onAccepted: root.activateSelected()
-            Keys.onDownPressed: event => {
-                results.incrementCurrentIndex();
-                event.accepted = true;
-            }
-            Keys.onUpPressed: event => {
-                results.decrementCurrentIndex();
-                event.accepted = true;
-            }
-        }
-        ListView {
-            id: results
-            objectName: "launcherResults"
+        spacing: Tokens.space12
+        LauncherForm {
+            id: form
             Layout.fillWidth: true
             Layout.fillHeight: true
-            clip: true
-            model: Shell.search
-            currentIndex: 0
-            // Qt's internal highlight tracker also animates when no highlight is drawn.
-            highlightMoveVelocity: -1
-            highlightResizeVelocity: -1
-            highlightMoveDuration: Tokens.motionFast
-            highlightResizeDuration: Tokens.motionFast
-            spacing: Tokens.space4
-            boundsBehavior: Flickable.StopAtBounds
-            ScrollBar.vertical: ScrollBar {
-                policy: ScrollBar.AlwaysOn
-                contentItem: Rectangle {
-                    implicitWidth: Tokens.space6
-                    implicitHeight: Tokens.space6
-                    radius: Tokens.radiusPill
-                    color: Tokens.outline
-                }
+            gridMode: root.gridMode
+            applications: Shell.search
+            appNames: root.applicationNames
+            appDescriptions: root.applicationDescriptions
+            actionTarget: root
+            currentIndex: root.currentIndex
+            searchPlaceholder: I18n.t("shell.launcher.placeholder")
+            emptyText: I18n.t("shell.launcher.empty")
+            searchField.text: Shell.search.query
+            searchField.Keys.onDownPressed: root.moveSelection(root.gridMode ? Math.max(2, Math.floor(form.gridView.width / Tokens.launcherGridMinimumCell)) : 1)
+            searchField.Keys.onUpPressed: root.moveSelection(root.gridMode ? -Math.max(2, Math.floor(form.gridView.width / Tokens.launcherGridMinimumCell)) : -1)
+            searchField.Keys.onRightPressed: event => {
+                if (root.gridMode && form.searchField.text.length === 0) {
+                    root.moveSelection(1);
+                    event.accepted = true;
+                } else
+                    event.accepted = false;
             }
-            delegate: ItemDelegate {
-                id: resultRow
-                required property int index
-                required property string appId
-                required property string displayName
-                required property string description
-                required property string origin
-                required property string iconName
-                width: results.width
-                height: Tokens.launcherRow * Tokens.textScale
-                highlighted: ListView.isCurrentItem
-                Accessible.name: I18n.s(displayName) + ", " + I18n.s(description)
-                onClicked: {
-                    Shell.launch(appId);
-                    root.close();
-                }
-                contentItem: RowLayout {
-                    spacing: Tokens.space16
-                    Icon {
-                        name: resultRow.iconName
-                        Layout.preferredWidth: Tokens.iconL
-                        Layout.preferredHeight: Tokens.iconL
-                    }
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: Tokens.space4
-                        Label {
-                            text: I18n.s(resultRow.displayName) + (resultRow.origin === "android" ? " · " + I18n.t("android.origin") : "")
-                            font: Tokens.body
-                            color: Tokens.textPrimary
-                        }
-                        Label {
-                            text: I18n.s(resultRow.description)
-                            font: Tokens.caption
-                            color: Tokens.textSecondary
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
-                        }
-                    }
-                }
-                background: Rectangle {
-                    radius: Tokens.radiusL
-                    color: resultRow.highlighted || resultRow.hovered ? Tokens.primaryContainer : "transparent"
-                    border.width: resultRow.visualFocus ? Tokens.space2 : 0
-                    border.color: Tokens.primary
-                }
-            }
-            Label {
-                anchors.centerIn: parent
-                visible: results.count === 0
-                text: I18n.t("shell.launcher.empty")
-                font: Tokens.body
-                color: Tokens.textSecondary
+            searchField.Keys.onLeftPressed: event => {
+                if (root.gridMode && form.searchField.text.length === 0) {
+                    root.moveSelection(-1);
+                    event.accepted = true;
+                } else
+                    event.accepted = false;
             }
         }
-        Label {
-            text: I18n.t("shell.launcher.help")
-            font: Tokens.caption
-            color: Tokens.textSecondary
-            wrapMode: Text.WordWrap
+        Rectangle {
             Layout.fillWidth: true
+            height: 1
+            color: Tokens.surfaceEdge
+        }
+        Dock {
+            id: integratedDock
+            Layout.alignment: Qt.AlignHCenter
+            decorationVisible: false
+            onLauncherRequested: root.close()
+            onSettingsRequested: {
+                root.close();
+                root.settingsRequested();
+            }
+        }
+    }
+    Connections {
+        target: form.searchField
+        function onTextEdited(): void {
+            Shell.search.query = form.searchField.text;
+        }
+        function onAccepted(): void {
+            root.activateApp(Shell.search.idAt(root.currentIndex), root.currentIndex);
+        }
+    }
+    Connections {
+        target: form.gridButton
+        function onClicked(): void {
+            root.gridMode = true;
+            form.searchField.forceActiveFocus();
+        }
+    }
+    Connections {
+        target: form.listButton
+        function onClicked(): void {
+            root.gridMode = false;
+            form.searchField.forceActiveFocus();
+        }
+    }
+    Connections {
+        target: form.closeButton
+        function onClicked(): void {
+            root.close();
         }
     }
     Connections {
         target: Shell.search
         function onQueryChanged(): void {
-            results.currentIndex = 0;
+            root.currentIndex = 0;
         }
     }
 }

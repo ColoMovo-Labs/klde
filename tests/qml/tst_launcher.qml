@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import QtTest
 import KLDE.Shell
 import KLDE.Backends
@@ -42,6 +43,24 @@ Item {
             keyClick(Qt.Key_Return);
             tryCompare(popup, "opened", false);
             verify(Shell.message.indexOf("Terminal") >= 0);
+        }
+        function test_gridAndListKeepTheSearchAndKeyboardActivation(): void {
+            const search = findChild(popup, "launcherSearch");
+            const listButton = findChild(popup, "launcherListButton");
+            const gridButton = findChild(popup, "launcherGridButton");
+            verify(popup.gridMode);
+            Shell.search.query = "terminal";
+            listButton.forceActiveFocus();
+            keyClick(Qt.Key_Space);
+            compare(popup.gridMode, false);
+            compare(Shell.search.query, "terminal");
+            gridButton.forceActiveFocus();
+            keyClick(Qt.Key_Space);
+            compare(popup.gridMode, true);
+            compare(Shell.search.count, 1);
+            search.forceActiveFocus();
+            keyClick(Qt.Key_Return);
+            tryCompare(popup, "opened", false);
         }
         function test_escapeClosesTheLauncher(): void {
             keyClick(Qt.Key_Escape);

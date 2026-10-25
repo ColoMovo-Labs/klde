@@ -180,6 +180,19 @@ jobs:
       - store_artifacts:
           path: artifacts/environment
 
+  designer-compat:
+    executor: fedora-qt
+    steps:
+      - run:
+          name: Install QML Designer runtime and isolated X server
+          command: dnf install -y --setopt=install_weak_deps=False git openssh-clients qt-creator qt6-qtsvg mesa-dri-drivers mesa-libGL mesa-libEGL xorg-x11-server-Xvfb xorg-x11-xauth google-noto-sans-cjk-vf-fonts
+      - checkout
+      - run:
+          name: Render every form scene with QML Designer's own renderer
+          command: bash tools/check-designer-renderer.sh artifacts/designer
+      - store_artifacts:
+          path: artifacts/designer
+
   static-analysis:
     executor: ubuntu-qt
     steps:
@@ -189,6 +202,7 @@ jobs:
           command: |
             bash tools/check-format.sh
             reuse lint
+            python3 tools/check-design-workspace.py
             python3 tools/check-translations.py
             python3 tools/check-fcitx-theme.py
             cmake --build build/ci --target all_qmllint --parallel 2
@@ -221,6 +235,10 @@ jobs:
     executor: ubuntu-qt
     steps:
       - built-tree
+      - run:
+          name: Shared visual workspace without shell backends
+          command: |
+            xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic OWODE_DESIGN_CAPTURES=artifacts/smoke/design build/ci/bin/owode-design-workspace-test
       - run:
           name: Default fusion materials through OpenGL
           command: bash tools/capture-fusion-previews.sh build/ci/bin/klde-shell artifacts/smoke/fusion
@@ -376,6 +394,7 @@ workflows:
           filters:
             branches:
               ignore: feat/native-session-surfaces
+      - designer-compat
       - configure-build
       - fedora-build
       - native-ubuntu:

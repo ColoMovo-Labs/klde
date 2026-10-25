@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
-import QtQuick.Layouts
 import KLDE.Backends
 
 ShellPopup {
@@ -10,207 +10,137 @@ ShellPopup {
     signal blurRequested
     signal sceneSettingsRequested
     signal viewRequested(string view)
+    // Kept for CLI/Visual Lab compatibility. All everyday controls are always shown.
     property bool expanded: false
+    property int microphoneRestoreLevel: 82
     readonly property var snapshot: Shell.state.snapshot
-    width: Math.min(Tokens.panelWidth + (expanded ? Tokens.space32 : 0), parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
-    height: Math.min(settingsColumn.implicitHeight + padding * 2, parent ? parent.height - y - Tokens.space24 : Tokens.previewHeight)
-    Behavior on width {
-        NumberAnimation {
-            duration: Tokens.springSpatial.duration
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Tokens.springSpatial.curve
-        }
-    }
-    Behavior on height {
-        NumberAnimation {
-            duration: Tokens.springSpatial.duration
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Tokens.springSpatial.curve
-        }
-    }
+    width: Math.min(Tokens.panelWidth + Tokens.space16, parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
+    height: Math.min(form.implicitHeight + padding * 2, parent ? parent.height - y - Tokens.space24 : Tokens.previewHeight)
     contentItem: ScrollView {
         id: scroller
-        clip: true
         contentWidth: availableWidth
-        ColumnLayout {
-            id: settingsColumn
+        clip: true
+        QuickSettingsForm {
+            id: form
             width: scroller.availableWidth
-            spacing: Tokens.rowGap
-            RowLayout {
-                Layout.fillWidth: true
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: Tokens.space4
-                    Label {
-                        text: I18n.t("shell.quick.title")
-                        Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        font: Tokens.title
-                        color: Tokens.textPrimary
-                    }
-                    Label {
-                        text: I18n.t("shell.quick.provenance")
-                        font: Tokens.caption
-                        color: Tokens.textSecondary
-                    }
-                }
-                IconButton {
-                    iconName: "close"
-                    text: I18n.t("shell.quick.close")
-                    onClicked: root.close()
-                }
+            height: implicitHeight
+            wifiOn: root.snapshot.network.enabled
+            bluetoothOn: root.snapshot.bluetooth.enabled
+            bluetoothAvailable: root.snapshot.capabilities.bluetooth
+            brightnessAvailable: root.snapshot.capabilities.brightness
+            microphoneAvailable: root.snapshot.capabilities.microphone
+            microphoneOn: root.snapshot.audio.microphone > 0
+            nightOn: Shell.system.nightMode
+            quietOn: Shell.scenes.current.visual.motion === 0
+            dndOn: root.snapshot.notifications.dnd
+            wifiDetail: root.snapshot.network.connected ? root.snapshot.network.ssid : I18n.t("lab.network.offline")
+            provenance: I18n.t("shell.quick.provenance")
+            wifiLabel: I18n.t("shell.network.wifi")
+            bluetoothLabel: I18n.t("shell.network.bluetooth")
+            dndLabel: I18n.t("lab.dnd")
+            nightLabel: I18n.t("shell.effects.night")
+            motionLabel: I18n.t("shell.effects.quiet")
+            microphoneLabel: I18n.t("lab.module.microphone")
+            brightnessLabel: I18n.t("shell.effects.brightness")
+            volumeLabel: I18n.t("shell.effects.volume")
+            settingsLabel: I18n.t("shell.settings.open")
+            powerLabel: I18n.t("destructive.session.preview")
+            brightnessSlider.value: Shell.system.brightness
+            volumeSlider.value: Shell.system.volume
+            microphoneSlider.value: root.snapshot.audio.microphone
+            profileLabels: [I18n.t("shell.scene.performance"), I18n.t("shell.scene.balanced"), I18n.t("shell.scene.saver")]
+            profileChoice.currentIndex: Shell.scenes.activeId === "performance" ? 0 : Shell.scenes.activeId === "balanced" ? 1 : 2
+        }
+    }
+    Connections {
+        target: form.closeButton
+        function onClicked(): void {
+            root.close();
+        }
+    }
+    Connections {
+        target: form.settingsButton
+        function onClicked(): void {
+            root.close();
+            root.sceneSettingsRequested();
+        }
+    }
+    Connections {
+        target: form.powerButton
+        function onClicked(): void {
+            Shell.system.requestSessionAction("shutdown");
+        }
+    }
+    Connections {
+        target: form.wifiButton
+        function onClicked(): void {
+            Shell.system.wifi = !Shell.system.wifi;
+        }
+    }
+    Connections {
+        target: form.bluetoothButton
+        function onClicked(): void {
+            Shell.system.bluetooth = !Shell.system.bluetooth;
+        }
+    }
+    Connections {
+        target: form.nightButton
+        function onClicked(): void {
+            Shell.system.nightMode = !Shell.system.nightMode;
+        }
+    }
+    Connections {
+        target: form.motionButton
+        function onClicked(): void {
+            Shell.scenes.customize("motion", Tokens.reducedMotion ? 1 : 0);
+        }
+    }
+    Connections {
+        target: form.dndButton
+        function onClicked(): void {
+            Shell.state.requestValue("notifications.dnd", !root.snapshot.notifications.dnd);
+        }
+    }
+    Connections {
+        target: form.microphoneButton
+        function onClicked(): void {
+            if (root.snapshot.audio.microphone > 0) {
+                root.microphoneRestoreLevel = root.snapshot.audio.microphone;
+                Shell.state.requestValue("audio.microphone", 0);
+            } else {
+                Shell.state.requestValue("audio.microphone", root.microphoneRestoreLevel);
             }
-            ActionButton {
-                text: I18n.t(root.expanded ? "lab.quick.compact" : "lab.quick.expand")
-                Layout.fillWidth: true
-                onClicked: root.expanded = !root.expanded
-            }
-            GridLayout {
-                columns: 2
-                columnSpacing: Tokens.space12
-                rowSpacing: Tokens.space12
-                Layout.fillWidth: true
-                ToggleTile {
-                    text: I18n.t("shell.network.wifi")
-                    iconName: "wifi"
-                    detail: root.snapshot.network.connected ? root.snapshot.network.ssid : I18n.t("lab.network.offline")
-                    selected: root.snapshot.network.enabled
-                    Layout.fillWidth: true
-                    onToggleRequested: Shell.system.wifi = !Shell.system.wifi
-                }
-                ToggleTile {
-                    text: I18n.t("shell.network.bluetooth")
-                    iconName: "bluetooth"
-                    enabled: root.snapshot.capabilities.bluetooth
-                    detail: !enabled ? I18n.t("lab.unavailable") : I18n.t(root.snapshot.bluetooth.enabled ? "common.on" : "common.off")
-                    selected: root.snapshot.bluetooth.enabled
-                    Layout.fillWidth: true
-                    onToggleRequested: Shell.system.bluetooth = !Shell.system.bluetooth
-                }
-                ToggleTile {
-                    text: I18n.t("shell.effects.night")
-                    iconName: "moon"
-                    selected: Shell.system.nightMode
-                    Layout.fillWidth: true
-                    onToggleRequested: Shell.system.nightMode = !Shell.system.nightMode
-                }
-                ToggleTile {
-                    text: I18n.t("shell.effects.quiet")
-                    iconName: "leaf"
-                    selected: Shell.scenes.current.visual.motion === 0
-                    Layout.fillWidth: true
-                    onToggleRequested: Shell.scenes.customize("motion", Tokens.reducedMotion ? 1 : 0)
-                }
-            }
-            SliderCard {
-                visible: root.snapshot.capabilities.brightness
-                label: I18n.t("shell.effects.brightness")
-                iconName: "sun"
-                value: Shell.system.brightness
-                Layout.fillWidth: true
-                onValueRequested: requestedValue => Shell.system.brightness = requestedValue
-            }
-            SliderCard {
-                label: I18n.t("shell.effects.volume")
-                iconName: "volume"
-                value: Shell.system.volume
-                Layout.fillWidth: true
-                onValueRequested: requestedValue => Shell.system.volume = requestedValue
-            }
-            StateSlider {
-                visible: root.expanded && root.snapshot.capabilities.microphone
-                path: "audio.microphone"
-                label: I18n.t("lab.module.microphone")
-                iconName: "microphone"
-            }
-            StateChoice {
-                visible: root.expanded
-                label: I18n.t("lab.audio.output")
-                path: "audio.output"
-                values: ["speakers", "headphones", "bluetooth"]
-                labels: [I18n.t("lab.audio.speakers"), I18n.t("lab.audio.headphones"), I18n.t("shell.network.bluetooth")]
-            }
-            Switch {
-                text: I18n.t("lab.dnd")
-                checked: root.snapshot.notifications.dnd
-                onToggled: Shell.state.requestValue("notifications.dnd", checked)
-            }
-            Flow {
-                visible: root.expanded
-                Layout.fillWidth: true
-                spacing: Tokens.space8
-                ActionButton {
-                    text: I18n.t("language.title")
-                    onClicked: root.viewRequested("language")
-                }
-                ActionButton {
-                    text: I18n.t("lab.center.title")
-                    onClicked: root.viewRequested("notifications")
-                }
-                ActionButton {
-                    text: I18n.t("lab.ribbon.customize")
-                    onClicked: root.viewRequested("ribbon-settings")
-                }
-            }
-            Flow {
-                visible: root.expanded
-                Layout.fillWidth: true
-                spacing: Tokens.space8
-                ActionButton {
-                    text: I18n.t("temporal.title")
-                    onClicked: root.viewRequested("temporal")
-                }
-                ActionButton {
-                    text: I18n.t("wallpaper.title")
-                    onClicked: root.viewRequested("wallpaper-effects")
-                }
-                ActionButton {
-                    text: I18n.t("android.title")
-                    onClicked: root.viewRequested("waydroid")
-                }
-            }
-            ChoiceBox {
-                visible: root.expanded
-                Layout.fillWidth: true
-                model: [I18n.t("lab.density.comfortable"), I18n.t("lab.density.balanced"), I18n.t("lab.density.dense")]
-                currentIndex: Tokens.densityMode
-                Accessible.name: I18n.t("lab.density")
-                onActivated: Shell.scenes.customize("density", currentIndex)
-            }
-            PowerSceneCard {
-                Layout.fillWidth: true
-                onCustomizeRequested: {
-                    root.close();
-                    root.sceneSettingsRequested();
-                }
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                ActionButton {
-                    text: I18n.t("shell.blur.open")
-                    font: Tokens.label
-                    onClicked: {
-                        root.close();
-                        root.blurRequested();
-                    }
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                IconButton {
-                    iconName: "settings"
-                    text: I18n.t("shell.settings.open")
-                    onClicked: {
-                        root.close();
-                        root.sceneSettingsRequested();
-                    }
-                }
-                IconButton {
-                    iconName: "power"
-                    text: I18n.t("destructive.session.preview")
-                    onClicked: Shell.system.requestSessionAction("shutdown")
-                }
-            }
+        }
+    }
+    Connections {
+        target: form.brightnessSlider
+        function onMoved(): void {
+            Shell.system.brightness = Math.round(form.brightnessSlider.value);
+        }
+    }
+    Connections {
+        target: form.volumeSlider
+        function onMoved(): void {
+            Shell.system.volume = Math.round(form.volumeSlider.value);
+        }
+    }
+    Connections {
+        target: form.microphoneSlider
+        function onMoved(): void {
+            Shell.state.requestValue("audio.microphone", Math.round(form.microphoneSlider.value));
+        }
+    }
+    Connections {
+        target: form.profileChoice
+        function onActivated(index: int): void {
+            Shell.scenes.select(["performance", "balanced", "power-saver"][index]);
+        }
+    }
+    Connections {
+        target: form.moreButton
+        function onClicked(): void {
+            root.close();
+            root.sceneSettingsRequested();
         }
     }
 }

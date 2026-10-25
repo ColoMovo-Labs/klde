@@ -24,12 +24,11 @@ else()
 endif()
 add_subdirectory(src)
 
-set_source_files_properties(qml/Tokens.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
-set_source_files_properties(qml/MonetPalette.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+add_subdirectory(design/Owo/Visuals)
 set_source_files_properties(qml/Branding.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set_source_files_properties(qml/I18n.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 set(klde_qml_files
-    qml/Main.qml qml/Tokens.qml qml/MonetPalette.qml qml/I18n.qml qml/Branding.qml
+    qml/Main.qml qml/I18n.qml qml/Branding.qml
     qml/components/RibbonGroup.qml qml/components/TelemetryCell.qml
     qml/components/TemporalCapsule.qml qml/components/TemporalLandscape.qml
     qml/components/SystemIsland.qml qml/components/WelcomeFlow.qml
@@ -80,10 +79,10 @@ qt_add_qml_module(klde_ui STATIC
     RESOURCE_PREFIX /qt/qml
     OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml/KLDE/Shell"
     IMPORT_PATH "${CMAKE_BINARY_DIR}/qml"
-    DEPENDENCIES KLDE.Backends
+    DEPENDENCIES KLDE.Backends Owo.Visuals
     QML_FILES ${klde_qml_files}
 )
-target_link_libraries(klde_ui PUBLIC klde_backends klde_backendsplugin Qt6::Quick Qt6::QuickControls2)
+target_link_libraries(klde_ui PUBLIC owode_visuals owode_visualsplugin klde_backends klde_backendsplugin Qt6::Quick Qt6::QuickControls2)
 
 # Build-time shader packs for public ShaderEffect use (blur.md). Runtime
 # packages need no shader compiler; the baked .qsb files are embedded.
@@ -119,7 +118,7 @@ foreach(stem abstract quiet kemono depth-foreground soft-cache-study lock-cache-
 endforeach()
 list(APPEND klde_assets assets/temporal/moon.svg assets/wallpapers/first-night.svg
     "assets/fonts/rubik/Rubik[wght].ttf")
-foreach(icon klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather cpu memory microphone battery bell overview display info previous next thermometer weather-clear weather-partly-cloudy weather-cloudy weather-rain weather-snow weather-thunderstorm weather-fog weather-extreme-heat weather-extreme-cold)
+foreach(icon grid list minus klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather cpu memory microphone battery bell overview display info previous next thermometer weather-clear weather-partly-cloudy weather-cloudy weather-rain weather-snow weather-thunderstorm weather-fog weather-extreme-heat weather-extreme-cold)
     list(APPEND klde_assets "assets/icons/${icon}.svg")
     list(APPEND klde_assets "assets/icons/${icon}-light.svg")
 endforeach()

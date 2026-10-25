@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import QtTest
 import KLDE.Shell
 import KLDE.Backends
@@ -270,12 +271,15 @@ Item {
                     const left = findChild(ribbon, "ribbonLeft");
                     const right = findChild(ribbon, "ribbonRight");
                     verify(left !== null);
+                    const leftPosition = left.mapToItem(ribbon, 0, 0);
+                    const rightPosition = right.mapToItem(ribbon, 0, 0);
+                    const centerPosition = center.mapToItem(ribbon, 0, 0);
                     if (!ribbon.stacked) {
-                        verify(left.x + left.width <= center.x - Tokens.ribbonGroupGap + 1);
-                        verify(right.x >= center.x + center.width + Tokens.ribbonGroupGap - 1);
+                        verify(leftPosition.x + left.width <= centerPosition.x - Tokens.ribbonGroupGap + 1);
+                        verify(rightPosition.x >= centerPosition.x + center.width + Tokens.ribbonGroupGap - 1);
                     } else {
-                        verify(left.y >= center.y + center.height);
-                        verify(right.y >= center.y + center.height);
+                        verify(leftPosition.y >= centerPosition.y + center.height);
+                        verify(rightPosition.y >= centerPosition.y + center.height);
                     }
                     for (const section of [left, right]) {
                         for (const id of ["context", "date", "workspaces", "telemetry", "connectivity", "session", "extras"]) {
@@ -283,15 +287,19 @@ Item {
                             if (group && group.entries.length > 0) {
                                 tryVerify(() => {
                                     const position = group.mapToItem(ribbon, 0, 0);
-                                    return position.x >= section.x - 1 && position.x + group.width <= section.x + section.width + 1;
+                                    const start = section.mapToItem(ribbon, 0, 0).x;
+                                    return position.x >= start - 1 && position.x + group.width <= start + section.width + 1;
                                 }, 1000, id + " stays inside lane after positioner polish");
                             }
                         }
                     }
-                    console.info("axis-geometry", screenWidth, density, ribbon.x + center.x + center.width / 2 - screenWidth / 2, "right-edge", right.x + right.width);
                     verify(right !== null);
-                    verify(Math.abs(right.x + right.width - width) < 1);
-                    verify(Math.abs(center.x + center.width / 2 - width / 2) < 1);
+                    // Flow polish may update a slot width while the per-group
+                    // assertions yield. Read mapped positions after that polish;
+                    // a saved QPointF describes the previous layout, not this one.
+                    tryVerify(() => Math.abs(right.mapToItem(ribbon, 0, 0).x + right.width - ribbon.width) < 1, 1000, "right lane reaches the ribbon edge");
+                    tryVerify(() => Math.abs(center.mapToItem(ribbon, center.width / 2, center.height / 2).x - ribbon.width / 2) < 1, 1000, "clock stays on the screen axis");
+                    console.info("axis-geometry", screenWidth, density, ribbon.x + center.mapToItem(ribbon, center.width / 2, center.height / 2).x - screenWidth / 2, "right-edge", right.mapToItem(ribbon, right.width, 0).x);
                     for (const section of ribbon.children) {
                         verify(section.x >= 0);
                         verify(section.x + section.width <= width + 1);
@@ -302,7 +310,7 @@ Item {
             for (const id of ["context", "date", "notifications", "bluetooth"]) {
                 verify(Shell.ribbon.setVisible(id, false));
                 wait(0);
-                verify(Math.abs(center.x + center.width / 2 - ribbon.width / 2) <= 1);
+                verify(Math.abs(center.mapToItem(ribbon, center.width / 2, center.height / 2).x - ribbon.width / 2) <= 1);
             }
             Shell.ribbon.reset();
             Shell.mockScenarios.apply("desktop-no-battery");

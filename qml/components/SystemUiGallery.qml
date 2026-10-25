@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 
@@ -43,6 +44,11 @@ LabPanel {
             stateName: root.islandState
             anchors.centerIn: parent
         }
+    }
+    WindowChromeForm {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 112
+        title: "owoDE · " + I18n.t("gallery.title")
     }
     GridLayout {
         Layout.fillWidth: true

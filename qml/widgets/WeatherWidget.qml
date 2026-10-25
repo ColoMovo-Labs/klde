@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
 
@@ -14,49 +15,13 @@ Surface {
     padding: Tokens.weatherWidgetPadding
     tone: Tokens.surfaceContainerHigh
 
-    ColumnLayout {
-        anchors.centerIn: parent
-        spacing: Tokens.space4
-        Icon {
-            name: root.weather.available && root.weather.conditionId !== "weather.condition.unknown" ? "weather-" + root.weather.conditionId.split(".").pop() : "weather"
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: Tokens.weatherIcon
-            Layout.preferredHeight: Tokens.weatherIcon
-        }
-        Label {
-            Layout.alignment: Qt.AlignHCenter
-            text: root.weather.available ? root.weather.temperature + "°" : "—"
-            font: Tokens.weatherTemperature
-            color: Tokens.secondary
-            Accessible.name: root.weather.available ? I18n.t("shell.weather.degrees").arg(root.weather.temperature).arg(root.conditionLabel) : I18n.t("friendly.weather.unavailable")
-        }
-        Label {
-            Layout.alignment: Qt.AlignHCenter
-            text: root.weather.location
-            textFormat: Text.PlainText
-            Layout.maximumWidth: Tokens.weatherWidgetSize - Tokens.space32
-            elide: Text.ElideRight
-            font: Tokens.label
-            color: Tokens.textPrimary
-        }
-        Label {
-            Layout.alignment: Qt.AlignHCenter
-            text: root.conditionLabel
-            textFormat: Text.PlainText
-            Layout.maximumWidth: Tokens.weatherWidgetSize - Tokens.space32
-            elide: Text.ElideRight
-            font: Tokens.caption
-            color: Tokens.textSecondary
-        }
-        Label {
-            Layout.alignment: Qt.AlignHCenter
-            text: I18n.s(root.weather.sourceLabel) + (root.weather.stale ? I18n.t("shell.weather.stale") : "")
-            textFormat: Text.PlainText
-            Layout.maximumWidth: Tokens.weatherWidgetSize - Tokens.space32
-            elide: Text.ElideRight
-            font: Tokens.caption
-            color: Tokens.textSecondary
-        }
+    WeatherForm {
+        anchors.fill: parent
+        iconName: root.weather.available && root.weather.conditionId !== "weather.condition.unknown" ? "weather-" + root.weather.conditionId.split(".").pop() : "weather"
+        temperatureText: root.weather.available ? root.weather.temperature + "°" : "—"
+        locationText: root.weather.location
+        conditionLabel: root.conditionLabel
+        sourceText: I18n.s(root.weather.sourceLabel) + (root.weather.stale ? I18n.t("shell.weather.stale") : "")
     }
     TapHandler {
         onTapped: root.settingsRequested()

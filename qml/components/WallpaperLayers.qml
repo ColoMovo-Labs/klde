@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import Owo.Visuals
 import KLDE.Backends
 
 Item {
@@ -12,12 +13,10 @@ Item {
     function nightAsset(source: string): string {
         return Tokens.darkMode && source.length > 0 ? source.replace(".svg", "-night.svg") : source;
     }
-    Image {
+    BackgroundForm {
         anchors.fill: parent
         visible: !root.foregroundOnly
-        source: visible ? root.original : ""
-        sourceSize: Qt.size(width, height)
-        fillMode: Image.PreserveAspectCrop
+        wallpaper: root.original
     }
     Image {
         anchors.fill: parent

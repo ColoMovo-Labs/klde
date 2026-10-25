@@ -45,3 +45,12 @@ qt_add_executable(klde-visual-lab-test test_visual_lab.cpp)
 target_link_libraries(klde-visual-lab-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME visual-lab-contracts COMMAND klde-visual-lab-test)
 set_tests_properties(visual-lab-contracts PROPERTIES LABELS unit TIMEOUT 30)
+
+# Filesystem/QDS compatibility check, independent of every native/mock backend.
+qt_add_executable(owode-design-workspace-test test_design_workspace.cpp)
+target_link_libraries(owode-design-workspace-test PRIVATE Qt6::Quick Qt6::QuickControls2 Qt6::Test)
+target_compile_definitions(owode-design-workspace-test PRIVATE
+    OWODE_DESIGN_DIR="${PROJECT_SOURCE_DIR}/design")
+add_test(NAME design-workspace COMMAND owode-design-workspace-test)
+set_tests_properties(design-workspace PROPERTIES LABELS "qml;design" TIMEOUT 60
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;QT_QUICK_CONTROLS_STYLE=Basic")

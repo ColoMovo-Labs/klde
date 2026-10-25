@@ -11,9 +11,11 @@ Do not replace the host session or install privileged helpers during bring-up.
 The preview has working cloud packages, bilingual UI and native surface source,
 but most system and window state is still mock. A separate native popup host
 and rounded input regions now replace hidden-preview popup ownership and
-full-window pointer interception in the source. Exact-commit KWin evidence is
-still required before accepting them. Native input regions, exclusive zones, maximized clients and
-multi-output behavior still need protocol evidence and real interaction tests.
+full-window pointer interception in the source. The single-output cloud gates passed on both distributions: Ubuntu at `b0ae620`
+([evidence](evidence/native-ubuntu-120/README.md)) and Fedora 44 at `3ec750b`
+([evidence](evidence/native-fedora-122/README.md)), covering roles,
+input regions, exclusive zones, maximized clients, popup focus and movement.
+Owner-host and multi-output acceptance remain independent gates.
 This is not yet a desktop suitable for ordinary daily use.
 
 ## Acceptance order
