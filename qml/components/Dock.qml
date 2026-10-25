@@ -9,7 +9,7 @@ Surface {
     readonly property bool nativeInputSurface: true
     signal launcherRequested
     signal settingsRequested
-    width: form.row.implicitWidth + Tokens.space24
+    width: Math.min(form.row.implicitWidth + Tokens.space24, parent ? parent.width - Tokens.space32 : Tokens.previewWidth)
     height: Tokens.dockHeight
     padding: 0
     cornerRadius: Tokens.radiusXL
@@ -27,7 +27,7 @@ Surface {
         id: form
         anchors.fill: parent
         decorationVisible: false
-        applications: Shell.applications
+        applications: Shell.dockApplications
         actionTarget: root
     }
     Connections {

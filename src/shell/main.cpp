@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName(QStringLiteral("klde-shell"));
     QCoreApplication::setApplicationVersion(QStringLiteral(KLDE_VERSION));
     QCoreApplication::setOrganizationName(QStringLiteral("KLDE"));
+    QGuiApplication::setDesktopFileName(QStringLiteral("org.klde.shell.preview"));
     QQuickStyle::setStyle(QStringLiteral("Basic"));
 
     QCommandLineParser parser;
@@ -93,12 +94,27 @@ int main(int argc, char *argv[]) {
     const QCommandLineOption nativeSurfaceOption(
         "native-shell-surfaces",
         "Use LayerShellQt wallpaper, ribbon and dock surfaces (Wayland/KWin only)");
+    const QCommandLineOption applicationsOption(
+        "applications",
+        "Application catalog: system or mock (default: system in native mode, mock in preview)",
+        "source");
     parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
-                       developerOption, nativeSurfaceOption});
+                       developerOption, nativeSurfaceOption, applicationsOption});
     parser.addOptions({cropOption, focusOption, lockStateOption, islandStateOption,
                        welcomePageOption, debugGeometryOption, smokeOption, captureOption,
                        viewOption, darkOption, idleOption, localeOption, voiceOption});
     parser.process(app);
+    const auto applicationSource = parser.isSet(applicationsOption)
+                                       ? parser.value(applicationsOption)
+                                   : parser.isSet(nativeSurfaceOption) ? "system"
+                                                                       : "mock";
+    if ((applicationSource != "system" && applicationSource != "mock") ||
+        (applicationSource == "system" &&
+         (!parser.isSet(nativeSurfaceOption) || !klde::DesktopApplicationBackend::available()))) {
+        qCritical() << "System applications require native-surface mode and KF6 Service/KIO."
+                    << "Use --applications mock for an isolated native visual test.";
+        return EXIT_FAILURE;
+    }
     if (parser.isSet(nativeSurfaceOption) && parser.isSet(smokeOption)) {
         qCritical() << "--native-shell-surfaces cannot be combined with --smoke-test";
         return EXIT_FAILURE;
@@ -177,6 +193,7 @@ int main(int argc, char *argv[]) {
     bool auditStarted = false;
     int idleFrames = 0;
     QQmlApplicationEngine engine;
+    engine.setProperty("owodeSystemApplications", applicationSource == "system");
     QObject::connect(&engine, &QQmlApplicationEngine::warnings, &engine,
                      [&qmlWarnings] { qmlWarnings = true; });
     QObject::connect(

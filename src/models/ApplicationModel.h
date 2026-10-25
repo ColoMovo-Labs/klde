@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
+#include "ApplicationEntry.h"
 #include <QAbstractListModel>
 #include <QSortFilterProxyModel>
 #include <QtQml/qqmlregistration.h>
@@ -10,6 +11,7 @@ class ApplicationModel : public QAbstractListModel {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.applications")
+    Q_PROPERTY(bool preview READ preview NOTIFY modeChanged)
   public:
     enum Role : quint16 {
         AppIdRole = Qt::UserRole + 1,
@@ -19,7 +21,8 @@ class ApplicationModel : public QAbstractListModel {
         KeywordsRole,
         RunningRole,
         ActiveRole,
-        OriginRole
+        OriginRole,
+        PinnedRole
     };
     Q_ENUM(Role)
     explicit ApplicationModel(QObject *parent = nullptr);
@@ -31,21 +34,29 @@ class ApplicationModel : public QAbstractListModel {
     void resetPreview(const QString &appId);
     void setAndroidSource(bool enabled);
     QString activeId() const;
+    bool preview() const { return m_preview; }
+    void replaceSystemApplications(const QList<ApplicationEntry> &applications);
+    Q_INVOKABLE bool isPinned(const QString &appId) const;
+    Q_INVOKABLE void setPinned(const QString &appId, bool pinned);
   signals:
     void activeChanged();
+    void modeChanged();
+    void pinRequested(const QString &appId, bool pinned);
 
   private:
-    struct Application {
-        QString id;
-        QString name;
-        QString description;
-        QString icon;
-        QString keywords;
-        bool running = false;
-        bool active = false;
-        QString origin = "linux";
-    };
-    QList<Application> m_applications;
+    QList<ApplicationEntry> m_applications;
+    bool m_preview = true;
+};
+
+class DockApplicationModel final : public QSortFilterProxyModel {
+    Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("Provided by Shell.dockApplications")
+  public:
+    explicit DockApplicationModel(ApplicationModel *source, QObject *parent = nullptr);
+
+  protected:
+    bool filterAcceptsRow(int row, const QModelIndex &parent) const override;
 };
 
 class ApplicationFilterModel : public QSortFilterProxyModel {

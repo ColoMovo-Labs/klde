@@ -41,6 +41,8 @@ ShellPopup {
         }
     }
     onOpened: {
+        if (!Shell.applications.preview)
+            Shell.desktopApplications.refresh();
         Shell.search.query = "";
         currentIndex = 0;
         form.searchField.forceActiveFocus();
@@ -54,6 +56,22 @@ ShellPopup {
         }
     }
     signal settingsRequested
+    property string menuApplication: ""
+    property bool menuPinned: false
+    function requestApplicationMenu(appId: string): void {
+        if (Shell.applications.preview)
+            return;
+        menuApplication = appId;
+        menuPinned = Shell.applications.isPinned(appId);
+        applicationMenu.popup();
+    }
+    Menu {
+        id: applicationMenu
+        MenuItem {
+            text: root.menuPinned ? I18n.t("shell.launcher.unpin") : I18n.t("shell.launcher.pin")
+            onTriggered: Shell.applications.setPinned(root.menuApplication, !root.menuPinned)
+        }
+    }
     function moveSelection(delta: int): void {
         currentIndex = Math.max(0, Math.min(Shell.search.count - 1, currentIndex + delta));
         const view = gridMode ? form.gridView : form.listView;
@@ -74,6 +92,12 @@ ShellPopup {
             searchPlaceholder: I18n.t("shell.launcher.placeholder")
             emptyText: I18n.t("shell.launcher.empty")
             searchField.text: Shell.search.query
+            searchField.Keys.onPressed: event => {
+                if ((event.key === Qt.Key_Menu || (event.key === Qt.Key_F10 && (event.modifiers & Qt.ShiftModifier))) && !Shell.applications.preview) {
+                    root.requestApplicationMenu(Shell.search.idAt(root.currentIndex));
+                    event.accepted = true;
+                }
+            }
             searchField.Keys.onDownPressed: root.moveSelection(root.gridMode ? Math.max(2, Math.floor(form.gridView.width / Tokens.launcherGridMinimumCell)) : 1)
             searchField.Keys.onUpPressed: root.moveSelection(root.gridMode ? -Math.max(2, Math.floor(form.gridView.width / Tokens.launcherGridMinimumCell)) : -1)
             searchField.Keys.onRightPressed: event => {

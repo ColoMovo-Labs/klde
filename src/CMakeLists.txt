@@ -5,6 +5,8 @@ qt_add_qml_module(klde_backends STATIC
     RESOURCE_PREFIX /qt/qml
     OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml/KLDE/Backends"
     SOURCES
+        applications/DesktopApplicationBackend.h applications/DesktopApplicationBackend.cpp
+        models/ApplicationEntry.h
         backends/PresentationBackends.h backends/PresentationBackends.cpp
         backends/WindowManagerBackend.h
         backends/MockWindowManagerBackend.h backends/MockWindowManagerBackend.cpp
@@ -29,12 +31,16 @@ qt_add_qml_module(klde_backends STATIC
         ShellServices.h ShellServices.cpp
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Gui Qt6::DBus Qt6::Network Qt6::Qml Qt6::Quick)
+target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Concurrent Qt6::Gui Qt6::DBus Qt6::Network Qt6::Qml Qt6::Quick)
+if(OWODE_HAVE_KDE_APPLICATIONS)
+    target_link_libraries(klde_backends PRIVATE KF6::Service KF6::KIOGui)
+    target_compile_definitions(klde_backends PRIVATE OWODE_HAVE_KDE_APPLICATIONS=1)
+endif()
 if(OWODE_HAVE_LAYERSHELLQT)
     target_link_libraries(klde_backends PUBLIC LayerShellQt::Interface)
     target_compile_definitions(klde_backends PUBLIC OWODE_HAVE_LAYERSHELLQT=1)
 endif()
 # qmltyperegistrar emits conditional includes by header basename.
 target_include_directories(klde_backends PRIVATE
-    backends models i18n input mock platform/common shortcuts status weather)
+    applications backends models i18n input mock platform/common shortcuts status weather)
 target_compile_options(klde_backends PRIVATE -Wall -Wextra -Wpedantic)

@@ -44,6 +44,8 @@ target.chmod(0o700)
 if 'security.capability' in os.listxattr(target):
     raise SystemExit('Private KWin copy unexpectedly carries capabilities')
 PY
+# Preserve read access to the installed user application catalog while keeping writes private.
+export XDG_DATA_DIRS="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 export XDG_RUNTIME_DIR="$runtime_dir" XDG_CONFIG_HOME="$runtime_dir/config"
 export XDG_CACHE_HOME="$runtime_dir/cache" XDG_DATA_HOME="$runtime_dir/data"
 env -u WAYLAND_DISPLAY dbus-run-session -- bash -s -- \
@@ -97,7 +99,7 @@ export WAYLAND_DISPLAY="$socket_name" QT_QPA_PLATFORM=wayland GDK_BACKEND=waylan
 export XDG_CURRENT_DESKTOP=owoDE XDG_SESSION_DESKTOP=owoDE XDG_SESSION_TYPE=wayland
 export XCURSOR_THEME=${XCURSOR_THEME:-Bibata-Modern-Classic} XCURSOR_SIZE=${XCURSOR_SIZE:-24}
 shell_args=(--view desktop)
-[[ "$mode" == native ]] && shell_args=(--native-shell-surfaces)
+[[ "$mode" == native ]] && shell_args=(--native-shell-surfaces --applications "${OWODE_APPLICATIONS:-system}")
 "$shell_bin" "${shell_args[@]}" > "$evidence_dir/shell.log" 2>&1 &
 shell_pid=$!
 if [[ -n "${OWODE_APP:-}" ]]; then

@@ -20,6 +20,21 @@ These license texts are legal notices, not imported implementation code.
 
 ## External runtime and build dependencies
 
+### Optional KF6 application integration
+
+`DesktopApplicationBackend` dynamically links distribution KService, KConfig and
+KIOGui. No implementation code, application branding or icons are copied from
+those projects. Plasma Shell is not a runtime prerequisite.
+The inspected [KService public header](https://github.com/KDE/kservice/blob/master/src/services/kservice.h)
+is LGPL-2.0-or-later; the inspected
+[ApplicationLauncherJob header](https://github.com/KDE/kio/blob/master/src/gui/applicationlauncherjob.h)
+offers LGPL-2.0-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL.
+The LGPL-3.0 option is compatible with the project's GPL-3.0-or-later combination.
+The distribution libraries retain their own notices/licenses; our SPDX metadata
+does not relicense them. Record the exact package versions and notices from cloud
+artifacts for each binary distribution. These header observations are not a claim
+that every file in all KDE Frameworks has the same license.
+
 ### Optional Lingmo Calculator engine
 
 The [calculator provenance record](../../apps/calculator/README.md) identifies

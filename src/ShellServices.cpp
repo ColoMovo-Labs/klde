@@ -3,14 +3,26 @@
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QKeyEvent>
+#include <QQmlEngine>
 #include <QScopedValueRollback>
 #include <QWindow>
 
 namespace klde {
+ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
+    auto *services = new ShellServices;
+    engine->addImageProvider("applications",
+                             new ApplicationIconProvider(services->desktopApplications()));
+    if (engine->property("owodeSystemApplications").toBool()) {
+        services->m_applications.replaceSystemApplications({});
+        services->m_desktopApplications.setLocale(services->language()->locale());
+        services->m_desktopApplications.start();
+    }
+    return services;
+}
 ShellServices::ShellServices(QObject *parent)
-    : QObject(parent), m_search(&m_applications), m_scenes(&m_system, &m_blur), m_shortcuts(this),
-      m_mockScenarios(&m_state), m_time(&m_state), m_telemetry(&m_state),
-      m_wallpaperEffects(&m_state), m_waydroid(&m_state) {
+    : QObject(parent), m_dockApplications(&m_applications), m_search(&m_applications),
+      m_scenes(&m_system, &m_blur), m_shortcuts(this), m_mockScenarios(&m_state), m_time(&m_state),
+      m_telemetry(&m_state), m_wallpaperEffects(&m_state), m_waydroid(&m_state) {
     m_noticeTimer.setSingleShot(true);
     m_noticeTimer.setInterval(2400);
     connect(&m_noticeTimer, &QTimer::timeout, this, [this] {
@@ -33,6 +45,7 @@ ShellServices::ShellServices(QObject *parent)
     connect(&m_mockScenarios, &MockScenarioManager::applied, this, [this] { projectState(); });
     connect(&m_system, &SystemBackend::stateChanged, this, &ShellServices::reconcileSystem);
     connect(&m_language, &LocaleVoiceModel::changed, this, [this] {
+        m_desktopApplications.setLocale(m_language.locale());
         if (m_syncing)
             return;
         QScopedValueRollback guard(m_syncing, true);
@@ -50,11 +63,22 @@ ShellServices::ShellServices(QObject *parent)
         m_state.requestValue("notifications.count", m_notifications.count());
     });
     connect(&m_applications, &ApplicationModel::activeChanged, this, [this] {
-        if (m_syncing)
+        if (m_syncing || !m_applications.preview())
             return;
         QScopedValueRollback guard(m_syncing, true);
         m_state.requestValue("activeApp", m_applications.activeId());
     });
+    connect(&m_desktopApplications, &DesktopApplicationBackend::catalogChanged, this,
+            [this] { m_applications.replaceSystemApplications(m_desktopApplications.entries()); });
+    connect(&m_applications, &ApplicationModel::pinRequested, &m_desktopApplications,
+            &DesktopApplicationBackend::setPinned);
+    connect(&m_desktopApplications, &DesktopApplicationBackend::launchFinished, this,
+            [this](const QString &id, bool success, const QString &message) {
+                showNotice(
+                    success
+                        ? tr("Started %1").arg(m_applications.nameFor(id))
+                        : tr("Could not start %1: %2").arg(m_applications.nameFor(id), message));
+            });
     connect(&m_scenes, &PowerSceneController::currentChanged, this, [this] {
         if (m_syncing)
             return;
@@ -217,6 +241,12 @@ bool ShellServices::eventFilter(QObject *watched, QEvent *event) {
 }
 QVariantMap ShellServices::weather() const { return m_weather.reading(); }
 bool ShellServices::launch(const QString &appId) {
+    if (!m_applications.preview()) {
+        if (m_desktopApplications.launch(appId))
+            return true;
+        showNotice(tr("That application is unavailable"));
+        return false;
+    }
     if (appId == "android-sketch" && !m_waydroid.state().value("running").toBool()) {
         showNotice(tr("Preview: start the Android session first"));
         return false;

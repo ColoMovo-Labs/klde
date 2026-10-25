@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
+#include "applications/DesktopApplicationBackend.h"
 #include "backends/BlurBackend.h"
 #include "backends/MockSystemBackend.h"
 #include "backends/MockWindowManagerBackend.h"
@@ -19,6 +20,9 @@
 #include "weather/WeatherService.h"
 #include <QTimer>
 
+class QQmlEngine;
+class QJSEngine;
+
 namespace klde {
 class ShellServices final : public QObject {
     Q_OBJECT
@@ -28,6 +32,9 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::WindowManagerBackend *windowManager READ windowManager CONSTANT)
     Q_PROPERTY(klde::BlurBackend *blur READ blur CONSTANT)
     Q_PROPERTY(klde::ApplicationModel *applications READ applications CONSTANT)
+    Q_PROPERTY(klde::DockApplicationModel *dockApplications READ dockApplications CONSTANT)
+    Q_PROPERTY(
+        klde::DesktopApplicationBackend *desktopApplications READ desktopApplications CONSTANT)
     Q_PROPERTY(klde::ApplicationFilterModel *search READ search CONSTANT)
     Q_PROPERTY(klde::PowerSceneController *scenes READ scenes CONSTANT)
     Q_PROPERTY(klde::ShortcutRegistry *shortcuts READ shortcuts CONSTANT)
@@ -50,10 +57,13 @@ class ShellServices final : public QObject {
     Q_PROPERTY(int osdValue READ osdValue NOTIFY messageChanged)
   public:
     explicit ShellServices(QObject *parent = nullptr);
+    static ShellServices *create(QQmlEngine *engine, QJSEngine *scriptEngine);
     SystemBackend *system() { return &m_system; }
     WindowManagerBackend *windowManager() { return &m_windowManager; }
     BlurBackend *blur() { return &m_blur; }
     ApplicationModel *applications() { return &m_applications; }
+    DockApplicationModel *dockApplications() { return &m_dockApplications; }
+    DesktopApplicationBackend *desktopApplications() { return &m_desktopApplications; }
     ApplicationFilterModel *search() { return &m_search; }
     PowerSceneController *scenes() { return &m_scenes; }
     ShortcutRegistry *shortcuts() { return &m_shortcuts; }
@@ -93,6 +103,8 @@ class ShellServices final : public QObject {
     MockWindowManagerBackend m_windowManager;
     PreviewBlurBackend m_blur;
     ApplicationModel m_applications;
+    DockApplicationModel m_dockApplications;
+    DesktopApplicationBackend m_desktopApplications;
     ApplicationFilterModel m_search;
     PowerSceneController m_scenes;
     ShortcutRegistry m_shortcuts;
