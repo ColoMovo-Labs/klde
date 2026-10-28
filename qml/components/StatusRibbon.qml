@@ -46,7 +46,7 @@ Item {
     }
     GeometryDebugOverlay {
         anchors.fill: parent
-        enabled: Tokens.debugGeometry
+        debugEnabled: Tokens.debugGeometry
         targetItems: [center, left, right]
         contentItems: [center.debugContentItem]
         textItems: [center.debugTextItem]

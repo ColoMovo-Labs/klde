@@ -10,12 +10,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui DBus Network Qml Quick QuickControls2 ShaderTools)
 qt_standard_project_setup(REQUIRES 6.8)
 include(CTest)
+option(OWODE_BUILD_NATIVE_TESTS "Build isolated KWin integration tools (cloud only)" OFF)
 include(GNUInstallDirs)
 
 # LayerShellQt is an optional runtime integration. The Visual Lab and ordinary
 # preview stay buildable on hosts that do not ship it; native-surface mode is
 # enabled only when the target provides the KDE interface package.
-find_package(LayerShellQt 6.0 CONFIG QUIET)
+find_package(LayerShellQt 6.6 CONFIG QUIET)
 if(TARGET LayerShellQt::Interface)
     set(OWODE_HAVE_LAYERSHELLQT ON)
 else()
@@ -133,13 +134,19 @@ if(OWODE_HAVE_LAYERSHELLQT)
     # Runtime smoke test used only inside an isolated Wayland/KWin session. It
     # is deliberately not part of the ordinary preview test matrix.
     add_executable(klde-layer-shell-smoke tests/native-layer-shell-smoke.cpp)
-    target_link_libraries(klde-layer-shell-smoke PRIVATE LayerShellQt::Interface Qt6::Gui)
+    target_link_libraries(klde-layer-shell-smoke PRIVATE klde_backends Qt6::Gui)
     target_compile_options(klde-layer-shell-smoke PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 if(BUILD_TESTING)
     find_package(Qt6 6.8 REQUIRED COMPONENTS Test QuickTest)
     add_subdirectory(tests)
+    if(OWODE_BUILD_NATIVE_TESTS)
+        if(NOT OWODE_HAVE_LAYERSHELLQT)
+            message(FATAL_ERROR "Native integration tests require LayerShellQt 6.6 or newer")
+        endif()
+        add_subdirectory(tests/native)
+    endif()
 endif()
 
 install(TARGETS klde-shell RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

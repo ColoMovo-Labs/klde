@@ -161,6 +161,17 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     bool qmlWarnings = false;
+    if (parser.isSet(nativeSurfaceOption)) {
+        const klde::NativeSurfaceController surfaceProbe;
+        const klde::SessionRuntimeBackend sessionProbe;
+        if (!surfaceProbe.available() ||
+            !sessionProbe.capabilities().value("kwinService").toBool()) {
+            qCritical()
+                << "Native surfaces require the linked LayerShellQt Interface, a Wayland QPA"
+                << "and the KWin service on the same isolated session bus.";
+            return EXIT_FAILURE;
+        }
+    }
     bool frameHandled = false;
     bool settlingEnabled = false;
     bool auditStarted = false;
@@ -200,20 +211,29 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     if (parser.isSet(nativeSurfaceOption)) {
-        if (!services->surface()->available() || services->surface()->attachedSurfaceCount() != 3) {
-            qCritical() << "Native shell surfaces requested but the three LayerShellQt surfaces"
+        if (!services->surface()->available() || !services->surface()->hasRole("wallpaper") ||
+            !services->surface()->hasRole("ribbon") || !services->surface()->hasRole("dock") ||
+            !services->surface()->hasRole("popup")) {
+            qCritical() << "Native shell surfaces requested but the LayerShellQt surfaces"
                         << "could not be attached:" << services->surface()->diagnostic();
             return EXIT_FAILURE;
         }
-        qInfo() << "owoDE native surfaces attached: wallpaper, ribbon, dock";
+        qInfo() << "owoDE native roles attached: wallpaper, ribbon, dock, dormant popup host";
     }
     if (services->mockScenarios()->activeId() != parser.value(scenarioOption)) {
         qCritical() << "Unknown or invalid mock scenario";
         return EXIT_FAILURE;
     }
-    const QPointer<QQuickWindow> guardedWindow(window);
+    QQuickWindow *graphicsWindow = window;
+    if (parser.isSet(nativeSurfaceOption)) {
+        for (auto *candidate : QGuiApplication::allWindows()) {
+            if (candidate->objectName() == "nativeWallpaperSurface")
+                graphicsWindow = qobject_cast<QQuickWindow *>(candidate);
+        }
+    }
+    const QPointer<QQuickWindow> guardedWindow(graphicsWindow);
     QObject::connect(
-        window, &QQuickWindow::sceneGraphInitialized, services,
+        graphicsWindow, &QQuickWindow::sceneGraphInitialized, services,
         [guardedWindow, services] {
             if (!guardedWindow) {
                 return;
@@ -225,7 +245,7 @@ int main(int argc, char *argv[]) {
         },
         Qt::QueuedConnection);
     QObject::connect(
-        window, &QQuickWindow::sceneGraphInvalidated, services,
+        graphicsWindow, &QQuickWindow::sceneGraphInvalidated, services,
         [services] { services->setGraphicsAvailable(false); }, Qt::QueuedConnection);
 
     if (parser.isSet(smokeOption)) {

@@ -57,6 +57,70 @@ commands:
           at: /root/project
 
 jobs:
+  native-ubuntu:
+    executor: ubuntu-qt
+    steps:
+      - built-tree
+      - restore_cache:
+          keys:
+            - ccache-v1-26.04-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - ccache-v1-26.04-{{ arch }}-{{ .Branch }}-
+      - run:
+          name: Install isolated KWin and native test dependencies
+          command: apt-get install -y --no-install-recommends kwin-wayland libwayland-dev libwayland-bin pkg-config imagemagick xdotool dbus-daemon dbus-bin libkf6service-bin
+      - run:
+          name: Build native integration tools against Ubuntu LayerShellQt
+          command: |
+            cmake -S . -B build/ci -DOWODE_BUILD_NATIVE_TESTS=ON
+            cmake --build build/ci --target klde-native-session-test owode-native-test-client owode-native-capture --parallel 2
+            mkdir -p artifacts/native-session
+            tar -C build/ci/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
+            git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
+      - run:
+          name: Verify native KWin roles, input, focus and maximization
+          command: bash tools/native-session-smoke.sh build/ci artifacts/native-session
+      - store_test_results:
+          path: artifacts/native-session
+      - store_artifacts:
+          path: artifacts/native-session
+
+  native-fedora:
+    executor: fedora-qt
+    steps:
+      - run:
+          name: Install Fedora checkout tools
+          command: dnf install -y --setopt=install_weak_deps=False ca-certificates git openssh-clients tar gzip findutils
+      - checkout
+      - restore_cache:
+          keys:
+            - dnf-v1-fedora44-{{ arch }}-{{ checksum ".circleci/fedora-packages.txt" }}
+      - run:
+          name: Install Fedora Qt and isolated KWin tools
+          command: |
+            xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
+            dnf install -y --setopt=install_weak_deps=False kwin xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick xdotool mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config dbus-daemon dbus-tools kf6-kservice
+      - attach_workspace:
+          at: /root/project
+      - restore_cache:
+          keys:
+            - ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-
+      - run:
+          name: Build native integration tools against Fedora LayerShellQt
+          command: |
+            cmake -S . -B build/fedora -DOWODE_BUILD_NATIVE_TESTS=ON
+            cmake --build build/fedora --target klde-native-session-test owode-native-test-client owode-native-capture --parallel 2
+            mkdir -p artifacts/native-session
+            tar -C build/fedora/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
+            git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
+      - run:
+          name: Verify native KWin roles, input, focus and maximization
+          command: bash tools/native-session-smoke.sh build/fedora artifacts/native-session
+      - store_test_results:
+          path: artifacts/native-session
+      - store_artifacts:
+          path: artifacts/native-session
+
   calculator-ubuntu:
     executor: ubuntu-qt
     steps:
@@ -205,8 +269,8 @@ jobs:
       - run:
           name: Independently configure and build on Fedora
           command: |
-            cmake --preset ci -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-            cmake --build --preset ci --parallel 2
+            cmake --preset ci -B build/fedora -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+            cmake --build build/fedora --parallel 2
             ccache --show-stats > artifacts/environment/ccache.txt
       - run:
           name: Fedora format and static analysis with LayerShellQt
@@ -214,23 +278,23 @@ jobs:
             clang-format --version > artifacts/environment/fedora-clang-format.txt
             clang-tidy --version > artifacts/environment/fedora-clang-tidy.txt
             CHECK_CPP_ONLY=1 bash tools/check-format.sh
-            BUILD_DIR=build/ci bash tools/check-tidy.sh
+            BUILD_DIR=build/fedora bash tools/check-tidy.sh
       - run:
           name: Fedora unit, QML and offscreen startup tests
           command: |
-            ctest --test-dir build/ci --output-on-failure --output-junit artifacts/tests/fedora.xml
+            ctest --test-dir build/fedora --output-on-failure --output-junit artifacts/tests/fedora.xml
             runtime_dir="$(mktemp -d)"
             chmod 700 "$runtime_dir"
             trap 'rm -rf "$runtime_dir"' EXIT
             env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
-              build/ci/bin/klde-shell --smoke-test --view quick-settings \
+              build/fedora/bin/klde-shell --smoke-test --view quick-settings \
               --capture "$PWD/artifacts/fedora-smoke/offscreen.png" \
               > artifacts/fedora-smoke/offscreen.log 2>&1
             test -s artifacts/fedora-smoke/offscreen.png
             desktop-file-validate packaging/org.klde.shell.preview.desktop
       - run:
           name: Package Fedora user bundle
-          command: bash tools/package-fedora-bundle.sh build/ci artifacts/fedora-package
+          command: bash tools/package-fedora-bundle.sh build/fedora artifacts/fedora-package
       - run:
           name: Verify Fedora RPM installation
           command: |
@@ -249,6 +313,10 @@ jobs:
           key: ccache-v1-fedora44-{{ arch }}-{{ .Branch }}-{{ .Revision }}
           paths:
             - /root/.cache/ccache
+      - persist_to_workspace:
+          root: /root/project
+          paths:
+            - build/fedora
       - store_test_results:
           path: artifacts/tests
       - store_artifacts:
@@ -300,10 +368,20 @@ jobs:
 workflows:
   core:
     jobs:
-      - calculator-ubuntu
-      - calculator-fedora
+      - calculator-ubuntu:
+          filters:
+            branches:
+              ignore: feat/native-session-surfaces
+      - calculator-fedora:
+          filters:
+            branches:
+              ignore: feat/native-session-surfaces
       - configure-build
       - fedora-build
+      - native-ubuntu:
+          requires: [configure-build]
+      - native-fedora:
+          requires: [fedora-build]
       - static-analysis:
           requires: [configure-build]
       - unit-tests:

@@ -1,47 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <LayerShellQt/Window>
+#include "platform/wayland/NativeSurfaceController.h"
 #include <QCommandLineParser>
 #include <QGuiApplication>
 #include <QTimer>
 #include <QWindow>
-
-namespace {
-bool configure(QWindow &window, const QString &role) {
-    auto *surface = LayerShellQt::Window::get(&window);
-    if (surface == nullptr)
-        return false;
-
-    window.setFlag(Qt::FramelessWindowHint, true);
-    surface->setScope(QStringLiteral("owode-smoke-%1").arg(role));
-    surface->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
-    surface->setActivateOnShow(false);
-    surface->setCloseOnDismissed(true);
-    surface->setWantsToBeOnActiveScreen(true);
-
-    if (role == QStringLiteral("wallpaper")) {
-        surface->setLayer(LayerShellQt::Window::LayerBackground);
-        surface->setAnchors({LayerShellQt::Window::AnchorTop, LayerShellQt::Window::AnchorBottom,
-                             LayerShellQt::Window::AnchorLeft, LayerShellQt::Window::AnchorRight});
-        window.setFlag(Qt::WindowTransparentForInput, true);
-    } else if (role == QStringLiteral("ribbon")) {
-        surface->setLayer(LayerShellQt::Window::LayerTop);
-        surface->setAnchors({LayerShellQt::Window::AnchorTop, LayerShellQt::Window::AnchorLeft,
-                             LayerShellQt::Window::AnchorRight});
-        surface->setMargins(QMargins(16, 16, 16, 0));
-        surface->setExclusiveZone(window.height() + 16);
-        surface->setExclusiveEdge(LayerShellQt::Window::AnchorTop);
-    } else if (role == QStringLiteral("dock")) {
-        surface->setLayer(LayerShellQt::Window::LayerTop);
-        surface->setAnchors({LayerShellQt::Window::AnchorBottom, LayerShellQt::Window::AnchorLeft,
-                             LayerShellQt::Window::AnchorRight});
-        surface->setMargins(QMargins(0, 0, 0, 24));
-    } else {
-        return false;
-    }
-    return true;
-}
-} // namespace
 
 int main(int argc, char **argv) {
     QGuiApplication app(argc, argv);
@@ -70,7 +33,8 @@ int main(int argc, char **argv) {
     window.setTitle(QStringLiteral("owoDE LayerShellQt smoke: %1").arg(parser.value(roleOption)));
     window.resize(parser.value(roleOption) == QStringLiteral("wallpaper") ? QSize(1, 1)
                                                                           : QSize(960, 96));
-    if (!configure(window, parser.value(roleOption))) {
+    klde::NativeSurfaceController controller;
+    if (!controller.attach(&window, parser.value(roleOption))) {
         qCritical("LayerShellQt could not create the requested surface");
         return 3;
     }

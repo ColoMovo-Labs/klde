@@ -10,7 +10,8 @@ The probe reports four separate facts:
 
 - Wayland session detection from `XDG_SESSION_TYPE` or `WAYLAND_DISPLAY`.
 - Registration of `org.kde.KWin` on the session bus.
-- Presence of a LayerShellQt QML module in standard Qt 6 locations.
+- Availability of the linked LayerShellQt C++ Interface at build time. The
+  adapter does not use a LayerShellQt QML module.
 - A human-readable diagnostic explaining which prerequisite is missing.
 
 `realSessionReady` is true only when Wayland, KWin and LayerShellQt are all
