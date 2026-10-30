@@ -575,5 +575,8 @@
   "session.logout.cancel": "取消",
   "session.logout.confirm": "退出登录",
   "temporal.system": "本机时间；景观为示意",
-  "temporal.season.unavailable": "季节尚未配置"
+  "temporal.season.unavailable": "季节尚未配置",
+  "shell.workspace.compositor": "由窗口管理器控制",
+  "backend.window-manager.action": "窗口管理器未能执行此操作",
+  "backend.window-manager.application": "应用程序"
 }

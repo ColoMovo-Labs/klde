@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "ApplicationModel.h"
 #include <algorithm>
+#include <utility>
 
 namespace klde {
 ApplicationModel::ApplicationModel(QObject *parent) : QAbstractListModel(parent) {
@@ -112,13 +113,60 @@ bool ApplicationModel::activate(const QString &appId) {
 
 void ApplicationModel::replaceSystemApplications(const QList<ApplicationEntry> &applications) {
     const bool changedMode = m_preview;
-    beginResetModel();
     m_preview = false;
-    m_applications = applications;
-    endResetModel();
+    m_catalog = applications;
+    reconcileSystemApplications();
     if (changedMode)
         emit modeChanged();
-    emit activeChanged();
+}
+void ApplicationModel::setRuntimeApplications(const QList<ApplicationEntry> &applications) {
+    if (m_preview)
+        return;
+    m_runtime = applications;
+    reconcileSystemApplications();
+}
+void ApplicationModel::reconcileSystemApplications() {
+    auto next = m_catalog;
+    for (auto &entry : next) {
+        entry.running = false;
+        entry.active = false;
+    }
+    for (const auto &runtime : std::as_const(m_runtime)) {
+        auto entry = std::find_if(next.begin(), next.end(),
+                                  [&runtime](const auto &item) { return item.id == runtime.id; });
+        if (entry == next.end())
+            next.append(runtime);
+        else {
+            entry->running = runtime.running;
+            entry->active = runtime.active;
+        }
+    }
+    const auto previousActive = activeId();
+    bool structure = next.size() != m_applications.size();
+    for (qsizetype row = 0; !structure && row < next.size(); ++row) {
+        const auto &before = m_applications.at(row);
+        const auto &after = next.at(row);
+        structure = before.id != after.id || before.name != after.name ||
+                    before.description != after.description || before.icon != after.icon ||
+                    before.keywords != after.keywords || before.origin != after.origin ||
+                    before.pinned != after.pinned;
+    }
+    if (structure) {
+        beginResetModel();
+        m_applications = next;
+        endResetModel();
+    } else {
+        for (qsizetype row = 0; row < next.size(); ++row) {
+            if (m_applications.at(row).running != next.at(row).running ||
+                m_applications.at(row).active != next.at(row).active) {
+                m_applications[row] = next.at(row);
+                emit dataChanged(index(static_cast<int>(row)), index(static_cast<int>(row)),
+                                 {RunningRole, ActiveRole});
+            }
+        }
+    }
+    if (previousActive != activeId())
+        emit activeChanged();
 }
 bool ApplicationModel::isPinned(const QString &appId) const {
     for (const auto &app : m_applications)
@@ -127,8 +175,12 @@ bool ApplicationModel::isPinned(const QString &appId) const {
     return false;
 }
 void ApplicationModel::setPinned(const QString &appId, bool pinned) {
-    if (!m_preview && !nameFor(appId).isEmpty())
+    if (canPin(appId))
         emit pinRequested(appId, pinned);
+}
+bool ApplicationModel::canPin(const QString &appId) const {
+    return !m_preview && std::any_of(m_catalog.cbegin(), m_catalog.cend(),
+                                     [&appId](const auto &app) { return app.id == appId; });
 }
 DockApplicationModel::DockApplicationModel(ApplicationModel *source, QObject *parent)
     : QSortFilterProxyModel(parent) {

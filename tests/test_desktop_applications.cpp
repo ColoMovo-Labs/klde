@@ -225,6 +225,67 @@ class DesktopApplicationsTest final : public QObject {
         QVERIFY(preview.time()->reading().value("mock").toBool());
         QVERIFY(!preview.applications()->nameFor("terminal").isEmpty());
     }
+    void compositorIdentityMatchingIsExplicitAndRejectsAmbiguousAliases() {
+        const auto folder = dataRoot + "/applications/";
+        const QByteArray base("[Desktop Entry]\nType=Application\nExec=/bin/true\n");
+        writeFile(folder + "org.owode.Editor.desktop",
+                  base + "Name=Editor\nStartupWMClass=OldEditor\n");
+        klde::DesktopApplicationBackend backend;
+        backend.start();
+        QTRY_VERIFY(backend.ready());
+        QCOMPARE(backend.applicationForWindow("org.owode.Editor", {}, {}),
+                 "org.owode.Editor.desktop");
+        QCOMPARE(backend.applicationForWindow(folder + "org.owode.Editor.desktop", {}, {}),
+                 "org.owode.Editor.desktop");
+        QCOMPARE(backend.applicationForWindow({}, "oldeditor", {}), "org.owode.Editor.desktop");
+        QVERIFY(backend.applicationForWindow({}, "not-OldEditor", {}).isEmpty());
+        writeFile(folder + "other-editor.desktop",
+                  base + "Name=Other editor\nStartupWMClass=OldEditor\n");
+        QTRY_VERIFY(contains(backend, "other-editor.desktop"));
+        QVERIFY(backend.applicationForWindow({}, "OldEditor", {}).isEmpty());
+        QCOMPARE(backend.applicationForWindow("org.owode.Editor", "OldEditor", {}),
+                 "org.owode.Editor.desktop");
+        QVERIFY(QFile::remove(folder + "org.owode.Editor.desktop"));
+        QVERIFY(QFile::remove(folder + "other-editor.desktop"));
+    }
+    void runtimeBadgesSurviveCatalogRefreshWithoutInventingProcesses() {
+        klde::ApplicationModel model;
+        klde::DockApplicationModel dock(&model);
+        const klde::ApplicationEntry installed{
+            "editor.desktop", "Editor", {}, "note", {}, false, false, "system", false};
+        model.replaceSystemApplications({installed});
+        QCOMPARE(dock.rowCount(), 0);
+        auto running = installed;
+        running.running = true;
+        running.active = true;
+        QSignalSpy reset(&model, &QAbstractItemModel::modelReset);
+        model.setRuntimeApplications({running});
+        QCOMPARE(reset.count(), 0);
+        QCOMPARE(dock.rowCount(), 1);
+        QCOMPARE(model.activeId(), "editor.desktop");
+        model.replaceSystemApplications({installed});
+        QCOMPARE(reset.count(), 0);
+        QCOMPARE(dock.rowCount(), 1);
+        QVERIFY(model.canPin("editor.desktop"));
+        const klde::ApplicationEntry unmatched{"window:opaque-id",
+                                               "Uncatalogued window",
+                                               {},
+                                               "note",
+                                               {},
+                                               true,
+                                               false,
+                                               "window",
+                                               false};
+        model.setRuntimeApplications({running, unmatched});
+        QCOMPARE(dock.rowCount(), 2);
+        QVERIFY(!model.canPin(unmatched.id));
+        model.setRuntimeApplications({unmatched});
+        QCOMPARE(dock.rowCount(), 1);
+        QCOMPARE(model.activeId(), "desktop");
+        model.setRuntimeApplications({});
+        QCOMPARE(dock.rowCount(), 0);
+        QCOMPARE(model.rowCount(), 1);
+    }
 };
 
 int main(int argc, char **argv) {

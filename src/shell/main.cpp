@@ -207,6 +207,8 @@ int main(int argc, char *argv[]) {
     int idleFrames = 0;
     QQmlApplicationEngine engine;
     engine.setProperty("owodeSystemApplications", applicationSource == "system");
+    engine.setProperty("owodeNativeWindowManager",
+                       applicationSource == "system" && parser.isSet(nativeSurfaceOption));
     QObject::connect(&engine, &QQmlApplicationEngine::warnings, &engine,
                      [&qmlWarnings] { qmlWarnings = true; });
     QObject::connect(

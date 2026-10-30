@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "backends/BlurBackend.h"
+#include "backends/KWinWindowManagerBackend.h"
 #include "backends/MockSystemBackend.h"
 #include "backends/MockWindowManagerBackend.h"
 #include "backends/PresentationBackends.h"
@@ -56,6 +57,20 @@ class BackendTest final : public QObject {
         blur.setRenderingAllowed(false);
         QCOMPARE(blur.strategyFor(true), klde::BlurBackend::OpaqueFallback);
         QVERIFY(!blur.nativeAvailable());
+    }
+    void disconnectedKwinAdapterNeverInventsWindowsOrAcceptsCallbacks() {
+        klde::KWinWindowManagerBackend manager;
+        QVERIFY(!manager.capabilities().value("mock").toBool());
+        QVERIFY(!manager.capabilities().value("available").toBool());
+        QVERIFY(manager.workspaces().isEmpty());
+        QVERIFY(manager.windows().isEmpty());
+        QVERIFY(!manager.snapshot("untrusted", "{\"schema\":1,\"sequence\":1}"));
+        QVERIFY(!manager.activateWindow("made-up"));
+        QVERIFY(!manager.activateWorkspace("workspace-1"));
+        QVERIFY(!manager.moveWindow("made-up", "workspace-1"));
+        QVERIFY(!manager.closeWindow("made-up"));
+        manager.commandFinished("untrusted", "arbitrary-script", true);
+        QVERIFY(manager.windows().isEmpty());
     }
     void sessionProbeReportsEnvironmentWithoutClaimingMockIntegration() {
         klde::SessionRuntimeBackend session;

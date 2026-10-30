@@ -143,6 +143,8 @@ if (client && action === 'place') {
     client.frameGeometry = {x: 500, y: -60, width: 480, height: 420};
 }
 if (client && action === 'close') client.closeWindow();
+if (client && action === 'minimize') client.minimized = true;
+if (action === 'close-all') windows.filter(w => w.caption === 'owoDE native CI application').forEach(w => w.closeWindow());
 callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', JSON.stringify(windows.map(w => ({
     caption: w.caption, resourceClass: w.resourceClass, desktop: w.desktopWindow, dock: w.dock,
     normal: w.normalWindow, active: w.active,
@@ -388,19 +390,31 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QVERIFY(bus.registerObject("/Audit", this, QDBusConnection::ExportAllSlots));
         QQmlApplicationEngine engine;
         const auto cleanup = qScopeGuard([&] {
-            snapshot("close");
+            snapshot("close-all");
             QFile::remove(fixture);
             bus.unregisterObject("/Audit");
             bus.unregisterService("org.owode.NativeAudit");
         });
         const QSignalSpy warnings(&engine, &QQmlApplicationEngine::warnings);
         engine.setProperty("owodeSystemApplications", true);
+        engine.setProperty("owodeNativeWindowManager", true);
         engine.setInitialProperties({{"nativeSurfaceMode", true}, {"initialLocale", "en"}});
         engine.loadFromModule("KLDE.Shell", "Main");
         QCOMPARE(engine.rootObjects().size(), 1);
         auto *root = qobject_cast<QQuickWindow *>(engine.rootObjects().first());
         auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
         QVERIFY(root && services);
+        auto *manager = services->windowManager();
+        QTRY_VERIFY_WITH_TIMEOUT(manager->capabilities().value("available").toBool(), 15000);
+        QVERIFY(!manager->capabilities().value("mock").toBool());
+        QCOMPARE(manager->workspaces().size(), 2);
+        QVERIFY(manager->windows().isEmpty());
+        const auto confirmedWindow = [manager](const QString &id) {
+            for (const auto &item : manager->windows())
+                if (item.toMap().value("id") == id)
+                    return item.toMap();
+            return QVariantMap{};
+        };
         QTRY_VERIFY(services->desktopApplications()->ready());
         QVERIFY(!services->applications()->preview());
         QVERIFY(!services->applications()->nameFor("owode-launch-fixture.desktop").isEmpty());
@@ -461,7 +475,68 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_VERIFY(readObject(state).value("active").toBool());
         QCOMPARE(readObject(state).value("platform").toString(), QString("wayland"));
         QVERIFY(capture("native-catalog-application"));
-        QVERIFY(snapshot("close"));
+        QTRY_COMPARE(manager->windows().size(), 1);
+        const auto firstId = manager->windows().first().toMap().value("id").toString();
+        QTRY_COMPARE(services->applications()->activeId(), QString("owode-launch-fixture.desktop"));
+        QVERIFY(services->dockApplications()
+                    ->data(services->dockApplications()->index(0, 0),
+                           klde::ApplicationModel::RunningRole)
+                    .toBool());
+        QVERIFY(!manager->activateWorkspace("workspace-5"));
+        QVERIFY(!manager->setWorkspaceLayout(manager->activeWorkspace(),
+                                             klde::WindowManagerBackend::ClassicTiling));
+        QVERIFY(!manager->activateWindow("not-a-real-window"));
+        // A genuine second instance must still form one application group.
+        QVERIFY(services->desktopApplications()->launch("owode-launch-fixture.desktop"));
+        QTRY_COMPARE(launched.count(), 2);
+        QTRY_COMPARE(manager->windows().size(), 2);
+        QCOMPARE(services->dockApplications()->rowCount(), 1);
+        const auto secondId = manager->windows().last().toMap().value("id").toString();
+        QVERIFY(secondId != firstId);
+        QVERIFY(snapshot("minimize"));
+        QTRY_VERIFY(confirmedWindow(firstId).value("minimized").toBool());
+        QVERIFY(manager->activateWindow(firstId));
+        QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
+        QTRY_VERIFY(!confirmedWindow(firstId).value("minimized").toBool());
+        const auto destination = manager->workspaces().last().toMap().value("id").toString();
+        QVERIFY(manager->moveWindow(firstId, destination));
+        QTRY_COMPARE(confirmedWindow(firstId).value("workspaceId").toString(), destination);
+        QVERIFY(manager->activateWorkspace(destination));
+        QTRY_COMPARE(manager->activeWorkspace(), destination);
+        QVERIFY(manager->activateWindow(firstId));
+        QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
+        // Clicking the existing Dock application activates a window without
+        // manufacturing a new process or changing the launch completion count.
+        QVERIFY(services->launch("owode-launch-fixture.desktop"));
+        QTest::qWait(150);
+        QCOMPARE(launched.count(), 2);
+        QCOMPARE(manager->windows().size(), 2);
+        QFile stateEvidence(m_output + "/live-window-state.json");
+        QVERIFY(stateEvidence.open(QIODevice::WriteOnly));
+        stateEvidence.write(
+            QJsonDocument(
+                QJsonObject{{"capabilities", QJsonObject::fromVariantMap(manager->capabilities())},
+                            {"workspaces", QJsonArray::fromVariantList(manager->workspaces())},
+                            {"windows", QJsonArray::fromVariantList(manager->windows())},
+                            {"activeWorkspace", manager->activeWorkspace()},
+                            {"dockCount", services->dockApplications()->rowCount()}})
+                .toJson());
+        stateEvidence.close();
+        QVERIFY(capture("native-live-workspace"));
+        QVERIFY(manager->closeWindow(firstId));
+        QTRY_COMPARE(manager->windows().size(), 1);
+        QVERIFY(services->dockApplications()
+                    ->data(services->dockApplications()->index(0, 0),
+                           klde::ApplicationModel::RunningRole)
+                    .toBool());
+        QVERIFY(manager->closeWindow(secondId));
+        QTRY_VERIFY(manager->windows().isEmpty());
+        QTRY_VERIFY(!services->dockApplications()
+                         ->data(services->dockApplications()->index(0, 0),
+                                klde::ApplicationModel::RunningRole)
+                         .toBool());
+        services->applications()->setPinned("owode-launch-fixture.desktop", false);
+        QTRY_COMPARE(services->dockApplications()->rowCount(), 0);
         QTRY_VERIFY(snapshot() && client().isEmpty());
         QVERIFY(wallpaper->isVisible() && dock->isVisible());
         QCOMPARE(warnings.count(), 0);

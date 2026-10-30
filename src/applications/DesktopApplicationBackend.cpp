@@ -28,6 +28,7 @@ struct DesktopEntry {
     ApplicationEntry application;
     QString path;
     QString icon;
+    QString startupClass;
 };
 struct Discovery {
     QList<DesktopEntry> entries;
@@ -111,7 +112,8 @@ Discovery discover(const QStringList &roots, const QString &locale) {
                 false,
                 false,
                 "system"};
-            result.entries.append({application, path, service.icon()});
+            result.entries.append({application, path, service.icon(),
+                                   desktop.desktopGroup().readEntry("StartupWMClass", QString{})});
         }
     }
     QCollator collator;
@@ -226,6 +228,33 @@ void DesktopApplicationBackend::setPinned(const QString &id, bool pinned) {
     settings.setValue("applications/pinned", pins);
     found->application.pinned = pinned;
     emit catalogChanged();
+}
+QString DesktopApplicationBackend::applicationForWindow(const QString &desktopFile,
+                                                        const QString &resourceClass,
+                                                        const QString &resourceName) const {
+    const auto stem = [](QString id) {
+        if (id.endsWith(".desktop", Qt::CaseInsensitive))
+            id.chop(8);
+        return id.toCaseFolded();
+    };
+    // The compositor's declared desktop identity has precedence over WM_CLASS.
+    // Ambiguous aliases deliberately don't attach a badge to an unrelated app.
+    QStringList matches;
+    if (!desktopFile.isEmpty()) {
+        for (const auto &entry : d->entries)
+            if (entry.path == desktopFile || stem(entry.application.id) == stem(desktopFile))
+                matches.append(entry.application.id);
+        if (!matches.isEmpty())
+            return matches.size() == 1 ? matches.first() : QString{};
+    }
+    for (const auto &entry : d->entries) {
+        const auto aliases =
+            QStringList{stem(entry.application.id), entry.startupClass.toCaseFolded()};
+        if ((!resourceClass.isEmpty() && aliases.contains(resourceClass.toCaseFolded())) ||
+            (!resourceName.isEmpty() && aliases.contains(resourceName.toCaseFolded())))
+            matches.append(entry.application.id);
+    }
+    return matches.size() == 1 ? matches.first() : QString{};
 }
 bool DesktopApplicationBackend::launch(const QString &id) {
 #if defined(OWODE_HAVE_KDE_APPLICATIONS)

@@ -27,10 +27,11 @@ Surface {
                 id: workspaceButton
                 required property var modelData
                 readonly property bool selected: modelData.id === Shell.windowManager.activeWorkspace
-                readonly property string modeLabel: modelData.layout === WindowManagerBackend.Floating ? I18n.t("shell.workspace.floating") : modelData.layout === WindowManagerBackend.ClassicTiling ? I18n.t("shell.workspace.tiled") : modelData.layout === WindowManagerBackend.Mixed ? I18n.t("shell.workspace.mixed") : modelData.layout === WindowManagerBackend.Scrolling ? I18n.t("lab.workspace.scrolling") : I18n.t("shell.workspace.custom")
+                readonly property bool layoutKnown: modelData.layoutKnown !== false
+                readonly property string modeLabel: !layoutKnown ? I18n.t("shell.workspace.compositor") : modelData.layout === WindowManagerBackend.Floating ? I18n.t("shell.workspace.floating") : modelData.layout === WindowManagerBackend.ClassicTiling ? I18n.t("shell.workspace.tiled") : modelData.layout === WindowManagerBackend.Mixed ? I18n.t("shell.workspace.mixed") : modelData.layout === WindowManagerBackend.Scrolling ? I18n.t("lab.workspace.scrolling") : I18n.t("shell.workspace.custom")
                 width: selected ? Tokens.controlHeight + Tokens.space12 : Tokens.densityMode === 2 ? Tokens.space16 : Tokens.space24
                 height: root.compact ? Tokens.ribbonHeight - Tokens.space8 : Tokens.controlHeight
-                text: selected ? modelData.name + " " + ["F", "T", "M", "S"][Math.min(modelData.layout, 3)] : Tokens.densityMode === 2 ? "•" : modelData.name
+                text: selected && layoutKnown ? modelData.name + " " + ["F", "T", "M", "S"][Math.min(modelData.layout, 3)] : Tokens.densityMode === 2 ? "•" : modelData.name
                 font: Tokens.label
                 Accessible.name: I18n.t("shell.workspace.accessible").arg(modelData.name).arg(modeLabel).arg(selected ? I18n.t("common.selected") : "")
                 ToolTip.visible: hovered

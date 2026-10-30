@@ -23,7 +23,7 @@ class WindowManagerBackend : public QObject {
     Q_PROPERTY(QVariantList workspaces READ workspaces NOTIFY workspacesChanged)
     Q_PROPERTY(QVariantList windows READ windows NOTIFY windowsChanged)
     Q_PROPERTY(QString activeWorkspace READ activeWorkspace NOTIFY activeWorkspaceChanged)
-    Q_PROPERTY(QVariantMap capabilities READ capabilities CONSTANT)
+    Q_PROPERTY(QVariantMap capabilities READ capabilities NOTIFY capabilitiesChanged)
 
   public:
     // Keep the numeric layout IDs stable while exposing the neutral product name.
@@ -47,12 +47,15 @@ class WindowManagerBackend : public QObject {
     Q_INVOKABLE virtual bool setWorkspaceLayout(const QString &id, LayoutMode mode) = 0;
     Q_INVOKABLE virtual bool setWindowFloating(const QString &id, bool floating) = 0;
     Q_INVOKABLE virtual bool moveWindow(const QString &id, const QString &workspaceId) = 0;
+    Q_INVOKABLE virtual bool activateWindow(const QString &) { return false; }
+    Q_INVOKABLE virtual bool closeWindow(const QString &) { return false; }
     virtual bool applyWindowRule(const WindowRule &rule) = 0;
 
   signals:
     void workspacesChanged();
     void windowsChanged();
     void activeWorkspaceChanged();
+    void capabilitiesChanged();
     void requestRejected(const QString &reason);
 };
 
