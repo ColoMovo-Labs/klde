@@ -1,0 +1,38 @@
+Name: owode-session
+Version: @VERSION@
+Release: @RELEASE@
+Summary: Experimental owoDE KWin Wayland login session
+License: GPL-3.0-or-later
+URL: https://github.com/ColoMovo-Labs/klde
+BuildArch: noarch
+Source0: owode-session-source.tar.gz
+Requires: klde-shell-preview = @VERSION@-@RELEASE@
+Requires: kwin >= 6.6
+Requires: layer-shell-qt >= 6.6
+Requires: xorg-x11-server-Xwayland
+Requires: dbus-daemon
+Requires: dbus-tools
+Requires: bash
+
+%description
+An opt-in Wayland session entry and launcher for owo Desktop Environment.
+Installs alongside existing sessions and does not change the display manager,
+autologin, or the default session. This is a development snapshot, not a claim
+of production readiness. Plasma Shell is not required.
+
+%prep
+%setup -q -n owode-session-source
+
+%build
+# Scripts and metadata only. The matching shell is built separately in cloud CI.
+
+%install
+install -Dm755 start-owode %{buildroot}%{_bindir}/start-owode
+install -Dm755 owode-session-client %{buildroot}%{_libexecdir}/owode-session-client
+install -Dm644 owode.desktop %{buildroot}%{_datadir}/wayland-sessions/owode.desktop
+
+%files
+%license LICENSE
+%{_bindir}/start-owode
+%{_libexecdir}/owode-session-client
+%{_datadir}/wayland-sessions/owode.desktop

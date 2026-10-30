@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=owoDE (Wayland, experimental)
+Name[zh_CN]=owoDE（Wayland，实验性）
+Comment=owo Desktop Environment with KWin
+Comment[zh_CN]=基于 KWin 的 owo 桌面环境
+Exec=/usr/bin/start-owode
+TryExec=/usr/bin/start-owode
+DesktopNames=owoDE;

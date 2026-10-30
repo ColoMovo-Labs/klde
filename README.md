@@ -13,6 +13,14 @@
 > `KLDE`、`klde-shell`、`KLDE.Shell` 和 `org.klde.*` 是保留的技术标识，
 > 用于兼容已有源码、包名、CI 与迁移历史；新的用户界面品牌统一使用 owoDE。
 
+## 生产使用与 Fedora 登录会话
+
+当前正在实现生产使用所需的会话、应用兼容和系统后端。
+独立的 `owode-session` RPM 增加可选登录项，保留现有桌面和预览包。
+安装、退出与回退见 [Fedora 登录会话](docs/development/fedora-login-session.md)，
+未完成项见 [生产验收表](docs/development/production-readiness.md)。
+在云端及目标机验收完成前，不宣称生产就绪。
+
 ## 愿景
 
 owoDE 从 Ubuntu Kylin / UKUI 在 2020–2021 年前后的明亮、柔和气质出发，结合
@@ -130,7 +138,7 @@ tar -xzf owode-shell-fedora44-*.tar.gz -C "$HOME/.local" --strip-components=1
 
 这是独立预览窗口，不会替换当前桌面。若要测试嵌套 KWin 原生表面，需使用
 匹配提交中的 `tools/run-owode-session.sh`，并设置 `OWODE_MODE=native`；
-它仍然不会安装登录会话。Fedora 目前提供云端 RPM 和 tarball，尚未提供完整登录会话包。
+它仍然不会安装登录会话。Fedora 目前提供云端 RPM 和 tarball，另提供实验性的可选登录会话包，参见上方会话指南。
 
 ## 贡献与许可
 

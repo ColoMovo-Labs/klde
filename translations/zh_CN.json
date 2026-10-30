@@ -569,5 +569,9 @@
   "shell.launcher.pin": "固定到应用栏",
   "shell.launcher.unpin": "从应用栏取消固定",
   "shell.application.started": "已启动 %1",
-  "shell.application.failed": "无法启动 %1：%2"
+  "shell.application.failed": "无法启动 %1：%2",
+  "session.logout.title": "退出 owoDE 登录？",
+  "session.logout.detail": "请先保存工作。这会关闭本次 owoDE 会话中的应用。",
+  "session.logout.cancel": "取消",
+  "session.logout.confirm": "退出登录"
 }

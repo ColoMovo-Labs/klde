@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Login-manager/TTY entry. Nested testing has a separate runner.
+set -euo pipefail
+case "${1:-}" in
+    --check) check_only=1 ;;
+    '') check_only=0 ;;
+    *) echo 'Usage: start-owode [--check]' >&2; exit 2 ;;
+esac
+[[ $# -le 1 ]] || exit 2
+for command in kwin_wayland klde-shell dbus-run-session dbus-send Xwayland; do
+    command -v "$command" >/dev/null || { echo "Missing dependency: $command" >&2; exit 3; }
+done
+test -x /usr/libexec/owode-session-client || { echo 'Missing owoDE session client.' >&2; exit 3; }
+kwin_help=$(kwin_wayland --help 2>&1)
+for option in --drm --xwayland --exit-with-session; do
+    [[ "$kwin_help" == *"$option"* ]] || { echo "KWin lacks $option" >&2; exit 3; }
+done
+if [[ "$check_only" == 1 ]]; then
+    kwin_wayland --version
+    echo 'owoDE login entry prerequisites found; DRM/login and hardware behavior are not tested by --check.'
+    exit 0
+fi
+[[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]] || {
+    echo 'Refusing to start a login compositor inside an existing graphical session. Use the nested runner.' >&2
+    exit 4
+}
+[[ -n "${XDG_RUNTIME_DIR:-}" && -d "$XDG_RUNTIME_DIR" && -O "$XDG_RUNTIME_DIR" ]] || {
+    echo 'A login-managed XDG_RUNTIME_DIR owned by the current user is required.' >&2; exit 4;
+}
+if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
+    exec dbus-run-session -- "$0"
+fi
+owner=$(dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+    /org/freedesktop/DBus org.freedesktop.DBus.NameHasOwner string:org.kde.KWin)
+[[ "$owner" == *'boolean false'* ]] || {
+    echo 'KWin already owns this session bus; refusing to replace it.' >&2; exit 4;
+}
+export XDG_CURRENT_DESKTOP=owoDE XDG_SESSION_DESKTOP=owoDE XDG_SESSION_TYPE=wayland
+export OWODE_MANAGED_SESSION=1
+# KWin hands its own Wayland AND Xwayland environment to the session client.
+# Its exit-with-session contract makes a shell logout end only this compositor.
+exec kwin_wayland --drm --xwayland --exit-with-session /usr/libexec/owode-session-client

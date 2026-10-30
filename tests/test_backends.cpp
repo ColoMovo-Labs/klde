@@ -64,6 +64,13 @@ class BackendTest final : public QObject {
         QCOMPARE(capabilities.value("kwinService").toBool(), session.kwinService());
         QVERIFY(!session.diagnostic().isEmpty());
     }
+    void anOrdinaryPreviewCannotLogOutTheUser() {
+        klde::SessionRuntimeBackend session;
+        const QSignalSpy logout(&session, &klde::SessionRuntimeBackend::logoutRequested);
+        QVERIFY(!session.managed());
+        QVERIFY(!session.logout());
+        QCOMPARE(logout.count(), 0);
+    }
 };
 QTEST_GUILESS_MAIN(BackendTest)
 #include "test_backends.moc"

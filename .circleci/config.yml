@@ -114,6 +114,16 @@ jobs:
             tar -C build/fedora/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
             git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
       - run:
+          name: Verify installed Fedora login client, Xwayland and owned logout
+          command: |
+            dnf install -y artifacts/fedora-package/*.rpm
+            bash tools/login-session-smoke.sh build/fedora artifacts/login-session
+            dnf remove -y owode-session
+            test ! -e /usr/share/wayland-sessions/owode.desktop
+            test ! -e /usr/bin/start-owode
+      - store_artifacts:
+          path: artifacts/login-session
+      - run:
           name: Verify native KWin roles, input, focus and maximization
           command: bash tools/native-session-smoke.sh build/fedora artifacts/native-session
       - store_test_results:
@@ -337,6 +347,7 @@ jobs:
           root: /root/project
           paths:
             - build/fedora
+            - artifacts/fedora-package
       - store_test_results:
           path: artifacts/tests
       - store_artifacts:

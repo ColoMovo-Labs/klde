@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "ShellServices.h"
 #include <QCommandLineParser>
+#include <QDBusConnection>
 #include <QDebug>
 #include <QGuiApplication>
 #include <QImage>
@@ -98,8 +99,11 @@ int main(int argc, char *argv[]) {
         "applications",
         "Application catalog: system or mock (default: system in native mode, mock in preview)",
         "source");
+    const QCommandLineOption managedSessionOption(
+        "managed-session", "Owned login-session lifecycle (requires native/system mode)");
     parser.addOptions({scenarioOption, densityOption, wallpaperOption, sizeOption, ambientOption,
-                       developerOption, nativeSurfaceOption, applicationsOption});
+                       developerOption, nativeSurfaceOption, applicationsOption,
+                       managedSessionOption});
     parser.addOptions({cropOption, focusOption, lockStateOption, islandStateOption,
                        welcomePageOption, debugGeometryOption, smokeOption, captureOption,
                        viewOption, darkOption, idleOption, localeOption, voiceOption});
@@ -108,6 +112,13 @@ int main(int argc, char *argv[]) {
                                        ? parser.value(applicationsOption)
                                    : parser.isSet(nativeSurfaceOption) ? "system"
                                                                        : "mock";
+    if (parser.isSet(managedSessionOption) &&
+        (!parser.isSet(nativeSurfaceOption) || applicationSource != "system" ||
+         qEnvironmentVariable("OWODE_MANAGED_SESSION") != "1")) {
+        qCritical()
+            << "Managed sessions require the owoDE session launcher and native/system mode.";
+        return EXIT_FAILURE;
+    }
     if ((applicationSource != "system" && applicationSource != "mock") ||
         (applicationSource == "system" &&
          (!parser.isSet(nativeSurfaceOption) || !klde::DesktopApplicationBackend::available()))) {
@@ -226,6 +237,18 @@ int main(int argc, char *argv[]) {
     if (window == nullptr || services == nullptr || !services->language()->ready()) {
         qCritical() << "The shell window or services could not be created";
         return EXIT_FAILURE;
+    }
+    if (parser.isSet(managedSessionOption)) {
+        auto bus = QDBusConnection::sessionBus();
+        if (!services->session()->enableManagedSession() ||
+            !bus.registerService("org.owode.Session") ||
+            !bus.registerObject("/org/owode/Session", services->session(),
+                                QDBusConnection::ExportScriptableSlots)) {
+            qCritical() << "Could not own the owoDE session lifecycle; refusing to continue.";
+            return EXIT_FAILURE;
+        }
+        QObject::connect(services->session(), &klde::SessionRuntimeBackend::logoutRequested, &app,
+                         &QCoreApplication::quit, Qt::QueuedConnection);
     }
     if (parser.isSet(nativeSurfaceOption)) {
         if (!services->surface()->available() || !services->surface()->hasRole("wallpaper") ||

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+[[ "${OWODE_MANAGED_SESSION:-}" == 1 && -n "${WAYLAND_DISPLAY:-}" ]] || {
+    echo 'This helper must be launched by the owoDE KWin session.' >&2; exit 2;
+}
+export QT_QPA_PLATFORM=wayland
+exec /usr/bin/klde-shell --native-shell-surfaces --applications system --managed-session

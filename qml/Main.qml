@@ -57,7 +57,7 @@ ApplicationWindow {
     readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: nativeSurfaceMode && nativeRibbonLoader.item ? (nativeRibbonLoader.item as Window).height : ribbon.y + ribbon.height + Tokens.space16
-    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings]
+    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings, sessionMenu]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function openPendingNativePanel(): void {
         if (pendingNativePanel && nativePopupLoader.item && (nativePopupLoader.item as Window).visible) {
@@ -79,6 +79,9 @@ ApplicationWindow {
     function showView(view: string): void {
         let target = null;
         switch (view) {
+        case "session":
+            target = sessionMenu;
+            break;
         case "temporal":
             target = temporalSettings;
             break;
@@ -175,9 +178,22 @@ ApplicationWindow {
         else if (id === "cpu" || id === "memory" || id === "temperature" || id === "battery")
             showView("ribbon");
         else if (id === "power")
-            Shell.system.requestSessionAction("shutdown");
+            requestSessionMenu();
         else
             showView("quick-settings");
+    }
+    function requestSessionMenu(): void {
+        if (Shell.session.managed)
+            showView("session");
+        else
+            Shell.system.requestSessionAction("shutdown");
+    }
+    SessionMenu {
+        id: sessionMenu
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
     }
     Connections {
         target: Shell.scenes
