@@ -57,6 +57,23 @@ KWinWindowManagerBackend::~KWinWindowManagerBackend() {
     if (m_registered)
         QDBusConnection::sessionBus().unregisterObject(m_objectPath);
 }
+void KWinWindowManagerBackend::invoke(const QDBusMessage &message,
+                                      std::function<void(const QDBusMessage &)> handler) {
+    auto pending = std::make_unique<QDBusPendingCallWatcher>(
+        QDBusConnection::sessionBus().asyncCall(message, 3000));
+    auto *watcher = pending.get();
+    m_pending.push_back(std::move(pending));
+    connect(watcher, &QDBusPendingCallWatcher::finished, this,
+            [this, handler = std::move(handler)](QDBusPendingCallWatcher *finished) {
+                const auto result = finished->reply();
+                QTimer::singleShot(0, this, [this, finished] {
+                    std::erase_if(m_pending, [finished](const auto &entry) {
+                        return entry.get() == finished;
+                    });
+                });
+                handler(result);
+            });
+}
 QString KWinWindowManagerBackend::scriptSource(const QString &file) const {
     QFile source(QStringLiteral(":/owode/") + file);
     if (!source.open(QIODevice::ReadOnly))
@@ -80,15 +97,12 @@ void KWinWindowManagerBackend::start() {
     auto message = QDBusMessage::createMethodCall("org.freedesktop.DBus", "/org/freedesktop/DBus",
                                                   "org.freedesktop.DBus", "GetNameOwner");
     message << QStringLiteral("org.kde.KWin");
-    auto *watcher = new QDBusPendingCallWatcher(bus.asyncCall(message, 3000), this);
     const auto generation = m_generation;
-    connect(watcher, &QDBusPendingCallWatcher::finished, this,
-            [this, generation](QDBusPendingCallWatcher *watcher) {
-                const QDBusPendingReply<QString> reply = *watcher;
-                watcher->deleteLater();
-                if (generation == m_generation)
-                    ownerChanged(reply.isError() ? QString{} : reply.value());
-            });
+    invoke(message, [this, generation](const QDBusMessage &response) {
+        const QDBusPendingReply<QString> reply = response;
+        if (generation == m_generation)
+            ownerChanged(reply.isError() ? QString{} : reply.value());
+    });
 }
 void KWinWindowManagerBackend::ownerChanged(const QString &owner) {
     if (!m_registered)
@@ -111,28 +125,23 @@ void KWinWindowManagerBackend::ownerChanged(const QString &owner) {
     const auto generation = m_generation;
     const auto message =
         QDBusMessage::createMethodCall(owner, "/KWin", "org.kde.KWin", "supportInformation");
-    auto *watcher =
-        new QDBusPendingCallWatcher(QDBusConnection::sessionBus().asyncCall(message, 3000), this);
-    connect(watcher, &QDBusPendingCallWatcher::finished, this,
-            [this, generation](QDBusPendingCallWatcher *watcher) {
-                const QDBusPendingReply<QString> reply = *watcher;
-                watcher->deleteLater();
-                if (generation != m_generation)
-                    return;
-                const QRegularExpression version(
-                    QStringLiteral(R"(^KWin version: (6\.(6|7)\.\d+)[^\r\n]*$)"),
-                    QRegularExpression::MultilineOption);
-                const auto match = version.match(reply.isError() ? QString{} : reply.value());
-                if (!match.hasMatch()) {
-                    clearState(
-                        QStringLiteral("Only probed upstream KWin 6.6/6.7 profiles are enabled"));
-                    return;
-                }
-                m_version = match.captured(1);
-                m_reporter = "owode-state-" + m_token;
-                m_deadline.start();
-                loadScript(m_reporter, true, scriptSource("kwin-state.js").toUtf8());
-            });
+    invoke(message, [this, generation](const QDBusMessage &response) {
+        const QDBusPendingReply<QString> reply = response;
+        if (generation != m_generation)
+            return;
+        const QRegularExpression version(
+            QStringLiteral(R"(^KWin version: (6\.(6|7)\.\d+)[^\r\n]*$)"),
+            QRegularExpression::MultilineOption);
+        const auto match = version.match(reply.isError() ? QString{} : reply.value());
+        if (!match.hasMatch()) {
+            clearState(QStringLiteral("Only probed upstream KWin 6.6/6.7 profiles are enabled"));
+            return;
+        }
+        m_version = match.captured(1);
+        m_reporter = "owode-state-" + m_token;
+        m_deadline.start();
+        loadScript(m_reporter, true, scriptSource("kwin-state.js").toUtf8());
+    });
 }
 void KWinWindowManagerBackend::clearState(const QString &diagnostic) {
     m_ready = false;
@@ -178,48 +187,38 @@ void KWinWindowManagerBackend::loadScript(const QString &name, bool reporter,
     const auto generation = m_generation;
     auto message = scriptingCall(owner, "loadScript");
     message << path << name;
-    auto *watcher =
-        new QDBusPendingCallWatcher(QDBusConnection::sessionBus().asyncCall(message, 3000), this);
-    connect(watcher, &QDBusPendingCallWatcher::finished, this,
-            [this, owner, generation, name, reporter](QDBusPendingCallWatcher *watcher) {
-                const QDBusPendingReply<int> reply = *watcher;
-                watcher->deleteLater();
-                if (generation != m_generation) {
-                    unloadScript(owner, name);
-                    return;
+    invoke(message, [this, owner, generation, name, reporter](const QDBusMessage &response) {
+        const QDBusPendingReply<int> reply = response;
+        if (generation != m_generation) {
+            unloadScript(owner, name);
+            return;
+        }
+        if (reply.isError() || reply.value() < 0) {
+            if (reporter)
+                clearState(QStringLiteral("KWin refused the owned state script"));
+            else {
+                m_commands.remove(name);
+                QFile::remove(m_scripts.filePath(name + ".js"));
+                emit requestRejected(tr("The window manager could not perform that action"));
+            }
+            return;
+        }
+        auto run = QDBusMessage::createMethodCall(
+            owner, "/Scripting/Script" + QString::number(reply.value()), "org.kde.kwin.Script",
+            "run");
+        invoke(run, [this, generation, reporter, name](const QDBusMessage &response) {
+            const QDBusPendingReply<> result = response;
+            if (generation == m_generation && result.isError()) {
+                unloadScript(m_owner, name);
+                if (reporter)
+                    clearState(QStringLiteral("KWin state script failed to start"));
+                else {
+                    m_commands.remove(name);
+                    emit requestRejected(tr("The window manager could not perform that action"));
                 }
-                if (reply.isError() || reply.value() < 0) {
-                    if (reporter)
-                        clearState(QStringLiteral("KWin refused the owned state script"));
-                    else {
-                        m_commands.remove(name);
-                        QFile::remove(m_scripts.filePath(name + ".js"));
-                        emit requestRejected(
-                            tr("The window manager could not perform that action"));
-                    }
-                    return;
-                }
-                auto run = QDBusMessage::createMethodCall(
-                    owner, "/Scripting/Script" + QString::number(reply.value()),
-                    "org.kde.kwin.Script", "run");
-                auto *running = new QDBusPendingCallWatcher(
-                    QDBusConnection::sessionBus().asyncCall(run, 3000), this);
-                connect(running, &QDBusPendingCallWatcher::finished, this,
-                        [this, generation, reporter, name](QDBusPendingCallWatcher *running) {
-                            const QDBusPendingReply<> result = *running;
-                            running->deleteLater();
-                            if (generation == m_generation && result.isError()) {
-                                unloadScript(m_owner, name);
-                                if (reporter)
-                                    clearState(QStringLiteral("KWin state script failed to start"));
-                                else {
-                                    m_commands.remove(name);
-                                    emit requestRejected(
-                                        tr("The window manager could not perform that action"));
-                                }
-                            }
-                        });
-            });
+            }
+        });
+    });
 }
 void KWinWindowManagerBackend::unloadScript(const QString &owner, const QString &name) {
     if (owner.isEmpty() || name.isEmpty())

@@ -7,6 +7,12 @@
 #include <QHash>
 #include <QTemporaryDir>
 #include <QTimer>
+#include <functional>
+#include <memory>
+#include <vector>
+
+class QDBusMessage;
+class QDBusPendingCallWatcher;
 
 namespace klde {
 // A session-scoped, event-driven adapter. No KWin private C++ ABI is linked.
@@ -37,6 +43,7 @@ class KWinWindowManagerBackend final : public WindowManagerBackend, protected QD
     void ownerChanged(const QString &owner);
     void clearState(const QString &diagnostic);
     QString scriptSource(const QString &file) const;
+    void invoke(const QDBusMessage &message, std::function<void(const QDBusMessage &)> handler);
     void loadScript(const QString &name, bool reporter, const QByteArray &source);
     void unloadScript(const QString &owner, const QString &name);
     bool trusted(const QString &token) const;
@@ -62,5 +69,8 @@ class KWinWindowManagerBackend final : public WindowManagerBackend, protected QD
     bool m_started = false;
     bool m_registered = false;
     bool m_ready = false;
+    // Own asynchronous calls explicitly; finished watchers are released on the
+    // next event turn, never while their finished signal is being dispatched.
+    std::vector<std::unique_ptr<QDBusPendingCallWatcher>> m_pending;
 };
 } // namespace klde
