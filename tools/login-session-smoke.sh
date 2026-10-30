@@ -13,10 +13,6 @@ grep -Fx 'DesktopNames=owoDE;' "$entry"
 sed '/^DesktopNames=/d' "$entry" > "$out_dir/owode-entry-validation.desktop"
 desktop-file-validate "$out_dir/owode-entry-validation.desktop"
 grep -Fx 'Exec=/usr/bin/start-owode' /usr/share/wayland-sessions/owode.desktop
-/usr/bin/start-owode --check > "$out_dir/prerequisites.txt" 2>&1
-# A graphical host must never be replaced by the login entry.
-if env WAYLAND_DISPLAY=protected-host /usr/bin/start-owode > "$out_dir/host-refusal.txt" 2>&1; then exit 1; fi
-grep -q 'Refusing to start a login compositor' "$out_dir/host-refusal.txt"
 runtime_dir=$(mktemp -d /tmp/owode-login-ci-XXXXXX)
 chmod 700 "$runtime_dir"
 trap 'rm -rf "$runtime_dir"' EXIT
@@ -40,6 +36,10 @@ source, target = map(Path, sys.argv[1:])
 shutil.copyfile(source, target)
 target.chmod(0o700)
 PY
+env PATH="$runtime_dir:$PATH" /usr/bin/start-owode --check > "$out_dir/prerequisites.txt" 2>&1
+# A graphical host must never be replaced by the login entry.
+if env PATH="$runtime_dir:$PATH" WAYLAND_DISPLAY=protected-host /usr/bin/start-owode > "$out_dir/host-refusal.txt" 2>&1; then exit 1; fi
+grep -q 'Refusing to start a login compositor' "$out_dir/host-refusal.txt"
 printf '%s\n' "$(git rev-parse HEAD)" > "$out_dir/source-commit.txt"
 xvfb-run -a -s '-screen 0 1600x1000x24 -nolisten tcp' env -u WAYLAND_DISPLAY \
     XDG_RUNTIME_DIR="$runtime_dir" XDG_CONFIG_HOME="$runtime_dir/config" \
@@ -48,6 +48,7 @@ xvfb-run -a -s '-screen 0 1600x1000x24 -nolisten tcp' env -u WAYLAND_DISPLAY \
     OWODE_MANAGED_SESSION=1 OWODE_NATIVE_TEST_ISOLATED=1 \
     OWODE_SESSION_BUILD="$build_dir" OWODE_SESSION_EVIDENCE="$out_dir" \
     QT_QUICK_BACKEND=software LIBGL_ALWAYS_SOFTWARE=1 WAYLAND_DEBUG=client \
+    QT_LOGGING_RULES="kwin_scripting.debug=true;js.debug=true" \
     dbus-run-session -- bash -c '
         set -euo pipefail
         export OWODE_SESSION_PARENT_DISPLAY="$DISPLAY"

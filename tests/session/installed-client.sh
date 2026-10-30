@@ -21,7 +21,7 @@ for _ in $(seq 1 150); do
     sleep 0.1
 done
 grep -q org.owode.Session1 "$OWODE_SESSION_EVIDENCE/session-interface.xml"
-python3 tools/wait-native-buffers.py "$OWODE_SESSION_EVIDENCE/shell.log" "$OWODE_SESSION_EVIDENCE/first-buffers.json"
+python3 tools/wait-native-buffers.py "$OWODE_SESSION_EVIDENCE/shell.log" "$OWODE_SESSION_EVIDENCE/first-buffers.json" --roles wallpaper ribbon dock
 # These are genuine toolkit clients. Xwayland's DISPLAY is supplied by KWin,
 # rather than inherited from the Xvfb parent used only for the nested viewport.
 [[ -n "${DISPLAY:-}" && "$DISPLAY" != "$OWODE_SESSION_PARENT_DISPLAY" ]]
