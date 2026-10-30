@@ -102,6 +102,14 @@ QQuickItem *findItem(QQuickItem *root, const QString &name) {
             return match;
     return nullptr;
 }
+QQuickItem *findApplicationItem(QQuickItem *root, const QString &id) {
+    if (root->property("appId").toString() == id)
+        return root;
+    for (auto *child : root->childItems())
+        if (auto *match = findApplicationItem(child, id))
+            return match;
+    return nullptr;
+}
 QQuickWindow *findWindow(const QString &name) {
     for (auto *window : QGuiApplication::allWindows())
         if (window->objectName() == name)
@@ -505,12 +513,28 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_COMPARE(manager->activeWorkspace(), destination);
         QVERIFY(manager->activateWindow(firstId));
         QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
-        // Clicking the existing Dock application activates a window without
-        // manufacturing a new process or changing the launch completion count.
-        QVERIFY(services->launch("owode-launch-fixture.desktop"));
-        QTest::qWait(150);
+        // Exercise the actual shared Dock delegate and Wayland input path,
+        // rather than only invoking Shell.launch directly from this test.
+        QVERIFY(snapshot("minimize"));
+        QTRY_VERIFY(confirmedWindow(firstId).value("minimized").toBool());
+        auto *applicationButton =
+            findApplicationItem(dock->contentItem(), "owode-launch-fixture.desktop");
+        QVERIFY(applicationButton);
+        const auto applicationPoint = applicationButton->mapToScene(
+            QPointF(applicationButton->width() / 2, applicationButton->height() / 2));
+        QTRY_VERIFY(dock->mask().contains(applicationPoint.toPoint()));
+        input.move(QPoint(qRound(applicationPoint.x()),
+                          wallpaper->height() - dock->height() + qRound(applicationPoint.y())));
+        QTRY_VERIFY(applicationButton->property("hovered").toBool());
+        input.button(true);
+        input.button(false);
+        QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool() ||
+                    confirmedWindow(secondId).value("active").toBool());
         QCOMPARE(launched.count(), 2);
         QCOMPARE(manager->windows().size(), 2);
+        QVERIFY(manager->activateWindow(firstId));
+        QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
+        QTRY_COMPARE(manager->activeWorkspace(), destination);
         QFile stateEvidence(m_output + "/live-window-state.json");
         QVERIFY(stateEvidence.open(QIODevice::WriteOnly));
         stateEvidence.write(
@@ -547,6 +571,30 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         services->applications()->setPinned("owode-launch-fixture.desktop", false);
         QTRY_COMPARE(services->dockApplications()->rowCount(), 0);
         QTRY_VERIFY(snapshot() && client().isEmpty());
+        // A real normal window without catalog metadata still needs a Dock
+        // entry, but must not become a persistently pinned fictional app.
+        QProcess uncatalogued;
+        uncatalogued.setProcessChannelMode(QProcess::ForwardedChannels);
+        uncatalogued.start(QCoreApplication::applicationDirPath() + "/owode-native-test-client",
+                           {"--state", m_output + "/uncatalogued-client.json", "--desktop-file",
+                            "org.owode.UncataloguedFixture"});
+        QVERIFY(uncatalogued.waitForStarted());
+        QTRY_COMPARE(manager->windows().size(), 1);
+        QTRY_COMPARE(services->dockApplications()->rowCount(), 1);
+        const auto unknownWindow = manager->windows().first().toMap().value("id").toString();
+        const auto unknownApp =
+            services->dockApplications()
+                ->data(services->dockApplications()->index(0, 0), klde::ApplicationModel::AppIdRole)
+                .toString();
+        QVERIFY(unknownApp.startsWith("window:"));
+        QVERIFY(!services->applications()->canPin(unknownApp));
+        QVERIFY(services->launch(unknownApp));
+        QTRY_VERIFY(confirmedWindow(unknownWindow).value("active").toBool());
+        QCOMPARE(launched.count(), 2);
+        QVERIFY(manager->closeWindow(unknownWindow));
+        QTRY_VERIFY(manager->windows().isEmpty());
+        QTRY_COMPARE(services->dockApplications()->rowCount(), 0);
+        QTRY_COMPARE(uncatalogued.state(), QProcess::NotRunning);
         QVERIFY(wallpaper->isVisible() && dock->isVisible());
         QCOMPARE(warnings.count(), 0);
     }
