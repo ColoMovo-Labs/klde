@@ -134,16 +134,19 @@ class NativeSessionTest final : public QObject {
 
   private:
     std::unique_ptr<Input> m_input;
-    bool snapshot(const QString &action = {}) {
+    bool snapshot(const QString &action = {}, const QString &windowId = {}) {
         m_received = false;
         const auto name = QStringLiteral("owode-native-audit-%1").arg(++m_script);
         const auto path = m_output + "/" + name + ".js";
         QFile file(path);
         if (!file.open(QIODevice::WriteOnly))
             return false;
-        const auto script = QStringLiteral(R"JS(
+        const auto script =
+            QStringLiteral(R"JS(
 const windows = workspace.windowList();
-const client = windows.find(w => w.caption === 'owoDE native CI application');
+const target = %2[0];
+const client = target ? windows.find(w => String(w.internalId) === target)
+    : windows.find(w => w.caption === 'owoDE native CI application');
 const action = '%1';
 if (client && action === 'maximize') client.setMaximize(true, true);
 if (client && action === 'place') {
@@ -159,7 +162,9 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
     geometry: {x: w.frameGeometry.x, y: w.frameGeometry.y, width: w.frameGeometry.width, height: w.frameGeometry.height}
 }))));
 )JS")
-                                .arg(action);
+                .arg(action,
+                     QString::fromUtf8(
+                         QJsonDocument(QJsonArray{windowId}).toJson(QJsonDocument::Compact)));
         file.write(script.toUtf8());
         file.close();
         QDBusInterface scripting("org.kde.KWin", "/Scripting", "org.kde.kwin.Scripting");
@@ -501,7 +506,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QCOMPARE(services->dockApplications()->rowCount(), 1);
         const auto secondId = manager->windows().last().toMap().value("id").toString();
         QVERIFY(secondId != firstId);
-        QVERIFY(snapshot("minimize"));
+        QVERIFY(snapshot("minimize", firstId));
         QTRY_VERIFY(confirmedWindow(firstId).value("minimized").toBool());
         QVERIFY(manager->activateWindow(firstId));
         QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
@@ -515,7 +520,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
         // Exercise the actual shared Dock delegate and Wayland input path,
         // rather than only invoking Shell.launch directly from this test.
-        QVERIFY(snapshot("minimize"));
+        QVERIFY(snapshot("minimize", firstId));
         QTRY_VERIFY(confirmedWindow(firstId).value("minimized").toBool());
         auto *applicationButton =
             findApplicationItem(dock->contentItem(), "owode-launch-fixture.desktop");
