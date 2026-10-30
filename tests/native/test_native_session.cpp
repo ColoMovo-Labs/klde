@@ -355,6 +355,10 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
                          .startsWith(QDir::tempPath() + "/owode-native-ci-"),
                  "Run only in the private cloud KWin session");
         QVERIFY(klde::DesktopApplicationBackend::available());
+        // Register the isolated input device before mapping the shell, as in
+        // the surface test. Device/seat setup can outlive the bind roundtrip.
+        Input input;
+        QVERIFY(input.valid());
         m_output = qEnvironmentVariable("OWODE_NATIVE_EVIDENCE");
         QVERIFY(!m_output.isEmpty());
         const auto fixture =
@@ -406,11 +410,12 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         dock->update();
         QTRY_VERIFY(!committed.isEmpty());
         QVERIFY(capture("native-catalog-background"));
-        Input input;
-        QVERIFY(input.valid());
         const auto point = button->mapToScene(QPointF(button->width() / 2, button->height() / 2));
-        input.click(
+        input.move(
             QPoint(qRound(point.x()), wallpaper->height() - dock->height() + qRound(point.y())));
+        QTRY_VERIFY(button->property("hovered").toBool());
+        input.button(true);
+        input.button(false);
         auto *launcher = root->findChild<QObject *>("launcher");
         QVERIFY(launcher);
         QTRY_VERIFY(popup->isExposed() && launcher->property("opened").toBool());
