@@ -1,3 +1,7 @@
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+add_test(NAME native-protocol-parser COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test_native_protocol.py")
+set_tests_properties(native-protocol-parser PROPERTIES LABELS unit TIMEOUT 10)
+
 qt_add_executable(klde-backend-test test_backends.cpp)
 target_link_libraries(klde-backend-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME backend-contracts COMMAND klde-backend-test)
