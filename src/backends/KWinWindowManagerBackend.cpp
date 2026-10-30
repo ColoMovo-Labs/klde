@@ -24,15 +24,6 @@ QString jsonString(const QString &text) {
     const auto array = QJsonDocument(QJsonArray{text}).toJson(QJsonDocument::Compact);
     return QString::fromUtf8(array.mid(1, array.size() - 2));
 }
-QString scriptTemplate(const QString &file, const QString &path, const QString &token) {
-    QFile source(QStringLiteral(":/owode/") + file);
-    if (!source.open(QIODevice::ReadOnly))
-        return {};
-    return QString::fromUtf8(source.readAll())
-        .replace("@DESTINATION@", jsonString(QDBusConnection::sessionBus().baseService()))
-        .replace("@OBJECT_PATH@", jsonString(path))
-        .replace("@TOKEN@", jsonString(token));
-}
 QDBusMessage scriptingCall(const QString &owner, const QString &method) {
     return QDBusMessage::createMethodCall(owner, "/Scripting", "org.kde.kwin.Scripting", method);
 }
@@ -66,6 +57,15 @@ KWinWindowManagerBackend::~KWinWindowManagerBackend() {
     if (m_registered)
         QDBusConnection::sessionBus().unregisterObject(m_objectPath);
 }
+QString KWinWindowManagerBackend::scriptSource(const QString &file) const {
+    QFile source(QStringLiteral(":/owode/") + file);
+    if (!source.open(QIODevice::ReadOnly))
+        return {};
+    return QString::fromUtf8(source.readAll())
+        .replace("@DESTINATION@", jsonString(QDBusConnection::sessionBus().baseService()))
+        .replace("@OBJECT_PATH@", jsonString(m_objectPath))
+        .replace("@TOKEN@", jsonString(m_token));
+}
 void KWinWindowManagerBackend::start() {
     if (m_started)
         return;
@@ -82,12 +82,13 @@ void KWinWindowManagerBackend::start() {
     message << QStringLiteral("org.kde.KWin");
     auto *watcher = new QDBusPendingCallWatcher(bus.asyncCall(message, 3000), this);
     const auto generation = m_generation;
-    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, watcher, generation] {
-        const QDBusPendingReply<QString> reply = *watcher;
-        watcher->deleteLater();
-        if (generation == m_generation)
-            ownerChanged(reply.isError() ? QString{} : reply.value());
-    });
+    connect(watcher, &QDBusPendingCallWatcher::finished, this,
+            [this, generation](QDBusPendingCallWatcher *watcher) {
+                const QDBusPendingReply<QString> reply = *watcher;
+                watcher->deleteLater();
+                if (generation == m_generation)
+                    ownerChanged(reply.isError() ? QString{} : reply.value());
+            });
 }
 void KWinWindowManagerBackend::ownerChanged(const QString &owner) {
     if (!m_registered)
@@ -112,24 +113,26 @@ void KWinWindowManagerBackend::ownerChanged(const QString &owner) {
         QDBusMessage::createMethodCall(owner, "/KWin", "org.kde.KWin", "supportInformation");
     auto *watcher =
         new QDBusPendingCallWatcher(QDBusConnection::sessionBus().asyncCall(message, 3000), this);
-    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, watcher, generation] {
-        const QDBusPendingReply<QString> reply = *watcher;
-        watcher->deleteLater();
-        if (generation != m_generation)
-            return;
-        const QRegularExpression version(
-            QStringLiteral(R"(^KWin version: (6\.(6|7)\.\d+)[^\r\n]*$)"),
-            QRegularExpression::MultilineOption);
-        const auto match = version.match(reply.isError() ? QString{} : reply.value());
-        if (!match.hasMatch()) {
-            clearState(QStringLiteral("Only probed upstream KWin 6.6/6.7 profiles are enabled"));
-            return;
-        }
-        m_version = match.captured(1);
-        m_reporter = "owode-state-" + m_token;
-        m_deadline.start();
-        loadScript(scriptTemplate("kwin-state.js", m_objectPath, m_token), m_reporter, true);
-    });
+    connect(watcher, &QDBusPendingCallWatcher::finished, this,
+            [this, generation](QDBusPendingCallWatcher *watcher) {
+                const QDBusPendingReply<QString> reply = *watcher;
+                watcher->deleteLater();
+                if (generation != m_generation)
+                    return;
+                const QRegularExpression version(
+                    QStringLiteral(R"(^KWin version: (6\.(6|7)\.\d+)[^\r\n]*$)"),
+                    QRegularExpression::MultilineOption);
+                const auto match = version.match(reply.isError() ? QString{} : reply.value());
+                if (!match.hasMatch()) {
+                    clearState(
+                        QStringLiteral("Only probed upstream KWin 6.6/6.7 profiles are enabled"));
+                    return;
+                }
+                m_version = match.captured(1);
+                m_reporter = "owode-state-" + m_token;
+                m_deadline.start();
+                loadScript(m_reporter, true, scriptSource("kwin-state.js").toUtf8());
+            });
 }
 void KWinWindowManagerBackend::clearState(const QString &diagnostic) {
     m_ready = false;
@@ -158,12 +161,12 @@ QVariantMap KWinWindowManagerBackend::capabilities() const {
             {"rememberGeometry", false},
             {"scrollingTiling", false}};
 }
-void KWinWindowManagerBackend::loadScript(const QString &source, const QString &name,
-                                          bool reporter) {
+void KWinWindowManagerBackend::loadScript(const QString &name, bool reporter,
+                                          const QByteArray &source) {
     const auto path = m_scripts.filePath(name + ".js");
     QFile file(path);
     if (source.isEmpty() || !file.open(QIODevice::WriteOnly) ||
-        file.write(source.toUtf8()) != source.toUtf8().size()) {
+        file.write(source) != source.size()) {
         if (reporter)
             clearState(QStringLiteral("Could not stage the owned KWin script"));
         else
@@ -178,7 +181,7 @@ void KWinWindowManagerBackend::loadScript(const QString &source, const QString &
     auto *watcher =
         new QDBusPendingCallWatcher(QDBusConnection::sessionBus().asyncCall(message, 3000), this);
     connect(watcher, &QDBusPendingCallWatcher::finished, this,
-            [this, watcher, owner, generation, name, reporter] {
+            [this, owner, generation, name, reporter](QDBusPendingCallWatcher *watcher) {
                 const QDBusPendingReply<int> reply = *watcher;
                 watcher->deleteLater();
                 if (generation != m_generation) {
@@ -202,7 +205,7 @@ void KWinWindowManagerBackend::loadScript(const QString &source, const QString &
                 auto *running = new QDBusPendingCallWatcher(
                     QDBusConnection::sessionBus().asyncCall(run, 3000), this);
                 connect(running, &QDBusPendingCallWatcher::finished, this,
-                        [this, running, generation, reporter, name] {
+                        [this, generation, reporter, name](QDBusPendingCallWatcher *running) {
                             const QDBusPendingReply<> result = *running;
                             running->deleteLater();
                             if (generation == m_generation && result.isError()) {
@@ -230,7 +233,7 @@ bool KWinWindowManagerBackend::trusted(const QString &token) const {
            !m_reporter.isEmpty() && token == m_token;
 }
 bool KWinWindowManagerBackend::snapshot(const QString &token, const QString &json) {
-    if (!trusted(token) || json.toUtf8().size() > 1024 * 1024)
+    if (!trusted(token) || json.toUtf8().size() > 1'048'576)
         return false;
     const auto data = QJsonDocument::fromJson(json.toUtf8()).object();
     const auto desktops = data.value("desktops").toArray();
@@ -323,11 +326,11 @@ bool KWinWindowManagerBackend::request(const QString &operation, const QString &
                               {"window", operation == "workspace" ? QString{} : id},
                               {"desktop", operation == "workspace" ? id : destination}};
     const auto source =
-        scriptTemplate("kwin-command.js", m_objectPath, m_token)
+        scriptSource("kwin-command.js")
             .replace("@COMMAND@",
                      QString::fromUtf8(QJsonDocument(command).toJson(QJsonDocument::Compact)));
     m_commands.insert(name, name);
-    loadScript(source, name, false);
+    loadScript(name, false, source.toUtf8());
     const auto generation = m_generation;
     QTimer::singleShot(5000, this, [this, generation, name] {
         if (generation == m_generation && m_commands.remove(name)) {

@@ -36,7 +36,8 @@ class KWinWindowManagerBackend final : public WindowManagerBackend, protected QD
   private:
     void ownerChanged(const QString &owner);
     void clearState(const QString &diagnostic);
-    void loadScript(const QString &source, const QString &name, bool reporter);
+    QString scriptSource(const QString &file) const;
+    void loadScript(const QString &name, bool reporter, const QByteArray &source);
     void unloadScript(const QString &owner, const QString &name);
     bool trusted(const QString &token) const;
     bool request(const QString &operation, const QString &id, const QString &destination = {});
