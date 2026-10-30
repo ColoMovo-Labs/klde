@@ -34,17 +34,21 @@ Button {
             width: root.listMode ? parent.width - x - Tokens.space12 : parent.width - Tokens.space8
             spacing: Tokens.space4
             Text {
+                objectName: "applicationLabel"
                 width: parent.width
                 text: root.label
+                textFormat: Text.PlainText
                 font: Tokens.label
                 color: Tokens.textPrimary
                 horizontalAlignment: root.listMode ? Text.AlignLeft : Text.AlignHCenter
                 elide: Text.ElideRight
             }
             Text {
+                objectName: "applicationDetail"
                 width: parent.width
                 visible: root.listMode
                 text: root.detail
+                textFormat: Text.PlainText
                 font: Tokens.caption
                 color: Tokens.textSecondary
                 elide: Text.ElideRight
