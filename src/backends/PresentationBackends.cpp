@@ -1,8 +1,69 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "PresentationBackends.h"
 #include <QDateTime>
+#include <QFileInfo>
 
 namespace klde {
+SystemTimeBackend::SystemTimeBackend(QObject *parent) : TimeBackend(parent) {
+    m_minute.setSingleShot(true);
+    m_minute.setTimerType(Qt::PreciseTimer);
+    connect(&m_minute, &QTimer::timeout, this, &SystemTimeBackend::refresh);
+    connect(&m_zone, &QFileSystemWatcher::fileChanged, this,
+            [this](const QString &) { refresh(); });
+    refresh();
+}
+
+QVariantMap SystemTimeBackend::readingAt(const QDateTime &date) {
+    const int hour = date.time().hour();
+    const bool night = hour < 6 || hour >= 19;
+    const auto phase = night       ? "starry-night"
+                       : hour < 11 ? "clear-morning"
+                       : hour < 17 ? "cloudy-day"
+                                   : "sunset";
+    // The landscape is illustration, not an inferred weather/ephemeris reading.
+    // Language selection never supplies a region, hemisphere or weather location.
+    return {{"dateTime", date.toString(Qt::ISODate)},
+            {"timeText", date.time().toString("HH:mm")},
+            {"hours", date.time().toString("HH")},
+            {"minutes", date.time().toString("mm")},
+            {"phase", phase},
+            {"season", "unavailable"},
+            {"night", night},
+            {"weatherAvailable", false},
+            {"weatherMood", "unknown"},
+            {"sunVisible", false},
+            {"moonVisible", false},
+            {"sunX", 0.25},
+            {"sunY", 0.34},
+            {"moonX", 0.25},
+            {"moonY", 0.34},
+            {"astronomy", QVariantMap{{"available", false},
+                                      {"simulated", false},
+                                      {"sunrise", "—"},
+                                      {"sunset", "—"},
+                                      {"moonrise", "—"},
+                                      {"moonset", "—"},
+                                      {"moonPhase", "unknown"}}},
+            {"mock", false}};
+}
+
+void SystemTimeBackend::refresh() {
+    const auto current = QDateTime::currentDateTime();
+    const auto next = readingAt(current);
+    if (next != m_reading) {
+        m_reading = next;
+        emit changed();
+    }
+    // One wake per visible minute, not a seconds-based repaint loop. Re-read
+    // wall time after resume and on timezone-file replacement, then realign.
+    const auto milliseconds = QDateTime::currentMSecsSinceEpoch();
+    m_minute.start(static_cast<int>(60000 - milliseconds % 60000));
+    for (const auto &path : {QStringLiteral("/etc/localtime"), QStringLiteral("/etc/timezone")}) {
+        if (QFileInfo::exists(path) && !m_zone.files().contains(path))
+            m_zone.addPath(path);
+    }
+}
+
 MockTimeBackend::MockTimeBackend(SystemStateModel *state) : m_state(state) {
     connect(state, &SystemStateModel::changed, this, &TimeBackend::changed);
 }

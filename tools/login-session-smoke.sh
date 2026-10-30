@@ -54,7 +54,8 @@ xvfb-run -a -s '-screen 0 1600x1000x24 -nolisten tcp' env -u WAYLAND_DISPLAY \
         export OWODE_SESSION_PARENT_DISPLAY="$DISPLAY"
         kbuildsycoca6 --noincremental > "$OWODE_SESSION_EVIDENCE/desktop-cache.log" 2>&1
         timeout --signal=TERM --kill-after=5s 60s "$XDG_RUNTIME_DIR/kwin_wayland" \
-            --x11-display "$DISPLAY" --socket owode-login-ci --xwayland --no-global-shortcuts \
+            --x11-display "$DISPLAY" --width 1600 --height 1000 \
+            --socket owode-login-ci --xwayland --no-global-shortcuts \
             --exit-with-session "bash tests/session/installed-client.sh" \
             > "$OWODE_SESSION_EVIDENCE/kwin.log" 2>&1
         test ! -S "$XDG_RUNTIME_DIR/owode-login-ci"

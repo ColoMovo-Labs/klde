@@ -217,10 +217,12 @@ class DesktopApplicationsTest final : public QObject {
         auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
         QVERIFY(services);
         QVERIFY(!services->applications()->preview());
+        QVERIFY(!services->time()->reading().value("mock").toBool());
         QTRY_VERIFY(services->desktopApplications()->ready());
         QVERIFY(!services->applications()->nameFor("suite-child.desktop").isEmpty());
         klde::ShellServices preview(nullptr);
         QVERIFY(preview.applications()->preview());
+        QVERIFY(preview.time()->reading().value("mock").toBool());
         QVERIFY(!preview.applications()->nameFor("terminal").isEmpty());
     }
 };

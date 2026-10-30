@@ -68,7 +68,10 @@ while time.monotonic() < deadline:
     for line in (root / 'kwin.log').read_text(errors='replace').splitlines():
         if 'OWODE_COMPAT_WINDOWS:' not in line:
             continue
-        windows = json.loads(line.split('OWODE_COMPAT_WINDOWS:', 1)[1])
+        try:
+            windows = json.loads(line.split('OWODE_COMPAT_WINDOWS:', 1)[1])
+        except json.JSONDecodeError:
+            continue  # The last log line may still be being written.
         apps = [w for w in windows if w['normal']]
         names = [w['appId'].lower() for w in apps]
         if (any('gnome.calculator' in n or 'gnome-calculator' in n for n in names)

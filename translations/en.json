@@ -573,5 +573,7 @@
   "session.logout.title": "Log out of owoDE?",
   "session.logout.detail": "Save your work first. This closes applications in this owoDE session.",
   "session.logout.cancel": "Cancel",
-  "session.logout.confirm": "Log out"
+  "session.logout.confirm": "Log out",
+  "temporal.system": "System local time; landscape is illustrative",
+  "temporal.season.unavailable": "Season not configured"
 }

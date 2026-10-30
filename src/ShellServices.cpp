@@ -13,6 +13,7 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
     engine->addImageProvider("applications",
                              new ApplicationIconProvider(services->desktopApplications()));
     if (engine->property("owodeSystemApplications").toBool()) {
+        services->m_systemTime = std::make_unique<SystemTimeBackend>();
         services->m_applications.replaceSystemApplications({});
         services->m_desktopApplications.setLocale(services->language()->locale());
         services->m_desktopApplications.start();

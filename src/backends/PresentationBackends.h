@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 #include "mock/SystemStateModel.h"
+#include <QDateTime>
+#include <QFileSystemWatcher>
 #include <QObject>
+#include <QTimer>
 #include <QVariantMap>
 #include <QtQml/qqmlregistration.h>
 
@@ -25,6 +28,19 @@ class MockTimeBackend final : public TimeBackend {
 
   private:
     SystemStateModel *m_state;
+};
+class SystemTimeBackend final : public TimeBackend {
+    Q_OBJECT
+  public:
+    explicit SystemTimeBackend(QObject *parent = nullptr);
+    QVariantMap reading() const override { return m_reading; }
+    static QVariantMap readingAt(const QDateTime &date);
+    void refresh();
+
+  private:
+    QVariantMap m_reading;
+    QTimer m_minute;
+    QFileSystemWatcher m_zone;
 };
 class TelemetryBackend : public QObject {
     Q_OBJECT

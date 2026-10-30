@@ -573,5 +573,7 @@
   "session.logout.title": "退出 owoDE 登录？",
   "session.logout.detail": "请先保存工作。这会关闭本次 owoDE 会话中的应用。",
   "session.logout.cancel": "取消",
-  "session.logout.confirm": "退出登录"
+  "session.logout.confirm": "退出登录",
+  "temporal.system": "本机时间；景观为示意",
+  "temporal.season.unavailable": "季节尚未配置"
 }
