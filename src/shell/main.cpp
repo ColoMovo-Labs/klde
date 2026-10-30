@@ -4,6 +4,7 @@
 #include <QDBusConnection>
 #include <QDebug>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QImage>
 #include <QPointer>
 #include <QQmlApplicationEngine>
@@ -27,6 +28,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationVersion(QStringLiteral(KLDE_VERSION));
     QCoreApplication::setOrganizationName(QStringLiteral("KLDE"));
     QGuiApplication::setDesktopFileName(QStringLiteral("org.klde.shell.preview"));
+    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/assets/branding/owode-logo.png")));
     QQuickStyle::setStyle(QStringLiteral("Basic"));
 
     QCommandLineParser parser;

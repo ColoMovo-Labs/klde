@@ -10,7 +10,7 @@ Image {
     property bool lightInk: Tokens.darkMode
     width: Tokens.iconM
     height: Tokens.iconM
-    source: root.name.startsWith("image://applications/") ? root.name : Assets.root + "icons/" + root.name + (root.lightInk ? "-light" : "") + ".svg"
+    source: root.name === "klde" ? Assets.root + "branding/owode-logo.png" : root.name.startsWith("image://applications/") ? root.name : Assets.root + "icons/" + root.name + (root.lightInk ? "-light" : "") + ".svg"
     asynchronous: false
     sourceSize.width: width
     sourceSize.height: height
