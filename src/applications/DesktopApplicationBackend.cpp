@@ -35,6 +35,26 @@ struct Discovery {
     QStringList files;
 };
 
+#if defined(OWODE_HAVE_KDE_APPLICATIONS)
+bool visibleInShell(const KDesktopFile &desktop, const KService &service) {
+    const auto group = desktop.desktopGroup();
+    const auto excluded = group.readXdgListEntry("NotShowIn");
+    // Explicit exclusion of our desktop is still respected. OnlyShowIn is a
+    // menu visibility hint, not an execution/security boundary.
+    const auto desktops = qEnvironmentVariable("XDG_CURRENT_DESKTOP").split(':');
+    for (const auto &name : desktops) {
+        if (excluded.contains(name))
+            return false;
+    }
+    if (service.showInCurrentDesktop())
+        return true;
+    if (!desktops.contains("owoDE"))
+        return false;
+    const auto included = group.readXdgListEntry("OnlyShowIn");
+    return included.contains("GNOME") || included.contains("KDE");
+}
+#endif
+
 Discovery discover(const QStringList &roots, const QString &locale) {
     Discovery result;
 #if defined(OWODE_HAVE_KDE_APPLICATIONS)
@@ -74,7 +94,7 @@ Discovery discover(const QStringList &roots, const QString &locale) {
                 continue;
             const KService service(&desktop, path);
             if (!service.isValid() || !service.isApplication() || service.name().isEmpty() ||
-                !service.showInCurrentDesktop() || !service.showOnCurrentPlatform())
+                !visibleInShell(desktop, service) || !service.showOnCurrentPlatform())
                 continue;
             const auto description =
                 service.comment().isEmpty() ? service.genericName() : service.comment();
@@ -220,7 +240,7 @@ bool DesktopApplicationBackend::launch(const QString &id) {
         desktop.noDisplay() || !desktop.tryExec())
         return false;
     auto service = KService::Ptr(new KService(&desktop, found->path));
-    if (!service->isValid() || !service->isApplication() || !service->showInCurrentDesktop() ||
+    if (!service->isValid() || !service->isApplication() || !visibleInShell(desktop, *service) ||
         !service->showOnCurrentPlatform())
         return false;
     auto *job = new KIO::ApplicationLauncherJob(service, this);

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Compatibility is scoped to a newly executed child, never the whole session.
+set -euo pipefail
+case "${1:-}" in
+    --gnome) profile=GNOME ;;
+    --kde) profile=KDE ;;
+    --native) profile=owoDE ;;
+    *) echo 'Usage: owode-run --gnome|--kde|--native -- PROGRAM [ARGUMENTS...]' >&2; exit 2 ;;
+esac
+shift
+[[ "${1:-}" != -- ]] || shift
+[[ $# -gt 0 ]] || { echo 'An executable is required.' >&2; exit 2; }
+export XDG_CURRENT_DESKTOP="$profile"
+if [[ "$profile" == KDE ]]; then
+    export KDE_FULL_SESSION=true KDE_SESSION_VERSION=6
+else
+    unset KDE_FULL_SESSION KDE_SESSION_VERSION
+fi
+# Keep DISPLAY, WAYLAND_DISPLAY, XDG_SESSION_DESKTOP, portals and the session
+# bus untouched. Do not force an unavailable Qt/GTK platform-theme plugin.
+exec -- "$@"

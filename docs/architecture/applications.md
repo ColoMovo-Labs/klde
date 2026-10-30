@@ -73,3 +73,6 @@ References: [Desktop Entry specification](https://specifications.freedesktop.org
 [KDesktopFile](https://api.kde.org/kdesktopfile.html),
 [KService](https://api.kde.org/kservice.html),
 [ApplicationLauncherJob](https://api.kde.org/kio-applicationlauncherjob.html).
+
+GNOME/KDE menu visibility and process-local identity profiles are documented in
+[application-compatibility.md](application-compatibility.md).

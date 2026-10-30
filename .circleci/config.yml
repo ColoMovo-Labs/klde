@@ -116,6 +116,7 @@ jobs:
       - run:
           name: Verify installed Fedora login client, Xwayland and owned logout
           command: |
+            dnf install -y --setopt=install_weak_deps=False gnome-calculator kcalc adwaita-icon-theme breeze-icon-theme
             dnf install -y artifacts/fedora-package/*.rpm
             bash tools/login-session-smoke.sh build/fedora artifacts/login-session
             dnf remove -y owode-session

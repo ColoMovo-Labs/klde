@@ -161,6 +161,7 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS klde-shell RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS packaging/owode-run DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES packaging/org.klde.shell.preview.desktop
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 install(FILES assets/icons/klde.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
