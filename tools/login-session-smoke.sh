@@ -5,7 +5,13 @@ set -euo pipefail
 build_dir=$(realpath "${1:?Cloud build tree}")
 out_dir=$(realpath -m "${2:-artifacts/login-session}")
 mkdir -p "$out_dir"
-desktop-file-validate /usr/share/wayland-sessions/owode.desktop
+entry=/usr/share/wayland-sessions/owode.desktop
+# Fedora desktop-file-utils 0.28 validates application entries and rejects the
+# display-manager DesktopNames key. Check that session key explicitly, then
+# validate every remaining key with the distribution validator.
+grep -Fx 'DesktopNames=owoDE;' "$entry"
+sed '/^DesktopNames=/d' "$entry" > "$out_dir/owode-entry-validation.desktop"
+desktop-file-validate "$out_dir/owode-entry-validation.desktop"
 grep -Fx 'Exec=/usr/bin/start-owode' /usr/share/wayland-sessions/owode.desktop
 /usr/bin/start-owode --check > "$out_dir/prerequisites.txt" 2>&1
 # A graphical host must never be replaced by the login entry.
