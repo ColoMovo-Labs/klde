@@ -9,6 +9,13 @@ and a flexible floating/tiling workflow.
 **Early development. Not ready for daily use.** The initial target is Ubuntu
 Kylin / Ubuntu 26.04 LTS. The shell uses Qt 6, QML / Qt Quick, C++20 and CMake.
 
+## Fedora login session and production gates
+
+An opt-in `owode-session` RPM is being added alongside the existing preview.
+See the [Fedora session guide](docs/development/fedora-login-session.md) and
+[production acceptance gates](docs/development/production-readiness.md).
+A login entry does not mean the desktop is production-ready.
+
 ## Language
 
 [中文 README](README.md) is the default landing page.

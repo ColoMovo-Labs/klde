@@ -157,3 +157,12 @@ records the final authorship and redistribution terms.
 shapes were developed from the SIL Open Font License 1.1 Iansui reference and
 then adjusted into a KLDE slanted, heavier treatment; the source font is not
 shipped. Preserve the OFL attribution when redistributing derived artwork.
+
+## GNOME/KDE runtime compatibility checks
+
+Fedora compatibility jobs install distribution GNOME Calculator and KCalc
+packages with their unmodified dependency and license metadata. Their code and
+branding are not copied into owoDE. Running them alongside the shell is a
+compatibility test, not an application port or an affiliation claim. The new
+logo is generated at the owner request; provenance and prompt are recorded in
+assets/branding/README.md and logo-prompt.md.

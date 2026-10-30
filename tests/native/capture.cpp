@@ -20,10 +20,13 @@
 
 int main(int argc, char **argv) {
     QCoreApplication app(argc, argv);
+    const auto display = qEnvironmentVariable("WAYLAND_DISPLAY");
+    const auto runtime = qEnvironmentVariable("XDG_RUNTIME_DIR");
+    const bool isolated =
+        (display == "owode-ci" && runtime.startsWith(QDir::tempPath() + "/owode-native-ci-")) ||
+        (display == "owode-login-ci" && runtime.startsWith(QDir::tempPath() + "/owode-login-ci-"));
     if (app.arguments().size() != 2 || qEnvironmentVariable("OWODE_NATIVE_TEST_ISOLATED") != "1" ||
-        qEnvironmentVariable("WAYLAND_DISPLAY") != "owode-ci" ||
-        !qEnvironmentVariable("XDG_RUNTIME_DIR")
-             .startsWith(QDir::tempPath() + "/owode-native-ci-")) {
+        !isolated) {
         qCritical("Capture is restricted to the isolated native test compositor");
         return 2;
     }

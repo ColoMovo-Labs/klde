@@ -1,6 +1,6 @@
 # CNB is a public mirror and an additional Fedora cloud validation path.
 # CircleCI remains the authoritative Qt/CMake matrix and merge check.
-"(main|feat/temporal-shell|feat/native-session-surfaces|feat/visual-workspace|feat/system-applications)":
+"(main|feat/temporal-shell|feat/native-session-surfaces|feat/visual-workspace|feat/system-applications|feat/fedora-login-session)":
   push:
     - docker:
         image: fedora:44
@@ -9,7 +9,7 @@
           script: |
             set -eu
             dnf install -y --setopt=install_weak_deps=False \
-              @development-tools cmake ninja-build git file findutils rpm-build \
+              @development-tools cmake ninja-build git file findutils rpm-build python3 \
               clang clang-tools-extra \
               qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtshadertools-devel qt6-qtwayland-devel \
               qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
@@ -83,8 +83,9 @@
           script: |
             set -eu
             bash tools/package-fedora-bundle.sh build/cnb artifacts/fedora-package
-            test -s artifacts/fedora-package/*.tar.gz
-            test -s artifacts/fedora-package/*.rpm
+            for artifact in artifacts/fedora-package/*.tar.gz artifacts/fedora-package/*.rpm; do
+              test -s "$artifact"
+            done
         - name: attach Fedora packages
           image: cnbcool/attachments:latest
           settings:

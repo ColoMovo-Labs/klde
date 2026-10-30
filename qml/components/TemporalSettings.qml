@@ -9,7 +9,7 @@ LabPanel {
     id: root
     objectName: "temporalDetail"
     heading: I18n.t("temporal.title")
-    subtitle: I18n.t("temporal.mock")
+    subtitle: I18n.t(Shell.time.reading.mock ? "temporal.mock" : "temporal.system")
     signal studyRequested
     TemporalCapsule {
         sizeMode: "expanded"
@@ -29,6 +29,7 @@ LabPanel {
         Layout.fillWidth: true
     }
     StateChoice {
+        visible: Shell.time.reading.mock
         label: I18n.t("temporal.phase")
         path: "temporal.phase"
         values: ["auto", "clear-morning", "cloudy-day", "sunset", "rainy-evening", "starry-night", "moonlit-night"]
@@ -52,6 +53,7 @@ LabPanel {
         }
     }
     ActionButton {
+        visible: Shell.time.reading.mock
         text: I18n.t("temporal.advance")
         Layout.fillWidth: true
         onClicked: Shell.state.advanceMinutes(1)

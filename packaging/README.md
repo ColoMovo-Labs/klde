@@ -49,6 +49,8 @@ Fedora 44 has an independent source build, CTest, offscreen startup job and
 cloud-built packages under the CircleCI `fedora-build` job's
 `artifacts/fedora-package/` directory. The preferred artifact is
 `klde-shell-preview-*.rpm`, installable with `dnf`; the matching
-`owode-shell-fedora44-*.tar.gz` is a rootless `~/.local` fallback. Neither
-registers a login session. Installation and tested scope are documented in
+`owode-shell-fedora44-*.tar.gz` is a rootless `~/.local` fallback. The separate `owode-session-*.noarch.rpm` registers an opt-in Wayland
+login entry and depends on its exact matching shell version. The preview RPM
+and rootless tarball still do not change the login manager. See
+[the session guide](../docs/development/fedora-login-session.md). Installation and tested scope are documented in
 [platforms.md](../docs/development/platforms.md).

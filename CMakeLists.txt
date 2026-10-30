@@ -71,7 +71,7 @@ set(klde_qml_files
     qml/components/Icon.qml qml/components/Surface.qml qml/components/IconButton.qml
     qml/components/ShellPopup.qml qml/components/Dock.qml qml/components/Launcher.qml
     qml/components/WorkspaceIndicator.qml qml/components/ToggleTile.qml
-    qml/components/SliderCard.qml qml/components/QuickSettings.qml
+    qml/components/SliderCard.qml qml/components/QuickSettings.qml qml/components/SessionMenu.qml
     qml/components/PowerSceneCard.qml qml/components/SceneSettings.qml
     qml/components/WeatherSettings.qml
     qml/components/ActionButton.qml qml/components/ChoiceBox.qml
@@ -111,7 +111,7 @@ qt_add_resources(klde_backends klde_translations PREFIX / FILES
 qt_add_resources(klde_backends klde_mock_data PREFIX / FILES
     src/mock/scenarios.json src/status/modules.json)
 
-set(klde_assets assets/wallpapers/first-light.svg
+set(klde_assets assets/branding/owode-logo.png assets/wallpapers/first-light.svg
     assets/wallpapers/depth-foreground.svg assets/wallpapers/soft-cache-study.svg
     assets/wallpapers/lock-cache-study.svg assets/fonts/comfortaa/Comfortaa-Bold.otf
     assets/welcome/klde-guide-placeholder.png assets/welcome/klde-guide-wave.png
@@ -161,9 +161,11 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS klde-shell RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS packaging/owode-run DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES packaging/org.klde.shell.preview.desktop
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 install(FILES assets/icons/klde.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
+install(FILES assets/branding/owode-logo.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps RENAME owode.png)
 install(DIRECTORY assets/fcitx5/klde-expressive-light assets/fcitx5/klde-expressive-dark
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/fcitx5/themes)
 install(FILES LICENSE LICENSES/CC-BY-SA-4.0.txt LICENSES/OFL-1.1.txt

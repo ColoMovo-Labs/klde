@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('log', type=Path)
 parser.add_argument('output', type=Path)
 parser.add_argument('--timeout', type=float, default=30)
+parser.add_argument('--roles', nargs='+', choices=['wallpaper', 'ribbon', 'dock', 'popup'],
+                    default=['wallpaper', 'ribbon', 'dock', 'popup'])
 args = parser.parse_args()
 if not 0 <= args.timeout <= 120:
     parser.error('timeout must be between 0 and 120 seconds')
@@ -23,6 +25,7 @@ expected = {
 created = re.compile(
     r'get_layer_surface\(new id (zwlr_layer_surface_v1[@#]\d+), '
     r'(wl_surface[@#]\d+), .*?, (\d+), "(desktop|dock|on-screen-display)"\)')
+expected = {role: value for role, value in expected.items() if role in args.roles}
 start = time.monotonic()
 args.output.unlink(missing_ok=True)
 while True:
@@ -56,7 +59,7 @@ while True:
             'scope': 'First buffers and output membership; inspect the actual PNG separately',
             'hardwarePerformanceBenchmark': False,
         }, indent=2) + '\n')
-        print('All four native CLI surfaces committed buffers and entered the output')
+        print('Native CLI surfaces committed buffers and entered the output: ' + ', '.join(sorted(expected)))
         break
     if time.monotonic() - start >= args.timeout:
         raise SystemExit('Native CLI buffers/mapping not ready: ' + ', '.join(sorted(set(expected) - set(ready))))

@@ -20,6 +20,7 @@
 #include <QtTest>
 #include <algorithm>
 #include <linux/input-event-codes.h>
+#include <memory>
 #include <wayland-client.h>
 
 Q_IMPORT_QML_PLUGIN(KldeShellPlugin)
@@ -124,6 +125,7 @@ class NativeSessionTest final : public QObject {
     }
 
   private:
+    std::unique_ptr<Input> m_input;
     bool snapshot(const QString &action = {}) {
         m_received = false;
         const auto name = QStringLiteral("owode-native-audit-%1").arg(++m_script);
@@ -187,6 +189,18 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
     bool m_received = false;
 
   private slots:
+    void initTestCase() {
+        QVERIFY(qEnvironmentVariable("OWODE_NATIVE_TEST_ISOLATED") == "1");
+        QVERIFY(qEnvironmentVariable("WAYLAND_DISPLAY") == "owode-ci");
+        QVERIFY(qEnvironmentVariable("XDG_RUNTIME_DIR")
+                    .startsWith(QDir::tempPath() + "/owode-native-ci-"));
+        // One persistent virtual seat device for the run. Recreating it between
+        // functional cases also hotplugs the seat and races pointer focus;
+        // hotplug behavior belongs in a separate, explicit acceptance case.
+        m_input = std::make_unique<Input>();
+        QVERIFY(m_input->valid());
+    }
+    void cleanupTestCase() { m_input.reset(); }
     void nativeSurfacesAndRealClient() {
         QVERIFY2(qEnvironmentVariable("OWODE_NATIVE_TEST_ISOLATED") == "1" &&
                      qEnvironmentVariable("WAYLAND_DISPLAY") == "owode-ci" &&
@@ -206,8 +220,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QVERIFY(supportFile.open(QIODevice::WriteOnly));
         supportFile.write(support.value().toUtf8());
         supportFile.close();
-        Input input;
-        QVERIFY2(input.valid(), "KWin's test input protocol must be advertised");
+        auto &input = *m_input;
         QQmlApplicationEngine engine;
         QSignalSpy warnings(&engine, &QQmlApplicationEngine::warnings);
         engine.setInitialProperties({{"nativeSurfaceMode", true}, {"initialLocale", "en"}});
@@ -355,10 +368,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
                          .startsWith(QDir::tempPath() + "/owode-native-ci-"),
                  "Run only in the private cloud KWin session");
         QVERIFY(klde::DesktopApplicationBackend::available());
-        // Register the isolated input device before mapping the shell, as in
-        // the surface test. Device/seat setup can outlive the bind roundtrip.
-        Input input;
-        QVERIFY(input.valid());
+        auto &input = *m_input;
         m_output = qEnvironmentVariable("OWODE_NATIVE_EVIDENCE");
         QVERIFY(!m_output.isEmpty());
         const auto fixture =

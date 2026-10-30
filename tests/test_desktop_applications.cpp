@@ -103,6 +103,32 @@ class DesktopApplicationsTest final : public QObject {
         QTRY_VERIFY(!contains(backend, "hot.desktop"));
         QVERIFY(QFile::remove(path));
     }
+    void gnomeAndKdeMenuEntriesRemainVisibleWithoutGlobalImpersonation() {
+        const auto folder = dataRoot + "/applications/";
+        const QByteArray base(
+            "[Desktop Entry]\nType=Application\nName=Compatibility fixture\nExec=/bin/true\n");
+        writeFile(folder + "gnome.desktop", base + "OnlyShowIn=GNOME;\n");
+        writeFile(folder + "kde.desktop", base + "OnlyShowIn=KDE;\n");
+        writeFile(folder + "excluded-compat.desktop",
+                  base + "OnlyShowIn=GNOME;KDE;\nNotShowIn=owoDE;\n");
+        klde::DesktopApplicationBackend backend;
+        backend.start();
+        QTRY_VERIFY(backend.ready());
+        QVERIFY(contains(backend, "gnome.desktop"));
+        QVERIFY(contains(backend, "kde.desktop"));
+        QVERIFY(!contains(backend, "excluded-compat.desktop"));
+        QVERIFY(!contains(backend, "other.desktop"));
+        QCOMPARE(qEnvironmentVariable("XDG_CURRENT_DESKTOP"), QString("owoDE"));
+        QSignalSpy result(&backend, &klde::DesktopApplicationBackend::launchFinished);
+        QVERIFY(backend.launch("gnome.desktop"));
+        QTRY_COMPARE(result.count(), 1);
+        QVERIFY(result.first().at(1).toBool());
+        QVERIFY(backend.launch("kde.desktop"));
+        QTRY_COMPARE(result.count(), 2);
+        QVERIFY(result.last().at(1).toBool());
+        for (const auto &id : {"gnome.desktop", "kde.desktop", "excluded-compat.desktop"})
+            QVERIFY(QFile::remove(folder + id));
+    }
     void launchesWithDesktopFieldCodesWorkingDirectoryAndLiteralArguments() {
         const auto marker = dataRoot + "/launch result.json";
         const auto path = dataRoot + "/applications/launch.desktop";
@@ -191,10 +217,12 @@ class DesktopApplicationsTest final : public QObject {
         auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
         QVERIFY(services);
         QVERIFY(!services->applications()->preview());
+        QVERIFY(!services->time()->reading().value("mock").toBool());
         QTRY_VERIFY(services->desktopApplications()->ready());
         QVERIFY(!services->applications()->nameFor("suite-child.desktop").isEmpty());
         klde::ShellServices preview(nullptr);
         QVERIFY(preview.applications()->preview());
+        QVERIFY(preview.time()->reading().value("mock").toBool());
         QVERIFY(!preview.applications()->nameFor("terminal").isEmpty());
     }
 };

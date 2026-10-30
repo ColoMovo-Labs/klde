@@ -44,7 +44,7 @@ ShellPopup {
             brightnessLabel: I18n.t("shell.effects.brightness")
             volumeLabel: I18n.t("shell.effects.volume")
             settingsLabel: I18n.t("shell.settings.open")
-            powerLabel: I18n.t("destructive.session.preview")
+            powerLabel: Shell.session.managed ? I18n.t("session.logout.confirm") : I18n.t("destructive.session.preview")
             brightnessSlider.value: Shell.system.brightness
             volumeSlider.value: Shell.system.volume
             microphoneSlider.value: root.snapshot.audio.microphone
@@ -68,7 +68,10 @@ ShellPopup {
     Connections {
         target: form.powerButton
         function onClicked(): void {
-            Shell.system.requestSessionAction("shutdown");
+            if (Shell.session.managed)
+                root.viewRequested("session");
+            else
+                Shell.system.requestSessionAction("shutdown");
         }
     }
     Connections {

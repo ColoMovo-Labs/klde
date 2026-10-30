@@ -79,7 +79,11 @@ class ShellServices final : public QObject {
     StatusModuleRegistry *ribbon() { return &m_ribbon; }
     Q_INVOKABLE bool previewAction(const QString &action);
     QVariantMap weather() const;
-    TimeBackend *time() { return &m_time; }
+    TimeBackend *time() {
+        if (m_systemTime)
+            return m_systemTime.get();
+        return &m_time;
+    }
     TelemetryBackend *telemetry() { return &m_telemetry; }
     WallpaperEffectsBackend *wallpaperEffects() { return &m_wallpaperEffects; }
     WaydroidBackend *waydroid() { return &m_waydroid; }
@@ -117,6 +121,7 @@ class ShellServices final : public QObject {
     SystemStateModel m_state;
     MockScenarioManager m_mockScenarios;
     MockTimeBackend m_time;
+    std::unique_ptr<SystemTimeBackend> m_systemTime;
     MockTelemetryBackend m_telemetry;
     MockWallpaperEffectsBackend m_wallpaperEffects;
     MockWaydroidBackend m_waydroid;

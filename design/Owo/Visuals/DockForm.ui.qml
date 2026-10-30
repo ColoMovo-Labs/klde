@@ -42,6 +42,9 @@ Item {
                 iconName: "klde"
                 text: Tokens.locale === "zh_CN" ? "应用" : "Applications"
                 selected: true
+                // The multicolor brand mark needs a neutral base, including
+                // when the launcher action is emphasized.
+                shapeColor: down ? Tokens.primaryContainer : hovered ? Tokens.surfaceContainerHigh : Tokens.surfaceElevated
             }
             Rectangle {
                 width: Tokens.space1

@@ -13,6 +13,14 @@
 > `KLDE`、`klde-shell`、`KLDE.Shell` 和 `org.klde.*` 是保留的技术标识，
 > 用于兼容已有源码、包名、CI 与迁移历史；新的用户界面品牌统一使用 owoDE。
 
+## 生产使用与 Fedora 登录会话
+
+当前正在实现生产使用所需的会话、应用兼容和系统后端。
+独立的 `owode-session` RPM 增加可选登录项，保留现有桌面和预览包。
+安装、退出与回退见 [Fedora 登录会话](docs/development/fedora-login-session.md)，
+未完成项见 [生产验收表](docs/development/production-readiness.md)。
+在云端及目标机验收完成前，不宣称生产就绪。
+
 ## 愿景
 
 owoDE 从 Ubuntu Kylin / UKUI 在 2020–2021 年前后的明亮、柔和气质出发，结合
@@ -32,8 +40,9 @@ Wayland / KWin 验证平台。长期目标是保持对普通 Ubuntu 和其他 De
 - Visual Lab 和 MockBackend 仍然可用，所有 mock 行为都在界面和文档中明确标注。
 - Fedora 44 + niri 主机上已经完成第一次嵌套 KWin 亮相：KWin 6.7.5、真实 Qt 6
   客户端和 owoDE 预览同时显示，主机 niri 保持运行。
-- LayerShellQt 原生背景、顶栏和 Dock 正在接入；没有 Fedora 目标机的协议日志
-  和角色证据前，不把它们宣称为已完成。
+- LayerShellQt 原生背景、顶栏和 Dock 已有 Ubuntu/Fedora 嵌套 KWin 云端角色、
+  输入和窗口叠放证据。新增登录会话与真实应用路径仍按具体提交验收，真实硬件
+  登录和生产级稳定性尚未完成。
 
 ## First Light：第一次嵌套 KWin 亮相
 
@@ -130,7 +139,7 @@ tar -xzf owode-shell-fedora44-*.tar.gz -C "$HOME/.local" --strip-components=1
 
 这是独立预览窗口，不会替换当前桌面。若要测试嵌套 KWin 原生表面，需使用
 匹配提交中的 `tools/run-owode-session.sh`，并设置 `OWODE_MODE=native`；
-它仍然不会安装登录会话。Fedora 目前提供云端 RPM 和 tarball，尚未提供完整登录会话包。
+它仍然不会安装登录会话。Fedora 目前提供云端 RPM 和 tarball，另提供实验性的可选登录会话包，参见上方会话指南。
 
 ## 贡献与许可
 

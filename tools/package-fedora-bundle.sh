@@ -28,7 +28,8 @@ cat > "$prefix/share/doc/owode-shell-preview/README-Fedora.md" <<'EOF'
 This is an experimental user-installable Fedora bundle produced by the Fedora
 cloud build. It contains the standalone `klde-shell` preview and its desktop
 resources. It does not replace the current desktop session or install a login
-manager entry.
+manager entry. The separate owode-session RPM provides the opt-in login entry;
+keep it separate from this rootless preview archive.
 
 Extract the archive into `~/.local` and run `~/.local/bin/klde-shell`.
 Install Fedora's Qt 6 runtime packages before launching it. Native KWin
@@ -44,7 +45,18 @@ cpack --config "$build_dir/CPackConfig.cmake" -G RPM -B "$out_dir" \
 rm -rf "$out_dir/_CPack_Packages"
 mapfile -t rpms < <(find "$out_dir" -maxdepth 1 -name '*.rpm' -type f -print)
 test "${#rpms[@]}" -eq 1
+session_source="$stage_dir/owode-session-source"
+mkdir -p "$session_source" "$stage_dir/rpmbuild/SOURCES"
+cp packaging/session/start-owode packaging/session/owode-session-client \
+    packaging/session/owode.desktop LICENSE "$session_source/"
+tar -C "$stage_dir" -czf "$stage_dir/rpmbuild/SOURCES/owode-session-source.tar.gz" owode-session-source
+sed -e "s/@VERSION@/$version/g" -e "s/@RELEASE@/$release/g" \
+    packaging/session/owode-session.spec.in > "$stage_dir/owode-session.spec"
+rpmbuild -bb --define "_topdir $stage_dir/rpmbuild" "$stage_dir/owode-session.spec"
+cp "$stage_dir"/rpmbuild/RPMS/noarch/owode-session-*.rpm "$out_dir/"
+# Keep the full matching source beside both GPL-covered binary packages.
+git archive --format=tar --prefix=owode-source/ "$commit" | gzip -n > "$out_dir/owode-source-$short_commit.tar.gz"
 printf '%s\n' "$commit" > "$out_dir/${archive%.tar.gz}.source-commit.txt"
 printf '%s\n' "$archive" > "$out_dir/${archive%.tar.gz}.manifest.txt"
 (cd "$stage_dir" && find owode -type f -printf '%P\n' | sort) >> "$out_dir/${archive%.tar.gz}.manifest.txt"
-(cd "$out_dir" && sha256sum "$archive" "$(basename "${rpms[0]}")" > SHA256SUMS)
+(cd "$out_dir" && sha256sum "$archive" *.rpm "owode-source-$short_commit.tar.gz" > SHA256SUMS)

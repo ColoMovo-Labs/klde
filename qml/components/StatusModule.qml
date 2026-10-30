@@ -23,9 +23,9 @@ StatusCapsule {
         case "context":
             return condensed ? "" : snapshot.activeApp === "desktop" ? I18n.t("lab.desktop") : I18n.s(Shell.applications.nameFor(snapshot.activeApp));
         case "date":
-            return I18n.date(snapshot.time, true);
+            return I18n.date(Shell.time.reading.dateTime, true);
         case "time":
-            return Qt.formatTime(new Date(snapshot.time), "hh:mm");
+            return Shell.time.reading.timeText;
         case "cpu":
             return I18n.number(snapshot.cpu.usage, 0);
         case "memory":

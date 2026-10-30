@@ -12,6 +12,7 @@ namespace klde {
 // host session or claims that a mock surface is a desktop shell surface.
 class SessionRuntimeBackend : public QObject {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.owode.Session1")
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.session")
     Q_PROPERTY(bool waylandSession READ waylandSession NOTIFY changed)
@@ -22,6 +23,7 @@ class SessionRuntimeBackend : public QObject {
     Q_PROPERTY(QString compositor READ compositor NOTIFY changed)
     Q_PROPERTY(QString diagnostic READ diagnostic NOTIFY changed)
     Q_PROPERTY(QVariantMap capabilities READ capabilities NOTIFY changed)
+    Q_PROPERTY(bool managed READ managed NOTIFY changed)
 
   public:
     explicit SessionRuntimeBackend(QObject *parent = nullptr);
@@ -38,12 +40,20 @@ class SessionRuntimeBackend : public QObject {
     // Re-probe on demand after an isolated session has been started. This is
     // intentionally event-driven; the shell must not poll the session bus.
     Q_INVOKABLE bool refresh();
+    bool managed() const { return m_managed; }
+    // Enabled only by main's explicit managed/native launch path.
+    bool enableManagedSession();
+
+  public slots:
+    Q_SCRIPTABLE bool logout();
 
   signals:
     void changed();
+    void logoutRequested();
 
   private:
     bool m_waylandSession = false;
+    bool m_managed = false;
     bool m_kwinService = false;
     bool m_kwinDetected = false;
     bool m_layerShellAvailable = false;

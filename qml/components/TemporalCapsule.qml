@@ -34,7 +34,7 @@ Button {
         }
     }
     padding: 0
-    Accessible.name: reading.timeText + ", " + I18n.t("temporal.phase." + reading.phase) + ", " + I18n.t("temporal.season." + reading.season) + ", " + I18n.t("temporal.mock")
+    Accessible.name: reading.timeText + ", " + I18n.t("temporal.phase." + reading.phase) + ", " + I18n.t("temporal.season." + reading.season) + ", " + I18n.t(reading.mock ? "temporal.mock" : "temporal.system")
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
     background: TemporalLandscape {

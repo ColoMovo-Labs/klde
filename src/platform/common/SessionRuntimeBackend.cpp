@@ -20,6 +20,22 @@ bool hasLayerShellInterface() {
 
 SessionRuntimeBackend::SessionRuntimeBackend(QObject *parent) : QObject(parent) { refresh(); }
 
+bool SessionRuntimeBackend::enableManagedSession() {
+    if (!refresh() || !m_layerShellAvailable ||
+        qEnvironmentVariable("OWODE_MANAGED_SESSION") != "1")
+        return false;
+    m_managed = true;
+    emit changed();
+    return true;
+}
+
+bool SessionRuntimeBackend::logout() {
+    if (!m_managed)
+        return false;
+    emit logoutRequested();
+    return true;
+}
+
 bool SessionRuntimeBackend::refresh() {
     const auto env = QProcessEnvironment::systemEnvironment();
     const bool wayland =

@@ -7,7 +7,7 @@ uses Qt and capability interfaces rather than Ubuntu-specific commands.
 | Environment | Current validation | Package status |
 | --- | --- | --- |
 | Ubuntu 26.04 / Ubuntu Kylin lineage | Primary CircleCI build, analysis, CTest, QML and three rendering paths | Experimental `.deb`, install/runtime/removal checked in a fresh Ubuntu container |
-| Fedora 44 | Independent CircleCI CMake/Ninja build, full CTest, offscreen/software startup and cloud-built packages | Experimental `.rpm` and `.tar.gz` bundles; no login-session package |
+| Fedora 44 | Independent CircleCI CMake/Ninja build, full CTest, offscreen/software startup and cloud-built packages | Experimental shell `.rpm` / `.tar.gz` plus opt-in `owode-session` RPM; see revision-specific acceptance |
 | Arch and other distributions | Public Qt 6.8+ / CMake source interface; not currently tested by CI | Community/source builds; no official package claim |
 
 These rows describe the configured acceptance checks. A platform is verified for
@@ -45,7 +45,8 @@ Compiler/dependency caches are separate from Ubuntu caches. Only software
 rendering is exercised in this Fedora job; Ubuntu's llvmpipe checks do not prove
 Fedora hardware acceleration or a compositor session works. The same job stores
 experimental `klde-shell-preview-*.rpm` and `owode-shell-fedora44-*.tar.gz`
-user bundles as CircleCI artifacts. Neither registers a login session.
+user bundles as CircleCI artifacts. The separate `owode-session` RPM adds the
+opt-in login entry; see [Fedora session guide](fedora-login-session.md).
 
 ## Fedora cloud bundle installation
 

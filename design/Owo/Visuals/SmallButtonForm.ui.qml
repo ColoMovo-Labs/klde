@@ -29,6 +29,8 @@ Button {
         Glyph {
             anchors.centerIn: parent
             name: root.iconName
+            width: root.iconName === "klde" ? Tokens.iconL : Tokens.iconM
+            height: width
             lightInk: root.selected ? !Tokens.darkMode : Tokens.darkMode
         }
     }

@@ -78,7 +78,13 @@ jobs:
             git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
       - run:
           name: Verify native KWin roles, input, focus and maximization
-          command: bash tools/native-session-smoke.sh build/ci artifacts/native-session
+          command: |
+            for native_run in 1 2 3; do
+              native_output=artifacts/native-session
+              if [[ "$native_run" != 1 ]]; then native_output="$native_output/repeat-$native_run"; fi
+              bash tools/native-session-smoke.sh build/ci "$native_output"
+            done
+            printf '%s\n' '3 fresh isolated KWin runs passed.' > artifacts/native-session/repeat-acceptance.txt
       - store_test_results:
           path: artifacts/native-session
       - store_artifacts:
@@ -114,8 +120,25 @@ jobs:
             tar -C build/fedora/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
             git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
       - run:
+          name: Verify installed Fedora login client, Xwayland and owned logout
+          command: |
+            dnf install -y --setopt=install_weak_deps=False gnome-calculator kcalc adwaita-icon-theme breeze-icon-theme
+            dnf install -y artifacts/fedora-package/*.rpm
+            bash tools/login-session-smoke.sh build/fedora artifacts/login-session
+            dnf remove -y owode-session
+            test ! -e /usr/share/wayland-sessions/owode.desktop
+            test ! -e /usr/bin/start-owode
+      - store_artifacts:
+          path: artifacts/login-session
+      - run:
           name: Verify native KWin roles, input, focus and maximization
-          command: bash tools/native-session-smoke.sh build/fedora artifacts/native-session
+          command: |
+            for native_run in 1 2 3; do
+              native_output=artifacts/native-session
+              if [[ "$native_run" != 1 ]]; then native_output="$native_output/repeat-$native_run"; fi
+              bash tools/native-session-smoke.sh build/fedora "$native_output"
+            done
+            printf '%s\n' '3 fresh isolated KWin runs passed.' > artifacts/native-session/repeat-acceptance.txt
       - store_test_results:
           path: artifacts/native-session
       - store_artifacts:
@@ -337,6 +360,7 @@ jobs:
           root: /root/project
           paths:
             - build/fedora
+            - artifacts/fedora-package
       - store_test_results:
           path: artifacts/tests
       - store_artifacts:
