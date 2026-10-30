@@ -523,7 +523,16 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
                 .toJson());
         stateEvidence.close();
         QVERIFY(capture("native-live-workspace"));
-        QVERIFY(manager->closeWindow(firstId));
+        const auto firstDesktop = manager->workspaces().first().toMap().value("id").toString();
+        QVERIFY(services->previewAction("move.1"));
+        QTRY_COMPARE(confirmedWindow(firstId).value("workspaceId").toString(), firstDesktop);
+        QVERIFY(services->previewAction("workspace.1"));
+        QTRY_COMPARE(manager->activeWorkspace(), firstDesktop);
+        QVERIFY(!services->previewAction("workspace.5"));
+        QVERIFY(!services->previewAction("window.float"));
+        QVERIFY(manager->activateWindow(firstId));
+        QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
+        QVERIFY(services->previewAction("window.close"));
         QTRY_COMPARE(manager->windows().size(), 1);
         QVERIFY(services->dockApplications()
                     ->data(services->dockApplications()->index(0, 0),

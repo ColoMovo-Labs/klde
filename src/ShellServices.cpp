@@ -199,6 +199,31 @@ void ShellServices::projectState(const QString &path) {
             QStringLiteral("workspace-%1").arg(m_state.value(path).toInt()));
 }
 bool ShellServices::previewAction(const QString &action) {
+    // This legacy entry point is also used by the shell's shortcut dispatcher.
+    // Native window actions must never mutate the Visual Lab's mock manager.
+    if (m_liveWindowManager && (action.startsWith("workspace.") || action.startsWith("move.") ||
+                                action.startsWith("window."))) {
+        const auto windows = m_liveWindowManager->windows();
+        QString active;
+        for (const auto &item : windows)
+            if (item.toMap().value("active").toBool())
+                active = item.toMap().value("id").toString();
+        if (action.startsWith("workspace.") || action.startsWith("move.")) {
+            bool valid = false;
+            const int number = action.section('.', 1).toInt(&valid);
+            const auto desktops = m_liveWindowManager->workspaces();
+            if (!valid || number < 1 || number > desktops.size())
+                return false;
+            const auto id = desktops.at(number - 1).toMap().value("id").toString();
+            return action.startsWith("move.") ? m_liveWindowManager->moveWindow(active, id)
+                                              : m_liveWindowManager->activateWorkspace(id);
+        }
+        if (action == "window.close")
+            return m_liveWindowManager->closeWindow(active);
+        if (action == "window.float")
+            return m_liveWindowManager->setWindowFloating(active, true);
+        return false;
+    }
     if (action.startsWith("workspace.") || action.startsWith("move.")) {
         const int number = action.section('.', 1).toInt();
         if (number < 1 || number > 5)
