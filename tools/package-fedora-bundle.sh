@@ -28,7 +28,8 @@ cat > "$prefix/share/doc/owode-shell-preview/README-Fedora.md" <<'EOF'
 This is an experimental user-installable Fedora bundle produced by the Fedora
 cloud build. It contains the standalone `klde-shell` preview and its desktop
 resources. It does not replace the current desktop session or install a login
-manager entry.
+manager entry. The separate owode-session RPM provides the opt-in login entry;
+keep it separate from this rootless preview archive.
 
 Extract the archive into `~/.local` and run `~/.local/bin/klde-shell`.
 Install Fedora's Qt 6 runtime packages before launching it. Native KWin

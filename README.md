@@ -40,8 +40,9 @@ Wayland / KWin 验证平台。长期目标是保持对普通 Ubuntu 和其他 De
 - Visual Lab 和 MockBackend 仍然可用，所有 mock 行为都在界面和文档中明确标注。
 - Fedora 44 + niri 主机上已经完成第一次嵌套 KWin 亮相：KWin 6.7.5、真实 Qt 6
   客户端和 owoDE 预览同时显示，主机 niri 保持运行。
-- LayerShellQt 原生背景、顶栏和 Dock 正在接入；没有 Fedora 目标机的协议日志
-  和角色证据前，不把它们宣称为已完成。
+- LayerShellQt 原生背景、顶栏和 Dock 已有 Ubuntu/Fedora 嵌套 KWin 云端角色、
+  输入和窗口叠放证据。新增登录会话与真实应用路径仍按具体提交验收，真实硬件
+  登录和生产级稳定性尚未完成。
 
 ## First Light：第一次嵌套 KWin 亮相
 
