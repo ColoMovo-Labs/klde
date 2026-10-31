@@ -66,6 +66,7 @@
               --capture artifacts/visual/material-study-dark-kemono.png \
               > artifacts/visual/material-study-dark-kemono.log 2>&1
             sha256sum artifacts/visual/*.png > artifacts/visual/SHA256SUMS
+            find artifacts/visual -maxdepth 1 -type f -empty -delete
             test -s artifacts/visual/monet-light-snow.png
             test -s artifacts/visual/monet-dark-kemono.png
             test -s artifacts/visual/material-study-light.png
@@ -77,7 +78,13 @@
               - "./artifacts/visual/*.png"
               - "./artifacts/visual/SHA256SUMS"
         - name: capture default fusion materials through OpenGL
-          script: bash tools/capture-fusion-previews.sh build/cnb/bin/klde-shell artifacts/fusion
+          script: |
+            set -eu
+            bash tools/capture-fusion-previews.sh build/cnb/bin/klde-shell artifacts/fusion
+            # A quiet Qt run leaves an empty log, and the attachment uploader
+            # rejects zero-length files (errcode 2000007). The PNGs are checked
+            # by the capture script itself.
+            find artifacts/fusion -maxdepth 1 -type f -empty -delete
         - name: attach fusion previews and rendering evidence
           image: cnbcool/attachments:latest
           settings:
@@ -102,7 +109,10 @@
               - "./artifacts/fedora-package/SHA256SUMS"
               - "./artifacts/fedora-package/*.txt"
         - name: build and verify the independent Lingmo calculator port
-          script: bash tools/cloud-calculator.sh
+          script: |
+            set -eu
+            bash tools/cloud-calculator.sh
+            find artifacts/calculator -maxdepth 1 -type f -empty -delete
         - name: attach themed calculator and corresponding source
           image: cnbcool/attachments:latest
           settings:
