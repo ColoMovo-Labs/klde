@@ -42,6 +42,8 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const {
         return app.active;
     case OriginRole:
         return app.origin;
+    case PinnedRole:
+        return app.pinned;
     default:
         return {};
     }
@@ -49,11 +51,12 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const {
 QHash<int, QByteArray> ApplicationModel::roleNames() const {
     return {{AppIdRole, "appId"},   {NameRole, "displayName"},  {DescriptionRole, "description"},
             {IconRole, "iconName"}, {KeywordsRole, "keywords"}, {RunningRole, "running"},
-            {ActiveRole, "active"}, {OriginRole, "origin"}};
+            {ActiveRole, "active"}, {OriginRole, "origin"},     {PinnedRole, "pinned"}};
 }
 QString ApplicationModel::nameFor(const QString &appId) const {
-    const auto found = std::find_if(m_applications.cbegin(), m_applications.cend(),
-                                    [&appId](const Application &app) { return app.id == appId; });
+    const auto found =
+        std::find_if(m_applications.cbegin(), m_applications.cend(),
+                     [&appId](const ApplicationEntry &app) { return app.id == appId; });
     return found == m_applications.cend() ? QString{} : found->name;
 }
 QString ApplicationModel::activeId() const {
@@ -63,6 +66,8 @@ QString ApplicationModel::activeId() const {
     return QStringLiteral("desktop");
 }
 void ApplicationModel::resetPreview(const QString &appId) {
+    if (!m_preview)
+        return;
     for (auto &app : m_applications) {
         app.active = app.id == appId;
         app.running = app.active || app.id == "files" || app.id == "terminal";
@@ -71,6 +76,8 @@ void ApplicationModel::resetPreview(const QString &appId) {
     emit activeChanged();
 }
 void ApplicationModel::setAndroidSource(bool enabled) {
+    if (!m_preview)
+        return;
     const bool present = !m_applications.isEmpty() && m_applications.last().origin == "android";
     if (present == enabled)
         return;
@@ -91,7 +98,7 @@ void ApplicationModel::setAndroidSource(bool enabled) {
     }
 }
 bool ApplicationModel::activate(const QString &appId) {
-    if (nameFor(appId).isEmpty()) {
+    if (!m_preview || nameFor(appId).isEmpty()) {
         return false;
     }
     for (auto &app : m_applications) {
@@ -103,12 +110,46 @@ bool ApplicationModel::activate(const QString &appId) {
     return true;
 }
 
+void ApplicationModel::replaceSystemApplications(const QList<ApplicationEntry> &applications) {
+    const bool changedMode = m_preview;
+    beginResetModel();
+    m_preview = false;
+    m_applications = applications;
+    endResetModel();
+    if (changedMode)
+        emit modeChanged();
+    emit activeChanged();
+}
+bool ApplicationModel::isPinned(const QString &appId) const {
+    for (const auto &app : m_applications)
+        if (app.id == appId)
+            return app.pinned;
+    return false;
+}
+void ApplicationModel::setPinned(const QString &appId, bool pinned) {
+    if (!m_preview && !nameFor(appId).isEmpty())
+        emit pinRequested(appId, pinned);
+}
+DockApplicationModel::DockApplicationModel(ApplicationModel *source, QObject *parent)
+    : QSortFilterProxyModel(parent) {
+    setSourceModel(source);
+    setDynamicSortFilter(true);
+}
+bool DockApplicationModel::filterAcceptsRow(int row, const QModelIndex &parent) const {
+    const auto *applications = qobject_cast<ApplicationModel *>(sourceModel());
+    const auto item = sourceModel()->index(row, 0, parent);
+    return applications->preview() ||
+           sourceModel()->data(item, ApplicationModel::PinnedRole).toBool() ||
+           sourceModel()->data(item, ApplicationModel::RunningRole).toBool();
+}
+
 ApplicationFilterModel::ApplicationFilterModel(ApplicationModel *source, QObject *parent)
     : QSortFilterProxyModel(parent) {
     setSourceModel(source);
     setDynamicSortFilter(true);
     connect(this, &QAbstractItemModel::rowsInserted, this, [this] { emit countChanged(); });
     connect(this, &QAbstractItemModel::rowsRemoved, this, [this] { emit countChanged(); });
+    connect(this, &QAbstractItemModel::modelReset, this, [this] { emit countChanged(); });
 }
 void ApplicationFilterModel::setQuery(const QString &query) {
     const auto normalized = query.simplified();

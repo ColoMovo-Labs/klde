@@ -21,41 +21,51 @@ Item {
         anchors.fill: parent
         visible: root.decorationVisible
     }
-    Row {
-        id: dockRow
-        anchors.centerIn: parent
-        spacing: Tokens.space6
-        SmallButton {
-            id: launcherButton
-            objectName: "launcherButton"
-            width: Tokens.dockItem
-            height: Tokens.dockItem
-            iconName: "klde"
-            text: Tokens.locale === "zh_CN" ? "应用" : "Applications"
-            selected: true
-        }
-        Rectangle {
-            width: Tokens.space1
-            height: Tokens.space24
+    Flickable {
+        x: Tokens.space12
+        width: root.width - Tokens.space24
+        height: root.height
+        contentWidth: dockRow.implicitWidth
+        contentHeight: height
+        clip: true
+        flickableDirection: Flickable.HorizontalFlick
+        boundsBehavior: Flickable.StopAtBounds
+        Row {
+            id: dockRow
             anchors.verticalCenter: parent.verticalCenter
-            color: Tokens.outline
-            opacity: Tokens.mutedOpacity
-        }
-        Repeater {
-            model: root.applications
-            delegate: DockItem {
-                required appId
-                required property string displayName
-                required property string iconName
-                required property bool running
-                required property bool active
+            spacing: Tokens.space6
+            SmallButton {
+                id: launcherButton
+                objectName: "launcherButton"
                 width: Tokens.dockItem
                 height: Tokens.dockItem
-                label: root.appNames[appId] || displayName
-                actionTarget: root.actionTarget
-                glyph: iconName
-                runningState: running
-                activeState: active
+                iconName: "klde"
+                text: Tokens.locale === "zh_CN" ? "应用" : "Applications"
+                selected: true
+            }
+            Rectangle {
+                width: Tokens.space1
+                height: Tokens.space24
+                anchors.verticalCenter: parent.verticalCenter
+                color: Tokens.outline
+                opacity: Tokens.mutedOpacity
+            }
+            Repeater {
+                model: root.applications
+                delegate: DockItem {
+                    required appId
+                    required property string displayName
+                    required property string iconName
+                    required property bool running
+                    required property bool active
+                    width: Tokens.dockItem
+                    height: Tokens.dockItem
+                    label: root.appNames[appId] || displayName
+                    actionTarget: root.actionTarget
+                    glyph: iconName
+                    runningState: running
+                    activeState: active
+                }
             }
         }
     }

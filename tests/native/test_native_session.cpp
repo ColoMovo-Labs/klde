@@ -13,6 +13,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QScopeGuard>
 #include <QScreen>
 #include <QSignalSpy>
 #include <QtQml/QQmlExtensionPlugin>
@@ -346,6 +347,114 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QCOMPARE(warnings.count(), 0);
         bus.unregisterObject("/Audit");
         bus.unregisterService("org.owode.NativeAudit");
+    }
+    void nativeLauncherDiscoversPinsAndStartsWaylandApplication() {
+        QVERIFY2(qEnvironmentVariable("OWODE_NATIVE_TEST_ISOLATED") == "1" &&
+                     qEnvironmentVariable("WAYLAND_DISPLAY") == "owode-ci" &&
+                     qEnvironmentVariable("XDG_RUNTIME_DIR")
+                         .startsWith(QDir::tempPath() + "/owode-native-ci-"),
+                 "Run only in the private cloud KWin session");
+        QVERIFY(klde::DesktopApplicationBackend::available());
+        // Register the isolated input device before mapping the shell, as in
+        // the surface test. Device/seat setup can outlive the bind roundtrip.
+        Input input;
+        QVERIFY(input.valid());
+        m_output = qEnvironmentVariable("OWODE_NATIVE_EVIDENCE");
+        QVERIFY(!m_output.isEmpty());
+        const auto fixture =
+            qEnvironmentVariable("XDG_DATA_HOME") + "/applications/owode-launch-fixture.desktop";
+        const auto state = m_output + "/catalog-client-state.json";
+        QFile desktop(fixture);
+        QVERIFY(desktop.open(QIODevice::WriteOnly));
+        const auto command = QStringLiteral("\"%1/owode-native-test-client\" --state \"%2\" "
+                                            "--desktop-file owode-launch-fixture")
+                                 .arg(QCoreApplication::applicationDirPath(), state);
+        desktop.write(("[Desktop Entry]\nType=Application\nName=Catalog Launch Fixture\nExec=" +
+                       command + "\nIcon=utilities-terminal\nStartupNotify=true\n")
+                          .toUtf8());
+        desktop.close();
+        auto bus = QDBusConnection::sessionBus();
+        QVERIFY(bus.registerService("org.owode.NativeAudit"));
+        QVERIFY(bus.registerObject("/Audit", this, QDBusConnection::ExportAllSlots));
+        QQmlApplicationEngine engine;
+        const auto cleanup = qScopeGuard([&] {
+            snapshot("close");
+            QFile::remove(fixture);
+            bus.unregisterObject("/Audit");
+            bus.unregisterService("org.owode.NativeAudit");
+        });
+        const QSignalSpy warnings(&engine, &QQmlApplicationEngine::warnings);
+        engine.setProperty("owodeSystemApplications", true);
+        engine.setInitialProperties({{"nativeSurfaceMode", true}, {"initialLocale", "en"}});
+        engine.loadFromModule("KLDE.Shell", "Main");
+        QCOMPARE(engine.rootObjects().size(), 1);
+        auto *root = qobject_cast<QQuickWindow *>(engine.rootObjects().first());
+        auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
+        QVERIFY(root && services);
+        QTRY_VERIFY(services->desktopApplications()->ready());
+        QVERIFY(!services->applications()->preview());
+        QVERIFY(!services->applications()->nameFor("owode-launch-fixture.desktop").isEmpty());
+        auto *dock = findWindow("nativeDockSurface");
+        auto *wallpaper = findWindow("nativeWallpaperSurface");
+        auto *popup = findWindow("nativePopupSurface");
+        QVERIFY(dock && wallpaper && popup);
+        QTRY_VERIFY(dock->isExposed() && wallpaper->isExposed());
+        auto *button = findItem(dock->contentItem(), "launcherButton");
+        QVERIFY(button);
+        QTRY_VERIFY(!dock->mask().isEmpty());
+        QTRY_VERIFY(dock->mask().contains(
+            button->mapToScene(QPointF(button->width() / 2, button->height() / 2)).toPoint()));
+        // Exposed precedes the first committed input mask. Wait for a frame after
+        // that mask is installed, then inject exactly one click (no click retry).
+        QSignalSpy committed(dock, &QQuickWindow::frameSwapped);
+        dock->update();
+        QTRY_VERIFY(!committed.isEmpty());
+        QVERIFY(capture("native-catalog-background"));
+        const auto point = button->mapToScene(QPointF(button->width() / 2, button->height() / 2));
+        input.move(
+            QPoint(qRound(point.x()), wallpaper->height() - dock->height() + qRound(point.y())));
+        QTRY_VERIFY(button->property("hovered").toBool());
+        input.button(true);
+        input.button(false);
+        auto *launcher = root->findChild<QObject *>("launcher");
+        QVERIFY(launcher);
+        QTRY_VERIFY(popup->isExposed() && launcher->property("opened").toBool());
+        for (const auto key : {KEY_F, KEY_I, KEY_X, KEY_T, KEY_U, KEY_R, KEY_E})
+            input.key(static_cast<uint32_t>(key));
+        QTRY_COMPARE(services->search()->query(), QString("fixture"));
+        QTRY_COMPARE(services->search()->count(), 1);
+        QCOMPARE(services->search()->idAt(0), QString("owode-launch-fixture.desktop"));
+        input.key(KEY_LEFTSHIFT, true);
+        input.key(KEY_F10);
+        input.key(KEY_LEFTSHIFT, false);
+        auto *menu = root->findChild<QObject *>("applicationContextMenu");
+        QVERIFY(menu);
+        QTRY_VERIFY(menu->property("visible").toBool());
+        input.key(KEY_DOWN);
+        input.key(KEY_ENTER);
+        QTRY_VERIFY(services->applications()->isPinned("owode-launch-fixture.desktop"));
+        QTRY_VERIFY(!menu->property("visible").toBool());
+        auto *search = findItem(popup->contentItem(), "launcherSearch");
+        QVERIFY(search);
+        QTRY_VERIFY(search->hasActiveFocus());
+        QCOMPARE(services->dockApplications()->rowCount(), 1);
+        QVERIFY(capture("native-catalog-launcher"));
+        QSignalSpy launched(services->desktopApplications(),
+                            &klde::DesktopApplicationBackend::launchFinished);
+        input.key(KEY_ENTER);
+        QTRY_COMPARE(launched.count(), 1);
+        QVERIFY2(launched.first().at(1).toBool(), qPrintable(launched.first().at(2).toString()));
+        QTRY_VERIFY(!popup->isVisible());
+        QTRY_VERIFY(snapshot() && client().value("normal").toBool());
+        // No click or script activation: focus must result from the real launcher request.
+        QCOMPARE(client().value("resourceClass").toString(), QString("owode-launch-fixture"));
+        QTRY_VERIFY(readObject(state).value("active").toBool());
+        QCOMPARE(readObject(state).value("platform").toString(), QString("wayland"));
+        QVERIFY(capture("native-catalog-application"));
+        QVERIFY(snapshot("close"));
+        QTRY_VERIFY(snapshot() && client().isEmpty());
+        QVERIFY(wallpaper->isVisible() && dock->isVisible());
+        QCOMPARE(warnings.count(), 0);
     }
 };
 

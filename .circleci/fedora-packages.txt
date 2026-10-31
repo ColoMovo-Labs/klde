@@ -20,3 +20,7 @@ layer-shell-qt
 layer-shell-qt-devel
 wayland-devel
 wayland-protocols-devel
+kf6-kio-devel
+kf6-kservice-devel
+dbus-daemon
+dbus-tools

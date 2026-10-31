@@ -565,5 +565,9 @@
   "material.sample.paste": "Paste",
   "material.sample.rename": "Rename",
   "material.sample.button": "Press and hold",
-  "material.sample.switch": "Wi-Fi"
+  "material.sample.switch": "Wi-Fi",
+  "shell.launcher.pin": "Pin to Dock",
+  "shell.launcher.unpin": "Unpin from Dock",
+  "shell.application.started": "Started %1",
+  "shell.application.failed": "Could not start %1: %2"
 }

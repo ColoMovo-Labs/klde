@@ -11,13 +11,13 @@ LayerShellQt is an optional build/runtime dependency. The public
 private Qt Wayland headers are required. The ordinary QML preview remains the
 fallback when the interface package or a Wayland QPA is unavailable.
 
-Future adapters should be added one service at a time:
+Integration proceeds one service at a time:
 
 - NetworkManager, UPower, PipeWire / WirePlumber and power-profiles-daemon via
   documented D-Bus APIs;
 - active window and workspace state through a versioned KWin adapter;
-- XDG desktop-file discovery and launching through standard application
-  metadata;
+- XDG desktop-file discovery and launching through the
+  [desktop application backend](applications.md), using KF6 metadata and launch APIs;
 - session actions through logind and polkit.
 
 Each adapter must expose availability and capability state, use asynchronous

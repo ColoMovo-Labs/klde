@@ -78,6 +78,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: Tokens.space8
+            uniformCellSizes: true
             Button {
                 id: wifiButton
                 objectName: "quickWifi"

@@ -41,3 +41,7 @@ reuse
 weston
 xauth
 xvfb
+libkf6kio-dev
+libkf6service-dev
+dbus-bin
+dbus-daemon

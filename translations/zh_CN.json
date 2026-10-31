@@ -565,5 +565,9 @@
   "material.sample.paste": "粘贴",
   "material.sample.rename": "重命名",
   "material.sample.button": "按住试试",
-  "material.sample.switch": "无线网络"
+  "material.sample.switch": "无线网络",
+  "shell.launcher.pin": "固定到应用栏",
+  "shell.launcher.unpin": "从应用栏取消固定",
+  "shell.application.started": "已启动 %1",
+  "shell.application.failed": "无法启动 %1：%2"
 }
