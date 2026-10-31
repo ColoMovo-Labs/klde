@@ -44,7 +44,7 @@ printf '%s\n' "$(git rev-parse HEAD)" > "$out_dir/source-commit.txt"
 xvfb-run -a -s '-screen 0 1600x1000x24 -nolisten tcp' env -u WAYLAND_DISPLAY \
     XDG_RUNTIME_DIR="$runtime_dir" XDG_CONFIG_HOME="$runtime_dir/config" \
     XDG_DATA_HOME="$runtime_dir/data" XDG_CACHE_HOME="$runtime_dir/cache" \
-    XDG_CURRENT_DESKTOP=owoDE XDG_SESSION_DESKTOP=owoDE XDG_SESSION_TYPE=wayland \
+    XDG_CURRENT_DESKTOP=owoDE XDG_SESSION_DESKTOP=owode XDG_SESSION_TYPE=wayland \
     OWODE_MANAGED_SESSION=1 OWODE_NATIVE_TEST_ISOLATED=1 \
     OWODE_SESSION_BUILD="$build_dir" OWODE_SESSION_EVIDENCE="$out_dir" \
     QT_QUICK_BACKEND=software LIBGL_ALWAYS_SOFTWARE=1 WAYLAND_DEBUG=client \

@@ -124,13 +124,13 @@ def main():
         # Fixed-purpose guest account. SSH password login is disabled; no owner
         # credentials, mounts, devices or host session environment are passed.
         (private / "user-data").write_text(
-            "#cloud-config\nhostname: owode-ci-vm\nssh_pwauth: false\n"
+            "#cloud-config\npreserve_hostname: false\nhostname: owode-ci-vm\nssh_pwauth: false\n"
             "users:\n  - name: owodeci\n    groups: [wheel]\n    shell: /bin/bash\n"
             "    lock_passwd: true\n    sudo: ALL=(ALL) NOPASSWD:ALL\n"
             "    ssh_authorized_keys:\n      - " + public_key + "\n"
             "write_files:\n  - path: /etc/owode-ci-vm\n    permissions: '0600'\n"
             "    content: " + marker + "\n")
-        (private / "meta-data").write_text("instance-id: owode-" + marker + "\n")
+        (private / "meta-data").write_text("instance-id: owode-" + marker + "\nlocal-hostname: owode-ci-vm\n")
         run(["cloud-localds", str(private / "seed.iso"), str(private / "user-data"),
              str(private / "meta-data")])
         # Let QEMU select an unused loopback port (no listener is exposed externally).

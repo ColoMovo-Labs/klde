@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Changes ONLY a disposable cloud guest carrying an unpredictable NoCloud marker.
 set -euo pipefail
-[[ $EUID == 0 && $(hostname) == owode-ci-vm ]] || exit 2
-case $(systemd-detect-virt) in qemu|kvm) ;; *) exit 2;; esac
+[[ $EUID == 0 ]] || { echo 'Guest audit requires its private root account.' >&2; exit 2; }
 [[ -n ${2:-} && $(cat /etc/owode-ci-vm) == "$2" ]] || exit 2
+[[ $(hostname) == owode-ci-vm ]] || { echo "Unexpected guest hostname: $(hostname)" >&2; exit 2; }
+case $(systemd-detect-virt) in qemu|kvm) ;; *) echo 'Guest is not QEMU/KVM.' >&2; exit 2;; esac
 [[ $(. /etc/os-release; echo "$ID:$VERSION_ID") == fedora:44 ]] || exit 2
 out=/var/tmp/owode-vm-evidence
 mkdir -p "$out"
@@ -77,7 +78,9 @@ EOF
     loginctl show-session "$session" > "$out/owode-session.txt"
     grep -Fx Type=wayland "$out/owode-session.txt"
     grep -Fx Class=user "$out/owode-session.txt"
-    grep -Fx Desktop=owoDE "$out/owode-session.txt"
+    # GDM uses the session entry basename for logind's session identifier;
+    # DesktopNames=owoDE is the separate XDG_CURRENT_DESKTOP brand/compat identity.
+    grep -Fx Desktop=owode "$out/owode-session.txt"
     grep -Fx Active=yes "$out/owode-session.txt"
     printf '%s\n' "$session" > "$out/owode-session-id.txt"
     # Rootless user-owned compositor, no Plasma/GNOME shell in the owoDE account.

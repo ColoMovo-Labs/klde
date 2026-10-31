@@ -13,7 +13,7 @@ WRAPPER = Path(__file__).resolve().parents[1] / 'packaging/owode-run'
 class ApplicationCompatibilityTest(unittest.TestCase):
     def test_profiles_preserve_session_and_argument_boundaries(self):
         probe = 'import os,sys,json;print(json.dumps({"env":dict(os.environ),"args":sys.argv[1:]}))'
-        env = dict(os.environ, XDG_CURRENT_DESKTOP='owoDE', XDG_SESSION_DESKTOP='owoDE',
+        env = dict(os.environ, XDG_CURRENT_DESKTOP='owoDE', XDG_SESSION_DESKTOP='owode',
                    WAYLAND_DISPLAY='private-test-socket', DISPLAY=':123',
                    DBUS_SESSION_BUS_ADDRESS='unix:path=/private-test-bus')
         for profile, expected in [('--gnome', 'GNOME'), ('--kde', 'KDE'), ('--native', 'owoDE')]:

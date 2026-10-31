@@ -12,7 +12,8 @@ SSH 仅绑定云端 runner 的回环地址，临时密钥、磁盘和 NoCloud se
 这个任务实际检查：
 
 - GDM 读取已安装的 `owode.desktop`，启动独立 owoDE 会话。
-- logind 报告活动的 `gdm-autologin`、Wayland、`Desktop=owoDE` 用户会话。
+- logind 报告活动的 `gdm-autologin`、Wayland、`Desktop=owode` 用户会话。`owode`
+  对应入口文件名；`XDG_CURRENT_DESKTOP=owoDE` 是单独的桌面品牌/兼容标识。
 - KWin 使用虚拟 DRM；用户下有真实 KWin 和 shell，没有 Plasma Shell 或 GNOME Shell。
 - 独立 KWin 脚本报告桌面背景、两个 panel/Dock 和真实 GNOME Calculator/KCalc 窗口。
 - Wayland 日志记录背景、Ribbon、Dock 的真实首帧、图层和输出归属。
