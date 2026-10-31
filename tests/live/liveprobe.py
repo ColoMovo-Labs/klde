@@ -1,18 +1,32 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Shared driver for live_probe: a private dbusmock system bus and line matching."""
+import selectors
 import subprocess
+import time
 
 import dbusmock
+
+LINE_TIMEOUT = 15
 
 
 class Probe:
     def __init__(self, binary, mode):
         self.process = subprocess.Popen([binary, mode], stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, text=True)
+        self.selector = selectors.DefaultSelector()
+        self.selector.register(self.process.stdout, selectors.EVENT_READ)
+
+    def readline(self):
+        """One line, or '' after LINE_TIMEOUT seconds so a stuck mock fails fast."""
+        deadline = time.monotonic() + LINE_TIMEOUT
+        while time.monotonic() < deadline:
+            if self.selector.select(timeout=max(0.0, deadline - time.monotonic())):
+                return self.process.stdout.readline().strip()
+        return ''
 
     def expect(self, wanted, limit=80):
         for _ in range(limit):
-            line = self.process.stdout.readline().strip()
+            line = self.readline()
             if not line:
                 break
             print('probe:', line, flush=True)
@@ -25,7 +39,7 @@ class Probe:
         expected = {key: ('true' if value is True else 'false' if value is False else str(value))
                     for key, value in wanted.items()}
         for _ in range(limit):
-            line = self.process.stdout.readline().strip()
+            line = self.readline()
             if not line:
                 break
             print('probe:', line, flush=True)
