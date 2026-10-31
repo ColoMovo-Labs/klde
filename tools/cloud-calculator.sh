@@ -36,7 +36,8 @@ if command -v dnf >/dev/null; then
         -D "CPACK_RPM_PACKAGE_RELEASE=$release"
     # Minimal Fedora cloud images default to nodocs; this job verifies the
     # corresponding source too, so retain this package's documentation.
-    dnf install -y --setopt=tsflags= "$PWD/$out_dir/"*.rpm
+    dnf install -y --setopt=tsflags= --setopt=install_weak_deps=False \
+        --disablerepo=fedora-cisco-openh264 "$PWD/$out_dir/"*.rpm
 else
     cpack --config "$build_dir/CPackConfig.cmake" -G DEB -B "$out_dir" \
         -D "CPACK_DEBIAN_PACKAGE_RELEASE=$release"

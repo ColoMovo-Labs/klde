@@ -15,6 +15,9 @@
                 -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.cloud.tencent.com/fedora|' \
                 "$repo"
             done
+            # Cisco's openh264 CDN is not mirrored and can stall later dnf calls
+            # past CNB's 10-minute no-output limit; no build step needs it.
+            sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/fedora-cisco-openh264.repo
             dnf install -y --setopt=install_weak_deps=False --disablerepo=fedora-cisco-openh264 \
               @development-tools cmake ninja-build git file findutils rpm-build python3 \
               clang clang-tools-extra \

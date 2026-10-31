@@ -45,11 +45,11 @@ cpack --config "$build_dir/CPackConfig.cmake" -G RPM -B "$out_dir" \
 rm -rf "$out_dir/_CPack_Packages"
 mapfile -t rpms < <(find "$out_dir" -maxdepth 1 -name '*.rpm' -type f -print)
 test "${#rpms[@]}" -eq 1
-session_source="$stage_dir/owode-session-source"
-mkdir -p "$session_source" "$stage_dir/rpmbuild/SOURCES"
+# The session package ships four plain sources. No tarball is unpacked in
+# %prep: tar extraction fails with ENOSYS in some container sandboxes (CNB).
+mkdir -p "$stage_dir/rpmbuild/SOURCES"
 cp packaging/session/start-owode packaging/session/owode-session-client \
-    packaging/session/owode.desktop LICENSE "$session_source/"
-tar -C "$stage_dir" -czf "$stage_dir/rpmbuild/SOURCES/owode-session-source.tar.gz" owode-session-source
+    packaging/session/owode.desktop LICENSE "$stage_dir/rpmbuild/SOURCES/"
 sed -e "s/@VERSION@/$version/g" -e "s/@RELEASE@/$release/g" \
     packaging/session/owode-session.spec.in > "$stage_dir/owode-session.spec"
 rpmbuild -bb --define "_topdir $stage_dir/rpmbuild" "$stage_dir/owode-session.spec"
