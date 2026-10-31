@@ -3,10 +3,14 @@
 
 #include <QDBusConnection>
 #include <QDBusMessage>
+#include <QDBusPendingCallWatcher>
 #include <QHash>
 #include <QObject>
 #include <QString>
 #include <QVariantMap>
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace klde {
 class SystemStateModel;
@@ -27,6 +31,8 @@ class MprisSource final : public QObject {
     static QString artist(const QVariant &metadata);
 
   private slots:
+    // The D-Bus NameOwnerChanged signature fixes this parameter order.
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     void nameOwnerChanged(const QString &name, const QString &oldOwner, const QString &newOwner);
     void propertiesChanged(const QDBusMessage &message);
 
@@ -40,6 +46,9 @@ class MprisSource final : public QObject {
     void update(const QString &service, const QVariantMap &changed);
     void publish();
     bool call(const QString &method);
+    // Owns each pending call until its reply has been handled.
+    void invoke(const QDBusMessage &message, std::function<void(const QDBusMessage &)> handler);
+    std::vector<std::unique_ptr<QDBusPendingCallWatcher>> m_pending;
     SystemStateModel *m_state;
     QDBusConnection m_bus;
     QHash<QString, Player> m_players;

@@ -3,7 +3,8 @@
 #include "mock/SystemStateModel.h"
 #include <QDBusArgument>
 #include <QDBusPendingCallWatcher>
-#include <QDBusPendingReply>
+#include <QTimer>
+#include <algorithm>
 #include <utility>
 
 namespace {
@@ -61,22 +62,18 @@ void MprisSource::start() {
     // Any sender: the unique owner is matched against the known players.
     m_bus.connect(QString(), playerPath, propertiesInterface, QStringLiteral("PropertiesChanged"),
                   this, SLOT(propertiesChanged(QDBusMessage)));
-    auto *list =
-        new QDBusPendingCallWatcher(m_bus.asyncCall(QDBusMessage::createMethodCall(
-                                        busService, QStringLiteral("/org/freedesktop/DBus"),
-                                        busService, QStringLiteral("ListNames"))),
-                                    this);
-    connect(list, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *self) {
-        const QDBusPendingReply<QStringList> reply = *self;
-        self->deleteLater();
-        if (reply.isError())
-            return;
-        for (const auto &name : reply.value())
-            if (name.startsWith(prefix))
-                add(name);
-    });
+    invoke(QDBusMessage::createMethodCall(busService, QStringLiteral("/org/freedesktop/DBus"),
+                                          busService, QStringLiteral("ListNames")),
+           [this](const QDBusMessage &reply) {
+               if (reply.type() != QDBusMessage::ReplyMessage || reply.arguments().isEmpty())
+                   return;
+               for (const auto &name : reply.arguments().constFirst().toStringList())
+                   if (name.startsWith(prefix))
+                       add(name);
+           });
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters): D-Bus signal order.
 void MprisSource::nameOwnerChanged(const QString &name, const QString &oldOwner,
                                    const QString &newOwner) {
     if (!name.startsWith(prefix))
@@ -93,30 +90,20 @@ void MprisSource::nameOwnerChanged(const QString &name, const QString &oldOwner,
 
 void MprisSource::add(const QString &service) {
     m_players.insert(service, Player{});
-    auto owner = new QDBusPendingCallWatcher(
-        m_bus.asyncCall(QDBusMessage::createMethodCall(busService,
-                                                       QStringLiteral("/org/freedesktop/DBus"),
-                                                       busService, QStringLiteral("GetNameOwner"))
-                        << service),
-        this);
-    connect(owner, &QDBusPendingCallWatcher::finished, this,
-            [this, service](QDBusPendingCallWatcher *self) {
-                const QDBusPendingReply<QString> reply = *self;
-                self->deleteLater();
-                if (!reply.isError())
-                    m_owners.insert(reply.value(), service);
-            });
+    invoke(QDBusMessage::createMethodCall(busService, QStringLiteral("/org/freedesktop/DBus"),
+                                          busService, QStringLiteral("GetNameOwner"))
+               << service,
+           [this, service](const QDBusMessage &reply) {
+               if (reply.type() == QDBusMessage::ReplyMessage && !reply.arguments().isEmpty())
+                   m_owners.insert(reply.arguments().constFirst().toString(), service);
+           });
     auto message = QDBusMessage::createMethodCall(service, playerPath, propertiesInterface,
                                                   QStringLiteral("GetAll"));
     message << playerInterface;
-    auto *properties = new QDBusPendingCallWatcher(m_bus.asyncCall(message), this);
-    connect(properties, &QDBusPendingCallWatcher::finished, this,
-            [this, service](QDBusPendingCallWatcher *self) {
-                const QDBusPendingReply<QVariantMap> reply = *self;
-                self->deleteLater();
-                if (!reply.isError())
-                    update(service, reply.value());
-            });
+    invoke(message, [this, service](const QDBusMessage &reply) {
+        if (reply.type() == QDBusMessage::ReplyMessage && !reply.arguments().isEmpty())
+            update(service, asMap(reply.arguments().constFirst()));
+    });
 }
 
 void MprisSource::propertiesChanged(const QDBusMessage &message) {
@@ -167,11 +154,25 @@ void MprisSource::publish() {
 bool MprisSource::call(const QString &method) {
     if (m_current.isEmpty())
         return false;
-    auto *pending =
-        new QDBusPendingCallWatcher(m_bus.asyncCall(QDBusMessage::createMethodCall(
-                                        m_current, playerPath, playerInterface, method)),
-                                    this);
-    connect(pending, &QDBusPendingCallWatcher::finished, pending, &QObject::deleteLater);
+    invoke(QDBusMessage::createMethodCall(m_current, playerPath, playerInterface, method),
+           [](const QDBusMessage &) {});
     return true;
+}
+
+void MprisSource::invoke(const QDBusMessage &message,
+                         std::function<void(const QDBusMessage &)> handler) {
+    auto pending = std::make_unique<QDBusPendingCallWatcher>(m_bus.asyncCall(message));
+    auto *watcher = pending.get();
+    m_pending.push_back(std::move(pending));
+    connect(watcher, &QDBusPendingCallWatcher::finished, this,
+            [this, handler = std::move(handler)](QDBusPendingCallWatcher *finished) {
+                const auto reply = finished->reply();
+                QTimer::singleShot(0, this, [this, finished] {
+                    std::erase_if(m_pending, [finished](const auto &entry) {
+                        return entry.get() == finished;
+                    });
+                });
+                handler(reply);
+            });
 }
 } // namespace klde

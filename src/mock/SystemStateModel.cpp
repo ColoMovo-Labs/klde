@@ -201,8 +201,8 @@ bool SystemStateModel::replacePreview(const QVariantMap &snapshot) {
     emit changed();
     return true;
 }
-void SystemStateModel::setLiveWriter(const QString &path, LiveWriter writer) {
-    m_writers.insert(path, std::move(writer));
+void SystemStateModel::setLiveWriter(const QString &path, const LiveWriter &writer) {
+    m_writers.insert(path, writer);
 }
 bool SystemStateModel::publishLive(const QString &path, const QVariant &value) {
     if (!valid(path, value))

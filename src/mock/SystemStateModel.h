@@ -38,7 +38,7 @@ class SystemStateModel : public QObject {
     // A controllable live path forwards requestValue() to its service instead
     // of editing the snapshot; the UI changes only once publishLive() confirms.
     using LiveWriter = std::function<bool(const QVariant &)>;
-    void setLiveWriter(const QString &path, LiveWriter writer);
+    void setLiveWriter(const QString &path, const LiveWriter &writer);
   signals:
     void changed();
     void valueEdited(const QString &path);
