@@ -1,7 +1,8 @@
 # 云端真实登录验收
 
 `fedora-login-vm` 是独立于现有容器构建、Visual Lab 和嵌套 KWin 的登录验收。
-当前只在功能分支 `feat/fedora-gdm-vm` 启用；新增任务通过之前，不声称登录验收完成。
+当前在功能分支 `feat/fedora-gdm-vm` 和 `feat/session-activation-env` 启用；
+新增任务通过之前，不声称登录验收完成。
 Ubuntu 26.04 仍是首要支持平台。该 Fedora 44 虚拟机任务不会在维护者设备上运行。
 
 CircleCI 的 Linux machine executor 启动一次性的 Fedora Cloud 44 客体，安装同一
