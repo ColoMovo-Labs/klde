@@ -20,6 +20,20 @@ class Probe:
                 return
         raise SystemExit(f'probe never reported {wanted!r}')
 
+    def expect_fields(self, limit=80, **wanted):
+        """Wait for a line whose key=value fields include every wanted pair."""
+        expected = {key: ('true' if value is True else 'false' if value is False else str(value))
+                    for key, value in wanted.items()}
+        for _ in range(limit):
+            line = self.process.stdout.readline().strip()
+            if not line:
+                break
+            print('probe:', line, flush=True)
+            fields = dict(part.split('=', 1) for part in line.split(' ') if '=' in part)
+            if all(fields.get(key) == value for key, value in expected.items()):
+                return
+        raise SystemExit(f'probe never reported {expected!r}')
+
     def request(self, path, value):
         self.process.stdin.write(f'set {path} {"true" if value else "false"}\n')
         self.process.stdin.flush()
