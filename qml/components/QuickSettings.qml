@@ -8,7 +8,7 @@ ShellPopup {
     id: root
     objectName: "quickSettings"
     signal blurRequested
-    signal sceneSettingsRequested
+    signal settingsRequested
     signal viewRequested(string view)
     // Kept for CLI/Visual Lab compatibility. All everyday controls are always shown.
     property bool expanded: false
@@ -44,6 +44,7 @@ ShellPopup {
             brightnessLabel: I18n.t("shell.effects.brightness")
             volumeLabel: I18n.t("shell.effects.volume")
             settingsLabel: I18n.t("shell.settings.open")
+            moreLabel: I18n.t("settings.open")
             powerLabel: Shell.session.managed ? I18n.t("session.logout.confirm") : I18n.t("destructive.session.preview")
             brightnessSlider.value: Shell.system.brightness
             volumeSlider.value: Shell.system.volume
@@ -62,7 +63,7 @@ ShellPopup {
         target: form.settingsButton
         function onClicked(): void {
             root.close();
-            root.sceneSettingsRequested();
+            root.settingsRequested();
         }
     }
     Connections {
@@ -143,7 +144,7 @@ ShellPopup {
         target: form.moreButton
         function onClicked(): void {
             root.close();
-            root.sceneSettingsRequested();
+            root.settingsRequested();
         }
     }
 }

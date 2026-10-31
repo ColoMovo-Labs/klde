@@ -55,7 +55,7 @@ bool PowerSceneController::select(const QString &id) {
     emit requestRejected(tr("That power scene is unavailable"));
     return false;
 }
-bool PowerSceneController::customize(const QString &option, const QVariant &value) {
+bool PowerSceneController::validOption(const QString &option, const QVariant &value) {
     bool valid = false;
     if (option == "theme") {
         valid = value.metaType().id() == QMetaType::QString &&
@@ -72,7 +72,10 @@ bool PowerSceneController::customize(const QString &option, const QVariant &valu
                 (option == "blurQuality" ? number >= BlurBackend::Low && number <= BlurBackend::High
                                          : number >= 0 && number <= (option == "motion" ? 3 : 2));
     }
-    if (!valid) {
+    return valid;
+}
+bool PowerSceneController::customize(const QString &option, const QVariant &value) {
+    if (!validOption(option, value)) {
         emit requestRejected(tr("That scene option is invalid or unsupported"));
         return false;
     }
@@ -89,6 +92,29 @@ bool PowerSceneController::customize(const QString &option, const QVariant &valu
     emit scenesChanged();
     emit currentChanged();
     return true;
+}
+bool PowerSceneController::restoreVisual(const QString &id, const QVariantMap &overrides) {
+    for (qsizetype i = 0; i < m_scenes.size(); ++i) {
+        auto scene = m_scenes.at(i).toMap();
+        if (scene.value("id").toString() != id)
+            continue;
+        auto visual = scene.value("visual").toMap();
+        for (auto option = overrides.cbegin(); option != overrides.cend(); ++option) {
+            if (option.key() == "shadowLevel" || !validOption(option.key(), option.value()))
+                return false;
+            visual.insert(option.key(), option.value());
+        }
+        scene.insert("visual", visual);
+        scene.insert("customized", visual != defaults().at(i).toMap().value("visual").toMap());
+        m_scenes[i] = scene;
+        if (i == m_active)
+            apply();
+        emit scenesChanged();
+        if (i == m_active)
+            emit currentChanged();
+        return true;
+    }
+    return false;
 }
 void PowerSceneController::resetDefaults() {
     m_scenes = defaults();

@@ -57,7 +57,7 @@ ApplicationWindow {
     readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: nativeSurfaceMode && nativeRibbonLoader.item ? (nativeRibbonLoader.item as Window).height : ribbon.y + ribbon.height + Tokens.space16
-    readonly property var panels: [launcher, quickSettings, blurLab, preferences, weatherPreferences, languagePreferences, inputPopup, notificationCenter, statusDashboard, ribbonSettings, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, wallpaperSettings, lockPreview, waydroidSettings, sessionMenu]
+    readonly property var panels: [launcher, quickSettings, blurLab, settingsCenter, inputPopup, notificationCenter, statusDashboard, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, lockPreview, sessionMenu]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function openPendingNativePanel(): void {
         if (pendingNativePanel && nativePopupLoader.item && (nativePopupLoader.item as Window).visible) {
@@ -78,21 +78,37 @@ ApplicationWindow {
     }
     function showView(view: string): void {
         let target = null;
+        // Opening the settings center on a named page never toggles it closed.
+        let toggle = true;
+        const settingsPage = {
+            "settings-appearance": "appearance",
+            "wallpaper-effects": "desktop",
+            "waydroid": "android",
+            "power-scenes": "power",
+            "weather": "weather",
+            "language": "language",
+            "ribbon-settings": "ribbon",
+            "settings-shortcuts": "shortcuts",
+            "settings-displays": "displays",
+            "settings-about": "about"
+        }[view];
+        if (settingsPage !== undefined) {
+            settingsCenter.openPage(settingsPage);
+            target = settingsCenter;
+            toggle = false;
+        }
         switch (view) {
+        case "settings":
+            target = settingsCenter;
+            break;
         case "session":
             target = sessionMenu;
             break;
         case "temporal":
             target = temporalSettings;
             break;
-        case "wallpaper-effects":
-            target = wallpaperSettings;
-            break;
         case "lock-preview":
             target = lockPreview;
-            break;
-        case "waydroid":
-            target = waydroidSettings;
             break;
         case "launcher":
             target = launcher;
@@ -106,15 +122,6 @@ ApplicationWindow {
             break;
         case "blur":
             target = blurLab;
-            break;
-        case "power-scenes":
-            target = preferences;
-            break;
-        case "weather":
-            target = weatherPreferences;
-            break;
-        case "language":
-            target = languagePreferences;
             break;
         case "input":
             target = inputPopup;
@@ -130,9 +137,6 @@ ApplicationWindow {
         case "ribbon":
             target = statusDashboard;
             break;
-        case "ribbon-settings":
-            target = ribbonSettings;
-            break;
         case "input-candidate":
             target = candidate;
             break;
@@ -146,7 +150,7 @@ ApplicationWindow {
             target = systemUiGallery;
             break;
         }
-        const close = target && target.opened;
+        const close = toggle && target && target.opened;
         for (const panel of panels)
             if (panel !== target)
                 panel.close();
@@ -221,6 +225,8 @@ ApplicationWindow {
         if (initialFocus)
             Shell.state.requestValue("appearance.focus", true);
         Tokens.debugGeometry = initialDebugGeometry;
+        // Persisted preferences win over the preview defaults set above.
+        Shell.restoreSettings();
         applyScene();
         showView(developerTools ? "mock-lab" : initialView);
     }
@@ -228,6 +234,11 @@ ApplicationWindow {
         target: Tokens
         property: "locale"
         value: Shell.language.locale
+    }
+    Binding {
+        target: Tokens
+        property: "accentChoice"
+        value: Shell.settings.values["appearance.accent"]
     }
     Binding {
         target: Tokens
@@ -357,6 +368,14 @@ ApplicationWindow {
                 dock.focusLauncher();
         }
     }
+    SettingsCenter {
+        id: settingsCenter
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+        onViewRequested: view => window.showView(view)
+    }
     QuickSettings {
         id: quickSettings
         parent: window.panelParent
@@ -364,7 +383,7 @@ ApplicationWindow {
         x: parent ? parent.width - width - Shell.ribbon.margin : 0
         y: window.popupTop
         onBlurRequested: window.showView("blur")
-        onSceneSettingsRequested: window.showView("power-scenes")
+        onSettingsRequested: window.showView("settings")
         onViewRequested: view => window.showView(view)
     }
     BlurLab {
@@ -373,29 +392,6 @@ ApplicationWindow {
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
-    }
-    SceneSettings {
-        id: preferences
-        parent: window.panelParent
-        backdropSource: window.nativeSurfaceMode ? null : wallpaper
-        x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
-        onLanguageInputRequested: window.showView("language")
-    }
-    WeatherSettings {
-        id: weatherPreferences
-        parent: window.panelParent
-        backdropSource: window.nativeSurfaceMode ? null : wallpaper
-        x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
-    }
-    LanguageInputSettings {
-        id: languagePreferences
-        parent: window.panelParent
-        backdropSource: window.nativeSurfaceMode ? null : wallpaper
-        x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
-        onCandidateRequested: window.showView("input-candidate")
     }
     InputPopup {
         id: inputPopup
@@ -421,13 +417,6 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: window.popupTop
         onCustomizeRequested: window.showView("ribbon-settings")
-    }
-    RibbonSettings {
-        id: ribbonSettings
-        parent: window.panelParent
-        backdropSource: window.nativeSurfaceMode ? null : wallpaper
-        x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
     }
     CandidatePreview {
         id: candidate
@@ -465,14 +454,6 @@ ApplicationWindow {
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
     }
-    WallpaperEffectsSettings {
-        id: wallpaperSettings
-        parent: window.panelParent
-        backdropSource: window.nativeSurfaceMode ? null : wallpaper
-        x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
-        onViewRequested: view => window.showView(view)
-    }
     LockScreenPreview {
         id: lockPreview
         parent: window.panelParent
@@ -496,13 +477,6 @@ ApplicationWindow {
         pageIndex: window.initialWelcomePage
         offline: !window.snapshot.network.internet
         onFinished: window.initialView = "desktop"
-    }
-    WaydroidSettings {
-        id: waydroidSettings
-        parent: window.panelParent
-        backdropSource: window.nativeSurfaceMode ? null : wallpaper
-        x: parent ? (parent.width - width) / 2 : 0
-        y: parent ? (parent.height - height) / 2 : 0
     }
     OsdForm {
         anchors.horizontalCenter: parent.horizontalCenter

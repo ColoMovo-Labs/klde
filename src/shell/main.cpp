@@ -48,7 +48,9 @@ int main(int argc, char *argv[]) {
         QStringLiteral("notifications"),     QStringLiteral("ribbon"),
         QStringLiteral("ribbon-settings"),   QStringLiteral("input-candidate"),
         QStringLiteral("mock-lab"),          QStringLiteral("app-suite"),
-        QStringLiteral("material-study")};
+        QStringLiteral("material-study"),    QStringLiteral("settings"),
+        QStringLiteral("settings-about"),    QStringLiteral("settings-shortcuts"),
+        QStringLiteral("settings-displays")};
     const QCommandLineOption smokeOption(
         QStringLiteral("smoke-test"), QStringLiteral("Capture a settled preview frame and exit"));
     const QCommandLineOption captureOption(QStringLiteral("capture"),

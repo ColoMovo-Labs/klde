@@ -44,6 +44,7 @@ Item {
     property string brightnessLabel: "亮度 / Brightness"
     property string volumeLabel: "音量 / Volume"
     property string settingsLabel: "设置 / Settings"
+    property string moreLabel: "更多设置 / More settings"
     property string powerLabel: "电源 / Power"
     property var profileLabels: ["性能", "均衡", "节能"]
     ColumnLayout {
@@ -250,7 +251,7 @@ Item {
             objectName: "quickMore"
             Layout.alignment: Qt.AlignRight
             iconName: "grid"
-            text: "更多设置 / More settings"
+            text: root.moreLabel
         }
     }
 }

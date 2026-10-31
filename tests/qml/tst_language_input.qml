@@ -11,7 +11,9 @@ Item {
     height: 760
     Component {
         id: settingsComponent
-        LanguageInputSettings {}
+        SettingsCenter {
+            page: "language"
+        }
     }
     TestCase {
         name: "LanguageInputInteraction"

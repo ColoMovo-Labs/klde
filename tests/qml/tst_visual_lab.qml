@@ -41,7 +41,9 @@ Item {
     }
     Component {
         id: wallpaperComponent
-        WallpaperEffectsSettings {}
+        SettingsCenter {
+            page: "desktop"
+        }
     }
     Component {
         id: temporalPanelComponent

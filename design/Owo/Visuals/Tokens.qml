@@ -276,6 +276,9 @@ QtObject {
     readonly property int panelWidth: design.panelWidth
     readonly property int settingsWidth: 600
     readonly property int settingsHeight: 664
+    readonly property int settingsCenterWidth: 960
+    readonly property int settingsCenterHeight: 700
+    readonly property int settingsNavWidth: 232
     readonly property int sceneCardHeight: 112
     readonly property int sliderHeight: 52 * densityScale
     readonly property int toggleHeight: 84 * densityScale

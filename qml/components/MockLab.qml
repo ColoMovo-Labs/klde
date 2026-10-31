@@ -80,7 +80,7 @@ LabPanel {
         Layout.fillWidth: true
         model: [I18n.t("common.auto"), I18n.t("shell.effects.teal"), I18n.t("shell.effects.lilac"), I18n.t("shell.effects.apricot")]
         currentIndex: ["auto", "teal", "lilac", "apricot"].indexOf(Tokens.accentChoice)
-        onActivated: Tokens.accentChoice = ["auto", "teal", "lilac", "apricot"][currentIndex]
+        onActivated: Shell.settings.setValue("appearance.accent", ["auto", "teal", "lilac", "apricot"][currentIndex])
     }
     StateChoice {
         label: I18n.t("shell.scene.select")

@@ -27,6 +27,7 @@ qt_add_qml_module(klde_backends STATIC
         platform/common/SessionRuntimeBackend.h platform/common/SessionRuntimeBackend.cpp
         platform/wayland/NativeSurfaceController.h platform/wayland/NativeSurfaceController.cpp
         mock/SystemStateModel.h mock/SystemStateModel.cpp
+        settings/ShellSettings.h settings/ShellSettings.cpp
         models/NotificationModel.h models/NotificationModel.cpp
         status/StatusModuleRegistry.h status/StatusModuleRegistry.cpp
         live/HostTelemetrySource.h live/HostTelemetrySource.cpp
@@ -72,5 +73,5 @@ if(OWODE_HAVE_LAYERSHELLQT)
 endif()
 # qmltyperegistrar emits conditional includes by header basename.
 target_include_directories(klde_backends PRIVATE
-    applications backends models i18n input mock platform/common shortcuts status weather)
+    applications backends models i18n input mock platform/common settings shortcuts status weather)
 target_compile_options(klde_backends PRIVATE -Wall -Wextra -Wpedantic)

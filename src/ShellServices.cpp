@@ -20,6 +20,7 @@
 #include <QKeyEvent>
 #include <QQmlEngine>
 #include <QScopedValueRollback>
+#include <QStandardPaths>
 #include <QWindow>
 #include <algorithm>
 
@@ -29,6 +30,10 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
     engine->addImageProvider("applications",
                              new ApplicationIconProvider(services->desktopApplications()));
     if (engine->property("owodeSystemApplications").toBool()) {
+        // Only real sessions read or write preferences; previews stay deterministic.
+        services->m_settings.enablePersistence(
+            QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) +
+            QStringLiteral("/owode"));
         services->m_systemTime = std::make_unique<SystemTimeBackend>();
         services->m_hostTelemetry = std::make_unique<HostTelemetrySource>(&services->m_state);
         services->m_hostTelemetry->start();
@@ -349,6 +354,65 @@ bool ShellServices::eventFilter(QObject *watched, QEvent *event) {
         }
     }
     return false;
+}
+namespace {
+const char *const SceneOptions[] = {"theme",       "transparency", "shadows", "blurEnabled",
+                                    "blurQuality", "motion",       "density"};
+} // namespace
+void ShellServices::restoreSettings() {
+    if (m_settingsRestored || m_settings.path().isEmpty())
+        return;
+    m_settingsRestored = true;
+    m_ribbon.setEnabled(m_settings.value("ribbon.enabled").toBool());
+    m_ribbon.setCompact(m_settings.value("ribbon.compact").toBool());
+    m_ribbon.setMargin(m_settings.value("ribbon.margin").toInt());
+    m_ribbon.setSpacing(m_settings.value("ribbon.spacing").toInt());
+    if (const auto locale = m_settings.value("language.locale").toString(); !locale.isEmpty())
+        m_language.setLocale(locale);
+    m_language.setVoice(m_settings.value("language.voice").toString());
+    m_state.requestValue("appearance.wallpaper", m_settings.value("appearance.wallpaper"));
+    for (const auto &item : m_scenes.scenes()) {
+        const auto id = item.toMap().value("id").toString();
+        QVariantMap overrides;
+        for (const auto *option : SceneOptions) {
+            const auto stored = m_settings.value(
+                QStringLiteral("scenes.%1.%2").arg(id, QString::fromLatin1(option)));
+            if (stored.isValid())
+                overrides.insert(QString::fromLatin1(option), stored);
+        }
+        if (!overrides.isEmpty())
+            m_scenes.restoreVisual(id, overrides);
+    }
+    connect(&m_ribbon, &StatusModuleRegistry::changed, this, [this] {
+        m_settings.setValue("ribbon.enabled", m_ribbon.enabled());
+        m_settings.setValue("ribbon.compact", m_ribbon.compact());
+        m_settings.setValue("ribbon.margin", m_ribbon.margin());
+        m_settings.setValue("ribbon.spacing", m_ribbon.spacing());
+    });
+    connect(&m_language, &LocaleVoiceModel::changed, this, [this] {
+        m_settings.setValue("language.locale", m_language.locale());
+        m_settings.setValue("language.voice", m_language.voice());
+    });
+    connect(&m_state, &SystemStateModel::valueEdited, this, [this](const QString &path) {
+        if (path == "appearance.wallpaper")
+            m_settings.setValue(path, m_state.value(path));
+    });
+    connect(&m_scenes, &PowerSceneController::scenesChanged, this, &ShellServices::recordScenes);
+}
+void ShellServices::recordScenes() {
+    for (const auto &item : m_scenes.scenes()) {
+        const auto scene = item.toMap();
+        const auto id = scene.value("id").toString();
+        const auto visual = scene.value("visual").toMap();
+        const bool customized = scene.value("customized").toBool();
+        for (const auto *option : SceneOptions) {
+            const auto key = QStringLiteral("scenes.%1.%2").arg(id, QString::fromLatin1(option));
+            if (customized)
+                m_settings.setValue(key, visual.value(QString::fromLatin1(option)));
+            else
+                m_settings.reset(key);
+        }
+    }
 }
 QVariantMap ShellServices::weather() const { return m_weather.reading(); }
 bool ShellServices::launch(const QString &appId) {

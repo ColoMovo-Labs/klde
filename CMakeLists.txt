@@ -81,14 +81,14 @@ set(klde_qml_files
     qml/components/MaterialStudy.qml
     qml/components/GeometryDebugOverlay.qml
     qml/components/TemporalSettings.qml qml/components/WallpaperLayers.qml
-    qml/components/WallpaperEffectsSettings.qml qml/components/LockScreenPreview.qml
+    qml/components/WallpaperEffectsSettingsContent.qml qml/components/LockScreenPreview.qml
     qml/components/LockScreenSurface.qml
-    qml/components/WaydroidSettings.qml
+    qml/components/WaydroidSettingsContent.qml
     qml/components/StateSlider.qml
     qml/components/StateChoice.qml
     qml/components/PolicyControls.qml
     qml/components/NotificationCenter.qml
-    qml/components/RibbonSettings.qml
+    qml/components/RibbonSettingsContent.qml
     qml/components/MockLab.qml
     qml/components/AppSuitePreview.qml
     qml/components/StatusCapsule.qml
@@ -104,10 +104,14 @@ set(klde_qml_files
     qml/components/ShellPopup.qml qml/components/Dock.qml qml/components/Launcher.qml
     qml/components/WorkspaceIndicator.qml qml/components/ToggleTile.qml
     qml/components/SliderCard.qml qml/components/QuickSettings.qml qml/components/SessionMenu.qml
-    qml/components/PowerSceneCard.qml qml/components/SceneSettings.qml
-    qml/components/WeatherSettings.qml
+    qml/components/PowerSceneCard.qml
+    qml/components/SettingsCenter.qml qml/components/VisualSettingsContent.qml
+    qml/components/PowerSettingsContent.qml qml/components/ShortcutSettingsContent.qml
+    qml/components/WeatherSettingsContent.qml qml/components/WorkspaceSettingsContent.qml
+    qml/components/DisplaySettingsContent.qml qml/components/NetworkSettingsContent.qml
+    qml/components/SoundSettingsContent.qml qml/components/AboutSettingsContent.qml
     qml/components/ActionButton.qml qml/components/ChoiceBox.qml
-    qml/components/LanguageInputSettings.qml qml/components/InputPopup.qml
+    qml/components/LanguageInputSettingsContent.qml qml/components/InputPopup.qml
     qml/widgets/WidgetHost.qml qml/widgets/WeatherWidget.qml
     qml/effects/OwnedBlurSample.qml qml/effects/BlurLab.qml qml/effects/OwnedBackdrop.qml
     qml/effects/MaterialBackdrop.qml

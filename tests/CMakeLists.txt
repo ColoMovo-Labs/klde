@@ -35,6 +35,11 @@ target_link_libraries(klde-shortcut-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME shortcut-contracts COMMAND klde-shortcut-test)
 set_tests_properties(shortcut-contracts PROPERTIES LABELS unit TIMEOUT 30)
 
+qt_add_executable(owode-settings-test test_settings.cpp)
+target_link_libraries(owode-settings-test PRIVATE klde_backends Qt6::Test)
+add_test(NAME settings-store COMMAND owode-settings-test)
+set_tests_properties(settings-store PROPERTIES LABELS unit TIMEOUT 30)
+
 qt_add_executable(klde-weather-test test_weather.cpp)
 target_link_libraries(klde-weather-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME weather-contracts COMMAND klde-weather-test)

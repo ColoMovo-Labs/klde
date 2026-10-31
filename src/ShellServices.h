@@ -21,6 +21,7 @@
 #include "platform/common/DisplayServerBackend.h"
 #include "platform/common/SessionRuntimeBackend.h"
 #include "platform/wayland/NativeSurfaceController.h"
+#include "settings/ShellSettings.h"
 #include "shortcuts/ShortcutRegistry.h"
 #include "status/StatusModuleRegistry.h"
 #include "weather/WeatherService.h"
@@ -52,6 +53,7 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::SessionRuntimeBackend *session READ session CONSTANT)
     Q_PROPERTY(klde::NativeSurfaceController *surface READ surface CONSTANT)
     Q_PROPERTY(klde::SystemStateModel *state READ state CONSTANT)
+    Q_PROPERTY(klde::ShellSettings *settings READ settings CONSTANT)
     Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
     Q_PROPERTY(klde::NotificationModel *notifications READ notifications CONSTANT)
     Q_PROPERTY(klde::StatusModuleRegistry *ribbon READ ribbon CONSTANT)
@@ -88,6 +90,7 @@ class ShellServices final : public QObject {
     SessionRuntimeBackend *session() { return &m_session; }
     NativeSurfaceController *surface() { return &m_surface; }
     SystemStateModel *state() { return &m_state; }
+    ShellSettings *settings() { return &m_settings; }
     MockScenarioManager *mockScenarios() { return &m_mockScenarios; }
     NotificationModel *notifications() { return &m_notifications; }
     StatusModuleRegistry *ribbon() { return &m_ribbon; }
@@ -105,6 +108,9 @@ class ShellServices final : public QObject {
     int osdValue() const { return m_osdValue; }
     Q_INVOKABLE bool launch(const QString &appId);
     Q_INVOKABLE void showNotice(const QString &message);
+    // Applies persisted preferences once QML has set up the preview state, then
+    // records later changes. A no-op unless persistence was enabled.
+    Q_INVOKABLE void restoreSettings();
     void showOsd(const QString &kind, int value);
     void setGraphicsAvailable(bool available) { m_blur.setGraphicsAvailable(available); }
   signals:
@@ -120,6 +126,7 @@ class ShellServices final : public QObject {
     void reconcileSystem();
     void reconcileWindows();
     QString windowApplication(const QVariantMap &window) const;
+    void recordScenes();
     MockSystemBackend m_system;
     MockWindowManagerBackend m_windowManager;
     std::unique_ptr<KWinWindowManagerBackend> m_liveWindowManager;
@@ -137,6 +144,7 @@ class ShellServices final : public QObject {
     SessionRuntimeBackend m_session;
     NativeSurfaceController m_surface;
     SystemStateModel m_state;
+    ShellSettings m_settings;
     MockScenarioManager m_mockScenarios;
     MockTimeBackend m_time;
     std::unique_ptr<SystemTimeBackend> m_systemTime;
@@ -158,6 +166,7 @@ class ShellServices final : public QObject {
     NotificationModel m_notifications;
     StatusModuleRegistry m_ribbon;
     bool m_syncing = false;
+    bool m_settingsRestored = false;
     bool m_metaDown = false;
     bool m_metaUsed = false;
     QTimer m_noticeTimer;

@@ -25,6 +25,8 @@ class PowerSceneController : public QObject {
     Q_INVOKABLE bool select(const QString &id);
     Q_INVOKABLE bool customize(const QString &option, const QVariant &value);
     Q_INVOKABLE void resetCurrent();
+    // Applies persisted visual options to one scene without selecting it.
+    bool restoreVisual(const QString &id, const QVariantMap &overrides);
     void resetDefaults();
   signals:
     void scenesChanged();
@@ -33,6 +35,7 @@ class PowerSceneController : public QObject {
 
   private:
     static QVariantList defaults();
+    static bool validOption(const QString &option, const QVariant &value);
     void apply();
     SystemBackend *m_system;
     BlurBackend *m_blur;
