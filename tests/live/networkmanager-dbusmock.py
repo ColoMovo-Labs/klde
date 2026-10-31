@@ -26,11 +26,13 @@ def main():
         # The SSID is network-controlled text; control characters must not survive.
         ssid = 'Snowline\x07'
         ap = mock.AddAccessPoint(device, 'mock_ap0', ssid, '00:23:F8:7E:12:BB', 2, 2425, 5400,
-                                 82, 0x400)
+                                 82, 0x100)
         connection = mock.AddWiFiConnection(device, 'mock_con0', ssid, 'wpa-psk')
         active = mock.AddActiveConnection([device], connection, ap, 'mock_active0',
                                           ACTIVE_CONNECTION_ACTIVATED)
-        mock.SetProperty(NM, NM_IFACE, 'PrimaryConnection', dbus.ObjectPath(active))
+        # The template omits PrimaryConnection; add it before the probe reads NM.
+        nm.AddProperty(NM_IFACE, 'PrimaryConnection', dbus.ObjectPath(active),
+                       dbus_interface=dbusmock.MOCK_IFACE)
         mock.SetGlobalConnectionState(STATE_CONNECTED_GLOBAL)
         mock.SetConnectivity(CONNECTIVITY_FULL)
         probe = liveprobe.Probe(sys.argv[1], 'network')
