@@ -99,7 +99,9 @@ ShellPopup {
     height: Math.min(Tokens.settingsCenterHeight, parent ? parent.height - Tokens.space32 * 2 : Tokens.settingsCenterHeight)
     onOpened: navigation.forceActiveFocus()
     onPageChanged: {
-        navigation.currentIndex = pageIndex;
+        // Look the index up here: the pageIndex binding may not have been
+        // re-evaluated yet when this handler runs.
+        navigation.currentIndex = Math.max(0, pages.findIndex(entry => entry.id === page));
         pageScroll.ScrollBar.vertical.position = 0;
         if (!Tokens.reducedMotion)
             pageReveal.restart();
