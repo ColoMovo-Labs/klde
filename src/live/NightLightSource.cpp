@@ -9,16 +9,28 @@
 #include <utility>
 
 namespace {
-const QString service = QStringLiteral("org.kde.KWin");
-const QString path = QStringLiteral("/org/kde/KWin/NightLight");
-const QString interface = QStringLiteral("org.kde.KWin.NightLight");
-const QString properties = QStringLiteral("org.freedesktop.DBus.Properties");
+const QString &service() {
+    static const QString value = QStringLiteral("org.kde.KWin");
+    return value;
+}
+const QString &path() {
+    static const QString value = QStringLiteral("/org/kde/KWin/NightLight");
+    return value;
+}
+const QString &interface() {
+    static const QString value = QStringLiteral("org.kde.KWin.NightLight");
+    return value;
+}
+const QString &properties() {
+    static const QString value = QStringLiteral("org.freedesktop.DBus.Properties");
+    return value;
+}
 } // namespace
 
 namespace klde {
 NightLightSource::NightLightSource(SystemStateModel *state, QDBusConnection bus, QObject *parent)
     : QObject(parent), m_state(state), m_bus(std::move(bus)),
-      m_watcher(service, m_bus, QDBusServiceWatcher::WatchForRegistration) {
+      m_watcher(service(), m_bus, QDBusServiceWatcher::WatchForRegistration) {
     connect(&m_watcher, &QDBusServiceWatcher::serviceRegistered, this, &NightLightSource::refresh);
 }
 
@@ -27,15 +39,15 @@ void NightLightSource::start() {
     m_state->publishLive(QStringLiteral("nightMode"), false);
     m_state->setLiveWriter(QStringLiteral("nightMode"),
                            [this](const QVariant &value) { return request(value.toBool()); });
-    m_bus.connect(service, path, properties, QStringLiteral("PropertiesChanged"), this,
+    m_bus.connect(service(), path(), properties(), QStringLiteral("PropertiesChanged"), this,
                   SLOT(propertiesChanged(QString, QVariantMap, QStringList)));
     refresh();
 }
 
 void NightLightSource::refresh() {
     auto message =
-        QDBusMessage::createMethodCall(service, path, properties, QStringLiteral("GetAll"));
-    message << interface;
+        QDBusMessage::createMethodCall(service(), path(), properties(), QStringLiteral("GetAll"));
+    message << interface();
     auto *call = new QDBusPendingCallWatcher(m_bus.asyncCall(message), this);
     connect(call, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *self) {
         const QDBusPendingReply<QVariantMap> reply = *self;
@@ -48,7 +60,7 @@ void NightLightSource::refresh() {
 void NightLightSource::propertiesChanged(const QString &changedInterface,
                                          const QVariantMap &changed,
                                          const QStringList &invalidated) {
-    if (changedInterface != interface)
+    if (changedInterface != interface())
         return;
     if (!invalidated.isEmpty()) {
         refresh();
@@ -77,7 +89,7 @@ bool NightLightSource::request(bool enabled) {
         group.writeEntry("Mode", QStringLiteral("Constant"));
     if (!group.sync())
         return false;
-    const auto message = QDBusMessage::createMethodCall(service, QStringLiteral("/KWin"),
+    const auto message = QDBusMessage::createMethodCall(service(), QStringLiteral("/KWin"),
                                                         QStringLiteral("org.kde.KWin"),
                                                         QStringLiteral("reconfigure"));
     auto *call = new QDBusPendingCallWatcher(m_bus.asyncCall(message), this);

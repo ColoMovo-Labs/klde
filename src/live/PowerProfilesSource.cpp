@@ -19,7 +19,10 @@ constexpr std::array<Endpoint, 2> endpoints{
     {{"org.freedesktop.UPower.PowerProfiles", "/org/freedesktop/UPower/PowerProfiles",
       "org.freedesktop.UPower.PowerProfiles"},
      {"net.hadess.PowerProfiles", "/net/hadess/PowerProfiles", "net.hadess.PowerProfiles"}}};
-const QString propertiesInterface = QStringLiteral("org.freedesktop.DBus.Properties");
+const QString &propertiesInterface() {
+    static const QString value = QStringLiteral("org.freedesktop.DBus.Properties");
+    return value;
+}
 
 QStringList profileNames(const QVariant &value) {
     QStringList result;
@@ -64,7 +67,7 @@ void PowerProfilesSource::connectTo(int index) {
     m_endpoint = index;
     const auto &endpoint = endpoints.at(index);
     m_bus.connect(QString::fromLatin1(endpoint.service), QString::fromLatin1(endpoint.path),
-                  propertiesInterface, QStringLiteral("PropertiesChanged"), this,
+                  propertiesInterface(), QStringLiteral("PropertiesChanged"), this,
                   SLOT(propertiesChanged(QString, QVariantMap, QStringList)));
     refresh();
 }
@@ -73,7 +76,7 @@ void PowerProfilesSource::refresh() {
     const auto &endpoint = endpoints.at(m_endpoint);
     auto message = QDBusMessage::createMethodCall(QString::fromLatin1(endpoint.service),
                                                   QString::fromLatin1(endpoint.path),
-                                                  propertiesInterface, QStringLiteral("GetAll"));
+                                                  propertiesInterface(), QStringLiteral("GetAll"));
     message << QString::fromLatin1(endpoint.interface);
     auto *call = new QDBusPendingCallWatcher(m_bus.asyncCall(message), this);
     connect(call, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *self) {
@@ -122,7 +125,7 @@ bool PowerProfilesSource::request(const QString &profile) {
     const auto &endpoint = endpoints.at(m_endpoint);
     auto message = QDBusMessage::createMethodCall(QString::fromLatin1(endpoint.service),
                                                   QString::fromLatin1(endpoint.path),
-                                                  propertiesInterface, QStringLiteral("Set"));
+                                                  propertiesInterface(), QStringLiteral("Set"));
     message << QString::fromLatin1(endpoint.interface) << QStringLiteral("ActiveProfile")
             << QVariant::fromValue(QDBusVariant(profile));
     auto *call = new QDBusPendingCallWatcher(m_bus.asyncCall(message), this);

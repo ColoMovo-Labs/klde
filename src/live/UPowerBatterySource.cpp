@@ -9,17 +9,29 @@
 #include <utility>
 
 namespace {
-const QString service = QStringLiteral("org.freedesktop.UPower");
-const QString displayDevice = QStringLiteral("/org/freedesktop/UPower/devices/DisplayDevice");
-const QString deviceInterface = QStringLiteral("org.freedesktop.UPower.Device");
-const QString propertiesInterface = QStringLiteral("org.freedesktop.DBus.Properties");
+const QString &service() {
+    static const QString value = QStringLiteral("org.freedesktop.UPower");
+    return value;
+}
+const QString &displayDevice() {
+    static const QString value = QStringLiteral("/org/freedesktop/UPower/devices/DisplayDevice");
+    return value;
+}
+const QString &deviceInterface() {
+    static const QString value = QStringLiteral("org.freedesktop.UPower.Device");
+    return value;
+}
+const QString &propertiesInterface() {
+    static const QString value = QStringLiteral("org.freedesktop.DBus.Properties");
+    return value;
+}
 } // namespace
 
 namespace klde {
 UPowerBatterySource::UPowerBatterySource(SystemStateModel *state, QDBusConnection bus,
                                          QObject *parent)
     : QObject(parent), m_state(state), m_bus(std::move(bus)),
-      m_watcher(service, m_bus, QDBusServiceWatcher::WatchForRegistration) {
+      m_watcher(service(), m_bus, QDBusServiceWatcher::WatchForRegistration) {
     connect(&m_watcher, &QDBusServiceWatcher::serviceRegistered, this,
             &UPowerBatterySource::refresh);
 }
@@ -27,15 +39,16 @@ UPowerBatterySource::UPowerBatterySource(SystemStateModel *state, QDBusConnectio
 void UPowerBatterySource::start() {
     // Until UPower answers, a battery is reported as absent rather than invented.
     m_state->publishLive(QStringLiteral("capabilities.battery"), false);
-    m_bus.connect(service, displayDevice, propertiesInterface, QStringLiteral("PropertiesChanged"),
-                  this, SLOT(propertiesChanged(QString, QVariantMap, QStringList)));
+    m_bus.connect(service(), displayDevice(), propertiesInterface(),
+                  QStringLiteral("PropertiesChanged"), this,
+                  SLOT(propertiesChanged(QString, QVariantMap, QStringList)));
     refresh();
 }
 
 void UPowerBatterySource::refresh() {
-    auto message = QDBusMessage::createMethodCall(service, displayDevice, propertiesInterface,
+    auto message = QDBusMessage::createMethodCall(service(), displayDevice(), propertiesInterface(),
                                                   QStringLiteral("GetAll"));
-    message << deviceInterface;
+    message << deviceInterface();
     auto *call = new QDBusPendingCallWatcher(m_bus.asyncCall(message), this);
     connect(call, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *self) {
         const QDBusPendingReply<QVariantMap> reply = *self;
@@ -52,7 +65,7 @@ void UPowerBatterySource::refresh() {
 
 void UPowerBatterySource::propertiesChanged(const QString &interface, const QVariantMap &changed,
                                             const QStringList &invalidated) {
-    if (interface != deviceInterface)
+    if (interface != deviceInterface())
         return;
     if (!invalidated.isEmpty()) {
         refresh();

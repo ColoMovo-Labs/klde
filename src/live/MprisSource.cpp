@@ -8,11 +8,26 @@
 #include <utility>
 
 namespace {
-const QString busService = QStringLiteral("org.freedesktop.DBus");
-const QString prefix = QStringLiteral("org.mpris.MediaPlayer2.");
-const QString playerPath = QStringLiteral("/org/mpris/MediaPlayer2");
-const QString playerInterface = QStringLiteral("org.mpris.MediaPlayer2.Player");
-const QString propertiesInterface = QStringLiteral("org.freedesktop.DBus.Properties");
+const QString &busService() {
+    static const QString value = QStringLiteral("org.freedesktop.DBus");
+    return value;
+}
+const QString &prefix() {
+    static const QString value = QStringLiteral("org.mpris.MediaPlayer2.");
+    return value;
+}
+const QString &playerPath() {
+    static const QString value = QStringLiteral("/org/mpris/MediaPlayer2");
+    return value;
+}
+const QString &playerInterface() {
+    static const QString value = QStringLiteral("org.mpris.MediaPlayer2.Player");
+    return value;
+}
+const QString &propertiesInterface() {
+    static const QString value = QStringLiteral("org.freedesktop.DBus.Properties");
+    return value;
+}
 
 QVariantMap asMap(const QVariant &value) {
     if (value.canConvert<QDBusArgument>())
@@ -56,19 +71,19 @@ void MprisSource::start() {
     m_state->setLiveWriter(QStringLiteral("media.playing"), [this](const QVariant &value) {
         return call(value.toBool() ? QStringLiteral("Play") : QStringLiteral("Pause"));
     });
-    m_bus.connect(busService, QStringLiteral("/org/freedesktop/DBus"), busService,
+    m_bus.connect(busService(), QStringLiteral("/org/freedesktop/DBus"), busService(),
                   QStringLiteral("NameOwnerChanged"), this,
                   SLOT(nameOwnerChanged(QString, QString, QString)));
     // Any sender: the unique owner is matched against the known players.
-    m_bus.connect(QString(), playerPath, propertiesInterface, QStringLiteral("PropertiesChanged"),
-                  this, SLOT(propertiesChanged(QDBusMessage)));
-    invoke(QDBusMessage::createMethodCall(busService, QStringLiteral("/org/freedesktop/DBus"),
-                                          busService, QStringLiteral("ListNames")),
+    m_bus.connect(QString(), playerPath(), propertiesInterface(),
+                  QStringLiteral("PropertiesChanged"), this, SLOT(propertiesChanged(QDBusMessage)));
+    invoke(QDBusMessage::createMethodCall(busService(), QStringLiteral("/org/freedesktop/DBus"),
+                                          busService(), QStringLiteral("ListNames")),
            [this](const QDBusMessage &reply) {
                if (reply.type() != QDBusMessage::ReplyMessage || reply.arguments().isEmpty())
                    return;
                for (const auto &name : reply.arguments().constFirst().toStringList())
-                   if (name.startsWith(prefix))
+                   if (name.startsWith(prefix()))
                        add(name);
            });
 }
@@ -76,7 +91,7 @@ void MprisSource::start() {
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters): D-Bus signal order.
 void MprisSource::nameOwnerChanged(const QString &name, const QString &oldOwner,
                                    const QString &newOwner) {
-    if (!name.startsWith(prefix))
+    if (!name.startsWith(prefix()))
         return;
     if (!oldOwner.isEmpty()) {
         m_players.remove(name);
@@ -90,16 +105,16 @@ void MprisSource::nameOwnerChanged(const QString &name, const QString &oldOwner,
 
 void MprisSource::add(const QString &service) {
     m_players.insert(service, Player{});
-    invoke(QDBusMessage::createMethodCall(busService, QStringLiteral("/org/freedesktop/DBus"),
-                                          busService, QStringLiteral("GetNameOwner"))
+    invoke(QDBusMessage::createMethodCall(busService(), QStringLiteral("/org/freedesktop/DBus"),
+                                          busService(), QStringLiteral("GetNameOwner"))
                << service,
            [this, service](const QDBusMessage &reply) {
                if (reply.type() == QDBusMessage::ReplyMessage && !reply.arguments().isEmpty())
                    m_owners.insert(reply.arguments().constFirst().toString(), service);
            });
-    auto message = QDBusMessage::createMethodCall(service, playerPath, propertiesInterface,
+    auto message = QDBusMessage::createMethodCall(service, playerPath(), propertiesInterface(),
                                                   QStringLiteral("GetAll"));
-    message << playerInterface;
+    message << playerInterface();
     invoke(message, [this, service](const QDBusMessage &reply) {
         if (reply.type() == QDBusMessage::ReplyMessage && !reply.arguments().isEmpty())
             update(service, asMap(reply.arguments().constFirst()));
@@ -109,7 +124,8 @@ void MprisSource::add(const QString &service) {
 void MprisSource::propertiesChanged(const QDBusMessage &message) {
     const auto service = m_owners.value(message.service());
     const auto arguments = message.arguments();
-    if (service.isEmpty() || arguments.size() < 2 || arguments.at(0).toString() != playerInterface)
+    if (service.isEmpty() || arguments.size() < 2 ||
+        arguments.at(0).toString() != playerInterface())
         return;
     update(service, asMap(arguments.at(1)));
 }
@@ -154,7 +170,7 @@ void MprisSource::publish() {
 bool MprisSource::call(const QString &method) {
     if (m_current.isEmpty())
         return false;
-    invoke(QDBusMessage::createMethodCall(m_current, playerPath, playerInterface, method),
+    invoke(QDBusMessage::createMethodCall(m_current, playerPath(), playerInterface(), method),
            [](const QDBusMessage &) {});
     return true;
 }
