@@ -25,7 +25,7 @@ void HostTelemetrySource::start(int intervalMs) {
 QByteArray HostTelemetrySource::read(const QString &relative) const {
     QFile file(QDir(m_root).filePath(relative));
     // Kernel pseudo-files report size 0; read a bounded amount explicitly.
-    return file.open(QIODevice::ReadOnly) ? file.read(64 * 1024) : QByteArray{};
+    return file.open(QIODevice::ReadOnly) ? file.read(qint64{64} * 1024) : QByteArray{};
 }
 
 std::optional<HostTelemetrySource::CpuTimes>

@@ -8,7 +8,14 @@
         - name: install Fedora Qt toolchain
           script: |
             set -eu
-            dnf install -y --setopt=install_weak_deps=False \
+            # The default metalink picks overseas mirrors, which made this stage
+            # take ~47 minutes on CNB. Tencent's Fedora mirror is in-region.
+            for repo in /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo; do
+              sed -i -e 's|^metalink=|#metalink=|' \
+                -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.cloud.tencent.com/fedora|' \
+                "$repo"
+            done
+            dnf install -y --setopt=install_weak_deps=False --disablerepo=fedora-cisco-openh264 \
               @development-tools cmake ninja-build git file findutils rpm-build python3 \
               clang clang-tools-extra \
               qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtshadertools-devel qt6-qtwayland-devel \
@@ -23,7 +30,7 @@
           script: |
             set -eu
             cmake -S . -B build/cnb -G Ninja -DBUILD_TESTING=ON -DOWODE_REQUIRE_SYSTEM_APPLICATIONS=ON
-            cmake --build build/cnb --parallel 2
+            cmake --build build/cnb --parallel "$(nproc)"
         - name: run Qt and QML tests
           script: |
             set -eu
