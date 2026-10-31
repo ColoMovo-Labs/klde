@@ -16,7 +16,13 @@ grep -Fx 'Exec=/usr/bin/start-owode' /usr/share/wayland-sessions/owode.desktop
 runtime_dir=$(mktemp -d /tmp/owode-login-ci-XXXXXX)
 chmod 700 "$runtime_dir"
 trap 'rm -rf "$runtime_dir"' EXIT
-mkdir -p "$runtime_dir/config/menus" "$runtime_dir/data/applications" "$runtime_dir/cache"
+mkdir -p "$runtime_dir/config/menus" "$runtime_dir/data/applications" "$runtime_dir/cache" \
+    "$runtime_dir/data/dbus-1/services"
+cat > "$runtime_dir/data/dbus-1/services/org.owode.ActivationProbe.service" <<EOF
+[D-BUS Service]
+Name=org.owode.ActivationProbe
+Exec=/usr/bin/env OWODE_NATIVE_TEST_ISOLATED=1 $build_dir/bin/owode-native-test-client --activation-probe --state $out_dir/activation-client.json
+EOF
 cat > "$runtime_dir/data/applications/org.owode.NativeCapture.desktop" <<EOF
 [Desktop Entry]
 Type=Application

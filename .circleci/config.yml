@@ -449,7 +449,7 @@ workflows:
           requires: [fedora-build]
           filters:
             branches:
-              only: feat/fedora-gdm-vm
+              only: [feat/fedora-gdm-vm, feat/session-activation-env]
       - native-ubuntu:
           requires: [configure-build]
       - native-fedora:

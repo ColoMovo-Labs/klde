@@ -3,9 +3,9 @@
 # Executed by the isolated CI KWin through the same exit-with-session contract.
 set -euo pipefail
 [[ "${OWODE_NATIVE_TEST_ISOLATED:-}" == 1 && "$XDG_RUNTIME_DIR" == /tmp/owode-login-ci-* ]] || exit 2
-shell_pid=; wayland_pid=; x11_pid=; gnome_pid=; kde_pid=
+shell_pid=; wayland_pid=; x11_pid=; gnome_pid=; kde_pid=; activation_pid=
 cleanup() {
-    for pid in "$shell_pid" "$wayland_pid" "$x11_pid" "$gnome_pid" "$kde_pid"; do
+    for pid in "$shell_pid" "$wayland_pid" "$x11_pid" "$gnome_pid" "$kde_pid" "$activation_pid"; do
         [[ -z "$pid" ]] || kill -TERM "$pid" 2>/dev/null || true
     done
     wait || true
@@ -25,6 +25,34 @@ python3 tools/wait-native-buffers.py "$OWODE_SESSION_EVIDENCE/shell.log" "$OWODE
 # These are genuine toolkit clients. Xwayland's DISPLAY is supplied by KWin,
 # rather than inherited from the Xvfb parent used only for the nested viewport.
 [[ -n "${DISPLAY:-}" && "$DISPLAY" != "$OWODE_SESSION_PARENT_DISPLAY" ]]
+# The private bus started before KWin and initially had only the Xvfb parent
+# DISPLAY. This client must obtain its environment via real D-Bus activation,
+# with no Wayland/platform overrides in its service Exec line.
+dbus-send --session --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus \
+    org.freedesktop.DBus.StartServiceByName string:org.owode.ActivationProbe uint32:0 \
+    > "$OWODE_SESSION_EVIDENCE/activation-start.txt"
+activation_pid=$(dbus-send --session --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus \
+    org.freedesktop.DBus.GetConnectionUnixProcessID string:org.owode.ActivationProbe | awk '/uint32/ {print $2}')
+[[ "$activation_pid" =~ ^[0-9]+$ && "$activation_pid" -gt 1 ]]
+for _ in $(seq 1 100); do
+    [[ ! -s "$OWODE_SESSION_EVIDENCE/activation-client.json" ]] || break
+    kill -0 "$activation_pid"
+    sleep 0.1
+done
+python3 - "$OWODE_SESSION_EVIDENCE/activation-client.json" "$activation_pid" <<'PY'
+import json, os, sys
+state = json.load(open(sys.argv[1]))
+assert state['pid'] == int(sys.argv[2]), state
+assert state['platform'] == 'wayland', state
+for field, variable in [('waylandDisplay', 'WAYLAND_DISPLAY'), ('x11Display', 'DISPLAY'),
+                        ('sessionDesktop', 'XDG_SESSION_DESKTOP'), ('currentDesktop', 'XDG_CURRENT_DESKTOP'),
+                        ('sessionType', 'XDG_SESSION_TYPE')]:
+    assert state[field] == os.environ[variable], (field, state)
+assert state['width'] > 0 and state['height'] > 0, state
+print('D-Bus-activated real Qt client inherited the owned compositor environment.')
+PY
+kill -TERM "$activation_pid"
+activation_pid=
 env QT_QPA_PLATFORM=wayland "$OWODE_SESSION_BUILD/bin/owode-native-test-client" \
     --state "$OWODE_SESSION_EVIDENCE/wayland-client.json" > "$OWODE_SESSION_EVIDENCE/wayland-client.log" 2>&1 &
 wayland_pid=$!

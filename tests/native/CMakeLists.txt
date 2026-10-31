@@ -12,7 +12,7 @@ qt_add_executable(klde-native-session-test test_native_session.cpp fake-input-cl
 target_include_directories(klde-native-session-test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(klde-native-session-test PRIVATE klde_ui klde_uiplugin Qt6::QuickControls2 Qt6::Test PkgConfig::WaylandClient)
 qt_add_executable(owode-native-test-client test_client.cpp)
-target_link_libraries(owode-native-test-client PRIVATE Qt6::Widgets)
+target_link_libraries(owode-native-test-client PRIVATE Qt6::Widgets Qt6::DBus)
 # Deliberately not an ordinary CTest entry: it requires the isolated KWin runner.
 
 qt_add_executable(owode-native-capture capture.cpp)
