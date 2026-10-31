@@ -41,3 +41,28 @@ a default and either allowed choices or an integer range. QML writes go through
 Persisted today: accent, wallpaper, locale and voice, top-bar options, and
 per-scene visual overrides (`scenes.<scene>.<option>`, unset means the scene's
 own default).
+
+## Dock and top-bar space
+
+`dock.mode` selects how the native dock shares the bottom edge:
+
+- `smart` (default): the dock hides while a window on the active workspace
+  overlaps the dock's resting rectangle. Overlap uses KWin frame geometry from
+  `kwin-state.js` (coalesced to one snapshot per 150 ms during moves) through
+  `WindowManagerBackend::windowOverlaps()`. Windows without known geometry,
+  including every mock window, never count.
+- `reserve`: the dock surface keeps an exclusive zone equal to its height
+  (dock plus margins), so maximized windows stop above it.
+- `hidden`: the dock stays hidden.
+
+A hidden dock comes back while the pointer is on the bottom edge or the dock,
+for 1.6 s after Super is pressed while the shell has keyboard focus, and after
+the launcher closes. Showing and hiding is one finite spring on `reveal`;
+nothing repaints after it settles. While hidden the surface's input region is a
+4 px strip on the screen edge (`dockEdgeTrigger`); while revealed by the pointer
+the strip bridges the gap up to the dock so the pointer never falls through.
+
+The top bar reserves its resting height (`StatusRibbon.restingHeight` plus
+margins), not its current height, so an expanded System Island no longer
+pushes windows down. Both zones are set from QML through
+`Shell.surface.setExclusiveZone()`.

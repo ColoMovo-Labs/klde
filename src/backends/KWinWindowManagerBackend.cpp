@@ -14,6 +14,7 @@
 #include <QSet>
 #include <QUuid>
 #include <algorithm>
+#include <cmath>
 #include <utility>
 
 static void initializeKWinScripts() { Q_INIT_RESOURCE(owode_kwin_scripts); }
@@ -273,6 +274,13 @@ bool KWinWindowManagerBackend::snapshot(const QString &token, const QString &jso
                 return false;
             membership.append(desktop.toString());
         }
+        // Compositor-global logical coordinates; absent or invalid means unknown.
+        const auto frame = window.value("geometry").toObject();
+        const QRectF geometry(frame.value("x").toDouble(), frame.value("y").toDouble(),
+                              frame.value("width").toDouble(), frame.value("height").toDouble());
+        const bool geometryKnown = geometry.isValid() && geometry.width() <= 65536 &&
+                                   geometry.height() <= 65536 && std::abs(geometry.x()) <= 65536 &&
+                                   std::abs(geometry.y()) <= 65536;
         nextWindows.append(
             QVariantMap{{"id", id},
                         {"applicationId", window.value("applicationId").toString().left(1024)},
@@ -284,7 +292,10 @@ bool KWinWindowManagerBackend::snapshot(const QString &token, const QString &jso
                         {"closeable", window.value("closeable").toBool()},
                         {"workspaceIds", membership},
                         {"workspaceId", membership.value(0)},
-                        {"onAllWorkspaces", membership.isEmpty()}});
+                        {"onAllWorkspaces", membership.isEmpty()},
+                        {"fullScreen", window.value("fullScreen").toBool()},
+                        {"output", window.value("output").toString().left(256)},
+                        {"geometry", geometryKnown ? QVariant(geometry) : QVariant()}});
     }
     m_sequence = sequence;
     m_deadline.stop();

@@ -40,6 +40,10 @@ class NativeSurfaceController : public QObject {
     Q_INVOKABLE bool attach(QObject *object, const QString &role);
     Q_INVOKABLE bool supportsRole(const QString &role) const;
     Q_INVOKABLE bool hasRole(const QString &role) const;
+    // Space reserved from the edge an attached ribbon or dock is anchored to.
+    // 0 lets windows extend underneath; the value is clamped to the surface.
+    Q_INVOKABLE bool setExclusiveZone(QObject *object, int zone);
+    Q_INVOKABLE int exclusiveZone(QObject *object) const;
 
   signals:
     void changed();
@@ -51,6 +55,7 @@ class NativeSurfaceController : public QObject {
     void updateInputRegion(QWindow *window);
 
     QHash<QWindow *, QString> m_roles;
+    QHash<QWindow *, int> m_zones;
     QSet<QQuickItem *> m_observedItems;
     QSet<QWindow *> m_pendingRegions;
     QString m_diagnostic;

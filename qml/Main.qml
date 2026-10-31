@@ -211,6 +211,11 @@ ApplicationWindow {
             if (!launcher.opened)
                 window.showView("launcher");
         }
+        function onDockPeekRequested(): void {
+            dock.peek();
+            if (nativeDockLoader.item)
+                nativeDockLoader.item.peek();
+        }
     }
     Component.onCompleted: {
         Shell.mockScenarios.apply(initialScenario);
@@ -347,12 +352,17 @@ ApplicationWindow {
             }
         }
     }
-    Dock {
+    AutoHideDock {
         id: dock
         visible: !window.nativeSurfaceMode && !window.welcomeMode && !window.snapshot.appearance.focus && !launcher.visible
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
+        mode: Shell.settings.values["dock.mode"]
         anchors.horizontalCenter: parent.horizontalCenter
         y: desktopLayout.dockHost.y
+        width: implicitWidth
+        height: implicitHeight
+        edgeGap: Math.max(0, window.height - desktopLayout.dockHost.y - Tokens.dockHeight)
+        maximumWidth: window.width - Tokens.space32
         onLauncherRequested: window.showView("launcher")
         onSettingsRequested: window.showView("quick-settings")
     }
@@ -366,6 +376,8 @@ ApplicationWindow {
         onClosed: {
             if (!window.nativeSurfaceMode)
                 dock.focusLauncher();
+            else if (nativeDockLoader.item)
+                nativeDockLoader.item.peek();
         }
     }
     SettingsCenter {
@@ -583,6 +595,11 @@ ApplicationWindow {
             color: "transparent"
             width: window.width
             height: nativeRibbon.implicitHeight + Shell.ribbon.margin * 2
+            readonly property int exclusiveZone: Math.ceil(nativeRibbon.restingHeight + Shell.ribbon.margin * 2)
+            onExclusiveZoneChanged: {
+                if (attached)
+                    Shell.surface.setExclusiveZone(nativeRibbonSurface, exclusiveZone);
+            }
             StatusRibbon {
                 id: nativeRibbon
                 anchors.fill: parent
@@ -590,7 +607,11 @@ ApplicationWindow {
                 islandState: window.initialIslandState
                 onAction: moduleId => window.moduleAction(moduleId)
             }
-            Component.onCompleted: attached = Shell.surface.attach(nativeRibbonSurface, "ribbon")
+            Component.onCompleted: {
+                attached = Shell.surface.attach(nativeRibbonSurface, "ribbon");
+                if (attached)
+                    Shell.surface.setExclusiveZone(nativeRibbonSurface, exclusiveZone);
+            }
         }
     }
     Loader {
@@ -608,19 +629,41 @@ ApplicationWindow {
             // the deliberately hidden preview window.
             transientParent: null
             property bool attached: false
+            readonly property string dockMode: Shell.settings.values["dock.mode"]
+            // Reserve the dock plus its margins only in "reserve" mode.
+            readonly property int exclusiveZone: dockMode === "reserve" ? height : 0
+            function peek(): void {
+                nativeDock.peek();
+            }
             visible: attached && !window.snapshot.appearance.focus && !launcher.visible
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
             width: window.width
             height: Tokens.dockHeight + Tokens.space32 + Tokens.space16
-            Dock {
+            onExclusiveZoneChanged: {
+                if (attached)
+                    Shell.surface.setExclusiveZone(nativeDockSurface, exclusiveZone);
+            }
+            AutoHideDock {
+                id: nativeDock
+                mode: nativeDockSurface.dockMode
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: Tokens.space24
+                width: implicitWidth
+                height: implicitHeight
+                edgeGap: Tokens.space24
+                maximumWidth: nativeDockSurface.width - Tokens.space32
+                overlapEnabled: true
+                globalOrigin: nativeDockSurface.screen ? Qt.point(nativeDockSurface.screen.geometry.x, nativeDockSurface.screen.geometry.y + nativeDockSurface.screen.geometry.height - nativeDockSurface.height) : Qt.point(0, 0)
                 onLauncherRequested: window.showView("launcher")
                 onSettingsRequested: window.showView("quick-settings")
             }
-            Component.onCompleted: attached = Shell.surface.attach(nativeDockSurface, "dock")
+            Component.onCompleted: {
+                attached = Shell.surface.attach(nativeDockSurface, "dock");
+                if (attached)
+                    Shell.surface.setExclusiveZone(nativeDockSurface, exclusiveZone);
+            }
         }
     }
     Loader {

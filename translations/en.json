@@ -612,5 +612,12 @@
   "settings.about.preview": "Preview window",
   "settings.about.store.file": "Settings are saved to %1 (schema version %2).",
   "settings.about.store.readonly": "%1 was written by a newer owoDE. It is read but not changed.",
-  "settings.about.store.memory": "This preview keeps settings only until it closes."
+  "settings.about.store.memory": "This preview keeps settings only until it closes.",
+  "settings.dock.mode": "Dock behavior",
+  "settings.dock.mode.smart": "Hide when windows overlap",
+  "settings.dock.mode.reserve": "Always shown, keep space",
+  "settings.dock.mode.hidden": "Always hidden",
+  "settings.dock.help.smart": "The dock steps aside when a window reaches it. Move the pointer to the bottom edge or press Super to bring it back.",
+  "settings.dock.help.reserve": "Maximized windows stop above the dock, so it never covers them.",
+  "settings.dock.help.hidden": "The dock stays out of the way until the pointer touches the bottom edge or you press Super."
 }

@@ -297,7 +297,29 @@ ShellPopup {
     Component {
         id: desktopPage
         ColumnLayout {
+            id: desktopColumn
+            readonly property var dockModes: ["smart", "reserve", "hidden"]
             spacing: Tokens.space16
+            Label {
+                text: I18n.t("settings.dock.mode")
+                font: Tokens.label
+                color: Tokens.textPrimary
+            }
+            ChoiceBox {
+                objectName: "settingsDockMode"
+                Layout.fillWidth: true
+                model: desktopColumn.dockModes.map(mode => I18n.t("settings.dock.mode." + mode))
+                currentIndex: desktopColumn.dockModes.indexOf(Shell.settings.values["dock.mode"])
+                Accessible.name: I18n.t("settings.dock.mode")
+                onActivated: Shell.settings.setValue("dock.mode", desktopColumn.dockModes[currentIndex])
+            }
+            Label {
+                text: I18n.t("settings.dock.help." + Shell.settings.values["dock.mode"])
+                font: Tokens.caption
+                color: Tokens.textSecondary
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
             Switch {
                 objectName: "settingsAmbient"
                 text: I18n.t("settings.desktop.ambient")

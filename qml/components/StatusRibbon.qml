@@ -16,6 +16,9 @@ RibbonForm {
     visible: Shell.ribbon.enabled
     readonly property int degradation: stacked ? 3 : width < Tokens.ribbonFoldThreshold ? 2 : width < Tokens.ribbonCondenseThreshold ? 1 : 0
     implicitHeight: visible ? Math.max(center.height, leftHost.y + left.height, rightHost.y + right.height) : 0
+    // Height without a temporarily expanded System Island; native sessions
+    // reserve only this much so windows don't jump when the island grows.
+    readonly property real restingHeight: visible ? Math.max(center.idle ? center.height : Tokens.ribbonHeight, leftHost.y + left.height, rightHost.y + right.height) : 0
     StatusRibbonSection {
         id: left
         parent: root.leftHost

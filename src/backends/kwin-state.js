@@ -12,6 +12,11 @@ let sequence = 0;
 let sending = false;
 let dirty = false;
 const watchedDesktops = new Set();
+// Geometry feeds only the dock's overlap test. Coalesce move/resize bursts so
+// dragging a window sends a few snapshots per second, not one per frame.
+const geometryTimer = new QTimer();
+geometryTimer.singleShot = true;
+geometryTimer.interval = 150;
 
 function desktopId(desktop) { return desktop ? String(desktop.id) : ""; }
 function schedule() {
@@ -29,7 +34,10 @@ function publish() {
         resourceClass: String(w.resourceClass), resourceName: String(w.resourceName),
         title: String(w.caption).slice(0, 2048), active: w === workspace.activeWindow,
         minimized: w.minimized, desktops: w.desktops.map(desktopId),
-        closeable: w.closeable
+        closeable: w.closeable, fullScreen: w.fullScreen,
+        output: w.output ? String(w.output.name) : "",
+        geometry: {x: w.frameGeometry.x, y: w.frameGeometry.y,
+                   width: w.frameGeometry.width, height: w.frameGeometry.height}
     }));
     callDBus(destination, objectPath, "org.owode.KWinBridge1", "snapshot", token,
         JSON.stringify({schema: 1, sequence: ++sequence, desktops: desktops,
@@ -39,14 +47,18 @@ function publish() {
             if (dirty) schedule();
         });
 }
+function scheduleGeometry() {
+    if (!geometryTimer.active) geometryTimer.start();
+}
 function watch(window) {
-    // Only state that feeds shell models is observed; geometry/paint/cursor
-    // changes deliberately don't send traffic while a window is being moved.
+    // Only state that feeds shell models is observed. Paint/cursor changes are
+    // ignored; geometry changes are coalesced by geometryTimer.
     for (const name of ["captionChanged", "desktopFileNameChanged", "desktopsChanged",
                         "minimizedChanged", "skipTaskbarChanged", "stackingOrderChanged",
-                        "closeableChanged"]) {
+                        "closeableChanged", "fullScreenChanged", "outputChanged"]) {
         if (window[name]) window[name].connect(schedule);
     }
+    if (window.frameGeometryChanged) window.frameGeometryChanged.connect(scheduleGeometry);
     schedule();
 }
 function watchDesktops() {
@@ -60,6 +72,7 @@ function watchDesktops() {
     schedule();
 }
 timer.timeout.connect(publish);
+geometryTimer.timeout.connect(schedule);
 workspace.windowAdded.connect(watch);
 workspace.windowRemoved.connect(schedule);
 workspace.windowActivated.connect(schedule);

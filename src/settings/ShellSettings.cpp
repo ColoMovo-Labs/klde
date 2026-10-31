@@ -23,6 +23,9 @@ ShellSettings::ShellSettings(QObject *parent) : QObject(parent) {
            {QString(), QStringLiteral("en"), QStringLiteral("zh_CN")});
     define(QStringLiteral("language.voice"), string, QStringLiteral("standard"),
            {QStringLiteral("standard"), QStringLiteral("cute")});
+    // smart: hide while a window overlaps; reserve: keep an exclusive zone.
+    define(QStringLiteral("dock.mode"), string, QStringLiteral("smart"),
+           {QStringLiteral("smart"), QStringLiteral("reserve"), QStringLiteral("hidden")});
     define(QStringLiteral("ribbon.enabled"), boolean, true);
     define(QStringLiteral("ribbon.compact"), boolean, false);
     define(QStringLiteral("ribbon.margin"), integer, 16, {}, 4, 40);

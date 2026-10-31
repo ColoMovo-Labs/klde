@@ -345,6 +345,7 @@ bool ShellServices::eventFilter(QObject *watched, QEvent *event) {
             if (key->key() == Qt::Key_Meta) {
                 m_metaDown = true;
                 m_metaUsed = false;
+                emit dockPeekRequested();
             } else if (m_metaDown)
                 m_metaUsed = true;
         } else if (key->key() == Qt::Key_Meta) {

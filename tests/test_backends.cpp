@@ -9,9 +9,43 @@
 #include <QSignalSpy>
 #include <QtTest>
 
+namespace {
+// Fixed window list for the dock overlap contract.
+class FixedWindows final : public klde::WindowManagerBackend {
+  public:
+    QVariantList items;
+    QVariantList workspaces() const override { return {}; }
+    QVariantList windows() const override { return items; }
+    QString activeWorkspace() const override { return QStringLiteral("one"); }
+    QVariantMap capabilities() const override { return {}; }
+    bool activateWorkspace(const QString &) override { return false; }
+    bool setWorkspaceLayout(const QString &, LayoutMode) override { return false; }
+    bool setWindowFloating(const QString &, bool) override { return false; }
+    bool moveWindow(const QString &, const QString &) override { return false; }
+    bool applyWindowRule(const klde::WindowRule &) override { return false; }
+};
+QVariantMap window(const QString &workspace, const QRectF &geometry, bool minimized = false) {
+    return {{"workspaceId", workspace},
+            {"workspaceIds", QStringList{workspace}},
+            {"minimized", minimized},
+            {"geometry", geometry.isValid() ? QVariant(geometry) : QVariant()}};
+}
+} // namespace
+
 class BackendTest final : public QObject {
     Q_OBJECT
   private slots:
+    void dockOverlapCountsOnlyVisibleWindowsOnTheActiveWorkspace() {
+        FixedWindows manager;
+        const QRectF dock(600, 1000, 400, 64);
+        manager.items = {window("two", {0, 0, 1920, 1080}), window("one", {0, 0, 1920, 1080}, true),
+                         window("one", {}), window("one", {100, 100, 800, 600})};
+        QVERIFY(!manager.windowOverlaps(dock));
+        manager.items.append(window("one", {500, 500, 600, 520}));
+        QVERIFY(manager.windowOverlaps(dock));
+        klde::MockWindowManagerBackend mock;
+        QVERIFY(!mock.windowOverlaps(dock));
+    }
     void quickSettingsClampAndRejectInvalidState() {
         klde::MockSystemBackend system;
         QSignalSpy osd(&system, &klde::SystemBackend::osdRequested);

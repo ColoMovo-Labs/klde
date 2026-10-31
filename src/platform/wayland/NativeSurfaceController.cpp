@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QVariant>
 #include <QWindow>
+#include <algorithm>
 
 #if defined(OWODE_HAVE_LAYERSHELLQT)
 #include <LayerShellQt/Window>
@@ -52,6 +53,33 @@ bool NativeSurfaceController::supportsRole(const QString &role) const {
 
 bool NativeSurfaceController::hasRole(const QString &role) const {
     return m_roles.values().contains(role);
+}
+
+int NativeSurfaceController::exclusiveZone(QObject *object) const {
+    return m_zones.value(qobject_cast<QWindow *>(object), -1);
+}
+
+bool NativeSurfaceController::setExclusiveZone(QObject *object, int zone) {
+    auto *window = qobject_cast<QWindow *>(object);
+    const auto role = m_roles.value(window);
+    if (window == nullptr || (role != QStringLiteral("ribbon") && role != QStringLiteral("dock")))
+        return false;
+    zone = std::clamp(zone, 0, std::max(0, window->height()));
+    if (m_zones.value(window, -1) == zone)
+        return true;
+#if defined(OWODE_HAVE_LAYERSHELLQT)
+    auto *surface = LayerShellQt::Window::get(window);
+    if (surface == nullptr)
+        return false;
+    surface->setExclusiveZone(zone);
+    m_zones.insert(window, zone);
+    // Layer-shell state is applied on the next commit; request exactly one frame.
+    if (auto *quick = qobject_cast<QQuickWindow *>(window))
+        quick->update();
+    return true;
+#else
+    return false;
+#endif
 }
 
 void NativeSurfaceController::queueInputRegion(QWindow *window) {
@@ -206,16 +234,20 @@ bool NativeSurfaceController::attach(QObject *object, const QString &role) {
                              LayerShellQt::Window::AnchorRight});
         // QML owns the visual margin; applying it here as well doubles it.
         surface->setMargins(QMargins());
+        // QML sets the resting height through setExclusiveZone(), so a
+        // temporarily expanded System Island never pushes windows down.
         surface->setExclusiveZone(window->height());
         surface->setExclusiveEdge(LayerShellQt::Window::AnchorTop);
-        connect(window, &QWindow::heightChanged, surface,
-                [surface](int height) { surface->setExclusiveZone(height); });
+        m_zones.insert(window, window->height());
     } else if (role == QStringLiteral("dock")) {
         surface->setLayer(LayerShellQt::Window::LayerTop);
         surface->setAnchors({LayerShellQt::Window::AnchorBottom, LayerShellQt::Window::AnchorLeft,
                              LayerShellQt::Window::AnchorRight});
         surface->setMargins(QMargins());
+        // Smart hide is the default; QML reserves space only in "reserve" mode.
         surface->setExclusiveZone(0);
+        surface->setExclusiveEdge(LayerShellQt::Window::AnchorBottom);
+        m_zones.insert(window, 0);
     } else {
         surface->setLayer(LayerShellQt::Window::LayerOverlay);
         surface->setAnchors({LayerShellQt::Window::AnchorTop, LayerShellQt::Window::AnchorBottom,
@@ -229,6 +261,7 @@ bool NativeSurfaceController::attach(QObject *object, const QString &role) {
     m_roles.insert(window, role);
     connect(window, &QObject::destroyed, this, [this, window] {
         m_roles.remove(window);
+        m_zones.remove(window);
         m_pendingRegions.remove(window);
         emit changed();
     });

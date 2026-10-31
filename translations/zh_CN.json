@@ -612,5 +612,12 @@
   "settings.about.preview": "预览窗口",
   "settings.about.store.file": "设置保存在 %1（配置版本 %2）。",
   "settings.about.store.readonly": "%1 由更新版本的 owoDE 写入，本次只读取、不修改。",
-  "settings.about.store.memory": "预览模式下，设置只保留到窗口关闭。"
+  "settings.about.store.memory": "预览模式下，设置只保留到窗口关闭。",
+  "settings.dock.mode": "Dock 行为",
+  "settings.dock.mode.smart": "智能隐藏",
+  "settings.dock.mode.reserve": "固定保留区域",
+  "settings.dock.mode.hidden": "始终隐藏",
+  "settings.dock.help.smart": "有窗口碰到 Dock 时它会自动让开。把鼠标移到屏幕底边或按 Super 键即可唤出。",
+  "settings.dock.help.reserve": "最大化的窗口会停在 Dock 上方，Dock 不会挡住窗口。",
+  "settings.dock.help.hidden": "Dock 平时隐藏，鼠标碰到屏幕底边或按 Super 键时出现。"
 }

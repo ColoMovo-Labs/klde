@@ -117,6 +117,8 @@ class ShellServices final : public QObject {
     void messageChanged();
     void weatherChanged();
     void launcherRequested();
+    // Super was pressed while the shell had keyboard focus.
+    void dockPeekRequested();
 
   protected:
     bool eventFilter(QObject *watched, QEvent *event) override;

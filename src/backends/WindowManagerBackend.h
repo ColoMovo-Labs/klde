@@ -3,8 +3,11 @@
 
 #include <QObject>
 #include <QRect>
+#include <QRectF>
+#include <QStringList>
 #include <QVariantList>
 #include <QtQml/qqmlregistration.h>
+#include <algorithm>
 
 namespace klde {
 
@@ -52,6 +55,25 @@ class WindowManagerBackend : public QObject {
     Q_INVOKABLE virtual bool activateWindow(const QString &) { return false; }
     Q_INVOKABLE virtual bool closeWindow(const QString &) { return false; }
     virtual bool applyWindowRule(const WindowRule &rule) = 0;
+
+    // True when a visible window on the active workspace intersects area, in
+    // compositor-global logical coordinates. Windows without known geometry
+    // never count, so mock backends keep a smart-hiding dock visible.
+    Q_INVOKABLE bool windowOverlaps(const QRectF &area) const {
+        const auto active = activeWorkspace();
+        const auto items = windows();
+        return std::any_of(items.cbegin(), items.cend(), [&](const QVariant &item) {
+            const auto window = item.toMap();
+            const auto geometry = window.value(QStringLiteral("geometry"));
+            if (!geometry.isValid() || window.value(QStringLiteral("minimized")).toBool())
+                return false;
+            const bool here =
+                window.value(QStringLiteral("onAllWorkspaces")).toBool() ||
+                window.value(QStringLiteral("workspaceId")).toString() == active ||
+                window.value(QStringLiteral("workspaceIds")).toStringList().contains(active);
+            return here && geometry.toRectF().intersects(area);
+        });
+    }
 
   signals:
     void workspacesChanged();
