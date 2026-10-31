@@ -57,6 +57,28 @@ commands:
           at: /root/project
 
 jobs:
+  fedora-login-vm:
+    machine:
+      image: ubuntu-2604:current
+    resource_class: medium
+    environment:
+      OWODE_VM_CLOUD_ONLY: "1"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install disposable cloud guest orchestration tools
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends qemu-system-x86 qemu-utils cloud-image-utils openssh-client gnupg curl python3
+      - run:
+          name: Real Fedora GDM, logind, virtual DRM and return to greeter
+          no_output_timeout: 20m
+          command: timeout --signal=TERM --kill-after=30s 45m python3 tools/cloud-login-vm.py --packages artifacts/fedora-package --output artifacts/login-vm
+      - store_artifacts:
+          path: artifacts/login-vm
+
   native-ubuntu:
     executor: ubuntu-qt
     steps:
@@ -423,6 +445,11 @@ workflows:
       - designer-compat
       - configure-build
       - fedora-build
+      - fedora-login-vm:
+          requires: [fedora-build]
+          filters:
+            branches:
+              only: feat/fedora-gdm-vm
       - native-ubuntu:
           requires: [configure-build]
       - native-fedora:
