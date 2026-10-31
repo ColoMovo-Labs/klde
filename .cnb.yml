@@ -1,6 +1,6 @@
 # CNB is a public mirror and an additional Fedora cloud validation path.
 # CircleCI remains the authoritative Qt/CMake matrix and merge check.
-"(main|feat/temporal-shell|feat/native-session-surfaces|feat/visual-workspace|feat/system-applications|feat/fedora-login-session|feat/kwin-live-state|feat/live-system-services)":
+"(main|feat/temporal-shell|feat/native-session-surfaces|feat/visual-workspace|feat/system-applications|feat/fedora-login-session|feat/kwin-live-state|feat/live-system-services|feat/experience-polish)":
   push:
     - docker:
         image: fedora:44
