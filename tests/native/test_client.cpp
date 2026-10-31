@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QDBusConnection>
 #include <QEvent>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -51,14 +52,21 @@ class AuditClient final : public QWidget {
             m_pending = false;
             QSaveFile file(m_path);
             if (file.open(QIODevice::WriteOnly)) {
-                file.write(QJsonDocument(QJsonObject{{"active", isActiveWindow()},
-                                                     {"platform", QGuiApplication::platformName()},
-                                                     {"pid", QCoreApplication::applicationPid()},
-                                                     {"clicks", m_clicks},
-                                                     {"text", m_input->text()},
-                                                     {"width", width()},
-                                                     {"height", height()}})
-                               .toJson());
+                file.write(
+                    QJsonDocument(
+                        QJsonObject{{"active", isActiveWindow()},
+                                    {"platform", QGuiApplication::platformName()},
+                                    {"pid", QCoreApplication::applicationPid()},
+                                    {"waylandDisplay", qEnvironmentVariable("WAYLAND_DISPLAY")},
+                                    {"x11Display", qEnvironmentVariable("DISPLAY")},
+                                    {"sessionDesktop", qEnvironmentVariable("XDG_SESSION_DESKTOP")},
+                                    {"currentDesktop", qEnvironmentVariable("XDG_CURRENT_DESKTOP")},
+                                    {"sessionType", qEnvironmentVariable("XDG_SESSION_TYPE")},
+                                    {"clicks", m_clicks},
+                                    {"text", m_input->text()},
+                                    {"width", width()},
+                                    {"height", height()}})
+                        .toJson());
                 file.commit();
             }
         });
@@ -77,11 +85,15 @@ int main(int argc, char **argv) {
     QCommandLineParser parser;
     parser.addOption({"state", "Cloud test state file", "path"});
     parser.addOption({"desktop-file", "Desktop application ID for launcher matching", "id"});
+    parser.addOption({"activation-probe", "Claim the private cloud D-Bus activation fixture"});
     parser.process(app);
     if (parser.isSet("desktop-file"))
         app.setDesktopFileName(parser.value("desktop-file"));
     if (parser.value("state").isEmpty())
         return 3;
+    if (parser.isSet("activation-probe") &&
+        !QDBusConnection::sessionBus().registerService("org.owode.ActivationProbe"))
+        return 4;
     AuditClient client(parser.value("state"));
     client.show();
     return app.exec();

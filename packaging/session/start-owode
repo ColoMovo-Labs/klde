@@ -8,7 +8,7 @@ case "${1:-}" in
     *) echo 'Usage: start-owode [--check]' >&2; exit 2 ;;
 esac
 [[ $# -le 1 ]] || exit 2
-for command in kwin_wayland klde-shell dbus-run-session dbus-send Xwayland; do
+for command in kwin_wayland klde-shell dbus-run-session dbus-send dbus-update-activation-environment Xwayland; do
     command -v "$command" >/dev/null || { echo "Missing dependency: $command" >&2; exit 3; }
 done
 test -x /usr/libexec/owode-session-client || { echo 'Missing owoDE session client.' >&2; exit 3; }

@@ -4,5 +4,22 @@ set -euo pipefail
 [[ "${OWODE_MANAGED_SESSION:-}" == 1 && -n "${WAYLAND_DISPLAY:-}" ]] || {
     echo 'This helper must be launched by the owoDE KWin session.' >&2; exit 2;
 }
+[[ -n "${XDG_RUNTIME_DIR:-}" && -d "$XDG_RUNTIME_DIR" && -O "$XDG_RUNTIME_DIR" ]] || exit 2
+kwin_owner=$(dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+    /org/freedesktop/DBus org.freedesktop.DBus.NameHasOwner string:org.kde.KWin)
+[[ "$kwin_owner" == *'boolean true'* ]] || {
+    echo 'The managed-session bus has no KWin owner; refusing environment import.' >&2; exit 2;
+}
+# Import only this compositor's display/identity fields, after KWin has supplied
+# its inner Wayland and Xwayland environment. Never import all process variables
+# or a GNOME/KDE compatibility profile into activation/portal services.
+activation_options=()
+systemd_owner=$(dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+    /org/freedesktop/DBus org.freedesktop.DBus.NameHasOwner string:org.freedesktop.systemd1)
+if [[ "$systemd_owner" == *'boolean true'* ]]; then activation_options+=(--systemd); fi
+dbus-update-activation-environment "${activation_options[@]}" \
+    "DISPLAY=${DISPLAY:-}" "WAYLAND_DISPLAY=$WAYLAND_DISPLAY" "XAUTHORITY=${XAUTHORITY:-}" \
+    "XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-owoDE}" \
+    "XDG_SESSION_DESKTOP=${XDG_SESSION_DESKTOP:-owode}" "XDG_SESSION_TYPE=wayland"
 export QT_QPA_PLATFORM=wayland
 exec /usr/bin/klde-shell --native-shell-surfaces --applications system --managed-session

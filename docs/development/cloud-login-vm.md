@@ -1,7 +1,8 @@
 # 云端真实登录验收
 
 `fedora-login-vm` 是独立于现有容器构建、Visual Lab 和嵌套 KWin 的登录验收。
-当前只在功能分支 `feat/fedora-gdm-vm` 启用；新增任务通过之前，不声称登录验收完成。
+当前在功能分支 `feat/fedora-gdm-vm` 和 `feat/session-activation-env` 启用；
+新增任务通过之前，不声称登录验收完成。
 Ubuntu 26.04 仍是首要支持平台。该 Fedora 44 虚拟机任务不会在维护者设备上运行。
 
 CircleCI 的 Linux machine executor 启动一次性的 Fedora Cloud 44 客体，安装同一
@@ -24,7 +25,9 @@ SSH 仅绑定云端 runner 的回环地址，临时密钥、磁盘和 NoCloud se
 关闭客体自动登录，避免登录循环。这不是密码认证或安全锁屏测试。GNOME Shell 仅作为
 GDM 的独立 greeter 运行，不属于 owoDE 用户会话。SELinux 保持发行版默认策略。
 
-任务探测 `/dev/kvm` 的可访问性；没有加速时使用 TCG，并记录实际选择。无论哪种
+任务探测 `/dev/kvm` 的可访问性；没有加速时使用 TCG（翻译缓存限制为 256 MiB），并记录实际选择。
+客体磁盘放在 `/var/tmp` 的真实存储上：runner 的 `/tmp` 是 tmpfs，安装桌面时磁盘增长会占用内存，
+曾与 4 GiB 客体一起触发宿主 OOM。无论哪种
 加速，虚拟显卡与软件渲染都不能代表 Intel 实机性能、物理显卡兼容性或生产级可靠性。
 不要为了这个任务在维护者主机加载内核模块、改权限或修改 GDM/niri 配置。
 

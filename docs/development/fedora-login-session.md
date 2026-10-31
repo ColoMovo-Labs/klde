@@ -28,6 +28,10 @@ KWin 通过 `--exit-with-session` 在自己的 Wayland/X11 环境中启动
 `/usr/libexec/owode-session-client`。客户端使用 LayerShellQt 背景、Ribbon、Dock
 与真实 XDG 应用目录，不需要 Plasma Shell。没有修改、复制或派生 KWin 代码。
 
+客户端会在启动 shell 前向当前会话的 D-Bus/已有 systemd 用户管理器导入本次 KWin
+的显示与桌面标识，使服务激活应用使用本会话。只导入明确的字段；不会把 GNOME/KDE
+兼容配置或全部进程环境写进去。详见[激活环境边界](../architecture/session-activation.md)。
+
 顶栏电源按钮或快捷设置的会话按钮打开退出确认。确认后只退出当前 owoDE shell，
 KWin 按其子会话生命周期退出；没有调用 `loginctl terminate-user`、关机或杀死其他
 合成器。取消和 Escape 保留会话。此轮不提供未经验证的真实关机/挂起按钮。
