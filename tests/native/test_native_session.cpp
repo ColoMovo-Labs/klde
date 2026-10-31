@@ -158,6 +158,7 @@ if (client && action === 'minimize') client.minimized = true;
 if (action === 'close-all') windows.filter(w => w.caption === 'owoDE native CI application').forEach(w => w.closeWindow());
 callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', JSON.stringify(windows.map(w => ({
     caption: w.caption, resourceClass: w.resourceClass, desktop: w.desktopWindow, dock: w.dock,
+    id: String(w.internalId), minimized: w.minimized,
     normal: w.normalWindow, active: w.active,
     geometry: {x: w.frameGeometry.x, y: w.frameGeometry.y, width: w.frameGeometry.width, height: w.frameGeometry.height}
 }))));
@@ -511,6 +512,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QVERIFY(manager->activateWindow(firstId));
         QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
         QTRY_VERIFY(!confirmedWindow(firstId).value("minimized").toBool());
+        QTRY_COMPARE(manager->pendingRequests(), 0);
         const auto destination = manager->workspaces().last().toMap().value("id").toString();
         QVERIFY(manager->moveWindow(firstId, destination));
         QTRY_COMPARE(confirmedWindow(firstId).value("workspaceId").toString(), destination);
@@ -518,6 +520,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_COMPARE(manager->activeWorkspace(), destination);
         QVERIFY(manager->activateWindow(firstId));
         QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
+        QTRY_COMPARE(manager->pendingRequests(), 0);
         // Exercise the actual shared Dock delegate and Wayland input path,
         // rather than only invoking Shell.launch directly from this test.
         QVERIFY(snapshot("minimize", firstId));
@@ -539,6 +542,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QCOMPARE(manager->windows().size(), 2);
         QVERIFY(manager->activateWindow(firstId));
         QTRY_VERIFY(confirmedWindow(firstId).value("active").toBool());
+        QTRY_COMPARE(manager->pendingRequests(), 0);
         QTRY_COMPARE(manager->activeWorkspace(), destination);
         QFile stateEvidence(m_output + "/live-window-state.json");
         QVERIFY(stateEvidence.open(QIODevice::WriteOnly));
@@ -548,6 +552,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
                             {"workspaces", QJsonArray::fromVariantList(manager->workspaces())},
                             {"windows", QJsonArray::fromVariantList(manager->windows())},
                             {"activeWorkspace", manager->activeWorkspace()},
+                            {"pendingRequests", manager->pendingRequests()},
                             {"dockCount", services->dockApplications()->rowCount()}})
                 .toJson());
         stateEvidence.close();
@@ -569,6 +574,7 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
                     .toBool());
         QVERIFY(manager->closeWindow(secondId));
         QTRY_VERIFY(manager->windows().isEmpty());
+        QTRY_COMPARE(manager->pendingRequests(), 0);
         QTRY_VERIFY(!services->dockApplications()
                          ->data(services->dockApplications()->index(0, 0),
                                 klde::ApplicationModel::RunningRole)
@@ -600,6 +606,13 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_VERIFY(manager->windows().isEmpty());
         QTRY_COMPARE(services->dockApplications()->rowCount(), 0);
         QTRY_COMPARE(uncatalogued.state(), QProcess::NotRunning);
+        QTRY_COMPARE(manager->pendingRequests(), 0);
+        // Two accepted asynchronous commands must execute in request order,
+        // even when the first requested state is already visible.
+        QVERIFY(manager->activateWorkspace(destination));
+        QVERIFY(manager->activateWorkspace(firstDesktop));
+        QTRY_COMPARE(manager->pendingRequests(), 0);
+        QTRY_COMPARE(manager->activeWorkspace(), firstDesktop);
         QVERIFY(wallpaper->isVisible() && dock->isVisible());
         QCOMPARE(warnings.count(), 0);
     }

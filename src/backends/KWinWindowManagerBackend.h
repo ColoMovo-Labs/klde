@@ -27,6 +27,7 @@ class KWinWindowManagerBackend final : public WindowManagerBackend, protected QD
     QVariantList windows() const override { return m_windows; }
     QString activeWorkspace() const override { return m_activeWorkspace; }
     QVariantMap capabilities() const override;
+    int pendingRequests() const override { return static_cast<int>(m_commands.size()); }
     bool activateWorkspace(const QString &id) override;
     bool activateWindow(const QString &id) override;
     bool closeWindow(const QString &id) override;
@@ -46,6 +47,8 @@ class KWinWindowManagerBackend final : public WindowManagerBackend, protected QD
     void invoke(const QDBusMessage &message, std::function<void(const QDBusMessage &)> handler);
     void loadScript(const QString &name, bool reporter, const QByteArray &source);
     void unloadScript(const QString &owner, const QString &name);
+    void startNextCommand();
+    void finishCommand(const QString &id, bool accepted);
     bool trusted(const QString &token) const;
     bool request(const QString &operation, const QString &id, const QString &destination = {});
     bool rejectUnavailable();
@@ -61,6 +64,8 @@ class KWinWindowManagerBackend final : public WindowManagerBackend, protected QD
     QString m_version;
     QString m_diagnostic;
     QHash<QString, QString> m_commands;
+    QStringList m_commandQueue;
+    QString m_activeCommand;
     QVariantList m_workspaces;
     QVariantList m_windows;
     QString m_activeWorkspace;

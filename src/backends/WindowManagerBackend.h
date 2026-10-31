@@ -24,6 +24,7 @@ class WindowManagerBackend : public QObject {
     Q_PROPERTY(QVariantList windows READ windows NOTIFY windowsChanged)
     Q_PROPERTY(QString activeWorkspace READ activeWorkspace NOTIFY activeWorkspaceChanged)
     Q_PROPERTY(QVariantMap capabilities READ capabilities NOTIFY capabilitiesChanged)
+    Q_PROPERTY(int pendingRequests READ pendingRequests NOTIFY pendingRequestsChanged)
 
   public:
     // Keep the numeric layout IDs stable while exposing the neutral product name.
@@ -41,6 +42,7 @@ class WindowManagerBackend : public QObject {
     virtual QVariantList windows() const = 0;
     virtual QString activeWorkspace() const = 0;
     virtual QVariantMap capabilities() const = 0;
+    virtual int pendingRequests() const { return 0; }
 
     // true means accepted; observers use change signals for confirmed state.
     Q_INVOKABLE virtual bool activateWorkspace(const QString &id) = 0;
@@ -56,6 +58,7 @@ class WindowManagerBackend : public QObject {
     void windowsChanged();
     void activeWorkspaceChanged();
     void capabilitiesChanged();
+    void pendingRequestsChanged();
     void requestRejected(const QString &reason);
 };
 

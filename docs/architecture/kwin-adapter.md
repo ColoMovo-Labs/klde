@@ -97,8 +97,9 @@ already running as the same desktop user or inside KWin.
 
 Workspace switching, window activation/unminimization, close requests and window
 moves use short owned scripts with a fixed command vocabulary and JSON-encoded
-IDs. User strings never become executable code. Calls are asynchronous and
-confirmed state comes from compositor events; a close request still respects
+IDs. User strings never become executable code. Calls are asynchronous, execute in a bounded FIFO, and expose `pendingRequests`
+until the compositor acknowledges execution. An already-visible state does not
+prove an outstanding request has completed. Confirmed state comes from compositor events; a close request still respects
 application close handling. Scripts are unloaded only by their unique names,
 including on teardown. No global `kwinrc`, shortcut or plugin is installed.
 Layout algorithms, persistent rules, global shortcuts and arbitrary source

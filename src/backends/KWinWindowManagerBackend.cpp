@@ -52,7 +52,7 @@ KWinWindowManagerBackend::KWinWindowManagerBackend(QObject *parent)
 }
 KWinWindowManagerBackend::~KWinWindowManagerBackend() {
     unloadScript(m_owner, m_reporter);
-    for (const auto &name : std::as_const(m_commands))
+    for (const auto &name : m_commands.keys())
         unloadScript(m_owner, name);
     if (m_registered)
         QDBusConnection::sessionBus().unregisterObject(m_objectPath);
@@ -107,12 +107,18 @@ void KWinWindowManagerBackend::start() {
 void KWinWindowManagerBackend::ownerChanged(const QString &owner) {
     if (!m_registered)
         return;
+    m_ready = false;
     ++m_generation;
     m_deadline.stop();
     unloadScript(m_owner, m_reporter);
-    for (const auto &name : std::as_const(m_commands))
+    for (const auto &name : m_commands.keys())
         unloadScript(m_owner, name);
+    const bool hadCommands = !m_commands.isEmpty();
     m_commands.clear();
+    m_commandQueue.clear();
+    m_activeCommand.clear();
+    if (hadCommands)
+        emit pendingRequestsChanged();
     m_reporter.clear();
     m_owner = owner;
     m_version.clear();
@@ -179,7 +185,7 @@ void KWinWindowManagerBackend::loadScript(const QString &name, bool reporter,
         if (reporter)
             clearState(QStringLiteral("Could not stage the owned KWin script"));
         else
-            emit requestRejected(tr("The window manager could not perform that action"));
+            finishCommand(name, false);
         return;
     }
     file.close();
@@ -196,11 +202,8 @@ void KWinWindowManagerBackend::loadScript(const QString &name, bool reporter,
         if (reply.isError() || reply.value() < 0) {
             if (reporter)
                 clearState(QStringLiteral("KWin refused the owned state script"));
-            else {
-                m_commands.remove(name);
-                QFile::remove(m_scripts.filePath(name + ".js"));
-                emit requestRejected(tr("The window manager could not perform that action"));
-            }
+            else
+                finishCommand(name, false);
             return;
         }
         auto run = QDBusMessage::createMethodCall(
@@ -212,10 +215,8 @@ void KWinWindowManagerBackend::loadScript(const QString &name, bool reporter,
                 unloadScript(m_owner, name);
                 if (reporter)
                     clearState(QStringLiteral("KWin state script failed to start"));
-                else {
-                    m_commands.remove(name);
-                    emit requestRejected(tr("The window manager could not perform that action"));
-                }
+                else
+                    finishCommand(name, false);
             }
         });
     });
@@ -328,26 +329,41 @@ bool KWinWindowManagerBackend::request(const QString &operation, const QString &
         scriptSource("kwin-command.js")
             .replace("@COMMAND@",
                      QString::fromUtf8(QJsonDocument(command).toJson(QJsonDocument::Compact)));
-    m_commands.insert(name, name);
-    loadScript(name, false, source.toUtf8());
+    m_commands.insert(name, source);
+    m_commandQueue.append(name);
+    emit pendingRequestsChanged();
+    startNextCommand();
+    return true; // Acceptance is distinct from execution and confirmed state.
+}
+void KWinWindowManagerBackend::startNextCommand() {
+    if (!m_ready || !m_activeCommand.isEmpty() || m_commandQueue.isEmpty())
+        return;
+    const auto name = m_commandQueue.takeFirst();
+    m_activeCommand = name;
     const auto generation = m_generation;
+    loadScript(name, false, m_commands.value(name).toUtf8());
     QTimer::singleShot(5000, this, [this, generation, name] {
-        if (generation == m_generation && m_commands.remove(name)) {
-            unloadScript(m_owner, name);
-            QFile::remove(m_scripts.filePath(name + ".js"));
-            emit requestRejected(tr("The window manager could not perform that action"));
-        }
+        if (generation == m_generation && m_activeCommand == name)
+            finishCommand(name, false);
     });
-    return true; // Confirmed state arrives only through compositor snapshots.
+}
+void KWinWindowManagerBackend::finishCommand(const QString &id, bool accepted) {
+    if (!m_commands.remove(id))
+        return;
+    m_commandQueue.removeAll(id);
+    if (m_activeCommand == id)
+        m_activeCommand.clear();
+    unloadScript(m_owner, id);
+    QFile::remove(m_scripts.filePath(id + ".js"));
+    emit pendingRequestsChanged();
+    if (!accepted)
+        emit requestRejected(tr("The window manager could not perform that action"));
+    startNextCommand();
 }
 void KWinWindowManagerBackend::commandFinished(const QString &token, const QString &id,
                                                bool accepted) {
-    if (!trusted(token) || !m_commands.remove(id))
-        return;
-    unloadScript(m_owner, id);
-    QFile::remove(m_scripts.filePath(id + ".js"));
-    if (!accepted)
-        emit requestRejected(tr("The window manager could not perform that action"));
+    if (trusted(token) && m_activeCommand == id)
+        finishCommand(id, accepted);
 }
 bool KWinWindowManagerBackend::activateWorkspace(const QString &id) {
     return contains(m_workspaces, id) ? request("workspace", id) : rejectUnavailable();
