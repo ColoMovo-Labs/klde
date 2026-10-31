@@ -38,6 +38,27 @@ owner=$(dbus-send --session --print-reply --dest=org.freedesktop.DBus \
 }
 export XDG_CURRENT_DESKTOP=owoDE XDG_SESSION_DESKTOP=owode XDG_SESSION_TYPE=wayland
 export OWODE_MANAGED_SESSION=1
+# GTK and Chromium draw client-side title-bar buttons from the GSettings key
+# org.gnome.desktop.wm.preferences button-layout. Its schema default on Fedora
+# is "appmenu:close", so Chrome showed only a close button. Override just the
+# default, just for this session, through a private schema directory: a value
+# the user set in dconf still wins, and GNOME/Plasma sessions are untouched.
+schemas=/usr/share/glib-2.0/schemas
+owode_schemas="$XDG_RUNTIME_DIR/owode/gsettings"
+if command -v glib-compile-schemas >/dev/null &&
+    [[ -f "$schemas/org.gnome.desktop.wm.preferences.gschema.xml" ]]; then
+    rm -rf "$owode_schemas"
+    mkdir -p "$owode_schemas"
+    cp "$schemas/org.gnome.desktop.wm.preferences.gschema.xml" "$owode_schemas/"
+    [[ ! -f "$schemas/org.gnome.desktop.enums.xml" ]] || cp "$schemas/org.gnome.desktop.enums.xml" "$owode_schemas/"
+    printf '[org.gnome.desktop.wm.preferences]\nbutton-layout=%s\n' "':minimize,maximize,close'" \
+        > "$owode_schemas/90_owode.gschema.override"
+    if glib-compile-schemas "$owode_schemas" 2>/dev/null; then
+        export GSETTINGS_SCHEMA_DIR="$owode_schemas${GSETTINGS_SCHEMA_DIR:+:$GSETTINGS_SCHEMA_DIR}"
+    else
+        echo 'owoDE: could not compile the session title-bar button default; keeping the system one.' >&2
+    fi
+fi
 # KWin hands its own Wayland AND Xwayland environment to the session client.
 # Its exit-with-session contract makes a shell logout end only this compositor.
 exec kwin_wayland --drm --xwayland --exit-with-session /usr/libexec/owode-session-client

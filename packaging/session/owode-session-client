@@ -17,7 +17,11 @@ activation_options=()
 systemd_owner=$(dbus-send --session --print-reply --dest=org.freedesktop.DBus \
     /org/freedesktop/DBus org.freedesktop.DBus.NameHasOwner string:org.freedesktop.systemd1)
 if [[ "$systemd_owner" == *'boolean true'* ]]; then activation_options+=(--systemd); fi
-dbus-update-activation-environment "${activation_options[@]}" \
+# start-owode's session-only GSettings defaults (title-bar buttons) must also
+# reach D-Bus-activated GTK apps and the GTK portal.
+session_schemas=()
+if [[ -n "${GSETTINGS_SCHEMA_DIR:-}" ]]; then session_schemas+=("GSETTINGS_SCHEMA_DIR=$GSETTINGS_SCHEMA_DIR"); fi
+dbus-update-activation-environment "${activation_options[@]}" "${session_schemas[@]}" \
     "DISPLAY=${DISPLAY:-}" "WAYLAND_DISPLAY=$WAYLAND_DISPLAY" "XAUTHORITY=${XAUTHORITY:-}" \
     "XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-owoDE}" \
     "XDG_SESSION_DESKTOP=${XDG_SESSION_DESKTOP:-owode}" "XDG_SESSION_TYPE=wayland"
