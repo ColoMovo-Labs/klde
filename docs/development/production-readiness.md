@@ -6,7 +6,7 @@ build or registered login entry is not a production-readiness claim.
 
 | Gate | Current boundary | Required acceptance |
 | --- | --- | --- |
-| Login/session lifecycle | Opt-in Fedora session package under development | Real GDM/SDDM login, DRM output, repeat logout/login, crash return to greeter |
+| Login/session lifecycle | Opt-in Fedora RPM and installed nested-client checks; [cloud GDM/virtual DRM gate](cloud-login-vm.md) under validation | Real GDM/SDDM login, DRM output, repeat logout/login, crash return to greeter |
 | Native shell roles | LayerShellQt roles and isolated KWin tests exist | Fedora and Ubuntu protocol/input tests and owner hardware acceptance |
 | Applications | Real XDG catalog, KIO launch, persistent pins | Wayland/Xwayland, activation, multiple instances, failed starts, app updates |
 | GNOME/KDE applications | Compatibility work in progress | Actual GNOME GTK/libadwaita and KDE Qt applications with correct dependencies and portals |

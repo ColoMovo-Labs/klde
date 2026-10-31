@@ -96,7 +96,7 @@ done
 # its DISPLAY handoff are implemented. They must never escape into host Xwayland.
 unset DISPLAY
 export WAYLAND_DISPLAY="$socket_name" QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland SDL_VIDEODRIVER=wayland
-export XDG_CURRENT_DESKTOP=owoDE XDG_SESSION_DESKTOP=owoDE XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP=owoDE XDG_SESSION_DESKTOP=owode XDG_SESSION_TYPE=wayland
 export XCURSOR_THEME=${XCURSOR_THEME:-Bibata-Modern-Classic} XCURSOR_SIZE=${XCURSOR_SIZE:-24}
 shell_args=(--view desktop)
 [[ "$mode" == native ]] && shell_args=(--native-shell-surfaces --applications "${OWODE_APPLICATIONS:-system}")
