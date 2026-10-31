@@ -24,7 +24,7 @@ Item {
     }
     Component {
         id: statusComponent
-        StatusCapsule {
+        StatusCapsuleForm {
             width: 240
             height: 64
         }
