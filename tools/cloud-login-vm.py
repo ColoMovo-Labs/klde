@@ -19,6 +19,7 @@ import time
 
 FEDORA_KEY = "36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6"
 IMAGE = "Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2"
+GUEST_MEMORY_MIB = 4096
 CHECKSUM = "Fedora-Cloud-44-1.7-x86_64-CHECKSUM"
 BASE_URL = "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/"
 REPO = Path(__file__).resolve().parents[1]
@@ -89,8 +90,14 @@ def main():
         stdout=(output / "package-checksums.txt").open("w"))
     (output / "source-commit.txt").write_text(revision + "\n")
     # No disks, NoCloud seed, private keys, sockets or SSH configs are artifacts.
-    with tempfile.TemporaryDirectory(prefix="owode-cloud-vm-") as scratch:
+    # The guest overlay grows to several GiB while dnf installs the desktop. On
+    # the runner /tmp is tmpfs, so that growth is RAM and pushed QEMU into the
+    # host OOM killer at GDM start. Keep the disks on real storage instead.
+    with tempfile.TemporaryDirectory(prefix="owode-cloud-vm-", dir="/var/tmp") as scratch:
         private = Path(scratch)
+        scratch_fs = subprocess.run(["stat", "-f", "-c", "%T", scratch], check=True,
+                                    capture_output=True, text=True).stdout.strip()
+        assert scratch_fs != "tmpfs", "guest disks must not live in RAM-backed tmpfs"
         keyring = private / "gnupg"
         keyring.mkdir(mode=0o700)
         fetch("https://fedoraproject.org/fedora.gpg", private / "fedora.gpg")
@@ -137,13 +144,16 @@ def main():
         # Let QEMU select an unused loopback port (no listener is exposed externally).
         qmp_socket = private / "qmp.sock"
         accelerated = os.access("/dev/kvm", os.R_OK | os.W_OK)
-        accelerator = "kvm" if accelerated else "tcg,thread=multi"
+        # TCG reserves a 1 GiB translation cache by default; 256 MiB is enough
+        # for one 2-vCPU guest and leaves the 8 GiB runner headroom.
+        accelerator = "kvm" if accelerated else "tcg,thread=multi,tb-size=256"
         (output / "virtualization.json").write_text(json.dumps({
             "accelerator": accelerator, "virtualGPU": "virtio-vga (no 3D passthrough)",
+            "guestMemoryMiB": GUEST_MEMORY_MIB, "scratchFilesystem": scratch_fs,
             "physicalGPUAcceptance": False, "passwordLoginAcceptance": False,
             "secureLockAcceptance": False, "hostSessionModified": False}, indent=2) + "\n")
         command = ["qemu-system-x86_64", "-accel", accelerator, "-cpu", "host" if accelerated else "max",
-                   "-m", "4096", "-smp", "2",
+                   "-m", str(GUEST_MEMORY_MIB), "-smp", "2",
                    "-drive", f"file={private / 'guest.qcow2'},if=virtio,format=qcow2",
                    "-drive", f"file={private / 'seed.iso'},media=cdrom,readonly=on",
                    "-device", "virtio-vga", "-display", "none", "-nic",
