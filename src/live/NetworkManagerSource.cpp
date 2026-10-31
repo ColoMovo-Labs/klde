@@ -97,17 +97,24 @@ void NetworkManagerSource::refresh() {
     QString accessPoint;
     if (const auto primary = NetworkManager::primaryConnection(); primary && connected) {
         if (primary->type() == NetworkManager::ConnectionSettings::Wireless) {
+            // The primary connection's specific object is its access point;
+            // ActiveAccessPoint on the device is the fallback.
+            NetworkManager::AccessPoint::Ptr ap;
             for (const auto &uni : primary->devices()) {
                 const auto device = NetworkManager::findNetworkInterface(uni)
                                         .objectCast<NetworkManager::WirelessDevice>();
-                if (device && device->activeAccessPoint()) {
+                if (!device)
+                    continue;
+                ap = device->findAccessPoint(primary->specificObject());
+                if (!ap)
+                    ap = device->activeAccessPoint();
+                if (ap) {
                     wifi = device;
                     break;
                 }
             }
-            if (wifi && wifi->activeAccessPoint()) {
-                const auto ap = wifi->activeAccessPoint();
-                name = displayName(ap->ssid());
+            name = displayName(ap ? ap->ssid() : primary->id());
+            if (ap) {
                 strength = std::clamp(ap->signalStrength(), 0, 100);
                 accessPoint = ap->uni();
             }
@@ -119,10 +126,9 @@ void NetworkManagerSource::refresh() {
     if (accessPoint != m_accessPoint) {
         disconnect(m_strength);
         m_accessPoint = accessPoint;
-        if (wifi && wifi->activeAccessPoint())
-            m_strength = connect(wifi->activeAccessPoint().data(),
-                                 &NetworkManager::AccessPoint::signalStrengthChanged, this,
-                                 &NetworkManagerSource::schedule);
+        if (const auto ap = wifi ? wifi->findAccessPoint(accessPoint) : nullptr)
+            m_strength = connect(ap.data(), &NetworkManager::AccessPoint::signalStrengthChanged,
+                                 this, &NetworkManagerSource::schedule);
     }
     m_state->publishLive(QStringLiteral("network.enabled"), enabled);
     m_state->publishLive(QStringLiteral("network.connected"), connected);
