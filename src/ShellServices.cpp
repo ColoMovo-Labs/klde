@@ -6,6 +6,7 @@
 #include <QQmlEngine>
 #include <QScopedValueRollback>
 #include <QWindow>
+#include <algorithm>
 
 namespace klde {
 ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
@@ -17,6 +18,15 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
         services->m_applications.replaceSystemApplications({});
         services->m_desktopApplications.setLocale(services->language()->locale());
         services->m_desktopApplications.start();
+        if (engine->property("owodeNativeWindowManager").toBool()) {
+            services->m_liveWindowManager = std::make_unique<KWinWindowManagerBackend>();
+            auto *manager = services->m_liveWindowManager.get();
+            connect(manager, &WindowManagerBackend::windowsChanged, services,
+                    &ShellServices::reconcileWindows);
+            connect(manager, &WindowManagerBackend::requestRejected, services,
+                    &ShellServices::showNotice);
+            manager->start();
+        }
     }
     return services;
 }
@@ -69,8 +79,10 @@ ShellServices::ShellServices(QObject *parent)
         QScopedValueRollback guard(m_syncing, true);
         m_state.requestValue("activeApp", m_applications.activeId());
     });
-    connect(&m_desktopApplications, &DesktopApplicationBackend::catalogChanged, this,
-            [this] { m_applications.replaceSystemApplications(m_desktopApplications.entries()); });
+    connect(&m_desktopApplications, &DesktopApplicationBackend::catalogChanged, this, [this] {
+        m_applications.replaceSystemApplications(m_desktopApplications.entries());
+        reconcileWindows();
+    });
     connect(&m_applications, &ApplicationModel::pinRequested, &m_desktopApplications,
             &DesktopApplicationBackend::setPinned);
     connect(&m_desktopApplications, &DesktopApplicationBackend::launchFinished, this,
@@ -187,6 +199,31 @@ void ShellServices::projectState(const QString &path) {
             QStringLiteral("workspace-%1").arg(m_state.value(path).toInt()));
 }
 bool ShellServices::previewAction(const QString &action) {
+    // This legacy entry point is also used by the shell's shortcut dispatcher.
+    // Native window actions must never mutate the Visual Lab's mock manager.
+    if (m_liveWindowManager && (action.startsWith("workspace.") || action.startsWith("move.") ||
+                                action.startsWith("window."))) {
+        const auto windows = m_liveWindowManager->windows();
+        QString active;
+        for (const auto &item : windows)
+            if (item.toMap().value("active").toBool())
+                active = item.toMap().value("id").toString();
+        if (action.startsWith("workspace.") || action.startsWith("move.")) {
+            bool valid = false;
+            const int number = action.section('.', 1).toInt(&valid);
+            const auto desktops = m_liveWindowManager->workspaces();
+            if (!valid || number < 1 || number > desktops.size())
+                return false;
+            const auto id = desktops.at(number - 1).toMap().value("id").toString();
+            return action.startsWith("move.") ? m_liveWindowManager->moveWindow(active, id)
+                                              : m_liveWindowManager->activateWorkspace(id);
+        }
+        if (action == "window.close")
+            return m_liveWindowManager->closeWindow(active);
+        if (action == "window.float")
+            return m_liveWindowManager->setWindowFloating(active, true);
+        return false;
+    }
     if (action.startsWith("workspace.") || action.startsWith("move.")) {
         const int number = action.section('.', 1).toInt();
         if (number < 1 || number > 5)
@@ -243,6 +280,16 @@ bool ShellServices::eventFilter(QObject *watched, QEvent *event) {
 QVariantMap ShellServices::weather() const { return m_weather.reading(); }
 bool ShellServices::launch(const QString &appId) {
     if (!m_applications.preview()) {
+        if (m_liveWindowManager) {
+            const auto windows = m_liveWindowManager->windows();
+            // Stacking order is bottom to top. Prefer the most recent visible
+            // instance; the compositor, not a successful spawn, confirms focus.
+            for (auto window = windows.crbegin(); window != windows.crend(); ++window) {
+                const auto data = window->toMap();
+                if (windowApplication(data) == appId)
+                    return m_liveWindowManager->activateWindow(data.value("id").toString());
+            }
+        }
         if (m_desktopApplications.launch(appId))
             return true;
         showNotice(tr("That application is unavailable"));
@@ -258,6 +305,36 @@ bool ShellServices::launch(const QString &appId) {
     }
     showNotice(tr("Preview: %1 is active").arg(m_applications.nameFor(appId)));
     return true;
+}
+QString ShellServices::windowApplication(const QVariantMap &window) const {
+    const auto application = m_desktopApplications.applicationForWindow(
+        window.value("applicationId").toString(), window.value("resourceClass").toString(),
+        window.value("resourceName").toString());
+    return application.isEmpty() ? QStringLiteral("window:") + window.value("id").toString()
+                                 : application;
+}
+void ShellServices::reconcileWindows() {
+    if (!m_liveWindowManager)
+        return;
+    QList<ApplicationEntry> applications;
+    const auto windows = m_liveWindowManager->windows();
+    for (const auto &item : windows) {
+        const auto window = item.toMap();
+        const auto id = windowApplication(window);
+        auto found = std::find_if(applications.begin(), applications.end(),
+                                  [&id](const auto &app) { return app.id == id; });
+        if (found == applications.end()) {
+            auto name = window.value("title").toString();
+            if (name.isEmpty())
+                name = window.value("resourceClass").toString();
+            if (name.isEmpty())
+                name = tr("Application");
+            applications.append(
+                {id, name, {}, "note", {}, true, window.value("active").toBool(), "window", false});
+        } else
+            found->active = found->active || window.value("active").toBool();
+    }
+    m_applications.setRuntimeApplications(applications);
 }
 void ShellServices::showNotice(const QString &message) {
     m_message = message;

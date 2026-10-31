@@ -3,6 +3,7 @@
 
 #include "applications/DesktopApplicationBackend.h"
 #include "backends/BlurBackend.h"
+#include "backends/KWinWindowManagerBackend.h"
 #include "backends/MockSystemBackend.h"
 #include "backends/MockWindowManagerBackend.h"
 #include "backends/PresentationBackends.h"
@@ -59,7 +60,11 @@ class ShellServices final : public QObject {
     explicit ShellServices(QObject *parent);
     static ShellServices *create(QQmlEngine *engine, QJSEngine *scriptEngine);
     SystemBackend *system() { return &m_system; }
-    WindowManagerBackend *windowManager() { return &m_windowManager; }
+    WindowManagerBackend *windowManager() {
+        if (m_liveWindowManager)
+            return m_liveWindowManager.get();
+        return &m_windowManager;
+    }
     BlurBackend *blur() { return &m_blur; }
     ApplicationModel *applications() { return &m_applications; }
     DockApplicationModel *dockApplications() { return &m_dockApplications; }
@@ -103,8 +108,11 @@ class ShellServices final : public QObject {
   private:
     void projectState(const QString &path = {});
     void reconcileSystem();
+    void reconcileWindows();
+    QString windowApplication(const QVariantMap &window) const;
     MockSystemBackend m_system;
     MockWindowManagerBackend m_windowManager;
+    std::unique_ptr<KWinWindowManagerBackend> m_liveWindowManager;
     PreviewBlurBackend m_blur;
     ApplicationModel m_applications;
     DockApplicationModel m_dockApplications;

@@ -28,6 +28,8 @@ class DesktopApplicationBackend : public QObject {
     void setLocale(const QString &locale);
     Q_INVOKABLE void refresh();
     bool launch(const QString &id);
+    QString applicationForWindow(const QString &desktopFile, const QString &resourceClass,
+                                 const QString &resourceName) const;
     void setPinned(const QString &id, bool pinned);
     QImage icon(const QString &id, const QSize &size) const;
   signals:

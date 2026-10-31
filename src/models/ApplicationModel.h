@@ -12,6 +12,8 @@ class ApplicationModel : public QAbstractListModel {
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.applications")
     Q_PROPERTY(bool preview READ preview NOTIFY modeChanged)
+    Q_PROPERTY(QString activeApplication READ activeId NOTIFY activeChanged)
+    Q_PROPERTY(QString activeName READ activeName NOTIFY activeChanged)
   public:
     enum Role : quint16 {
         AppIdRole = Qt::UserRole + 1,
@@ -34,9 +36,12 @@ class ApplicationModel : public QAbstractListModel {
     void resetPreview(const QString &appId);
     void setAndroidSource(bool enabled);
     QString activeId() const;
+    QString activeName() const { return nameFor(activeId()); }
     bool preview() const { return m_preview; }
     void replaceSystemApplications(const QList<ApplicationEntry> &applications);
+    void setRuntimeApplications(const QList<ApplicationEntry> &applications);
     Q_INVOKABLE bool isPinned(const QString &appId) const;
+    Q_INVOKABLE bool canPin(const QString &appId) const;
     Q_INVOKABLE void setPinned(const QString &appId, bool pinned);
   signals:
     void activeChanged();
@@ -45,6 +50,9 @@ class ApplicationModel : public QAbstractListModel {
 
   private:
     QList<ApplicationEntry> m_applications;
+    QList<ApplicationEntry> m_catalog;
+    QList<ApplicationEntry> m_runtime;
+    void reconcileSystemApplications();
     bool m_preview = true;
 };
 

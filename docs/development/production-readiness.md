@@ -10,7 +10,7 @@ build or registered login entry is not a production-readiness claim.
 | Native shell roles | LayerShellQt roles and isolated KWin tests exist | Fedora and Ubuntu protocol/input tests and owner hardware acceptance |
 | Applications | Real XDG catalog, KIO launch, persistent pins | Wayland/Xwayland, activation, multiple instances, failed starts, app updates |
 | GNOME/KDE applications | Compatibility work in progress | Actual GNOME GTK/libadwaita and KDE Qt applications with correct dependencies and portals |
-| Window/workspace state | Mock workspace state remains | Real KWin state, activate/close, running indicators, workspace changes and shortcuts |
+| Window/workspace state | Native mode has an event-driven KWin scripting adapter; Visual Lab remains mock | Verify state/activate/close/running indicators/workspace changes on both platforms; then global shortcuts, restart and multi-output acceptance |
 | Clock/date | Native mode uses local system time; mock previews remain deterministic | Timezone/time changes, DST and suspend/resume acceptance |
 | Audio/network/power | Quick Settings still largely mock | Event-driven real services, disconnection/errors, permission handling, truthful disabled states |
 | Notifications/tray | Preview components | Real notification server, actions, DND, StatusNotifier and app integration |

@@ -66,6 +66,9 @@ cat > "$runtime_dir/config/kwinrc" <<'EOF'
 [MouseBindings]
 CommandAllKey=Meta
 CommandAll1=Move
+[Desktops]
+Number=2
+Rows=1
 EOF
 cat > "$runtime_dir/config/kdeglobals" <<'EOF'
 [KDE]

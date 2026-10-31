@@ -13,8 +13,18 @@ Button {
     property bool runningState: false
     property bool activeState: false
     Accessible.name: root.label
-    ToolTip.visible: hovered
-    ToolTip.text: root.label
+    ToolTip {
+        id: applicationToolTip
+        visible: root.hovered
+        text: root.label
+        contentItem: Text {
+            objectName: "applicationToolTipText"
+            text: applicationToolTip.text
+            textFormat: Text.PlainText
+            font: applicationToolTip.font
+            color: applicationToolTip.palette.toolTipText
+        }
+    }
     hoverEnabled: true
     background: Rectangle {
         radius: root.shapeRadius

@@ -10,6 +10,7 @@ qt_add_qml_module(klde_backends STATIC
         backends/PresentationBackends.h backends/PresentationBackends.cpp
         backends/WindowManagerBackend.h
         backends/MockWindowManagerBackend.h backends/MockWindowManagerBackend.cpp
+        backends/KWinWindowManagerBackend.h backends/KWinWindowManagerBackend.cpp
         backends/SystemBackend.h
         backends/MockSystemBackend.h backends/MockSystemBackend.cpp
         backends/BlurBackend.h backends/BlurBackend.cpp
@@ -31,6 +32,9 @@ qt_add_qml_module(klde_backends STATIC
         ShellServices.h ShellServices.cpp
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+qt_add_resources(klde_backends owode_kwin_scripts
+    PREFIX /owode BASE backends
+    FILES backends/kwin-state.js backends/kwin-command.js)
 target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Concurrent Qt6::Gui Qt6::DBus Qt6::Network Qt6::Qml Qt6::Quick)
 if(OWODE_HAVE_KDE_APPLICATIONS)
     target_link_libraries(klde_backends PRIVATE KF6::Service KF6::KIOGui)

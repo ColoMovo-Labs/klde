@@ -71,6 +71,7 @@ ShellPopup {
         objectName: "applicationContextMenu"
         MenuItem {
             text: root.menuPinned ? I18n.t("shell.launcher.unpin") : I18n.t("shell.launcher.pin")
+            enabled: Shell.applications.canPin(root.menuApplication)
             onTriggered: Shell.applications.setPinned(root.menuApplication, !root.menuPinned)
         }
     }

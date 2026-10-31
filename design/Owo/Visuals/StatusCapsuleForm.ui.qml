@@ -28,8 +28,18 @@ Button {
     topPadding: Tokens.capsuleVerticalPadding
     bottomPadding: Tokens.capsuleVerticalPadding
     Accessible.name: label + ", " + valueText + (unavailable ? ", " + root.unavailableText : "")
-    ToolTip.visible: hovered
-    ToolTip.text: Accessible.name
+    ToolTip {
+        id: statusToolTip
+        visible: root.hovered
+        text: root.Accessible.name
+        contentItem: Text {
+            objectName: "statusToolTipText"
+            text: statusToolTip.text
+            textFormat: Text.PlainText
+            font: statusToolTip.font
+            color: statusToolTip.palette.toolTipText
+        }
+    }
 
     contentItem: Item {
         implicitWidth: contentRow.implicitWidth
@@ -58,8 +68,10 @@ Button {
                 }
             }
             Label {
+                objectName: "statusValueLabel"
                 visible: root.valueText.length > 0 || root.detailed
                 text: (root.severity > 0 ? "! " : "") + (root.detailed ? root.label + " " : "") + root.valueText
+                textFormat: Text.PlainText
                 color: root.ink
                 font: Tokens.label
                 elide: Text.ElideRight

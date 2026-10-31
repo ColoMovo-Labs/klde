@@ -23,7 +23,8 @@ class WindowManagerBackend : public QObject {
     Q_PROPERTY(QVariantList workspaces READ workspaces NOTIFY workspacesChanged)
     Q_PROPERTY(QVariantList windows READ windows NOTIFY windowsChanged)
     Q_PROPERTY(QString activeWorkspace READ activeWorkspace NOTIFY activeWorkspaceChanged)
-    Q_PROPERTY(QVariantMap capabilities READ capabilities CONSTANT)
+    Q_PROPERTY(QVariantMap capabilities READ capabilities NOTIFY capabilitiesChanged)
+    Q_PROPERTY(int pendingRequests READ pendingRequests NOTIFY pendingRequestsChanged)
 
   public:
     // Keep the numeric layout IDs stable while exposing the neutral product name.
@@ -41,18 +42,23 @@ class WindowManagerBackend : public QObject {
     virtual QVariantList windows() const = 0;
     virtual QString activeWorkspace() const = 0;
     virtual QVariantMap capabilities() const = 0;
+    virtual int pendingRequests() const { return 0; }
 
     // true means accepted; observers use change signals for confirmed state.
     Q_INVOKABLE virtual bool activateWorkspace(const QString &id) = 0;
     Q_INVOKABLE virtual bool setWorkspaceLayout(const QString &id, LayoutMode mode) = 0;
     Q_INVOKABLE virtual bool setWindowFloating(const QString &id, bool floating) = 0;
     Q_INVOKABLE virtual bool moveWindow(const QString &id, const QString &workspaceId) = 0;
+    Q_INVOKABLE virtual bool activateWindow(const QString &) { return false; }
+    Q_INVOKABLE virtual bool closeWindow(const QString &) { return false; }
     virtual bool applyWindowRule(const WindowRule &rule) = 0;
 
   signals:
     void workspacesChanged();
     void windowsChanged();
     void activeWorkspaceChanged();
+    void capabilitiesChanged();
+    void pendingRequestsChanged();
     void requestRejected(const QString &reason);
 };
 

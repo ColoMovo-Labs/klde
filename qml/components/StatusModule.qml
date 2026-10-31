@@ -21,7 +21,11 @@ StatusCapsule {
         case "weather":
             return snapshot.weather.available ? I18n.number(snapshot.weather.temperature, 0) + "°" : "—";
         case "context":
-            return condensed ? "" : snapshot.activeApp === "desktop" ? I18n.t("lab.desktop") : I18n.s(Shell.applications.nameFor(snapshot.activeApp));
+            if (condensed)
+                return "";
+            if (!Shell.windowManager.capabilities.mock && !Shell.windowManager.capabilities.available)
+                return "—";
+            return Shell.applications.activeApplication === "desktop" ? I18n.t("lab.desktop") : Shell.applications.preview ? I18n.s(Shell.applications.activeName) : Shell.applications.activeName;
         case "date":
             return I18n.date(Shell.time.reading.dateTime, true);
         case "time":
