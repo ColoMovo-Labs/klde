@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Shared driver for live_probe: a private dbusmock system bus and line matching."""
-import selectors
+import queue
 import subprocess
-import time
+import threading
 
 import dbusmock
 
@@ -13,16 +13,22 @@ class Probe:
     def __init__(self, binary, mode):
         self.process = subprocess.Popen([binary, mode], stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, text=True)
-        self.selector = selectors.DefaultSelector()
-        self.selector.register(self.process.stdout, selectors.EVENT_READ)
+        # A reader thread keeps buffered lines visible; select() on a text
+        # stream would miss lines Python has already read ahead.
+        self.lines = queue.Queue()
+        threading.Thread(target=self._read, daemon=True).start()
+
+    def _read(self):
+        for line in self.process.stdout:
+            self.lines.put(line.strip())
+        self.lines.put('')
 
     def readline(self):
         """One line, or '' after LINE_TIMEOUT seconds so a stuck mock fails fast."""
-        deadline = time.monotonic() + LINE_TIMEOUT
-        while time.monotonic() < deadline:
-            if self.selector.select(timeout=max(0.0, deadline - time.monotonic())):
-                return self.process.stdout.readline().strip()
-        return ''
+        try:
+            return self.lines.get(timeout=LINE_TIMEOUT)
+        except queue.Empty:
+            return ''
 
     def expect(self, wanted, limit=80):
         for _ in range(limit):
