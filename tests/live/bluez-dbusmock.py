@@ -14,9 +14,15 @@ ADDRESS = '11:22:33:44:55:66'
 def main():
     liveprobe.start_bus()
     bluez_process, bluez = liveprobe.spawn('bluez5')
-    mock = dbus.Interface(bluez, 'org.bluez.Mock')
-    probe = liveprobe.Probe(sys.argv[1], 'bluetooth')
+    probe = None
     try:
+        mock = dbus.Interface(bluez, 'org.bluez.Mock')
+        # BluezQt requires ProfileManager1 in GetManagedObjects; some dbusmock
+        # releases export only its methods, which the object manager omits.
+        manager = dbusmock.DBusTestCase.get_dbus(True).get_object('org.bluez', '/org/bluez')
+        manager.AddProperty('org.bluez.ProfileManager1', 'OwodeMock', dbus.Boolean(True),
+                            dbus_interface=dbusmock.MOCK_IFACE)
+        probe = liveprobe.Probe(sys.argv[1], 'bluetooth')
         # No adapter yet: unavailable, never the fixture's "on".
         probe.expect('bluetooth=false enabled=false connectedDevices=0')
         mock.AddAdapter('hci0', 'owode-ci')
@@ -29,7 +35,8 @@ def main():
         probe.request('bluetooth.enabled', True)
         probe.expect('bluetooth=true enabled=true connectedDevices=1')
     finally:
-        probe.close()
+        if probe:
+            probe.close()
         bluez_process.terminate()
         bluez_process.wait(timeout=10)
         liveprobe.stop_bus()
