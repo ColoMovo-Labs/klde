@@ -10,6 +10,7 @@
 #include "i18n/LocaleVoiceModel.h"
 #include "input/Fcitx5Backend.h"
 #include "live/HostTelemetrySource.h"
+#include "live/LiveSystemBackend.h"
 #include "live/UPowerBatterySource.h"
 #include "mock/SystemStateModel.h"
 #include "models/ApplicationModel.h"
@@ -61,7 +62,11 @@ class ShellServices final : public QObject {
   public:
     explicit ShellServices(QObject *parent);
     static ShellServices *create(QQmlEngine *engine, QJSEngine *scriptEngine);
-    SystemBackend *system() { return &m_system; }
+    SystemBackend *system() {
+        if (m_liveSystem)
+            return m_liveSystem.get();
+        return &m_system;
+    }
     WindowManagerBackend *windowManager() {
         if (m_liveWindowManager)
             return m_liveWindowManager.get();
@@ -135,6 +140,9 @@ class ShellServices final : public QObject {
     // Live system sources; created only for system/native sessions.
     std::unique_ptr<HostTelemetrySource> m_hostTelemetry;
     std::unique_ptr<UPowerBatterySource> m_battery;
+    std::unique_ptr<QObject> m_network;
+    std::unique_ptr<QObject> m_bluetooth;
+    std::unique_ptr<LiveSystemBackend> m_liveSystem;
     MockTelemetryBackend m_telemetry;
     MockWallpaperEffectsBackend m_wallpaperEffects;
     MockWaydroidBackend m_waydroid;

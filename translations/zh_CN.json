@@ -578,5 +578,6 @@
   "temporal.season.unavailable": "季节尚未配置",
   "shell.workspace.compositor": "由窗口管理器控制",
   "backend.window-manager.action": "窗口管理器未能执行此操作",
-  "backend.window-manager.application": "应用程序"
+  "backend.window-manager.application": "应用程序",
+  "shell.system.unavailable": "这个设置暂时不可用"
 }

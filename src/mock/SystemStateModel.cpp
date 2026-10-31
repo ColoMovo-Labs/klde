@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 #include <QResource>
 #include <cmath>
+#include <utility>
 
 static void initializeMockData() { Q_INIT_RESOURCE(klde_mock_data); }
 static void releaseMockData() { Q_CLEANUP_RESOURCE(klde_mock_data); }
@@ -135,8 +136,12 @@ bool SystemStateModel::requestValue(const QString &path, const QVariant &input) 
     const QVariant newValue = input.metaType() == QMetaType::fromType<QJSValue>()
                                   ? input.value<QJSValue>().toVariant()
                                   : input;
-    if (!valid(path, newValue) || m_live.contains(path))
+    if (!valid(path, newValue))
         return false;
+    if (m_live.contains(path)) {
+        const auto writer = m_writers.value(path);
+        return writer && writer(newValue);
+    }
     const QMap<QString, QString> needs{
         {"battery.percent", "battery"},       {"cpu.temperature", "sensors"},
         {"audio.microphone", "microphone"},   {"bluetooth.enabled", "bluetooth"},
@@ -193,6 +198,9 @@ bool SystemStateModel::replacePreview(const QVariantMap &snapshot) {
         assign(m_snapshot, it.key(), it.value());
     emit changed();
     return true;
+}
+void SystemStateModel::setLiveWriter(const QString &path, LiveWriter writer) {
+    m_writers.insert(path, std::move(writer));
 }
 bool SystemStateModel::publishLive(const QString &path, const QVariant &value) {
     if (!valid(path, value))

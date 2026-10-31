@@ -13,7 +13,7 @@
               clang clang-tools-extra \
               qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtshadertools-devel qt6-qtwayland-devel \
               qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
-              kf6-kio-devel kf6-kservice-devel \
+              kf6-kio-devel kf6-kservice-devel kf6-networkmanager-qt-devel kf6-bluez-qt-devel \
               wayland-devel wayland-protocols-devel mesa-dri-drivers \
               mesa-libEGL mesa-libGL dbus-daemon dbus-tools python3-dbus python3-dbusmock \
               dejavu-sans-fonts google-noto-sans-cjk-vf-fonts \

@@ -108,6 +108,7 @@ Item {
                         Text {
                             width: parent.width
                             text: root.wifiDetail
+                            textFormat: Text.PlainText
                             font: Tokens.caption
                             color: Tokens.textSecondary
                             elide: Text.ElideRight

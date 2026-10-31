@@ -61,12 +61,24 @@ target_link_libraries(owode-live-system-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME live-system-sources COMMAND owode-live-system-test)
 set_tests_properties(live-system-sources PROPERTIES LABELS unit TIMEOUT 30)
 
-# Private python-dbusmock system bus; the host UPower is never contacted.
-qt_add_executable(owode-upower-probe live/upower_probe.cpp)
-target_link_libraries(owode-upower-probe PRIVATE klde_backends)
-add_test(NAME live-upower-dbusmock
-    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/live/upower-dbusmock.py $<TARGET_FILE:owode-upower-probe>)
-set_tests_properties(live-upower-dbusmock PROPERTIES LABELS unit TIMEOUT 60)
+# Private python-dbusmock system buses; host services are never contacted.
+qt_add_executable(owode-live-probe live/live_probe.cpp)
+target_link_libraries(owode-live-probe PRIVATE klde_backends)
+set(owode_live_mocks upower)
+if(OWODE_HAVE_NETWORKMANAGER)
+    target_compile_definitions(owode-live-probe PRIVATE OWODE_HAVE_NETWORKMANAGER=1)
+    list(APPEND owode_live_mocks networkmanager)
+endif()
+if(OWODE_HAVE_BLUEZ)
+    target_compile_definitions(owode-live-probe PRIVATE OWODE_HAVE_BLUEZ=1)
+    list(APPEND owode_live_mocks bluez)
+endif()
+foreach(mock IN LISTS owode_live_mocks)
+    add_test(NAME live-${mock}-dbusmock
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/live/${mock}-dbusmock.py
+            $<TARGET_FILE:owode-live-probe>)
+    set_tests_properties(live-${mock}-dbusmock PROPERTIES LABELS unit TIMEOUT 60)
+endforeach()
 
 qt_add_executable(klde-visual-lab-test test_visual_lab.cpp)
 target_link_libraries(klde-visual-lab-test PRIVATE klde_backends Qt6::Test)

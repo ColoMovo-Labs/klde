@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
+#include <QHash>
 #include <QObject>
 #include <QVariantMap>
 #include <QtQml/qqmlregistration.h>
+#include <functional>
 
 namespace klde {
 class SystemStateModel : public QObject {
@@ -33,6 +35,10 @@ class SystemStateModel : public QObject {
     bool publishLive(const QString &path, const QVariant &value);
     bool isLive(const QString &path) const { return m_live.contains(path); }
     QStringList livePaths() const { return m_live.keys(); }
+    // A controllable live path forwards requestValue() to its service instead
+    // of editing the snapshot; the UI changes only once publishLive() confirms.
+    using LiveWriter = std::function<bool(const QVariant &)>;
+    void setLiveWriter(const QString &path, LiveWriter writer);
   signals:
     void changed();
     void valueEdited(const QString &path);
@@ -41,6 +47,7 @@ class SystemStateModel : public QObject {
     QVariantMap m_baseline;
     QVariantMap m_snapshot;
     QVariantMap m_live;
+    QHash<QString, LiveWriter> m_writers;
 };
 class MockScenarioManager : public QObject {
     Q_OBJECT

@@ -31,6 +31,7 @@ qt_add_qml_module(klde_backends STATIC
         status/StatusModuleRegistry.h status/StatusModuleRegistry.cpp
         live/HostTelemetrySource.h live/HostTelemetrySource.cpp
         live/UPowerBatterySource.h live/UPowerBatterySource.cpp
+        live/LiveSystemBackend.h live/LiveSystemBackend.cpp
         ShellServices.h ShellServices.cpp
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -41,6 +42,16 @@ target_link_libraries(klde_backends PUBLIC Qt6::Core Qt6::Concurrent Qt6::Gui Qt
 if(OWODE_HAVE_KDE_APPLICATIONS)
     target_link_libraries(klde_backends PRIVATE KF6::Service KF6::KIOGui)
     target_compile_definitions(klde_backends PRIVATE OWODE_HAVE_KDE_APPLICATIONS=1)
+endif()
+if(OWODE_HAVE_NETWORKMANAGER)
+    target_sources(klde_backends PRIVATE live/NetworkManagerSource.h live/NetworkManagerSource.cpp)
+    target_link_libraries(klde_backends PRIVATE KF6::NetworkManagerQt)
+    target_compile_definitions(klde_backends PRIVATE OWODE_HAVE_NETWORKMANAGER=1)
+endif()
+if(OWODE_HAVE_BLUEZ)
+    target_sources(klde_backends PRIVATE live/BluetoothSource.h live/BluetoothSource.cpp)
+    target_link_libraries(klde_backends PRIVATE KF6::BluezQt)
+    target_compile_definitions(klde_backends PRIVATE OWODE_HAVE_BLUEZ=1)
 endif()
 if(OWODE_HAVE_LAYERSHELLQT)
     target_link_libraries(klde_backends PUBLIC LayerShellQt::Interface)

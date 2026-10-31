@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "ShellServices.h"
+#if defined(OWODE_HAVE_NETWORKMANAGER)
+#include "live/NetworkManagerSource.h"
+#endif
+#if defined(OWODE_HAVE_BLUEZ)
+#include "live/BluetoothSource.h"
+#endif
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QKeyEvent>
@@ -19,6 +25,20 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
         services->m_hostTelemetry->start();
         services->m_battery = std::make_unique<UPowerBatterySource>(&services->m_state);
         services->m_battery->start();
+#if defined(OWODE_HAVE_NETWORKMANAGER)
+        auto network = std::make_unique<NetworkManagerSource>(&services->m_state);
+        network->start();
+        services->m_network = std::move(network);
+#endif
+#if defined(OWODE_HAVE_BLUEZ)
+        auto bluetooth = std::make_unique<BluetoothSource>(&services->m_state);
+        bluetooth->start();
+        services->m_bluetooth = std::move(bluetooth);
+#endif
+        services->m_liveSystem =
+            std::make_unique<LiveSystemBackend>(&services->m_state, &services->m_system);
+        connect(services->m_liveSystem.get(), &SystemBackend::requestRejected, services,
+                &ShellServices::showNotice);
         services->m_applications.replaceSystemApplications({});
         services->m_desktopApplications.setLocale(services->language()->locale());
         services->m_desktopApplications.start();

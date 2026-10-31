@@ -578,5 +578,6 @@
   "temporal.season.unavailable": "Season not configured",
   "shell.workspace.compositor": "Managed by the compositor",
   "backend.window-manager.action": "The window manager could not perform that action",
-  "backend.window-manager.application": "Application"
+  "backend.window-manager.application": "Application",
+  "shell.system.unavailable": "That setting is unavailable right now"
 }
