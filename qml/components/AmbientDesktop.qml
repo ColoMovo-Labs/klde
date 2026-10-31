@@ -43,7 +43,7 @@ Item {
     }
     Rectangle {
         objectName: "ambientMediaCard"
-        visible: root.detailsVisible
+        visible: root.detailsVisible && root.snapshot.media.available
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: Tokens.space16
@@ -57,7 +57,13 @@ Item {
             width: parent.width - Tokens.space24
             spacing: Tokens.space8
             Label {
-                text: I18n.t("lab.media.track") + " · " + root.snapshot.media.artist
+                // Player metadata is untrusted: never interpret it as markup.
+                textFormat: Text.PlainText
+                text: {
+                    const media = root.snapshot.media;
+                    const title = media.title.length > 0 ? media.title : I18n.t("lab.media.track");
+                    return media.artist.length > 0 ? title + " · " + media.artist : title;
+                }
                 color: Tokens.textPrimary
                 font: Tokens.label
                 elide: Text.ElideRight
@@ -68,7 +74,7 @@ Item {
                 ActionButton {
                     text: "◀"
                     Accessible.name: I18n.t("lab.media.previous")
-                    onClicked: Shell.showNotice(I18n.t("lab.media.track"))
+                    onClicked: Shell.previewAction("shell.media.previous")
                 }
                 ActionButton {
                     text: I18n.t(root.snapshot.media.playing ? "lab.media.pause" : "lab.media.play")
@@ -78,7 +84,7 @@ Item {
                 ActionButton {
                     text: "▶"
                     Accessible.name: I18n.t("lab.media.next")
-                    onClicked: Shell.showNotice(I18n.t("lab.media.track"))
+                    onClicked: Shell.previewAction("shell.media.next")
                 }
             }
         }

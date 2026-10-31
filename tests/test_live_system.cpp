@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include "live/BrightnessSource.h"
 #include "live/HostTelemetrySource.h"
+#include "live/LiveSystemBackend.h"
+#include "live/MprisSource.h"
 #include "live/UPowerBatterySource.h"
 #include "mock/SystemStateModel.h"
 #include <QDir>
@@ -85,6 +88,47 @@ class LiveSystemTest final : public QObject {
         // Paths without a live source keep their preview behavior.
         QVERIFY(state.requestValue("notifications.dnd", true));
         source.stop();
+    }
+
+    void selectsBacklightAndNeverWritesZero() {
+        QTemporaryDir root;
+        QVERIFY(root.isValid());
+        klde::SystemStateModel state;
+        klde::BrightnessSource source(&state, root.path());
+        QVERIFY(source.findDevice().isEmpty());
+        write(root.filePath("sys/class/backlight/acpi_video0/type"), "firmware\n");
+        write(root.filePath("sys/class/backlight/acpi_video0/max_brightness"), "0\n");
+        write(root.filePath("sys/class/backlight/intel_backlight/type"), "raw\n");
+        write(root.filePath("sys/class/backlight/intel_backlight/max_brightness"), "19200\n");
+        write(root.filePath("sys/class/backlight/intel_backlight/brightness"), "9600\n");
+        // A firmware interface with no range is unusable; fall through to raw.
+        QCOMPARE(source.findDevice(), QStringLiteral("intel_backlight"));
+        source.start(60000);
+        QVERIFY(state.value("capabilities.brightness").toBool());
+        QCOMPARE(state.value("brightness").toInt(), 50);
+        QVERIFY(state.isLive("brightness"));
+        QCOMPARE(klde::BrightnessSource::rawFor(0, 19200), 192);
+        QCOMPARE(klde::BrightnessSource::rawFor(100, 19200), 19200);
+        QCOMPARE(klde::BrightnessSource::percent(-1, 100), 0);
+    }
+
+    void mapsSceneProfilesToDaemonIdentifiers() {
+        using klde::LiveSystemBackend;
+        for (const auto *name : {"Performance", "Balanced", "Power saver"})
+            QCOMPARE(LiveSystemBackend::profileName(LiveSystemBackend::profileId(name)),
+                     QString::fromLatin1(name));
+        QVERIFY(LiveSystemBackend::profileId("Turbo").isEmpty());
+        QCOMPARE(LiveSystemBackend::profileId("Power saver"), QStringLiteral("power-saver"));
+    }
+
+    void boundsUntrustedMediaMetadata() {
+        const QVariantMap metadata{{"xesam:title", QString("Song\u0007 <b>x</b>")},
+                                   {"xesam:artist", QStringList{"A", "B"}}};
+        QCOMPARE(klde::MprisSource::title(metadata), QStringLiteral("Song <b>x</b>"));
+        QCOMPARE(klde::MprisSource::artist(metadata), QStringLiteral("A, B"));
+        QVERIFY(klde::MprisSource::title(QVariantMap{{"xesam:title", QString(500, 'x')}}).size() <=
+                120);
+        QVERIFY(klde::MprisSource::title({}).isEmpty());
     }
 
     void projectsUPowerDisplayDevice() {

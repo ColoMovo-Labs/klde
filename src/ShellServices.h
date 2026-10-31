@@ -11,6 +11,8 @@
 #include "input/Fcitx5Backend.h"
 #include "live/HostTelemetrySource.h"
 #include "live/LiveSystemBackend.h"
+#include "live/MprisSource.h"
+#include "live/PowerProfilesSource.h"
 #include "live/UPowerBatterySource.h"
 #include "mock/SystemStateModel.h"
 #include "models/ApplicationModel.h"
@@ -103,6 +105,7 @@ class ShellServices final : public QObject {
     int osdValue() const { return m_osdValue; }
     Q_INVOKABLE bool launch(const QString &appId);
     Q_INVOKABLE void showNotice(const QString &message);
+    void showOsd(const QString &kind, int value);
     void setGraphicsAvailable(bool available) { m_blur.setGraphicsAvailable(available); }
   signals:
     void messageChanged();
@@ -143,6 +146,12 @@ class ShellServices final : public QObject {
     std::unique_ptr<QObject> m_network;
     std::unique_ptr<QObject> m_bluetooth;
     std::unique_ptr<LiveSystemBackend> m_liveSystem;
+    std::unique_ptr<QObject> m_audio;
+    std::unique_ptr<QObject> m_brightness;
+    std::unique_ptr<QObject> m_nightLight;
+    std::unique_ptr<PowerProfilesSource> m_profiles;
+    std::unique_ptr<MprisSource> m_media;
+    QString m_lastProfile;
     MockTelemetryBackend m_telemetry;
     MockWallpaperEffectsBackend m_wallpaperEffects;
     MockWaydroidBackend m_waydroid;

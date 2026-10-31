@@ -16,6 +16,8 @@ class PowerSceneController : public QObject {
     Q_PROPERTY(QVariantMap capabilities READ capabilities CONSTANT)
   public:
     PowerSceneController(SystemBackend *system, BlurBackend *blur, QObject *parent = nullptr);
+    // Live sessions retarget scene profiles from the preview to the real backend.
+    void setSystemBackend(SystemBackend *system) { m_system = system; }
     QVariantList scenes() const { return m_scenes; }
     QString activeId() const;
     QVariantMap current() const;

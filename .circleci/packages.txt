@@ -47,5 +47,7 @@ libkf6kio-dev
 libkf6service-dev
 libkf6networkmanagerqt-dev
 libkf6bluezqt-dev
+libkf6pulseaudioqt-dev
+libkf6config-dev
 dbus-bin
 dbus-daemon

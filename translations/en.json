@@ -579,5 +579,6 @@
   "shell.workspace.compositor": "Managed by the compositor",
   "backend.window-manager.action": "The window manager could not perform that action",
   "backend.window-manager.application": "Application",
-  "shell.system.unavailable": "That setting is unavailable right now"
+  "shell.system.unavailable": "That setting is unavailable right now",
+  "shell.media.no-player": "Preview: no media player is connected"
 }

@@ -9,7 +9,9 @@
       "discreteGpu": false,
       "cpuPolicy": true,
       "gpuPolicy": true,
-      "refreshRate": true
+      "refreshRate": true,
+      "nightLight": true,
+      "powerProfiles": true
     },
     "battery": {
       "percent": 74,
@@ -41,7 +43,8 @@
       "volume": 77,
       "muted": false,
       "microphone": 82,
-      "output": "speakers"
+      "output": "speakers",
+      "microphoneMuted": false
     },
     "brightness": 73,
     "nightMode": false,
@@ -79,7 +82,9 @@
       "playing": false,
       "progress": 34,
       "titleId": "lab.media.track",
-      "artist": "KLDE Sessions"
+      "artist": "KLDE Sessions",
+      "title": "",
+      "available": true
     },
     "policy": {
       "cpu": "balanced",
@@ -116,7 +121,8 @@
       "available": false,
       "running": false,
       "indexApps": true
-    }
+    },
+    "powerProfile": "balanced"
   },
   "scenarios": [
     {

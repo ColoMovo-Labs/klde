@@ -77,6 +77,7 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
         {"locale", {"zh_CN", "en"}},
         {"voice", {"standard", "cute"}},
         {"powerScene", {"performance", "balanced", "power-saver"}},
+        {"powerProfile", {"performance", "balanced", "power-saver"}},
         {"input.currentId", {"pinyin", "keyboard-us"}},
         {"weather.condition",
          {"clear", "partly-cloudy", "cloudy", "rain", "thunderstorm", "snow", "fog", "extreme-heat",
@@ -128,7 +129,8 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
         return numeric && std::isfinite(number) && std::floor(number) == number &&
                number >= minimum && number <= maximum;
     }
-    return value.metaType().id() == QMetaType::QString && value.toString().size() <= 128;
+    // Free text (SSIDs, media titles) is bounded; live sources truncate first.
+    return value.metaType().id() == QMetaType::QString && value.toString().size() <= 256;
 }
 bool SystemStateModel::requestValue(const QString &path, const QVariant &input) {
     // QML arrays arrive inside QJSValue when an invokable accepts QVariant.

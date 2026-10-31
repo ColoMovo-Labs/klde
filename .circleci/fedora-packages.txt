@@ -25,6 +25,8 @@ kf6-kio-devel
 kf6-kservice-devel
 kf6-networkmanager-qt-devel
 kf6-bluez-qt-devel
+pulseaudio-qt-qt6-devel
+kf6-kconfig-devel
 dbus-daemon
 dbus-tools
 python3-dbus

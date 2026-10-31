@@ -6,6 +6,15 @@
 #if defined(OWODE_HAVE_BLUEZ)
 #include "live/BluetoothSource.h"
 #endif
+#if defined(OWODE_HAVE_PULSEAUDIO)
+#include "live/PulseAudioSource.h"
+#endif
+#include "live/BrightnessSource.h"
+#include "live/MprisSource.h"
+#if defined(OWODE_HAVE_KCONFIG)
+#include "live/NightLightSource.h"
+#endif
+#include "live/PowerProfilesSource.h"
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QKeyEvent>
@@ -37,8 +46,46 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
 #endif
         services->m_liveSystem =
             std::make_unique<LiveSystemBackend>(&services->m_state, &services->m_system);
-        connect(services->m_liveSystem.get(), &SystemBackend::requestRejected, services,
-                &ShellServices::showNotice);
+        auto *live = services->m_liveSystem.get();
+        connect(live, &SystemBackend::requestRejected, services, &ShellServices::showNotice);
+        connect(live, &SystemBackend::osdRequested, services,
+                [services](const QString &kind, int value) { services->showOsd(kind, value); });
+#if defined(OWODE_HAVE_PULSEAUDIO)
+        auto audio = std::make_unique<PulseAudioSource>(&services->m_state);
+        connect(audio.get(), &PulseAudioSource::volumeChanged, live,
+                [live](int value) { emit live->osdRequested(QStringLiteral("volume"), value); });
+        audio->start();
+        services->m_audio = std::move(audio);
+#endif
+        auto brightness = std::make_unique<BrightnessSource>(&services->m_state);
+        connect(brightness.get(), &BrightnessSource::brightnessChanged, live, [live](int value) {
+            emit live->osdRequested(QStringLiteral("brightness"), value);
+        });
+        brightness->start();
+        services->m_brightness = std::move(brightness);
+#if defined(OWODE_HAVE_KCONFIG)
+        auto nightLight = std::make_unique<NightLightSource>(&services->m_state);
+        nightLight->start();
+        services->m_nightLight = std::move(nightLight);
+#endif
+        services->m_profiles = std::make_unique<PowerProfilesSource>(&services->m_state);
+        services->m_profiles->start();
+        services->m_media = std::make_unique<MprisSource>(&services->m_state);
+        services->m_media->start();
+        // Scenes now drive the real profile daemon; an outside profile change
+        // selects the matching default scene so the two never disagree.
+        services->m_scenes.setSystemBackend(live);
+        connect(&services->m_state, &SystemStateModel::changed, services, [services] {
+            const auto profile = services->m_state.value(QStringLiteral("powerProfile")).toString();
+            if (!services->m_state.isLive(QStringLiteral("powerProfile")) ||
+                profile == services->m_lastProfile)
+                return;
+            services->m_lastProfile = profile;
+            const auto scene =
+                services->m_scenes.current().value(QStringLiteral("profile")).toString();
+            if (LiveSystemBackend::profileId(scene) != profile)
+                services->m_scenes.select(profile);
+        });
         services->m_applications.replaceSystemApplications({});
         services->m_desktopApplications.setLocale(services->language()->locale());
         services->m_desktopApplications.start();
@@ -71,11 +118,7 @@ ShellServices::ShellServices(QObject *parent)
             &ShellServices::showNotice);
     connect(&m_scenes, &PowerSceneController::requestRejected, this, &ShellServices::showNotice);
     connect(&m_weather, &WeatherService::changed, this, &ShellServices::weatherChanged);
-    connect(&m_system, &SystemBackend::osdRequested, this, [this](const QString &kind, int value) {
-        showNotice(kind == "volume" ? tr("Volume") : tr("Brightness"));
-        m_osdValue = value;
-        emit messageChanged();
-    });
+    connect(&m_system, &SystemBackend::osdRequested, this, &ShellServices::showOsd);
     connect(&m_state, &SystemStateModel::valueEdited, this, &ShellServices::projectState);
     connect(&m_mockScenarios, &MockScenarioManager::applied, this, [this] { projectState(); });
     connect(&m_system, &SystemBackend::stateChanged, this, &ShellServices::reconcileSystem);
@@ -273,6 +316,12 @@ bool ShellServices::previewAction(const QString &action) {
         return m_state.requestValue("scratchpad", !m_state.value("scratchpad").toBool());
     if (action == "shell.media")
         return m_state.requestValue("media.playing", !m_state.value("media.playing").toBool());
+    if (action == "shell.media.previous" || action == "shell.media.next") {
+        if (m_media)
+            return action.endsWith("previous") ? m_media->previous() : m_media->next();
+        showNotice(tr("Preview: no media player is connected"));
+        return false;
+    }
     return false;
 }
 bool ShellServices::eventFilter(QObject *watched, QEvent *event) {
@@ -359,6 +408,11 @@ void ShellServices::reconcileWindows() {
             found->active = found->active || window.value("active").toBool();
     }
     m_applications.setRuntimeApplications(applications);
+}
+void ShellServices::showOsd(const QString &kind, int value) {
+    showNotice(kind == "volume" ? tr("Volume") : tr("Brightness"));
+    m_osdValue = value;
+    emit messageChanged();
 }
 void ShellServices::showNotice(const QString &message) {
     m_message = message;

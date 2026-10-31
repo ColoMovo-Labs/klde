@@ -32,6 +32,9 @@ qt_add_qml_module(klde_backends STATIC
         live/HostTelemetrySource.h live/HostTelemetrySource.cpp
         live/UPowerBatterySource.h live/UPowerBatterySource.cpp
         live/LiveSystemBackend.h live/LiveSystemBackend.cpp
+        live/BrightnessSource.h live/BrightnessSource.cpp
+        live/PowerProfilesSource.h live/PowerProfilesSource.cpp
+        live/MprisSource.h live/MprisSource.cpp
         ShellServices.h ShellServices.cpp
 )
 target_include_directories(klde_backends PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -52,6 +55,16 @@ if(OWODE_HAVE_BLUEZ)
     target_sources(klde_backends PRIVATE live/BluetoothSource.h live/BluetoothSource.cpp)
     target_link_libraries(klde_backends PRIVATE KF6::BluezQt)
     target_compile_definitions(klde_backends PRIVATE OWODE_HAVE_BLUEZ=1)
+endif()
+if(OWODE_HAVE_PULSEAUDIO)
+    target_sources(klde_backends PRIVATE live/PulseAudioSource.h live/PulseAudioSource.cpp)
+    target_link_libraries(klde_backends PRIVATE KF6::PulseAudioQt)
+    target_compile_definitions(klde_backends PRIVATE OWODE_HAVE_PULSEAUDIO=1)
+endif()
+if(OWODE_HAVE_KCONFIG)
+    target_sources(klde_backends PRIVATE live/NightLightSource.h live/NightLightSource.cpp)
+    target_link_libraries(klde_backends PRIVATE KF6::ConfigCore)
+    target_compile_definitions(klde_backends PRIVATE OWODE_HAVE_KCONFIG=1)
 endif()
 if(OWODE_HAVE_LAYERSHELLQT)
     target_link_libraries(klde_backends PUBLIC LayerShellQt::Interface)

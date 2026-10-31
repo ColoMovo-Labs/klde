@@ -14,7 +14,7 @@ build or registered login entry is not a production-readiness claim.
 | Clock/date | Native mode uses local system time; mock previews remain deterministic | Timezone/time changes, DST and suspend/resume acceptance |
 | Telemetry/battery | Native mode reads CPU, memory and package temperature from the kernel and battery state from UPower; live values are pinned against mock fixtures | Sensor coverage on target hardware, suspend/resume and AC plug/unplug acceptance |
 | Network/Bluetooth | Native mode follows NetworkManager (Wi-Fi radio, connection, SSID, signal, connectivity) and BlueZ (adapters, power, connected devices); switches act only after service confirmation | Captive portals, VPN, multiple Wi-Fi devices, pairing UI and rfkill hardware switches on target machines |
-| Audio/power | Quick Settings volume, brightness, night light and power profile still mock | Event-driven real services, disconnection/errors, permission handling, truthful disabled states |
+| Audio/power/media | Native mode follows the default PipeWire/PulseAudio output and input (pulseaudio-qt), the internal backlight (sysfs read, logind write), KWin Night Light, power-profiles-daemon and MPRIS players; Power Scenes drive the real profile | Volume/brightness keys, multiple outputs, external monitors' DDC brightness and player edge cases on target machines |
 | Notifications/tray | Preview components | Real notification server, actions, DND, StatusNotifier and app integration |
 | Security/session lock | Lock-screen artwork is a preview | Compositor-enforced authenticated lock, suspend/resume, polkit and credential boundaries |
 | Portals/input | Partial Fcitx integration | File chooser, open URI, screenshot/screencast consent, IME and clipboard behavior |
