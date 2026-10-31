@@ -78,6 +78,7 @@ def main():
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
+    (output / "runner-memory-start.txt").write_text(Path("/proc/meminfo").read_text())
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO,
                                        text=True).strip()
     rpms = sorted(args.packages.resolve().glob("*.rpm"))
@@ -148,10 +149,12 @@ def main():
                    "-device", "virtio-vga", "-display", "none", "-nic",
                    "user,model=virtio-net-pci,hostfwd=tcp:127.0.0.1:0-:22",
                    "-qmp", f"unix:{qmp_socket},server=on,wait=off", "-serial",
-                   f"file:{output / 'serial.log'}", "-no-reboot"]
+                   f"file:{output / 'serial.log'}", "-no-reboot", "-no-shutdown"]
         with (output / "qemu.log").open("w") as log:
             process = subprocess.Popen(command, stdout=log, stderr=log)
             ssh = None
+            journal_process = None
+            journal_stream = None
             try:
                 wait_for("QMP", lambda: qmp_socket.exists() or process.poll() is not None, 30)
                 assert process.poll() is None, "QEMU exited; inspect qemu.log"
@@ -176,6 +179,12 @@ def main():
                     run(["tar", "-C", str(payload), "-cf", "-", "."], stdout=stream)
                 with (private / "payload.tar").open("rb") as stream:
                     run(ssh + ["mkdir -p /tmp/owode-vm-payload && tar -C /tmp/owode-vm-payload -xf -"], stdin=stream)
+                # Keep independent live evidence even if the guest/bus dies before
+                # its final tar collection. No owner data or credentials enter it.
+                journal_stream = (output / "guest-journal-live.log").open("w")
+                journal_process = subprocess.Popen(
+                    ssh + ["sudo journalctl --no-pager -f -n 0 -o short-monotonic"],
+                    stdout=journal_stream, stderr=subprocess.STDOUT)
                 run(ssh + ["sudo bash /tmp/owode-vm-payload/vm-guest.sh setup " + shlex.quote(marker)], timeout=1500)
                 # Framebuffer capture is independent of the shell/QML capture APIs.
                 qmp(qmp_socket, "screendump", {"filename": str(output / "gdm-owode.png"), "format": "png"})
@@ -187,6 +196,30 @@ def main():
                     "passwordAuthentication": "not tested", "secureLock": "not tested",
                     "physicalGPU": "not tested"}, indent=2) + "\n")
             finally:
+                before_cleanup = {"qemuExitBeforeCleanup": process.poll()}
+                try:
+                    before_cleanup["qmpStatus"] = qmp(qmp_socket, "query-status")
+                    qmp(qmp_socket, "screendump", {"filename": str(output / "last-frame.png"), "format": "png"})
+                except (OSError, ValueError, RuntimeError) as error:
+                    before_cleanup["qmpObservationError"] = type(error).__name__
+                (output / "process-before-cleanup.json").write_text(json.dumps(before_cleanup, indent=2) + "\n")
+                (output / "runner-memory-end.txt").write_text(Path("/proc/meminfo").read_text())
+                try:
+                    kernel = subprocess.run(["sudo", "-n", "dmesg"], capture_output=True, text=True, timeout=10)
+                    lines = [line for line in kernel.stdout.splitlines()
+                             if re.search(r"out of memory|oom.kill|killed process|qemu|segfault", line, re.IGNORECASE)]
+                    (output / "runner-kernel-diagnostics.txt").write_text("\n".join(lines[-100:]) + "\n")
+                except (OSError, subprocess.TimeoutExpired):
+                    pass
+                if journal_process:
+                    journal_process.terminate()
+                    try:
+                        journal_process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        journal_process.kill()
+                        journal_process.wait(timeout=5)
+                if journal_stream:
+                    journal_stream.close()
                 try:
                     if ssh:
                         with (output / "guest-evidence.tar.gz").open("wb") as stream:
@@ -208,6 +241,10 @@ def main():
                         except subprocess.TimeoutExpired:
                             process.kill()
                             process.wait(timeout=10)
+                    (output / "qemu-exit-status.json").write_text(json.dumps({
+                        "exitAfterCleanup": process.returncode,
+                        "scope": "Compare process-before-cleanup.json; cleanup requests QMP quit"
+                    }, indent=2) + "\n")
 
 
 if __name__ == "__main__":

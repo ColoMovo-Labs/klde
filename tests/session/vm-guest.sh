@@ -34,9 +34,11 @@ wait_owode() {
 }
 case ${1:-} in
 setup)
+    echo 'VM_AUDIT_STAGE: installing distribution and matching owoDE packages'
     dnf install -y --setopt=install_weak_deps=False \
         /tmp/owode-vm-payload/*.rpm gdm gnome-shell gnome-session \
         gnome-calculator kcalc adwaita-icon-theme breeze-icon-theme dbus-tools python3
+    echo 'VM_AUDIT_STAGE: checking installed session prerequisites'
     /usr/bin/start-owode --check > "$out/prerequisites.txt" 2>&1
     mkdir -p /usr/local/share/owode-ci /var/lib/AccountsService/users
     install -m 644 /tmp/owode-vm-payload/vm-state.js /usr/local/share/owode-ci/vm-state.js
@@ -63,8 +65,11 @@ WaylandEnable=true
 Enable=true
 EOF
     restorecon -RF /var/lib/AccountsService/users /etc/gdm /usr/local/share/owode-ci
+    echo 'VM_AUDIT_STAGE: refreshing the guest account service'
     systemctl restart accounts-daemon.service
+    echo 'VM_AUDIT_STAGE: starting GDM'
     systemctl start gdm.service
+    echo 'VM_AUDIT_STAGE: waiting for the owoDE session service'
     wait_owode
     # Select the actual GDM user session, never the parallel SSH session.
     session=
