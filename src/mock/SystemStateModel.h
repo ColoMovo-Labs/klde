@@ -12,6 +12,7 @@ class SystemStateModel : public QObject {
     Q_PROPERTY(QVariantMap snapshot READ snapshot NOTIFY changed)
     Q_PROPERTY(QVariantMap alerts READ alerts NOTIFY changed)
     Q_PROPERTY(bool ready READ ready CONSTANT)
+    Q_PROPERTY(QStringList livePaths READ livePaths NOTIFY changed)
   public:
     explicit SystemStateModel(QObject *parent = nullptr);
     ~SystemStateModel() override;
@@ -26,6 +27,12 @@ class SystemStateModel : public QObject {
     static QVariant lookup(const QVariantMap &map, const QString &path);
     static void assign(QVariantMap &map, const QString &path, const QVariant &value);
     bool valid(const QString &path, const QVariant &value) const;
+    // Confirmed values from a real system service. A live path is pinned: mock
+    // scenarios and preview edits can no longer replace it, so a fixture never
+    // masquerades as live state. Returns false for values outside the schema.
+    bool publishLive(const QString &path, const QVariant &value);
+    bool isLive(const QString &path) const { return m_live.contains(path); }
+    QStringList livePaths() const { return m_live.keys(); }
   signals:
     void changed();
     void valueEdited(const QString &path);
@@ -33,6 +40,7 @@ class SystemStateModel : public QObject {
   private:
     QVariantMap m_baseline;
     QVariantMap m_snapshot;
+    QVariantMap m_live;
 };
 class MockScenarioManager : public QObject {
     Q_OBJECT

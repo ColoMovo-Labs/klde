@@ -12,6 +12,7 @@ build or registered login entry is not a production-readiness claim.
 | GNOME/KDE applications | Compatibility work in progress | Actual GNOME GTK/libadwaita and KDE Qt applications with correct dependencies and portals |
 | Window/workspace state | Native mode has an event-driven KWin scripting adapter; Visual Lab remains mock | Verify state/activate/close/running indicators/workspace changes on both platforms; then global shortcuts, restart and multi-output acceptance |
 | Clock/date | Native mode uses local system time; mock previews remain deterministic | Timezone/time changes, DST and suspend/resume acceptance |
+| Telemetry/battery | Native mode reads CPU, memory and package temperature from the kernel and battery state from UPower; live values are pinned against mock fixtures | Sensor coverage on target hardware, suspend/resume and AC plug/unplug acceptance |
 | Audio/network/power | Quick Settings still largely mock | Event-driven real services, disconnection/errors, permission handling, truthful disabled states |
 | Notifications/tray | Preview components | Real notification server, actions, DND, StatusNotifier and app integration |
 | Security/session lock | Lock-screen artwork is a preview | Compositor-enforced authenticated lock, suspend/resume, polkit and credential boundaries |

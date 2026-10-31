@@ -218,11 +218,15 @@ class DesktopApplicationsTest final : public QObject {
         QVERIFY(services);
         QVERIFY(!services->applications()->preview());
         QVERIFY(!services->time()->reading().value("mock").toBool());
+        // Kernel counters are always readable; their fixture values must be replaced.
+        QVERIFY(services->state()->isLive("memory.usedPercent"));
+        QVERIFY(services->state()->isLive("capabilities.battery"));
         QTRY_VERIFY(services->desktopApplications()->ready());
         QVERIFY(!services->applications()->nameFor("suite-child.desktop").isEmpty());
         klde::ShellServices preview(nullptr);
         QVERIFY(preview.applications()->preview());
         QVERIFY(preview.time()->reading().value("mock").toBool());
+        QVERIFY(preview.state()->livePaths().isEmpty());
         QVERIFY(!preview.applications()->nameFor("terminal").isEmpty());
     }
     void compositorIdentityMatchingIsExplicitAndRejectsAmbiguousAliases() {

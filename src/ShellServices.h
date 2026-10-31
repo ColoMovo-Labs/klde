@@ -9,6 +9,8 @@
 #include "backends/PresentationBackends.h"
 #include "i18n/LocaleVoiceModel.h"
 #include "input/Fcitx5Backend.h"
+#include "live/HostTelemetrySource.h"
+#include "live/UPowerBatterySource.h"
 #include "mock/SystemStateModel.h"
 #include "models/ApplicationModel.h"
 #include "models/NotificationModel.h"
@@ -130,6 +132,9 @@ class ShellServices final : public QObject {
     MockScenarioManager m_mockScenarios;
     MockTimeBackend m_time;
     std::unique_ptr<SystemTimeBackend> m_systemTime;
+    // Live system sources; created only for system/native sessions.
+    std::unique_ptr<HostTelemetrySource> m_hostTelemetry;
+    std::unique_ptr<UPowerBatterySource> m_battery;
     MockTelemetryBackend m_telemetry;
     MockWallpaperEffectsBackend m_wallpaperEffects;
     MockWaydroidBackend m_waydroid;

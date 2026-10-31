@@ -1,6 +1,6 @@
 # CNB is a public mirror and an additional Fedora cloud validation path.
 # CircleCI remains the authoritative Qt/CMake matrix and merge check.
-"(main|feat/temporal-shell|feat/native-session-surfaces|feat/visual-workspace|feat/system-applications|feat/fedora-login-session|feat/kwin-live-state)":
+"(main|feat/temporal-shell|feat/native-session-surfaces|feat/visual-workspace|feat/system-applications|feat/fedora-login-session|feat/kwin-live-state|feat/live-system-services)":
   push:
     - docker:
         image: fedora:44
@@ -15,7 +15,7 @@
               qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
               kf6-kio-devel kf6-kservice-devel \
               wayland-devel wayland-protocols-devel mesa-dri-drivers \
-              mesa-libEGL mesa-libGL dbus-daemon dbus-tools \
+              mesa-libEGL mesa-libGL dbus-daemon dbus-tools python3-dbusmock \
               dejavu-sans-fonts google-noto-sans-cjk-vf-fonts \
               google-noto-color-emoji-fonts \
               desktop-file-utils xorg-x11-server-Xvfb xorg-x11-xauth glx-utils

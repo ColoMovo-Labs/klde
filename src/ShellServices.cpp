@@ -15,6 +15,10 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
                              new ApplicationIconProvider(services->desktopApplications()));
     if (engine->property("owodeSystemApplications").toBool()) {
         services->m_systemTime = std::make_unique<SystemTimeBackend>();
+        services->m_hostTelemetry = std::make_unique<HostTelemetrySource>(&services->m_state);
+        services->m_hostTelemetry->start();
+        services->m_battery = std::make_unique<UPowerBatterySource>(&services->m_state);
+        services->m_battery->start();
         services->m_applications.replaceSystemApplications({});
         services->m_desktopApplications.setLocale(services->language()->locale());
         services->m_desktopApplications.start();

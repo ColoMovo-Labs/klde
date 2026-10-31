@@ -25,3 +25,4 @@ kf6-kio-devel
 kf6-kservice-devel
 dbus-daemon
 dbus-tools
+python3-dbusmock

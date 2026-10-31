@@ -135,7 +135,7 @@ bool SystemStateModel::requestValue(const QString &path, const QVariant &input) 
     const QVariant newValue = input.metaType() == QMetaType::fromType<QJSValue>()
                                   ? input.value<QJSValue>().toVariant()
                                   : input;
-    if (!valid(path, newValue))
+    if (!valid(path, newValue) || m_live.contains(path))
         return false;
     const QMap<QString, QString> needs{
         {"battery.percent", "battery"},       {"cpu.temperature", "sensors"},
@@ -189,6 +189,19 @@ bool SystemStateModel::replacePreview(const QVariantMap &snapshot) {
     if (snapshot.keys() != m_baseline.keys() || !visit(visit, snapshot, {}))
         return false;
     m_snapshot = snapshot;
+    for (auto it = m_live.cbegin(); it != m_live.cend(); ++it)
+        assign(m_snapshot, it.key(), it.value());
+    emit changed();
+    return true;
+}
+bool SystemStateModel::publishLive(const QString &path, const QVariant &value) {
+    if (!valid(path, value))
+        return false;
+    const bool pinned = m_live.contains(path);
+    if (pinned && m_live.value(path) == value)
+        return true;
+    m_live.insert(path, value);
+    assign(m_snapshot, path, value);
     emit changed();
     return true;
 }
