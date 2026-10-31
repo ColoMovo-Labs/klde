@@ -15,7 +15,7 @@
               qt6-qtsvg qt6-qttools-devel layer-shell-qt layer-shell-qt-devel \
               kf6-kio-devel kf6-kservice-devel \
               wayland-devel wayland-protocols-devel mesa-dri-drivers \
-              mesa-libEGL mesa-libGL dbus-daemon dbus-tools python3-dbusmock \
+              mesa-libEGL mesa-libGL dbus-daemon dbus-tools python3-dbus python3-dbusmock \
               dejavu-sans-fonts google-noto-sans-cjk-vf-fonts \
               google-noto-color-emoji-fonts \
               desktop-file-utils xorg-x11-server-Xvfb xorg-x11-xauth glx-utils
