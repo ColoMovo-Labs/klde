@@ -12,6 +12,8 @@ class ApplicationModel : public QAbstractListModel {
     QML_ELEMENT
     QML_UNCREATABLE("Provided by Shell.applications")
     Q_PROPERTY(bool preview READ preview NOTIFY modeChanged)
+    Q_PROPERTY(QString activeApplication READ activeId NOTIFY activeChanged)
+    Q_PROPERTY(QString activeName READ activeName NOTIFY activeChanged)
   public:
     enum Role : quint16 {
         AppIdRole = Qt::UserRole + 1,
@@ -34,6 +36,7 @@ class ApplicationModel : public QAbstractListModel {
     void resetPreview(const QString &appId);
     void setAndroidSource(bool enabled);
     QString activeId() const;
+    QString activeName() const { return nameFor(activeId()); }
     bool preview() const { return m_preview; }
     void replaceSystemApplications(const QList<ApplicationEntry> &applications);
     void setRuntimeApplications(const QList<ApplicationEntry> &applications);

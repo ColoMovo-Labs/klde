@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "ApplicationModel.h"
+#include <QHash>
 #include <algorithm>
 #include <utility>
 
@@ -127,6 +128,7 @@ void ApplicationModel::setRuntimeApplications(const QList<ApplicationEntry> &app
 }
 void ApplicationModel::reconcileSystemApplications() {
     auto next = m_catalog;
+    QList<ApplicationEntry> unmatched;
     for (auto &entry : next) {
         entry.running = false;
         entry.active = false;
@@ -135,13 +137,23 @@ void ApplicationModel::reconcileSystemApplications() {
         auto entry = std::find_if(next.begin(), next.end(),
                                   [&runtime](const auto &item) { return item.id == runtime.id; });
         if (entry == next.end())
-            next.append(runtime);
+            unmatched.append(runtime);
         else {
             entry->running = runtime.running;
             entry->active = runtime.active;
         }
     }
+    QHash<QString, qsizetype> positions;
+    for (qsizetype row = 0; row < m_applications.size(); ++row)
+        positions.insert(m_applications.at(row).id, row);
+    std::stable_sort(unmatched.begin(), unmatched.end(),
+                     [this, &positions](const auto &a, const auto &b) {
+                         return positions.value(a.id, m_applications.size()) <
+                                positions.value(b.id, m_applications.size());
+                     });
+    next.append(unmatched);
     const auto previousActive = activeId();
+    const auto previousName = activeName();
     bool structure = next.size() != m_applications.size();
     for (qsizetype row = 0; !structure && row < next.size(); ++row) {
         const auto &before = m_applications.at(row);
@@ -165,7 +177,7 @@ void ApplicationModel::reconcileSystemApplications() {
             }
         }
     }
-    if (previousActive != activeId())
+    if (previousActive != activeId() || previousName != activeName())
         emit activeChanged();
 }
 bool ApplicationModel::isPinned(const QString &appId) const {

@@ -263,10 +263,18 @@ class DesktopApplicationsTest final : public QObject {
         QCOMPARE(reset.count(), 0);
         QCOMPARE(dock.rowCount(), 1);
         QCOMPARE(model.activeId(), "editor.desktop");
+        QCOMPARE(model.activeName(), "Editor");
         model.replaceSystemApplications({installed});
         QCOMPARE(reset.count(), 0);
         QCOMPARE(dock.rowCount(), 1);
         QVERIFY(model.canPin("editor.desktop"));
+        QSignalSpy active(&model, &klde::ApplicationModel::activeChanged);
+        auto renamed = installed;
+        renamed.name = "Localized editor";
+        model.replaceSystemApplications({renamed});
+        QCOMPARE(model.activeName(), "Localized editor");
+        QCOMPARE(model.activeId(), "editor.desktop");
+        QCOMPARE(active.count(), 1);
         const klde::ApplicationEntry unmatched{"window:opaque-id",
                                                "Uncatalogued window",
                                                {},
@@ -282,6 +290,17 @@ class DesktopApplicationsTest final : public QObject {
         model.setRuntimeApplications({unmatched});
         QCOMPARE(dock.rowCount(), 1);
         QCOMPARE(model.activeId(), "desktop");
+        auto another = unmatched;
+        another.id = "window:another-id";
+        another.name = "Another uncatalogued window";
+        model.setRuntimeApplications({unmatched, another});
+        QSignalSpy reordered(&model, &QAbstractItemModel::modelReset);
+        model.setRuntimeApplications({another, unmatched});
+        QCOMPARE(model.data(model.index(1, 0), klde::ApplicationModel::AppIdRole).toString(),
+                 unmatched.id);
+        QCOMPARE(model.data(model.index(2, 0), klde::ApplicationModel::AppIdRole).toString(),
+                 another.id);
+        QCOMPARE(reordered.count(), 0);
         model.setRuntimeApplications({});
         QCOMPARE(dock.rowCount(), 0);
         QCOMPARE(model.rowCount(), 1);

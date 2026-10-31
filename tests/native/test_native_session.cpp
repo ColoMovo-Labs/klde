@@ -492,6 +492,12 @@ callDBus('org.owode.NativeAudit', '/Audit', 'org.owode.NativeAudit', 'report', J
         QTRY_COMPARE(manager->windows().size(), 1);
         const auto firstId = manager->windows().first().toMap().value("id").toString();
         QTRY_COMPARE(services->applications()->activeId(), QString("owode-launch-fixture.desktop"));
+        QTRY_COMPARE(services->applications()->activeName(), QString("Catalog Launch Fixture"));
+        auto *ribbon = findWindow("nativeRibbonSurface");
+        QVERIFY(ribbon);
+        auto *context = findItem(ribbon->contentItem(), "statusModule-context");
+        QVERIFY(context);
+        QTRY_COMPARE(context->property("valueText").toString(), QString("Catalog Launch Fixture"));
         QVERIFY(services->dockApplications()
                     ->data(services->dockApplications()->index(0, 0),
                            klde::ApplicationModel::RunningRole)

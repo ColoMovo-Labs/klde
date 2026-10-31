@@ -22,6 +22,13 @@ Item {
             height: 64
         }
     }
+    Component {
+        id: statusComponent
+        StatusCapsule {
+            width: 240
+            height: 64
+        }
+    }
     TestCase {
         name: "ApplicationContentBoundary"
         when: windowShown
@@ -48,6 +55,16 @@ Item {
             verify(tooltip !== null);
             compare(tooltip.text, title);
             compare(tooltip.textFormat, Text.PlainText);
+            const status = createTemporaryObject(statusComponent, root, {
+                "valueText": title
+            });
+            verify(status !== null);
+            const statusLabel = findChild(status, "statusValueLabel");
+            const statusHint = findChild(status, "statusToolTipText");
+            verify(statusLabel !== null && statusHint !== null);
+            compare(statusLabel.text, title);
+            compare(statusLabel.textFormat, Text.PlainText);
+            compare(statusHint.textFormat, Text.PlainText);
         }
     }
 }
