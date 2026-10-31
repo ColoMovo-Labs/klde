@@ -67,11 +67,6 @@ LabPanel {
                 font: Tokens.label
                 color: Tokens.primary
             }
-            Label {
-                text: I18n.t("lab.preview")
-                font: Tokens.caption
-                color: Tokens.textSecondary
-            }
         }
     }
     ColumnLayout {
@@ -134,7 +129,7 @@ LabPanel {
             color: Tokens.textPrimary
         }
         Label {
-            text: I18n.t(Shell.state.snapshot.weather.available ? "lab.weather.mock" : "friendly.weather.unavailable")
+            text: !Shell.state.snapshot.weather.available ? I18n.t("friendly.weather.unavailable") : Shell.weatherService.onlineEnabled ? I18n.s(Shell.weatherService.attribution) : I18n.t("lab.weather.mock")
             font: Tokens.body
             color: Tokens.textSecondary
             Layout.fillWidth: true

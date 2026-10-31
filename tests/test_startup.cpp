@@ -27,7 +27,9 @@ class ShellStartupTest final : public QObject {
         QVERIFY(window != nullptr);
         QVERIFY(window->isVisible());
         QVERIFY(window->title().contains(QStringLiteral("owoDE")));
-        QVERIFY(window->findChild<QObject *>(QStringLiteral("statusLabel")) != nullptr);
+        // The corner "preview · mock services" caption is gone; mock data is
+        // marked next to its control and summarized in Settings > About.
+        QVERIFY(window->findChild<QObject *>(QStringLiteral("statusLabel")) == nullptr);
         QCoreApplication::processEvents();
         auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
         auto *tokens = engine.singletonInstance<QObject *>("Owo.Visuals", "Tokens");

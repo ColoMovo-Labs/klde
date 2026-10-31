@@ -9,7 +9,7 @@ LabPanel {
     id: root
     objectName: "temporalDetail"
     heading: I18n.t("temporal.title")
-    subtitle: I18n.t(Shell.time.reading.mock ? "temporal.mock" : "temporal.system")
+    subtitle: Shell.time.reading.mock ? I18n.t("temporal.mock") : ""
     signal studyRequested
     TemporalCapsule {
         sizeMode: "expanded"

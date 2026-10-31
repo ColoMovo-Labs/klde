@@ -9,12 +9,19 @@ import KLDE.Backends
 ColumnLayout {
     id: root
     spacing: Tokens.space16
-    ChoiceBox {
+    RowLayout {
         Layout.fillWidth: true
-        model: [I18n.t("shell.scene.performance"), I18n.t("shell.scene.balanced"), I18n.t("shell.scene.saver")]
-        currentIndex: Shell.scenes.activeId === "performance" ? 0 : Shell.scenes.activeId === "balanced" ? 1 : 2
-        Accessible.name: I18n.t("shell.scene.select")
-        onActivated: Shell.scenes.select(["performance", "balanced", "power-saver"][currentIndex])
+        spacing: Tokens.space8
+        ChoiceBox {
+            Layout.fillWidth: true
+            model: [I18n.t("shell.scene.performance"), I18n.t("shell.scene.balanced"), I18n.t("shell.scene.saver")]
+            currentIndex: Shell.scenes.activeId === "performance" ? 0 : Shell.scenes.activeId === "balanced" ? 1 : 2
+            Accessible.name: I18n.t("shell.scene.select")
+            onActivated: Shell.scenes.select(["performance", "balanced", "power-saver"][currentIndex])
+        }
+        MockBadge {
+            path: "powerProfile"
+        }
     }
     Label {
         text: I18n.t("shell.scene.disclosure")

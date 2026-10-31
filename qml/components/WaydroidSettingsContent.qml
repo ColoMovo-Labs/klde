@@ -8,6 +8,18 @@ import KLDE.Backends
 ColumnLayout {
     id: root
     spacing: Tokens.rowGap
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: Tokens.space8
+        MockBadge {}
+        Label {
+            text: I18n.t("android.mock")
+            font: Tokens.caption
+            color: Tokens.textSecondary
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+    }
     Switch {
         text: I18n.t("android.available")
         checked: Shell.waydroid.state.available

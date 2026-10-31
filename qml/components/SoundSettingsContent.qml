@@ -8,13 +8,20 @@ import KLDE.Backends
 ColumnLayout {
     id: root
     spacing: Tokens.space16
-    SliderCard {
-        objectName: "settingsVolume"
+    RowLayout {
         Layout.fillWidth: true
-        label: I18n.t("shell.effects.volume")
-        iconName: "volume"
-        value: Shell.system.volume
-        onValueRequested: requestedValue => Shell.system.volume = requestedValue
+        spacing: Tokens.space8
+        SliderCard {
+            objectName: "settingsVolume"
+            Layout.fillWidth: true
+            label: I18n.t("shell.effects.volume")
+            iconName: "volume"
+            value: Shell.system.volume
+            onValueRequested: requestedValue => Shell.system.volume = requestedValue
+        }
+        MockBadge {
+            path: "audio.volume"
+        }
     }
     StateSlider {
         label: I18n.t("lab.module.microphone")

@@ -9,13 +9,20 @@ import KLDE.Backends
 ColumnLayout {
     id: root
     spacing: Tokens.space16
-    SliderCard {
+    RowLayout {
         Layout.fillWidth: true
-        label: I18n.t("shell.effects.brightness")
-        iconName: "sun"
-        value: Shell.system.brightness
+        spacing: Tokens.space8
         visible: Shell.state.snapshot.capabilities.brightness
-        onValueRequested: requestedValue => Shell.system.brightness = requestedValue
+        SliderCard {
+            Layout.fillWidth: true
+            label: I18n.t("shell.effects.brightness")
+            iconName: "sun"
+            value: Shell.system.brightness
+            onValueRequested: requestedValue => Shell.system.brightness = requestedValue
+        }
+        MockBadge {
+            path: "brightness"
+        }
     }
     Switch {
         text: I18n.t("shell.effects.night")

@@ -10,6 +10,18 @@ ColumnLayout {
     signal viewRequested(string view)
     readonly property var effects: Shell.wallpaperEffects.state
     spacing: Tokens.rowGap
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: Tokens.space8
+        MockBadge {}
+        Label {
+            text: I18n.t("wallpaper.mock")
+            font: Tokens.caption
+            color: Tokens.textSecondary
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+    }
     StateChoice {
         label: I18n.t("wallpaper.mode")
         path: "wallpaperEffects.mode"

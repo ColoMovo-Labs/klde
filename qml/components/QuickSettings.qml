@@ -34,7 +34,8 @@ ShellPopup {
             quietOn: Shell.scenes.current.visual.motion === 0
             dndOn: root.snapshot.notifications.dnd
             wifiDetail: root.snapshot.network.connected ? root.snapshot.network.ssid : I18n.t("lab.network.offline")
-            provenance: I18n.t("shell.quick.provenance")
+            // The panel title; a quiet marker joins it while any control here is simulated.
+            provenance: I18n.t("shell.quick.title") + (["network.enabled", "bluetooth.enabled", "audio.volume", "brightness", "powerProfile"].some(path => Shell.state.livePaths.indexOf(path) < 0) ? "  ·  " + I18n.t("settings.mock.badge") : "")
             wifiLabel: I18n.t("shell.network.wifi")
             bluetoothLabel: I18n.t("shell.network.bluetooth")
             dndLabel: I18n.t("lab.dnd")

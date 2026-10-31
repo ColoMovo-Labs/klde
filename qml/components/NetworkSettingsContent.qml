@@ -9,11 +9,17 @@ ColumnLayout {
     id: root
     readonly property var snapshot: Shell.state.snapshot
     spacing: Tokens.space16
-    Switch {
-        objectName: "settingsWifi"
-        text: I18n.t("shell.network.wifi")
-        checked: Shell.system.wifi
-        onToggled: Shell.system.wifi = checked
+    RowLayout {
+        spacing: Tokens.space8
+        Switch {
+            objectName: "settingsWifi"
+            text: I18n.t("shell.network.wifi")
+            checked: Shell.system.wifi
+            onToggled: Shell.system.wifi = checked
+        }
+        MockBadge {
+            path: "network.enabled"
+        }
     }
     Label {
         text: !root.snapshot.network.enabled ? I18n.t("settings.network.off") : root.snapshot.network.connected ? I18n.t("settings.network.connected").arg(root.snapshot.network.ssid) : I18n.t("lab.network.offline")
@@ -22,12 +28,18 @@ ColumnLayout {
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
     }
-    Switch {
-        objectName: "settingsBluetooth"
-        text: I18n.t("shell.network.bluetooth")
-        enabled: root.snapshot.capabilities.bluetooth
-        checked: Shell.system.bluetooth
-        onToggled: Shell.system.bluetooth = checked
+    RowLayout {
+        spacing: Tokens.space8
+        Switch {
+            objectName: "settingsBluetooth"
+            text: I18n.t("shell.network.bluetooth")
+            enabled: root.snapshot.capabilities.bluetooth
+            checked: Shell.system.bluetooth
+            onToggled: Shell.system.bluetooth = checked
+        }
+        MockBadge {
+            path: "bluetooth.enabled"
+        }
     }
     Label {
         visible: !root.snapshot.capabilities.bluetooth

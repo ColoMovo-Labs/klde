@@ -34,7 +34,7 @@ Item {
     property bool microphoneAvailable: true
     property bool brightnessAvailable: true
     property string wifiDetail: "Snowline_5G"
-    property string provenance: "模拟系统数据 / Mock system data"
+    property string provenance: "快捷控制 / Quick Settings"
     property string wifiLabel: "Wi-Fi"
     property string bluetoothLabel: "蓝牙 / Bluetooth"
     property string dndLabel: "勿扰 / Do not disturb"
@@ -55,8 +55,8 @@ Item {
             Layout.fillWidth: true
             Text {
                 text: root.provenance
-                font: Tokens.caption
-                color: Tokens.textSecondary
+                font: Tokens.title
+                color: Tokens.textPrimary
                 Layout.fillWidth: true
                 elide: Text.ElideRight
             }

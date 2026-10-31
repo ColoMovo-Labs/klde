@@ -102,6 +102,7 @@ set(klde_qml_files
     qml/components/ApplicationShortcuts.qml
     qml/components/Icon.qml qml/components/Surface.qml qml/components/IconButton.qml
     qml/components/ShellPopup.qml qml/components/Dock.qml qml/components/AutoHideDock.qml
+    qml/components/MockBadge.qml
     qml/components/Launcher.qml
     qml/components/WorkspaceIndicator.qml qml/components/ToggleTile.qml
     qml/components/SliderCard.qml qml/components/QuickSettings.qml qml/components/SessionMenu.qml

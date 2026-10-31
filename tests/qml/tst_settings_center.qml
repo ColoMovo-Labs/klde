@@ -82,6 +82,15 @@ Item {
             verify(first.pixelRatio > 0);
             verify(findChild(center, "settingsDockAllScreens") !== null);
         }
+        function test_aboutSummarizesSimulatedSources(): void {
+            center.openPage("about");
+            tryVerify(() => findChild(center, "settingsSources") !== null);
+            compare(findChild(center, "settingsSources").count, 16);
+            const loader = findChild(center, "settingsPageLoader");
+            const network = loader.item.sources.find(source => source.id === "network");
+            compare(network.live, Shell.state.livePaths.indexOf("network.enabled") >= 0);
+            verify(!loader.item.sources.find(source => source.id === "android").live);
+        }
         function test_accentIsStoredInSettings(): void {
             Shell.settings.setValue("appearance.accent", "lilac");
             compare(Shell.settings.values["appearance.accent"], "lilac");

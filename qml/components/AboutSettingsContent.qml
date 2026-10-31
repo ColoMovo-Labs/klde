@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+pragma ComponentBehavior: Bound
 import QtQuick
 import Owo.Visuals
 import QtQuick.Controls
@@ -7,6 +8,77 @@ import KLDE.Backends
 
 ColumnLayout {
     id: root
+    // Which parts of this session read real services and which are simulated.
+    readonly property var sources: {
+        const live = Shell.state.livePaths;
+        const path = name => live.indexOf(name) >= 0;
+        return [
+            {
+                id: "network",
+                live: path("network.enabled")
+            },
+            {
+                id: "bluetooth",
+                live: path("bluetooth.enabled")
+            },
+            {
+                id: "audio",
+                live: path("audio.volume")
+            },
+            {
+                id: "brightness",
+                live: path("brightness")
+            },
+            {
+                id: "battery",
+                live: path("battery.percent")
+            },
+            {
+                id: "telemetry",
+                live: path("cpu.usage")
+            },
+            {
+                id: "power",
+                live: path("powerProfile")
+            },
+            {
+                id: "night",
+                live: path("nightMode")
+            },
+            {
+                id: "media",
+                live: path("media.available")
+            },
+            {
+                id: "weather",
+                live: Shell.weatherService.onlineEnabled
+            },
+            {
+                id: "applications",
+                live: !Shell.applications.preview
+            },
+            {
+                id: "windows",
+                live: Shell.windowManager.capabilities.mock === false && Shell.windowManager.capabilities.available === true
+            },
+            {
+                id: "input",
+                live: !Shell.input.simulated && Shell.input.engineAvailable
+            },
+            {
+                id: "android",
+                live: false
+            },
+            {
+                id: "wallpaper",
+                live: false
+            },
+            {
+                id: "lock",
+                live: false
+            }
+        ];
+    }
     spacing: Tokens.space16
     RowLayout {
         spacing: Tokens.space16
@@ -48,5 +120,37 @@ ColumnLayout {
         color: Tokens.textSecondary
         wrapMode: Text.WrapAnywhere
         Layout.fillWidth: true
+    }
+    Label {
+        text: I18n.t("settings.about.sources")
+        font: Tokens.title
+        color: Tokens.textPrimary
+        Layout.topMargin: Tokens.space8
+    }
+    Repeater {
+        objectName: "settingsSources"
+        model: root.sources
+        delegate: RowLayout {
+            id: sourceRow
+            required property var modelData
+            objectName: "settingsSource-" + modelData.id
+            Layout.fillWidth: true
+            spacing: Tokens.space8
+            Label {
+                text: I18n.t("settings.about.source." + sourceRow.modelData.id)
+                font: Tokens.body
+                color: Tokens.textPrimary
+                Layout.fillWidth: true
+            }
+            Label {
+                visible: sourceRow.modelData.live
+                text: I18n.t("settings.about.live")
+                font: Tokens.caption
+                color: Tokens.success
+            }
+            MockBadge {
+                mock: !sourceRow.modelData.live
+            }
+        }
     }
 }

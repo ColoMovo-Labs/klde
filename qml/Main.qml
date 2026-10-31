@@ -295,19 +295,11 @@ ApplicationWindow {
         islandState: window.initialIslandState
         onAction: moduleId => window.moduleAction(moduleId)
     }
-    Label {
-        objectName: "statusLabel"
-        x: Tokens.desktopMargin
-        y: window.popupTop
-        text: I18n.t("lab.preview")
-        color: Tokens.textSecondary
-        font: Tokens.caption
-    }
     WidgetHost {
         widgetId: "weather"
         visible: !window.welcomeMode && !window.snapshot.appearance.ambient
         x: Tokens.desktopMargin
-        y: window.popupTop + Tokens.controlHeight
+        y: window.popupTop
         renderingAllowed: window.renderingAllowed
         sourceComponent: Component {
             WeatherWidget {
@@ -594,13 +586,6 @@ ApplicationWindow {
             WallpaperLayers {
                 anchors.fill: parent
                 visible: true
-            }
-            Label {
-                x: Tokens.desktopMargin
-                y: window.popupTop
-                text: I18n.t("lab.preview")
-                color: Tokens.textSecondary
-                font: Tokens.caption
             }
             Component.onCompleted: {
                 if (Shell.surface.attach(nativeWallpaperSurface, "wallpaper"))

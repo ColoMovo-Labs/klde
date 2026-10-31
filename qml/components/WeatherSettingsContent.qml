@@ -48,12 +48,19 @@ ColumnLayout {
             onClicked: Shell.weatherService.disableOnline()
         }
     }
-    Label {
-        text: I18n.s(Shell.weatherService.attribution) + " · " + I18n.t("weather.status." + Shell.weatherService.status) + (Shell.weatherService.stale ? I18n.t("shell.weather.stale") : "")
-        font: Tokens.label
-        color: Tokens.textPrimary
+    RowLayout {
         Layout.fillWidth: true
-        wrapMode: Text.WordWrap
+        spacing: Tokens.space8
+        Label {
+            text: I18n.s(Shell.weatherService.attribution) + " · " + I18n.t("weather.status." + Shell.weatherService.status) + (Shell.weatherService.stale ? I18n.t("shell.weather.stale") : "")
+            font: Tokens.label
+            color: Tokens.textPrimary
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+        }
+        MockBadge {
+            mock: !Shell.weatherService.onlineEnabled
+        }
     }
     Label {
         text: I18n.s(Shell.weatherService.message)

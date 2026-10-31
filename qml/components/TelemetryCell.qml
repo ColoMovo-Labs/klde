@@ -17,7 +17,8 @@ TelemetryCellForm {
     iconName: moduleId === "temperature" ? "thermometer" : moduleId
     valueText: reading.value
     severity: reading.severity
-    Accessible.name: I18n.t("lab.preview") + ", " + I18n.t("lab.module." + moduleId) + ", " + reading.value + (reading.available ? "" : ", " + I18n.t("lab.unavailable"))
+    readonly property bool live: Shell.state.livePaths.some(path => path.startsWith(moduleId === "temperature" ? "cpu.temperature" : moduleId + "."))
+    Accessible.name: (live ? "" : I18n.t("settings.mock.badge") + ", ") + I18n.t("lab.module." + moduleId) + ", " + reading.value + (reading.available ? "" : ", " + I18n.t("lab.unavailable"))
     ToolTip.visible: hovered
     ToolTip.text: Accessible.name
 }

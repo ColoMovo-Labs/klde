@@ -10,7 +10,6 @@ LabPanel {
     id: root
     objectName: "statusDashboard"
     heading: I18n.t("lab.dashboard.title")
-    subtitle: I18n.t("lab.preview")
     signal customizeRequested
     Flow {
         Layout.fillWidth: true

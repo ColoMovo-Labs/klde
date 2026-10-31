@@ -125,7 +125,7 @@ Item {
             }
             IconButton {
                 iconName: root.expanded ? "close" : "overview"
-                text: I18n.t("lab.preview")
+                text: I18n.t(root.expanded ? "island.collapse" : "island.expand")
                 onClicked: root.expanded = !root.expanded
             }
         }
