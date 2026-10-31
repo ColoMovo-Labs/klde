@@ -19,6 +19,7 @@
 #include "models/NotificationModel.h"
 #include "models/PowerSceneController.h"
 #include "platform/common/DisplayServerBackend.h"
+#include "platform/common/ScreenModel.h"
 #include "platform/common/SessionRuntimeBackend.h"
 #include "platform/wayland/NativeSurfaceController.h"
 #include "settings/ShellSettings.h"
@@ -52,6 +53,7 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::DisplayServerBackend *displayServer READ displayServer CONSTANT)
     Q_PROPERTY(klde::SessionRuntimeBackend *session READ session CONSTANT)
     Q_PROPERTY(klde::NativeSurfaceController *surface READ surface CONSTANT)
+    Q_PROPERTY(klde::ScreenModel *screens READ screens CONSTANT)
     Q_PROPERTY(klde::SystemStateModel *state READ state CONSTANT)
     Q_PROPERTY(klde::ShellSettings *settings READ settings CONSTANT)
     Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
@@ -89,6 +91,7 @@ class ShellServices final : public QObject {
     DisplayServerBackend *displayServer() { return &m_displayServer; }
     SessionRuntimeBackend *session() { return &m_session; }
     NativeSurfaceController *surface() { return &m_surface; }
+    ScreenModel *screens() { return &m_screens; }
     SystemStateModel *state() { return &m_state; }
     ShellSettings *settings() { return &m_settings; }
     MockScenarioManager *mockScenarios() { return &m_mockScenarios; }
@@ -145,6 +148,7 @@ class ShellServices final : public QObject {
     DisplayServerBackend m_displayServer;
     SessionRuntimeBackend m_session;
     NativeSurfaceController m_surface;
+    ScreenModel m_screens;
     SystemStateModel m_state;
     ShellSettings m_settings;
     MockScenarioManager m_mockScenarios;

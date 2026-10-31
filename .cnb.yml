@@ -38,6 +38,19 @@
           script: |
             set -eu
             ctest --test-dir build/cnb --output-on-failure
+        - name: verify per-output surfaces in a two-output nested KWin
+          script: |
+            set -eu
+            dnf install -y --setopt=install_weak_deps=False --disablerepo=fedora-cisco-openh264 \
+              kwin-wayland xorg-x11-server-Xvfb xorg-x11-xauth dbus-daemon
+            bash tools/multi-output-smoke.sh build/cnb artifacts/multi-output
+            find artifacts/multi-output -maxdepth 1 -type f -empty -delete
+        - name: attach two-output evidence
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/multi-output/*.json"
+              - "./artifacts/multi-output/*.txt"
         - name: Fedora format and static analysis with LayerShellQt
           script: |
             set -eu

@@ -44,6 +44,9 @@ class NativeSurfaceController : public QObject {
     // 0 lets windows extend underneath; the value is clamped to the surface.
     Q_INVOKABLE bool setExclusiveZone(QObject *object, int zone);
     Q_INVOKABLE int exclusiveZone(QObject *object) const;
+    // Retargets a hidden surface to the named output; an empty name lets the
+    // compositor pick its active output. Takes effect when the window is shown.
+    Q_INVOKABLE bool setOutput(QObject *object, const QString &screenName);
 
   signals:
     void changed();

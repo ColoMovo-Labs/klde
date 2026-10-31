@@ -26,6 +26,9 @@ ShellSettings::ShellSettings(QObject *parent) : QObject(parent) {
     // smart: hide while a window overlaps; reserve: keep an exclusive zone.
     define(QStringLiteral("dock.mode"), string, QStringLiteral("smart"),
            {QStringLiteral("smart"), QStringLiteral("reserve"), QStringLiteral("hidden")});
+    // Top bar and dock appear on the primary output unless these are set.
+    define(QStringLiteral("ribbon.allScreens"), boolean, false);
+    define(QStringLiteral("dock.allScreens"), boolean, false);
     define(QStringLiteral("ribbon.enabled"), boolean, true);
     define(QStringLiteral("ribbon.compact"), boolean, false);
     define(QStringLiteral("ribbon.margin"), integer, 16, {}, 4, 40);

@@ -602,8 +602,8 @@
   "settings.workspaces.help": "每个工作区可以单独选择窗口布局。",
   "settings.workspaces.unsupported": "当前窗口管理器暂不支持由 owoDE 切换工作区布局。",
   "settings.workspaces.name": "工作区 %1",
-  "settings.displays.readonly": "这里的显示器信息为只读。分辨率、缩放和排列暂时仍需在 KWin 显示设置中修改。",
-  "settings.displays.geometry": "%1 × %2 逻辑像素 · 缩放 %3% · 位置 %4, %5",
+  "settings.displays.readonly": "分辨率、缩放、排列和主屏在这里只读：owoDE 还没有接入 KWin output-management 的写入。请在 KDE 的“显示配置”（kcmshell6 kcm_kscreen）中修改。",
+  "settings.displays.geometry": "%1 × %2 逻辑像素 · 位置 %3, %4",
   "settings.network.off": "Wi-Fi 已关闭",
   "settings.network.connected": "已连接到 %1",
   "settings.network.no-bluetooth": "未找到蓝牙适配器。",
@@ -619,5 +619,9 @@
   "settings.dock.mode.hidden": "始终隐藏",
   "settings.dock.help.smart": "有窗口碰到 Dock 时它会自动让开。把鼠标移到屏幕底边或按 Super 键即可唤出。",
   "settings.dock.help.reserve": "最大化的窗口会停在 Dock 上方，Dock 不会挡住窗口。",
-  "settings.dock.help.hidden": "Dock 平时隐藏，鼠标碰到屏幕底边或按 Super 键时出现。"
+  "settings.dock.help.hidden": "Dock 平时隐藏，鼠标碰到屏幕底边或按 Super 键时出现。",
+  "settings.displays.mode": "%1 × %2 · %3 Hz · 缩放 %4%",
+  "settings.displays.primary": "主屏",
+  "settings.displays.ribbon-all": "每块屏幕都显示顶栏",
+  "settings.displays.dock-all": "每块屏幕都显示 Dock"
 }

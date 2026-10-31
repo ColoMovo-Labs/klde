@@ -602,8 +602,8 @@
   "settings.workspaces.help": "Each workspace keeps its own window layout.",
   "settings.workspaces.unsupported": "The current window manager does not let owoDE change workspace layouts yet.",
   "settings.workspaces.name": "Workspace %1",
-  "settings.displays.readonly": "Display details are read-only here. Resolution, scale and arrangement are still changed in KWin's display settings.",
-  "settings.displays.geometry": "%1 × %2 logical pixels · scale %3% · position %4, %5",
+  "settings.displays.readonly": "Resolution, scale, arrangement and the primary display are read-only here: owoDE does not write KWin output management yet. Change them in KDE Display Configuration (kcmshell6 kcm_kscreen).",
+  "settings.displays.geometry": "%1 × %2 logical pixels · position %3, %4",
   "settings.network.off": "Wi-Fi is off",
   "settings.network.connected": "Connected to %1",
   "settings.network.no-bluetooth": "No Bluetooth adapter was found.",
@@ -619,5 +619,9 @@
   "settings.dock.mode.hidden": "Always hidden",
   "settings.dock.help.smart": "The dock steps aside when a window reaches it. Move the pointer to the bottom edge or press Super to bring it back.",
   "settings.dock.help.reserve": "Maximized windows stop above the dock, so it never covers them.",
-  "settings.dock.help.hidden": "The dock stays out of the way until the pointer touches the bottom edge or you press Super."
+  "settings.dock.help.hidden": "The dock stays out of the way until the pointer touches the bottom edge or you press Super.",
+  "settings.displays.mode": "%1 × %2 · %3 Hz · scale %4%",
+  "settings.displays.primary": "Primary",
+  "settings.displays.ribbon-all": "Show the top bar on every display",
+  "settings.displays.dock-all": "Show the dock on every display"
 }

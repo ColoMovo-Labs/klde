@@ -6,6 +6,7 @@
 #include <QPointer>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QScreen>
 #include <QTimer>
 #include <QVariant>
 #include <QWindow>
@@ -76,6 +77,32 @@ bool NativeSurfaceController::setExclusiveZone(QObject *object, int zone) {
     // Layer-shell state is applied on the next commit; request exactly one frame.
     if (auto *quick = qobject_cast<QQuickWindow *>(window))
         quick->update();
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool NativeSurfaceController::setOutput(QObject *object, const QString &screenName) {
+    auto *window = qobject_cast<QWindow *>(object);
+    if (window == nullptr || !m_roles.contains(window) || window->isVisible())
+        return false;
+    QScreen *target = nullptr;
+    for (auto *screen : QGuiApplication::screens()) {
+        if (screen->name() == screenName)
+            target = screen;
+    }
+    if (!screenName.isEmpty() && target == nullptr)
+        return false;
+#if defined(OWODE_HAVE_LAYERSHELLQT)
+    auto *surface = LayerShellQt::Window::get(window);
+    if (surface == nullptr)
+        return false;
+    surface->setWantsToBeOnActiveScreen(target == nullptr);
+    if (target != nullptr) {
+        window->setScreen(target);
+        surface->setScreen(target);
+    }
     return true;
 #else
     return false;

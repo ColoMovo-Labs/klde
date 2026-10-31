@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma ComponentBehavior: Bound
 import QtQuick
+import QtQml.Models
 import Owo.Visuals
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -49,14 +50,31 @@ ApplicationWindow {
     palette.light: Tokens.surfaceElevated
     palette.shadow: Tokens.shadow
 
-    readonly property bool renderingAllowed: nativeSurfaceMode ? nativeWallpaperLoader.item !== null && (nativeWallpaperLoader.item as Window).visible : visible && visibility !== Window.Minimized
+    readonly property bool renderingAllowed: nativeSurfaceMode ? nativeWallpapers.count > 0 : visible && visibility !== Window.Minimized
+    // Output name of the native surface that triggered the next view; consumed by showView.
+    property string triggerScreen: ""
+    // Bumped when a native top bar changes, so popupTop re-reads its height.
+    property int ribbonRevision: 0
+    function nativeRibbonHeight(name: string): real {
+        const revision = ribbonRevision;
+        for (let i = 0; i < nativeRibbons.count; ++i) {
+            const ribbon = nativeRibbons.objectAt(i);
+            if (ribbon && ribbon.visible && (name.length > 0 ? ribbon.name === name : ribbon.primary))
+                return ribbon.height;
+        }
+        return Shell.ribbon.margin;
+    }
+    function peekDocks(): void {
+        for (let i = 0; i < nativeDocks.count; ++i)
+            nativeDocks.objectAt(i).peek();
+    }
     property var pendingNativePanel: null
     readonly property bool nativePanelVisible: panels ? panels.some(panel => panel.visible) : false
     readonly property Item panelParent: nativeSurfaceMode ? (nativePopupLoader.item ? (nativePopupLoader.item as ApplicationWindow).contentItem : null) : Overlay.overlay
     readonly property bool lockSurfaceMode: initialView === "lock-screen"
     readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
-    readonly property real popupTop: nativeSurfaceMode && nativeRibbonLoader.item ? (nativeRibbonLoader.item as Window).height : ribbon.y + ribbon.height + Tokens.space16
+    readonly property real popupTop: nativeSurfaceMode ? nativeRibbonHeight(nativePopupLoader.item ? nativePopupLoader.item.outputName : "") : ribbon.y + ribbon.height + Tokens.space16
     readonly property var panels: [launcher, quickSettings, blurLab, settingsCenter, inputPopup, notificationCenter, statusDashboard, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, lockPreview, sessionMenu]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function openPendingNativePanel(): void {
@@ -151,20 +169,25 @@ ApplicationWindow {
             break;
         }
         const close = toggle && target && target.opened;
+        // A panel opened from another output closes here and reopens there.
+        const moved = nativeSurfaceMode && nativePopupLoader.item && nativePopupLoader.item.outputName !== triggerScreen;
         for (const panel of panels)
             if (panel !== target)
                 panel.close();
         if (target) {
-            if (close) {
+            if (close && !moved) {
                 pendingNativePanel = null;
                 target.close();
             } else if (nativeSurfaceMode) {
+                if (nativePopupLoader.item)
+                    nativePopupLoader.item.route(triggerScreen);
                 pendingNativePanel = target;
                 Qt.callLater(openPendingNativePanel);
             } else {
                 target.open();
             }
         }
+        triggerScreen = "";
     }
     function moduleAction(id: string): void {
         if (id === "launcher")
@@ -213,8 +236,7 @@ ApplicationWindow {
         }
         function onDockPeekRequested(): void {
             dock.peek();
-            if (nativeDockLoader.item)
-                nativeDockLoader.item.peek();
+            window.peekDocks();
         }
     }
     Component.onCompleted: {
@@ -376,8 +398,8 @@ ApplicationWindow {
         onClosed: {
             if (!window.nativeSurfaceMode)
                 dock.focusLauncher();
-            else if (nativeDockLoader.item)
-                nativeDockLoader.item.peek();
+            else
+                window.peekDocks();
         }
     }
     SettingsCenter {
@@ -545,19 +567,30 @@ ApplicationWindow {
     // Keep these QWindows unloaded in preview mode. That prevents duplicate
     // object names from changing Visual Lab geometry queries and keeps the
     // ordinary preview a single xdg-toplevel window.
-    Component {
-        id: nativeWallpaperComponent
-        Window {
+    //
+    // Every output gets its own wallpaper. The top bar and dock live on the
+    // primary output unless Settings > Displays puts them on every output.
+    // Shell.screens adds and removes rows on hotplug, so only the surfaces of
+    // the affected output are created or destroyed. Each QWindow follows its
+    // own QScreen, which gives it that output's device pixel ratio.
+    Instantiator {
+        id: nativeWallpapers
+        model: window.nativeSurfaceMode ? Shell.screens : null
+        delegate: Window {
             id: nativeWallpaperSurface
+            required property var output
+            required property string name
+            required property rect geometry
             objectName: "nativeWallpaperSurface"
             // These are independent shell surfaces, not transient children of
             // the deliberately hidden preview window.
             transientParent: null
+            screen: output
             visible: false
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
-            width: window.width
-            height: window.height
+            width: geometry.width
+            height: geometry.height
             WallpaperLayers {
                 anchors.fill: parent
                 visible: true
@@ -575,37 +608,44 @@ ApplicationWindow {
             }
         }
     }
-    Loader {
-        id: nativeWallpaperLoader
-        active: window.nativeSurfaceMode
-        sourceComponent: nativeWallpaperComponent
-    }
 
-    Component {
-        id: nativeRibbonComponent
-        Window {
+    Instantiator {
+        id: nativeRibbons
+        model: window.nativeSurfaceMode ? Shell.screens : null
+        delegate: Window {
             id: nativeRibbonSurface
+            required property var output
+            required property string name
+            required property bool primary
+            required property rect geometry
             objectName: "nativeRibbonSurface"
             // These are independent shell surfaces, not transient children of
             // the deliberately hidden preview window.
             transientParent: null
+            screen: output
             property bool attached: false
-            visible: attached && Shell.ribbon.enabled
+            readonly property bool placed: primary || Shell.settings.values["ribbon.allScreens"] === true
+            visible: attached && placed && Shell.ribbon.enabled
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
-            width: window.width
+            width: geometry.width
             height: nativeRibbon.implicitHeight + Shell.ribbon.margin * 2
             readonly property int exclusiveZone: Math.ceil(nativeRibbon.restingHeight + Shell.ribbon.margin * 2)
             onExclusiveZoneChanged: {
                 if (attached)
                     Shell.surface.setExclusiveZone(nativeRibbonSurface, exclusiveZone);
             }
+            onVisibleChanged: window.ribbonRevision++
+            onHeightChanged: window.ribbonRevision++
             StatusRibbon {
                 id: nativeRibbon
                 anchors.fill: parent
                 anchors.margins: Shell.ribbon.margin
                 islandState: window.initialIslandState
-                onAction: moduleId => window.moduleAction(moduleId)
+                onAction: moduleId => {
+                    window.triggerScreen = nativeRibbonSurface.name;
+                    window.moduleAction(moduleId);
+                }
             }
             Component.onCompleted: {
                 attached = Shell.surface.attach(nativeRibbonSurface, "ribbon");
@@ -614,31 +654,33 @@ ApplicationWindow {
             }
         }
     }
-    Loader {
-        id: nativeRibbonLoader
-        active: window.nativeSurfaceMode
-        sourceComponent: nativeRibbonComponent
-    }
 
-    Component {
-        id: nativeDockComponent
-        Window {
+    Instantiator {
+        id: nativeDocks
+        model: window.nativeSurfaceMode ? Shell.screens : null
+        delegate: Window {
             id: nativeDockSurface
+            required property var output
+            required property string name
+            required property bool primary
+            required property rect geometry
             objectName: "nativeDockSurface"
             // These are independent shell surfaces, not transient children of
             // the deliberately hidden preview window.
             transientParent: null
+            screen: output
             property bool attached: false
+            readonly property bool placed: primary || Shell.settings.values["dock.allScreens"] === true
             readonly property string dockMode: Shell.settings.values["dock.mode"]
             // Reserve the dock plus its margins only in "reserve" mode.
             readonly property int exclusiveZone: dockMode === "reserve" ? height : 0
             function peek(): void {
                 nativeDock.peek();
             }
-            visible: attached && !window.snapshot.appearance.focus && !launcher.visible
+            visible: attached && placed && !window.snapshot.appearance.focus && !launcher.visible
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
-            width: window.width
+            width: geometry.width
             height: Tokens.dockHeight + Tokens.space32 + Tokens.space16
             onExclusiveZoneChanged: {
                 if (attached)
@@ -655,9 +697,15 @@ ApplicationWindow {
                 edgeGap: Tokens.space24
                 maximumWidth: nativeDockSurface.width - Tokens.space32
                 overlapEnabled: true
-                globalOrigin: nativeDockSurface.screen ? Qt.point(nativeDockSurface.screen.geometry.x, nativeDockSurface.screen.geometry.y + nativeDockSurface.screen.geometry.height - nativeDockSurface.height) : Qt.point(0, 0)
-                onLauncherRequested: window.showView("launcher")
-                onSettingsRequested: window.showView("quick-settings")
+                globalOrigin: Qt.point(nativeDockSurface.geometry.x, nativeDockSurface.geometry.y + nativeDockSurface.geometry.height - nativeDockSurface.height)
+                onLauncherRequested: {
+                    window.triggerScreen = nativeDockSurface.name;
+                    window.showView("launcher");
+                }
+                onSettingsRequested: {
+                    window.triggerScreen = nativeDockSurface.name;
+                    window.showView("quick-settings");
+                }
             }
             Component.onCompleted: {
                 attached = Shell.surface.attach(nativeDockSurface, "dock");
@@ -665,11 +713,6 @@ ApplicationWindow {
                     Shell.surface.setExclusiveZone(nativeDockSurface, exclusiveZone);
             }
         }
-    }
-    Loader {
-        id: nativeDockLoader
-        active: window.nativeSurfaceMode
-        sourceComponent: nativeDockComponent
     }
 
     Component {
@@ -681,11 +724,36 @@ ApplicationWindow {
             // the deliberately hidden preview window.
             transientParent: null
             property bool attached: false
-            visible: attached && (window.pendingNativePanel !== null || window.nativePanelVisible)
+            // Output of the surface that opened the current panel; empty means
+            // the compositor's active output (keyboard shortcuts).
+            property string outputName: ""
+            property bool remapping: false
+            readonly property var output: {
+                const revision = Shell.screens.count;
+                for (let row = 0; row < Shell.screens.count; ++row) {
+                    const entry = Shell.screens.get(row);
+                    if (outputName.length > 0 ? entry.name === outputName : entry.primary)
+                        return entry;
+                }
+                return null;
+            }
+            // A layer surface keeps its output for its lifetime: unmap, retarget,
+            // and map again when a panel is requested from another output.
+            function route(name: string): void {
+                if (name === outputName)
+                    return;
+                remapping = true;
+                outputName = name;
+                Shell.surface.setOutput(nativePopupSurface, name);
+                Qt.callLater(() => {
+                    remapping = false;
+                });
+            }
+            visible: attached && !remapping && (window.pendingNativePanel !== null || window.nativePanelVisible)
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
-            width: window.width
-            height: window.height
+            width: output ? output.geometry.width : window.width
+            height: output ? output.geometry.height : window.height
             palette: window.palette
             font: window.font
             onVisibleChanged: {

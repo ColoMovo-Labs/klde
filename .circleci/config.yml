@@ -107,6 +107,9 @@ jobs:
               bash tools/native-session-smoke.sh build/ci "$native_output"
             done
             printf '%s\n' '3 fresh isolated KWin runs passed.' > artifacts/native-session/repeat-acceptance.txt
+      - run:
+          name: Verify per-output surfaces with a two-output nested KWin
+          command: bash tools/multi-output-smoke.sh build/ci artifacts/native-session/multi-output
       - store_test_results:
           path: artifacts/native-session
       - store_artifacts:
@@ -161,6 +164,9 @@ jobs:
               bash tools/native-session-smoke.sh build/fedora "$native_output"
             done
             printf '%s\n' '3 fresh isolated KWin runs passed.' > artifacts/native-session/repeat-acceptance.txt
+      - run:
+          name: Verify per-output surfaces with a two-output nested KWin
+          command: bash tools/multi-output-smoke.sh build/fedora artifacts/native-session/multi-output
       - store_test_results:
           path: artifacts/native-session
       - store_artifacts:

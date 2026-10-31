@@ -73,6 +73,15 @@ Item {
             verify(wifi !== null);
             tryVerify(() => wifi.activeFocus);
         }
+        function test_displaysListEveryScreen(): void {
+            verify(Shell.screens.count >= 1);
+            center.openPage("displays");
+            const first = Shell.screens.get(0);
+            tryCompare(findChild(center, "settingsScreens"), "count", Shell.screens.count);
+            verify(first.geometry.width > 0);
+            verify(first.pixelRatio > 0);
+            verify(findChild(center, "settingsDockAllScreens") !== null);
+        }
         function test_accentIsStoredInSettings(): void {
             Shell.settings.setValue("appearance.accent", "lilac");
             compare(Shell.settings.values["appearance.accent"], "lilac");
