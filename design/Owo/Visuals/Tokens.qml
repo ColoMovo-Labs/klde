@@ -120,6 +120,8 @@ QtObject {
 
     readonly property real motionScale: motionLevel === 3 ? 0.8 : motionLevel === 2 ? 1.2 : 1.0
     readonly property int motionFast: reducedMotion ? 0 : design.motionFastMs * motionScale
+    // Reduced-motion presentation uses only a short finite opacity transition.
+    readonly property int motionFade: design.motionFastMs
     readonly property int motionNormal: reducedMotion ? 0 : design.motionNormalMs * motionScale
     readonly property int motionSlow: reducedMotion ? 0 : design.motionSlowMs * motionScale
     readonly property int emphasized: Easing.InOutCubic

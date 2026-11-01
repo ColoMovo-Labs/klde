@@ -7,18 +7,20 @@ RibbonForm {
     id: root
     showSamples: false
     signal action(string moduleId)
+    signal notificationRequested(string notificationId)
+    property alias notificationSource: center.notificationSource
     leftWidth: left.naturalWidth
     rightWidth: right.naturalWidth
-    centerWidth: center.width
-    centerHeight: center.height
+    centerWidth: center.restingWidth
+    centerHeight: center.restingHeight
     property Item backdropSource: null
     property string islandState: "idle"
     visible: Shell.ribbon.enabled
     readonly property int degradation: stacked ? 3 : width < Tokens.ribbonFoldThreshold ? 2 : width < Tokens.ribbonCondenseThreshold ? 1 : 0
-    implicitHeight: visible ? Math.max(center.height, leftHost.y + left.height, rightHost.y + right.height) : 0
+    implicitHeight: visible ? Math.max(centerHost.y + center.height, leftHost.y + left.height, rightHost.y + right.height) : 0
     // Height without a temporarily expanded System Island; native sessions
     // reserve only this much so windows don't jump when the island grows.
-    readonly property real restingHeight: visible ? Math.max(center.idle ? center.height : Tokens.ribbonHeight, leftHost.y + left.height, rightHost.y + right.height) : 0
+    readonly property real restingHeight: visible ? Math.max(centerHost.y + center.restingHeight, leftHost.y + left.height, rightHost.y + right.height) : 0
     StatusRibbonSection {
         id: left
         parent: root.leftHost
@@ -37,9 +39,11 @@ RibbonForm {
         objectName: "ribbonCenter"
         stateName: root.islandState
         sizeMode: root.degradation >= 2 ? "compact" : "standard"
-        x: 0
+        maximumWidth: root.width - Tokens.space32
+        x: (root.centerHost.width - width) / 2
         y: 0
         onClicked: root.action("time")
+        onNotificationActivated: notificationId => root.notificationRequested(notificationId)
     }
     StatusRibbonSection {
         id: right

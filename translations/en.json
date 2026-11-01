@@ -655,5 +655,9 @@
   "settings.bridge.region": "Open region and system settings…",
   "settings.bridge.kscreen-missing": "KDE Display Configuration is not installed. On Fedora, install the kscreen package to enable this button.",
   "settings.bridge.start-failed": "System settings could not be started",
-  "weather.off": "Online weather is off"
+  "weather.off": "Online weather is off",
+  "notification.service.conflict": "Another notification service is active",
+  "notification.unread": "Unread messages",
+  "notification.service.readonly": "Another notification service owns this session. Its history is not available here.",
+  "notification.service.unavailable": "Notification service is unavailable"
 }

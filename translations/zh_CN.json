@@ -655,5 +655,9 @@
   "settings.bridge.region": "打开区域与系统设置…",
   "settings.bridge.kscreen-missing": "尚未安装 KDE 显示配置；Fedora 可安装 kscreen 软件包后使用此按钮。",
   "settings.bridge.start-failed": "无法启动系统设置",
-  "weather.off": "在线天气已关闭"
+  "weather.off": "在线天气已关闭",
+  "notification.service.conflict": "另一个通知服务正在运行",
+  "notification.unread": "有未读消息",
+  "notification.service.readonly": "当前通知由另一个服务管理，这里无法读取它的历史。",
+  "notification.service.unavailable": "通知服务暂不可用"
 }

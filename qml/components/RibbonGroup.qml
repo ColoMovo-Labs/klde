@@ -16,7 +16,12 @@ Surface {
     // visible group centered without changing its measured width.
     readonly property real opticalCenterOffset: groupId === "context" || groupId === "connectivity" ? -Tokens.space2 : groupId === "session" ? Tokens.space2 : 0
     readonly property bool batteryAvailable: Shell.state.snapshot.capabilities.battery
-    readonly property var entries: Shell.ribbon.modules.filter(m => m.id !== "time" && m.enabled && m.section === root.section && m.group === root.groupId && (m.id !== "battery" || root.batteryAvailable) && !(root.degradation >= 1 && ["microphone", "scene", "weather", "overview"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && ["bluetooth", "date", "input"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && root.groupId === "telemetry"))
+    readonly property bool separateNotifications: Shell.notifications.native && root.degradation === 0
+    readonly property var entries: Shell.ribbon.modules.filter(m => {
+        const separate = m.id === "notifications" && root.separateNotifications;
+        const group = separate ? "notifications" : m.group;
+        return m.id !== "time" && m.enabled && m.section === root.section && group === root.groupId && (!separate || Shell.notifications.unreadCount > 0) && (m.id !== "battery" || root.batteryAvailable) && !(root.degradation >= 1 && ["microphone", "scene", "weather", "overview"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && ["bluetooth", "date", "input"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && root.groupId === "telemetry");
+    })
     width: groupId === "telemetry" ? telemetry.implicitWidth + Tokens.ribbonGroupPadding * 2 : row.implicitWidth + Tokens.ribbonGroupPadding * 2
     // All top-ribbon groups share one optical band.  The telemetry grid is
     // centered inside it instead of producing a two-pixel-short capsule.

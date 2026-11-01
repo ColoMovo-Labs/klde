@@ -38,7 +38,7 @@ Flow {
     onYChanged: Qt.callLater(refreshBackdrops)
     Repeater {
         id: groups
-        model: ["context", "date", "workspaces", "telemetry", "connectivity", "session", "extras"]
+        model: ["context", "date", "workspaces", "telemetry", "connectivity", "notifications", "session", "extras"]
         onItemAdded: root.layoutRevision += 1
         onItemRemoved: root.layoutRevision += 1
         delegate: Item {

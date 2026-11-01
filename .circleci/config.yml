@@ -176,6 +176,11 @@ jobs:
           path: artifacts/locker-theme
       - store_artifacts:
           path: artifacts/locker-fallback
+      - run:
+          name: Verify real notifications and invariant ribbon exclusive zones
+          command: OWODE_CLOUD_NOTIFICATION_TEST=1 bash tools/notification-smoke.sh build/fedora artifacts/notifications-native
+      - store_artifacts:
+          path: artifacts/notifications-native
       - store_test_results:
           path: artifacts/native-session
       - store_artifacts:

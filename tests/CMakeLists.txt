@@ -1,4 +1,10 @@
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
+find_program(OWODE_NOTIFICATION_DBUS_RUN_SESSION dbus-run-session REQUIRED)
+qt_add_executable(owode-notifications-test test_notifications.cpp)
+target_link_libraries(owode-notifications-test PRIVATE klde_backends Qt6::Test)
+add_test(NAME notification-service COMMAND "${OWODE_NOTIFICATION_DBUS_RUN_SESSION}" -- $<TARGET_FILE:owode-notifications-test>)
+set_tests_properties(notification-service PROPERTIES LABELS unit TIMEOUT 45
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 add_test(NAME native-protocol-parser COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test_native_protocol.py")
 set_tests_properties(native-protocol-parser PROPERTIES LABELS unit TIMEOUT 10)
 add_test(NAME application-compatibility COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test_app_compatibility.py")

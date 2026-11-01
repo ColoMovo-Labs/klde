@@ -60,7 +60,7 @@ ApplicationWindow {
         for (let i = 0; i < nativeRibbons.count; ++i) {
             const ribbon = nativeRibbons.objectAt(i);
             if (ribbon && ribbon.visible && (name.length > 0 ? ribbon.name === name : ribbon.primary))
-                return ribbon.height;
+                return ribbon.exclusiveZone;
         }
         return Shell.ribbon.margin;
     }
@@ -74,7 +74,7 @@ ApplicationWindow {
     readonly property bool lockSurfaceMode: initialView === "lock-screen"
     readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
-    readonly property real popupTop: nativeSurfaceMode ? nativeRibbonHeight(nativePopupLoader.item ? nativePopupLoader.item.outputName : "") : ribbon.y + ribbon.height + Tokens.space16
+    readonly property real popupTop: nativeSurfaceMode ? nativeRibbonHeight(nativePopupLoader.item ? nativePopupLoader.item.outputName : "") : ribbon.y + ribbon.restingHeight + Tokens.space16
     readonly property var panels: [launcher, quickSettings, blurLab, settingsCenter, inputPopup, notificationCenter, statusDashboard, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, lockPreview, sessionMenu]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function openPendingNativePanel(): void {
@@ -93,6 +93,14 @@ ApplicationWindow {
         Tokens.motionLevel = visual.motion;
         Tokens.reducedMotion = visual.motion === 0;
         Tokens.densityMode = visual.density;
+    }
+    function showNotification(notificationId: string): void {
+        notificationCenter.focusedNotificationId = notificationId;
+        notificationCenter.tab = 1;
+        Shell.notifications.markRead(notificationId);
+        const moved = nativeSurfaceMode && nativePopupLoader.item && nativePopupLoader.item.outputName !== triggerScreen;
+        if (!notificationCenter.opened || moved)
+            showView("notifications");
     }
     function showView(view: string): void {
         let target = null;
@@ -149,7 +157,7 @@ ApplicationWindow {
             target = notificationCenter;
             break;
         case "notifications":
-            notificationCenter.tab = window.snapshot.weather.available ? 0 : 2;
+            notificationCenter.tab = 1;
             target = notificationCenter;
             break;
         case "ribbon":
@@ -256,6 +264,8 @@ ApplicationWindow {
         // Persisted preferences win over the preview defaults set above.
         Shell.restoreSettings();
         applyScene();
+        if (Shell.applications.preview && initialIslandState === "notification")
+            Shell.notifications.presentDemoPopup();
         showView(developerTools ? "mock-lab" : initialView);
     }
     Binding {
@@ -295,6 +305,7 @@ ApplicationWindow {
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
         islandState: window.initialIslandState
         onAction: moduleId => window.moduleAction(moduleId)
+        onNotificationRequested: notificationId => window.showNotification(notificationId)
     }
     WidgetHost {
         widgetId: "weather"
@@ -627,6 +638,10 @@ ApplicationWindow {
                 onAction: moduleId => {
                     window.triggerScreen = nativeRibbonSurface.name;
                     window.moduleAction(moduleId);
+                }
+                onNotificationRequested: notificationId => {
+                    window.triggerScreen = nativeRibbonSurface.name;
+                    window.showNotification(notificationId);
                 }
             }
             Component.onCompleted: {

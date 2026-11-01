@@ -120,7 +120,7 @@ bool SystemStateModel::valid(const QString &path, const QVariant &value) const {
                 ? 3
             : path == "cpu.temperature" || path == "gpu.temperature" ? 120
             : path == "policy.refreshRate"                           ? 240
-            : path == "notifications.count"                          ? 12
+            : path == "notifications.count"                          ? 100
             : path == "workspaces.active"                            ? 5
                                                                      : 100;
         const int minimum = path == "weather.temperature" ? -60

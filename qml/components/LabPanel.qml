@@ -10,6 +10,10 @@ ShellPopup {
     required property string heading
     default property alias body: bodyColumn.data
     property alias subtitle: header.subtitle
+    function ensureVisible(item: Item): void {
+        const point = item.mapToItem(bodyColumn, 0, 0);
+        scroll.contentItem.contentY = Math.max(0, point.y);
+    }
     width: Math.min(Tokens.settingsWidth, parent ? parent.width - Tokens.space32 : Tokens.settingsWidth)
     height: Math.min(bodyColumn.implicitHeight + header.implicitHeight + footerLoader.implicitHeight + padding * 2 + Tokens.space16, parent ? parent.height - Tokens.space32 : Tokens.settingsHeight)
     Connections {

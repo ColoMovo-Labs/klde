@@ -97,6 +97,7 @@ Item {
 
     Item {
         id: centerHost
+        z: 1
         x: (parent.width - width) / 2
         y: (Tokens.ribbonBandHeight - height) / 2
         width: root.centerWidth

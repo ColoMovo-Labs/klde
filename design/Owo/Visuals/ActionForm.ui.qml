@@ -16,6 +16,7 @@ Button {
 
     contentItem: Text {
         text: control.text
+        textFormat: Text.PlainText
         font: control.font
         color: control.emphasized ? Tokens.textOnPrimary : Tokens.textPrimary
         horizontalAlignment: Text.AlignHCenter

@@ -18,6 +18,7 @@
 #include "models/ApplicationModel.h"
 #include "models/NotificationModel.h"
 #include "models/PowerSceneController.h"
+#include "notifications/NotificationServer.h"
 #include "platform/common/DisplayServerBackend.h"
 #include "platform/common/ScreenModel.h"
 #include "platform/common/SessionRuntimeBackend.h"
@@ -174,6 +175,7 @@ class ShellServices final : public QObject {
     MockWallpaperEffectsBackend m_wallpaperEffects;
     MockWaydroidBackend m_waydroid;
     NotificationModel m_notifications;
+    std::unique_ptr<NotificationServer> m_notificationServer;
     StatusModuleRegistry m_ribbon;
     bool m_syncing = false;
     bool m_settingsRestored = false;

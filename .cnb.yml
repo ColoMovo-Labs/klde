@@ -56,6 +56,18 @@
             OWODE_CLOUD_LOCKER_TEST=1 bash tools/locker-theme-smoke.sh build/cnb artifacts/locker-theme
             OWODE_CLOUD_LOCKER_TEST=1 OWODE_LOCKER_FORCE_FALLBACK=1 bash tools/locker-theme-smoke.sh build/cnb artifacts/locker-fallback
             find artifacts/locker-theme -maxdepth 1 -type f -empty -delete
+        - name: deliver real notifications through the native Temporal Capsule
+          script: |
+            set -eu
+            OWODE_CLOUD_NOTIFICATION_TEST=1 bash tools/notification-smoke.sh build/cnb artifacts/notifications-native
+            find artifacts/notifications-native -maxdepth 1 -type f -empty -delete
+        - name: attach native notification evidence
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/notifications-native/*.png"
+              - "./artifacts/notifications-native/*.json"
+              - "./artifacts/notifications-native/*.log"
         - name: attach isolated locker loading evidence
           image: cnbcool/attachments:latest
           settings:
@@ -104,6 +116,13 @@
               build/cnb/bin/klde-shell --smoke-test --view material-study --dark --wallpaper kemono \
               --capture artifacts/visual/material-study-dark-kemono.png \
               > artifacts/visual/material-study-dark-kemono.log 2>&1
+            for mode in light dark; do
+              if [ "$mode" = dark ]; then dark_arg=--dark; else dark_arg=; fi
+              env XDG_RUNTIME_DIR="$runtime_dir" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+                build/cnb/bin/klde-shell --smoke-test --audit-idle --view desktop --locale zh_CN \
+                --island-state notification $dark_arg --capture "artifacts/visual/notification-island-$mode.png" \
+                > "artifacts/visual/notification-island-$mode.log" 2>&1
+            done
             sha256sum artifacts/visual/*.png > artifacts/visual/SHA256SUMS
             find artifacts/visual -maxdepth 1 -type f -empty -delete
             test -s artifacts/visual/monet-light-snow.png

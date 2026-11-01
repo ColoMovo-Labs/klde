@@ -29,6 +29,8 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
     auto *services = new ShellServices(nullptr);
     engine->addImageProvider("applications",
                              new ApplicationIconProvider(services->desktopApplications()));
+    engine->addImageProvider("notifications",
+                             new NotificationIconProvider(services->notifications()));
     if (engine->property("owodeSystemApplications").toBool()) {
         services->m_systemSettings.setEnabled(true);
         services->m_weather.setPreviewEnabled(false);
@@ -63,6 +65,17 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
         // Never seed fixture notifications or advertise unimplemented hardware
         // policies as supported in a real desktop session.
         services->m_notifications.clearAll();
+        services->m_notificationServer =
+            std::make_unique<NotificationServer>(&services->m_notifications);
+        if (!services->m_notificationServer->start())
+            services->showNotice(services->m_notifications.serviceStatus() == "another-server"
+                                     ? tr("Another notification service is active")
+                                     : tr("Notification service is unavailable"));
+        services->m_state.publishLive("notifications.count", 0);
+        services->m_notifications.setDnd(services->m_state.value("notifications.dnd").toBool());
+        connect(&services->m_state, &SystemStateModel::changed, services, [services] {
+            services->m_notifications.setDnd(services->m_state.value("notifications.dnd").toBool());
+        });
         for (const auto *capability : {"capabilities.cpuPolicy", "capabilities.gpuPolicy",
                                        "capabilities.refreshRate", "capabilities.discreteGpu"})
             services->m_state.publishLive(QString::fromLatin1(capability), false);
@@ -159,7 +172,10 @@ ShellServices::ShellServices(QObject *parent)
         if (m_syncing)
             return;
         QScopedValueRollback guard(m_syncing, true);
-        m_state.requestValue("notifications.count", m_notifications.count());
+        if (m_notifications.native())
+            m_state.publishLive("notifications.count", m_notifications.unreadCount());
+        else
+            m_state.requestValue("notifications.count", m_notifications.count());
     });
     connect(&m_applications, &ApplicationModel::activeChanged, this, [this] {
         if (m_syncing || !m_applications.preview())

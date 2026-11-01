@@ -31,6 +31,7 @@ qt_add_qml_module(klde_backends STATIC
         mock/SystemStateModel.h mock/SystemStateModel.cpp
         settings/ShellSettings.h settings/ShellSettings.cpp
         models/NotificationModel.h models/NotificationModel.cpp
+        notifications/NotificationServer.h notifications/NotificationServer.cpp
         status/StatusModuleRegistry.h status/StatusModuleRegistry.cpp
         live/HostTelemetrySource.h live/HostTelemetrySource.cpp
         live/UPowerBatterySource.h live/UPowerBatterySource.cpp

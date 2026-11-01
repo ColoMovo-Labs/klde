@@ -52,9 +52,9 @@ StatusCapsule {
         case "input":
             return !snapshot.input.available ? "!" : snapshot.input.currentId === "pinyin" ? snapshot.input.simplified ? "拼" : "繁" : "EN";
         case "notifications":
-            if (!Shell.applications.preview)
+            if (Shell.notifications.native && !Shell.notifications.available)
                 return "—";
-            return snapshot.notifications.dnd ? "–" : snapshot.notifications.count.toString();
+            return snapshot.notifications.dnd ? "–" : Shell.notifications.native && Shell.notifications.unreadCount > 0 && !condensed ? I18n.t("notification.unread") : snapshot.notifications.count.toString();
         default:
             return "";
         }

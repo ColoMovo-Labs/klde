@@ -11,7 +11,8 @@ LabPanel {
     objectName: "notificationCenter"
     heading: I18n.t("lab.center.title")
     subtitle: I18n.date(Shell.state.snapshot.time, false)
-    property int tab: 0
+    property int tab: Shell.notifications.native ? 1 : 0
+    property string focusedNotificationId: ""
     signal weatherRequested
     RowLayout {
         Layout.fillWidth: true
@@ -20,6 +21,7 @@ LabPanel {
             delegate: ActionButton {
                 required property string modelData
                 required property int index
+                visible: !(Shell.notifications.native && index === 0)
                 Layout.fillWidth: true
                 text: I18n.t(modelData)
                 emphasized: index === root.tab
@@ -89,6 +91,14 @@ LabPanel {
             }
         }
         Label {
+            visible: Shell.notifications.native && !Shell.notifications.available
+            text: I18n.t("notification.service.readonly")
+            font: Tokens.body
+            color: Tokens.textSecondary
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+        Label {
             visible: Shell.notifications.count === 0
             text: I18n.t("friendly.notifications.empty")
             font: Tokens.body
@@ -96,20 +106,65 @@ LabPanel {
         }
         Repeater {
             model: Shell.notifications
-            delegate: NotificationCardForm {
-                id: card
+            delegate: ColumnLayout {
+                id: record
                 required property string notificationId
-                required sourceName
+                required property string sourceName
                 required property string titleId
                 required property string bodyId
-                required severity
+                required property string titleText
+                required property string bodyMarkup
+                required property string notificationIcon
+                required property var notificationActions
+                required property int severity
+                required property bool demo
+                required property bool groupStart
                 Layout.fillWidth: true
-                heading: I18n.t(titleId)
-                body: I18n.t(bodyId)
-                Connections {
-                    target: card.dismissButton
-                    function onClicked(): void {
-                        Shell.notifications.dismiss(card.notificationId);
+                Label {
+                    visible: !record.demo && record.groupStart
+                    text: record.sourceName
+                    textFormat: Text.PlainText
+                    font: Tokens.label
+                    color: Tokens.textSecondary
+                }
+                NotificationCardForm {
+                    id: card
+                    Layout.fillWidth: true
+                    sourceName: record.sourceName
+                    showSource: record.demo
+                    heading: record.demo ? I18n.t(record.titleId) : record.titleText
+                    body: record.demo ? I18n.t(record.bodyId) : record.bodyMarkup
+                    bodyFormat: record.demo ? Text.PlainText : Text.RichText
+                    iconName: record.notificationIcon
+                    severity: record.severity
+                    highlighted: root.focusedNotificationId === record.notificationId
+                    onHighlightedChanged: if (highlighted)
+                        Qt.callLater(() => root.ensureVisible(record))
+                    Connections {
+                        target: card.dismissButton
+                        function onClicked(): void {
+                            Shell.notifications.dismiss(record.notificationId);
+                        }
+                    }
+                    Connections {
+                        target: card.bodyLabel
+                        function onLinkActivated(link: string): void {
+                            if (/^(https?:|mailto:)/i.test(link))
+                                Qt.openUrlExternally(link);
+                        }
+                    }
+                }
+                Flow {
+                    visible: record.notificationActions.length > 0
+                    Layout.fillWidth: true
+                    spacing: Tokens.space8
+                    Repeater {
+                        model: record.notificationActions
+                        delegate: ActionButton {
+                            required property var modelData
+                            text: modelData.label
+                            onClicked: Shell.notifications.invokeAction(record.notificationId, modelData.key)
+                        }
                     }
                 }
             }
@@ -140,8 +195,11 @@ LabPanel {
             onClicked: root.weatherRequested()
         }
     }
-    footer: Component {
+    footer: Shell.notifications.native ? null : mockFooter
+    Component {
+        id: mockFooter
         Rectangle {
+            visible: !Shell.notifications.native
             implicitHeight: Tokens.controlHeight + Tokens.space16
             radius: Tokens.radiusPill
             color: Tokens.primaryContainer
