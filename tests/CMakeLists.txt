@@ -3,6 +3,8 @@ add_test(NAME native-protocol-parser COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CU
 set_tests_properties(native-protocol-parser PROPERTIES LABELS unit TIMEOUT 10)
 add_test(NAME application-compatibility COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test_app_compatibility.py")
 set_tests_properties(application-compatibility PROPERTIES LABELS unit TIMEOUT 10)
+add_test(NAME lockscreen-source-contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test_lockscreen_contract.py")
+set_tests_properties(lockscreen-source-contract PROPERTIES LABELS unit TIMEOUT 10)
 
 qt_add_executable(klde-backend-test test_backends.cpp)
 target_link_libraries(klde-backend-test PRIVATE klde_backends Qt6::Test)

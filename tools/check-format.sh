@@ -11,6 +11,11 @@ qmlformat="${QMLFORMAT:-$qt_tools/qmlformat}"
 scratch="$(mktemp --suffix=.qml)"
 trap 'rm -f "$scratch"' EXIT
 while IFS= read -r -d '' source; do
+    # These upstream files stay byte-identical; their hashes and license are
+    # checked by lockscreen-source-contract rather than our QML formatter.
+    case "$source" in
+        packaging/lockscreen/org.owode.shell/contents/lockscreen/Greeter.qml|packaging/lockscreen/org.owode.shell/contents/lockscreen/PasswordSync.qml) continue ;;
+    esac
     "$qmlformat" "$source" > "$scratch"
     diff -u "$source" "$scratch"
 done < <(git ls-files -z -- '*.qml')

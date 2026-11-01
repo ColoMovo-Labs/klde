@@ -1,0 +1,11 @@
+{
+  "KPackageStructure": "Plasma/Shell",
+  "KPlugin": {
+    "Id": "org.owode.shell",
+    "Name": "owoDE Session",
+    "Description": "owoDE presentation for the system KScreenLocker greeter",
+    "License": "GPL-3.0-or-later AND GPL-2.0-or-later",
+    "Version": "0.1"
+  },
+  "X-Plasma-APIVersion": "2"
+}

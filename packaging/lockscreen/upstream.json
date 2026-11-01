@@ -1,0 +1,13 @@
+{
+  "project": "KDE KScreenLocker",
+  "version": "6.7.5",
+  "commit": "057b3774d9ad322cfccc2683ea057aed87e0f878",
+  "license": "GPL-2.0-or-later",
+  "source": "https://github.com/KDE/kscreenlocker",
+  "files_sha256": {
+    "Greeter.qml": "04eba130853de8a4e3541332c27e8ed17da49ad9cb4ad7ad78c4b7685fb6800f",
+    "PasswordSync.qml": "94fd1d117213e4ff0f7aad48eb12d8a6b937312ae190d5df583ed04c6e6841f5",
+    "qmldir": "5659e5885fdec064fbe9e615e7484c93c427624da91331e8b30c04e181acefa0"
+  },
+  "modifications": "None. Original PAM-facing Greeter, PasswordSync and qmldir retained; owoDE supplies a separate original LockScreen.qml."
+}

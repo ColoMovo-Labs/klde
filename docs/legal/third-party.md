@@ -8,6 +8,24 @@ The optional Lingmo Calculator engine port is documented separately below. No th
 artwork, icons, mascot or concept image is included. The separately licensed
 Glow Sans font evaluation is documented below.
 
+## Native KScreenLocker presentation
+
+`packaging/lockscreen/org.owode.shell/contents/lockscreen/{Greeter.qml,PasswordSync.qml,qmldir}`
+are byte-identical copies from [KDE KScreenLocker 6.7.5](https://github.com/KDE/kscreenlocker/tree/057b3774d9ad322cfccc2683ea057aed87e0f878/greeter/fallbacktheme),
+commit `057b3774d9ad322cfccc2683ea057aed87e0f878`. Their original Martin
+Gräßlin, Nate Graham and Yifan Zhu copyright/SPDX notices are retained.
+They are GPL-2.0-or-later, compatible with the project's GPL-3.0-or-later
+combination. Exact hashes, file mapping and lack of modifications are recorded
+in [the manifest](../../packaging/lockscreen/upstream.json); the complete GPL
+text is in `LICENSES/GPL-2.0-or-later.txt`. Both are installed with the package.
+
+The surrounding `LockScreen.qml`, metadata and layout/default stubs are newly
+authored GPL-3.0-or-later presentation. The wallpaper and shared theme values
+reuse existing owoDE assets. No PAM implementation, KScreenLocker security
+engine, Plasma Shell implementation or Lingmo authentication code is copied.
+KWin and the distribution's KScreenLocker retain lock ownership and authentication.
+The matching source archive contains every copied file and notice.
+
 | Material | License | Attribution |
 | --- | --- | --- |
 | Original C++/QML, CMake, CI, tooling and metadata | GPL-3.0-or-later | KLDE contributors; preserve individual notices |

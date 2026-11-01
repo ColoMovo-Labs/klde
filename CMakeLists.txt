@@ -207,6 +207,16 @@ install(FILES assets/icons/klde.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ico
 install(FILES assets/branding/owode-logo.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps RENAME owode.png)
 install(DIRECTORY assets/fcitx5/klde-expressive-light assets/fcitx5/klde-expressive-dark
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/fcitx5/themes)
+install(DIRECTORY packaging/lockscreen/org.owode.shell
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/plasma/shells)
+install(FILES design/Owo/Visuals/ThemeValues.ui.qml
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/plasma/shells/org.owode.shell/contents/lockscreen
+    RENAME ThemeValues.qml)
+install(FILES assets/wallpapers/first-light.svg
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/plasma/shells/org.owode.shell/contents/assets
+    RENAME snow.svg)
+install(FILES packaging/lockscreen/upstream.json LICENSES/GPL-2.0-or-later.txt
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/klde/lockscreen)
 install(FILES LICENSE LICENSES/CC-BY-SA-4.0.txt LICENSES/OFL-1.1.txt
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/klde)
 

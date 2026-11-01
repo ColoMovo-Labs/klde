@@ -13,6 +13,8 @@ Source4: org.owode.GnomeSettings.desktop
 Requires: klde-shell-preview = @VERSION@-@RELEASE@
 Requires: kwin >= 6.6
 Requires: layer-shell-qt >= 6.6
+Requires: kscreenlocker >= 6.6
+Requires: plasma-workspace-libs >= 6.6
 Requires: xorg-x11-server-Xwayland
 Requires: dbus-daemon
 Requires: dbus-tools

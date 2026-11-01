@@ -1,7 +1,50 @@
 # Lock-screen architecture boundary
 
-The current `LockScreenSurface` is a mock visual state machine. It deliberately
-has no credentials, PAM calls, privileged helper or session-lock authority.
+The Visual Lab's `LockScreenSurface` remains a mock visual state machine. It has
+no credentials, PAM calls, privileged helper or session-lock authority. A native
+session uses distribution KWin/KScreenLocker, with the independent presentation
+package below; it never treats the Visual Lab window as a security boundary.
+
+## Native KScreenLocker package
+
+`packaging/lockscreen/org.owode.shell` is a Plasma/Shell KPackage with lockscreen
+API version 2, installed in `share/plasma/shells/org.owode.shell`. It contains
+an original wallpaper/clock wrapper and three unchanged GPL-2.0-or-later
+presentation files from KScreenLocker 6.7.5. See
+[provenance](../../packaging/lockscreen/upstream.json) and
+[license details](../legal/third-party.md). Authentication remains in the
+distribution greeter, PAM stack and KWin. The wrapper never handles a password,
+calls `Qt.quit()` or decides that authentication succeeded.
+
+The reported Fedora 44 failure was a missing
+`org.kde.plasma.private.sessions` import in KDE's fallback LockScreen.qml. That
+module is supplied by the full plasma-workspace package. Our wrapper omits the
+switch-user feature requiring that import. It still uses Kirigami and Plasma
+component libraries, plus the Plasma/Shell package structure from
+plasma-workspace-libs. It does not require Plasma Shell to run.
+
+`start-owode` exports `PLASMA_DEFAULT_SHELL=org.owode.shell` within its child
+process tree. KScreenLocker uses that default when `plasmashellrc` has no
+explicit `Shell/ShellPackage` selection. We never rewrite another desktop's
+shared `plasmashellrc` or `kscreenlockerrc`, disable password requirements or
+export this selection to the shared user systemd manager. An existing explicit
+ShellPackage takes precedence; report that conflict rather than silently
+overwriting a user's Plasma preferences. Existing sessions need a new login
+after installing the matching shell/session RPM pair to receive this variable.
+
+Cloud-only validation command (inside an isolated Fedora container):
+
+```sh
+OWODE_CLOUD_LOCKER_TEST=1 bash tools/locker-theme-smoke.sh build/fedora artifacts/locker-theme
+```
+
+The script installs to a private prefix, starts its own Xvfb, D-Bus and nested
+KWin, and runs `kscreenlocker_greet --testing --immediateLock --shell <package>`.
+It requires real attached/committed Wayland buffers, a live greeter, no QML
+import/fallback errors, and saves a screenshot and logs. It never invokes
+`loginctl lock-session` or the host's ScreenSaver service. Testing mode proves
+package/import/native-render compatibility; it does **not** prove PAM unlock,
+production session-lock security, suspend/resume or hotplug acceptance.
 
 ## Presentation contract
 
@@ -16,13 +59,13 @@ The surface consumes:
 It does not decide whether the session is locked. The visual state can be driven
 by a future `SessionLockBackend` after the backend confirms the session state.
 
-## Future backend
+## Security boundary
 
-A real backend must probe the KWin engine family, internal lock-screen/session
-integration and supported Wayland session-lock protocol. Authentication remains
-separate from wallpaper and QML state. On lock failure or backend disconnect, the
-session state remains security-owned; the shell must not silently downgrade to a
-fullscreen preview.
+The session's existing lock request uses the KWin/KScreenLocker system service.
+Authentication remains separate from wallpaper and QML state. On lock failure
+or backend disconnect, session lock state remains security-owned; the shell
+must not silently downgrade to a fullscreen preview. Compatibility with other
+greeter versions requires a new pinned source/API audit and native validation.
 
 LingmoOS and Cutefish lock-screen code is research material only. Their audited
 PAM/X11 paths do not establish KLDE Wayland security. See

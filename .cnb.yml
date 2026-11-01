@@ -45,6 +45,21 @@
               kwin-wayland xorg-x11-server-Xvfb xorg-x11-xauth dbus-daemon gdb
             bash tools/multi-output-smoke.sh build/cnb artifacts/multi-output
             find artifacts/multi-output -maxdepth 1 -type f -empty -delete
+        - name: load the native owoDE locker in an isolated test compositor
+          script: |
+            set -eu
+            dnf install -y --setopt=install_weak_deps=False --disablerepo=fedora-cisco-openh264 \
+              kscreenlocker plasma-workspace-libs ImageMagick
+            OWODE_CLOUD_LOCKER_TEST=1 bash tools/locker-theme-smoke.sh build/cnb artifacts/locker-theme
+            find artifacts/locker-theme -maxdepth 1 -type f -empty -delete
+        - name: attach isolated locker loading evidence
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/locker-theme/*.json"
+              - "./artifacts/locker-theme/*.png"
+              - "./artifacts/locker-theme/*.txt"
+              - "./artifacts/locker-theme/*.log"
         - name: attach two-output evidence
           image: cnbcool/attachments:latest
           settings:
