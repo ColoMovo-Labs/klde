@@ -198,7 +198,8 @@ void NativeSurfaceController::setDiagnostic(const QString &diagnostic) {
     emit changed();
 }
 
-bool NativeSurfaceController::attach(QObject *object, const QString &role) {
+bool NativeSurfaceController::attach(QObject *object, const QString &role,
+                                     const QString &screenName) {
     auto *window = qobject_cast<QWindow *>(object);
     if (window == nullptr) {
         setDiagnostic(QStringLiteral("Native surface attachment requires a QWindow."));
@@ -221,6 +222,11 @@ bool NativeSurfaceController::attach(QObject *object, const QString &role) {
                 : QStringLiteral("LayerShellQt is unavailable; native surface role '%1' is gated.")
                       .arg(role));
         return false;
+    }
+
+    for (auto *screen : QGuiApplication::screens()) {
+        if (!screenName.isEmpty() && screen->name() == screenName)
+            window->setScreen(screen);
     }
 
 #if defined(OWODE_HAVE_LAYERSHELLQT)

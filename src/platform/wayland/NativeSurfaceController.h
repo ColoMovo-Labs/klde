@@ -37,7 +37,9 @@ class NativeSurfaceController : public QObject {
     // The object must be a QWindow that has not been shown yet. Calling this
     // before visible=true is important: LayerShellQt must configure the role
     // before the first Wayland surface commit.
-    Q_INVOKABLE bool attach(QObject *object, const QString &role);
+    // screenName binds the window to that output first. QML must not assign a
+    // QScreen to Window.screen: that property takes a QQuickScreenInfo.
+    Q_INVOKABLE bool attach(QObject *object, const QString &role, const QString &screenName = {});
     Q_INVOKABLE bool supportsRole(const QString &role) const;
     Q_INVOKABLE bool hasRole(const QString &role) const;
     // Space reserved from the edge an attached ribbon or dock is anchored to.

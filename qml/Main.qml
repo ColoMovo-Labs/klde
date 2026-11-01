@@ -570,14 +570,12 @@ ApplicationWindow {
         model: window.nativeSurfaceMode ? Shell.screens : null
         delegate: Window {
             id: nativeWallpaperSurface
-            required property var output
             required property string name
             required property rect geometry
             objectName: "nativeWallpaperSurface"
             // These are independent shell surfaces, not transient children of
             // the deliberately hidden preview window.
             transientParent: null
-            screen: output
             visible: false
             flags: Qt.FramelessWindowHint | Qt.Tool
             color: "transparent"
@@ -588,7 +586,7 @@ ApplicationWindow {
                 visible: true
             }
             Component.onCompleted: {
-                if (Shell.surface.attach(nativeWallpaperSurface, "wallpaper"))
+                if (Shell.surface.attach(nativeWallpaperSurface, "wallpaper", name))
                     visible = true;
             }
         }
@@ -599,7 +597,6 @@ ApplicationWindow {
         model: window.nativeSurfaceMode ? Shell.screens : null
         delegate: Window {
             id: nativeRibbonSurface
-            required property var output
             required property string name
             required property bool primary
             required property rect geometry
@@ -607,7 +604,6 @@ ApplicationWindow {
             // These are independent shell surfaces, not transient children of
             // the deliberately hidden preview window.
             transientParent: null
-            screen: output
             property bool attached: false
             readonly property bool placed: primary || Shell.settings.values["ribbon.allScreens"] === true
             visible: attached && placed && Shell.ribbon.enabled
@@ -633,7 +629,7 @@ ApplicationWindow {
                 }
             }
             Component.onCompleted: {
-                attached = Shell.surface.attach(nativeRibbonSurface, "ribbon");
+                attached = Shell.surface.attach(nativeRibbonSurface, "ribbon", name);
                 if (attached)
                     Shell.surface.setExclusiveZone(nativeRibbonSurface, exclusiveZone);
             }
@@ -645,7 +641,6 @@ ApplicationWindow {
         model: window.nativeSurfaceMode ? Shell.screens : null
         delegate: Window {
             id: nativeDockSurface
-            required property var output
             required property string name
             required property bool primary
             required property rect geometry
@@ -653,7 +648,6 @@ ApplicationWindow {
             // These are independent shell surfaces, not transient children of
             // the deliberately hidden preview window.
             transientParent: null
-            screen: output
             property bool attached: false
             readonly property bool placed: primary || Shell.settings.values["dock.allScreens"] === true
             readonly property string dockMode: Shell.settings.values["dock.mode"]
@@ -693,7 +687,7 @@ ApplicationWindow {
                 }
             }
             Component.onCompleted: {
-                attached = Shell.surface.attach(nativeDockSurface, "dock");
+                attached = Shell.surface.attach(nativeDockSurface, "dock", name);
                 if (attached)
                     Shell.surface.setExclusiveZone(nativeDockSurface, exclusiveZone);
             }
