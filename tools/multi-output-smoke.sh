@@ -51,9 +51,26 @@ WAYLAND_DISPLAY=owode-multi XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=owoDE \
     "$build_dir/bin/klde-shell" --native-shell-surfaces --applications mock \
     > "$out_dir/shell.log" 2>&1 &
 shell_pid=$!
-python3 tools/wait-native-buffers.py "$out_dir/shell.log" "$out_dir/first-buffers.json" \
-    --roles wallpaper ribbon dock
-kill -0 "$shell_pid"
+if ! python3 tools/wait-native-buffers.py "$out_dir/shell.log" "$out_dir/first-buffers.json" \
+    --roles wallpaper ribbon dock || ! kill -0 "$shell_pid" 2>/dev/null; then
+    shell_status=0
+    if kill -0 "$shell_pid" 2>/dev/null; then kill -TERM "$shell_pid"; fi
+    wait "$shell_pid" || shell_status=$?
+    shell_pid=
+    echo "klde-shell exit status: $shell_status"
+    # Application output without the Wayland protocol trace.
+    grep -vE '^\[ *[0-9.]+\] ' "$out_dir/shell.log" | tail -n 40 || true
+    if command -v gdb >/dev/null; then
+        # Re-run once under gdb so a crash leaves a symbolic backtrace.
+        WAYLAND_DISPLAY=owode-multi XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=owoDE \
+            QT_QPA_PLATFORM=wayland QT_QUICK_BACKEND=software \
+            timeout 60s gdb -q -batch -ex run -ex 'thread apply all bt 30' \
+            --args "$build_dir/bin/klde-shell" --native-shell-surfaces --applications mock \
+            > "$out_dir/gdb-backtrace.txt" 2>&1 || true
+        grep -E -A40 'received signal|^Thread .*\(Thread' "$out_dir/gdb-backtrace.txt" | head -n 80
+    fi
+    exit 1
+fi
 INNER
 python3 - "$out_dir/shell.log" "$out_dir/summary.json" <<'PY'
 import json
