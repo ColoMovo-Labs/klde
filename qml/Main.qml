@@ -240,7 +240,8 @@ ApplicationWindow {
         }
     }
     Component.onCompleted: {
-        Shell.mockScenarios.apply(initialScenario);
+        if (Shell.applications.preview)
+            Shell.mockScenarios.apply(initialScenario);
         if (initialLocale.length > 0)
             Shell.language.setLocale(initialLocale);
         if (initialVoice.length > 0)

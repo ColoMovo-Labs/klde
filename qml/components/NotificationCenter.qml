@@ -119,17 +119,17 @@ LabPanel {
         visible: root.tab === 2
         Layout.fillWidth: true
         Label {
-            text: Shell.state.snapshot.weather.available ? I18n.number(Shell.state.snapshot.weather.temperature, 0) + "°" : "—"
+            text: Shell.weather.available ? I18n.number(Shell.weather.temperature, 0) + "°" : "—"
             font: Tokens.display
             color: Tokens.primary
         }
         Label {
-            text: I18n.t("weather.condition." + Shell.state.snapshot.weather.condition)
+            text: Shell.weather.available ? I18n.t(Shell.weather.conditionId) : I18n.t("friendly.weather.unavailable")
             font: Tokens.title
             color: Tokens.textPrimary
         }
         Label {
-            text: !Shell.state.snapshot.weather.available ? I18n.t("friendly.weather.unavailable") : Shell.weatherService.onlineEnabled ? I18n.s(Shell.weatherService.attribution) : I18n.t("lab.weather.mock")
+            text: I18n.s(Shell.weatherService.attribution)
             font: Tokens.body
             color: Tokens.textSecondary
             Layout.fillWidth: true

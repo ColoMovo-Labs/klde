@@ -218,6 +218,11 @@ class DesktopApplicationsTest final : public QObject {
         QVERIFY(services);
         QVERIFY(!services->applications()->preview());
         QVERIFY(!services->time()->reading().value("mock").toBool());
+        QVERIFY(services->state()->isLive("time"));
+        QCOMPARE(services->state()->value("time"), services->time()->reading().value("dateTime"));
+        QVERIFY(!services->weatherService()->reading().value("available").toBool());
+        QCOMPARE(services->notifications()->count(), 0);
+        QVERIFY(!services->state()->value("capabilities.cpuPolicy").toBool());
         // Kernel counters are always readable; their fixture values must be replaced.
         QVERIFY(services->state()->isLive("memory.usedPercent"));
         QVERIFY(services->state()->isLive("capabilities.battery"));

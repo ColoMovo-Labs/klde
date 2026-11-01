@@ -23,6 +23,10 @@ ShellSettings::ShellSettings(QObject *parent) : QObject(parent) {
            {QString(), QStringLiteral("en"), QStringLiteral("zh_CN")});
     define(QStringLiteral("language.voice"), string, QStringLiteral("standard"),
            {QStringLiteral("standard"), QStringLiteral("cute")});
+    define(QStringLiteral("weather.city"), string, QString());
+    define(QStringLiteral("weather.language"), string, QStringLiteral("en"),
+           {QStringLiteral("en"), QStringLiteral("zh")});
+    define(QStringLiteral("weather.onlineConsent"), boolean, false);
     // smart: hide while a window overlaps; reserve: keep an exclusive zone.
     define(QStringLiteral("dock.mode"), string, QStringLiteral("smart"),
            {QStringLiteral("smart"), QStringLiteral("reserve"), QStringLiteral("hidden")});

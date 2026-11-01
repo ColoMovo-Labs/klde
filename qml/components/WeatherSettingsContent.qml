@@ -24,16 +24,20 @@ ColumnLayout {
     }
     TextField {
         id: city
+        text: Shell.settings.values["weather.city"] || ""
         Layout.fillWidth: true
         placeholderText: I18n.t("shell.weather.city")
         Accessible.name: I18n.t("shell.weather.city.accessible")
         maximumLength: 128
+        onEditingFinished: Shell.settings.setValue("weather.city", text.trim())
     }
     ChoiceBox {
         id: language
+        currentIndex: Shell.settings.values["weather.language"] === "zh" ? 1 : 0
         model: ["English", "中文"]
         Layout.fillWidth: true
         Accessible.name: I18n.t("shell.weather.language")
+        onActivated: Shell.settings.setValue("weather.language", currentIndex === 1 ? "zh" : "en")
     }
     RowLayout {
         Layout.fillWidth: true

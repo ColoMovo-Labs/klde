@@ -36,7 +36,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: Tokens.space16
         width: parent.width * 0.42
-        text: root.snapshot.weather.available ? root.snapshot.weather.city + " · " + I18n.t("weather.condition." + root.snapshot.weather.condition) + "  " + I18n.number(root.snapshot.weather.temperature, 0) + "°" : I18n.t("friendly.weather.unavailable")
+        text: Shell.weather.available ? Shell.weather.location + " · " + I18n.t(Shell.weather.conditionId) + "  " + I18n.number(Shell.weather.temperature, 0) + "°" : I18n.t("friendly.weather.unavailable")
         font: Tokens.label
         color: Tokens.textSecondary
         wrapMode: Text.WordWrap

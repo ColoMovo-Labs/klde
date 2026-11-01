@@ -3,6 +3,8 @@
 #include <QFont>
 #include <QImageReader>
 #include <QQmlApplicationEngine>
+#include <QQmlComponent>
+#include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QRawFont>
@@ -16,6 +18,43 @@ Q_IMPORT_QML_PLUGIN(KldeBackendsPlugin)
 class ShellStartupTest final : public QObject {
     Q_OBJECT
   private slots:
+    void weatherViewsFollowTheServiceInsteadOfFixtureState() {
+        QQmlEngine engine;
+        QQmlComponent component(&engine);
+        component.setData("import QtQuick\nimport KLDE.Shell\nStatusModule { module: ({id: "
+                          "'weather', titleId: 'lab.module.weather', icon: 'weather'}) }",
+                          QUrl());
+        QScopedPointer<QObject> status(component.create());
+        QVERIFY2(status, qPrintable(component.errorString()));
+        auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
+        services->language()->setLocale(QStringLiteral("en"));
+        klde::WeatherReading result;
+        result.location = QStringLiteral("Service fixture");
+        result.temperature = 7.25;
+        result.condition = QStringLiteral("Clear");
+        result.category = klde::WeatherCondition::Clear;
+        services->weatherService()->applyPreview(result, true);
+        QCOMPARE(services->state()->value("weather.temperature").toInt(), 21);
+        QTRY_COMPARE(status->property("valueText").toString(), QString("7°"));
+        QCOMPARE(status->property("iconName").toString(), QString("weather-clear"));
+    }
+    void temporalTextFollowsAnActualMinuteTimer() {
+        auto now = QDateTime::fromString("2026-11-01T10:59:59.980+08:00", Qt::ISODateWithMs);
+        klde::SystemTimeBackend clock([&now] { return now; });
+        QQmlEngine engine;
+        engine.rootContext()->setContextProperty(QStringLiteral("liveClock"), &clock);
+        QQmlComponent component(&engine);
+        component.setData("import QtQuick\nimport KLDE.Shell\nTemporalCapsule { readingOverride: "
+                          "liveClock.reading }",
+                          QUrl());
+        QScopedPointer<QObject> capsule(component.create());
+        QVERIFY2(capsule, qPrintable(component.errorString()));
+        auto *text = capsule->findChild<QObject *>(QStringLiteral("temporalTimeText"));
+        QVERIFY(text);
+        QCOMPARE(text->property("text").toString(), QString("10:59"));
+        now = now.addMSecs(20);
+        QTRY_COMPARE(text->property("text").toString(), QString("11:00"));
+    }
     void loadsPackagedModuleWithoutQmlWarnings() {
         QVERIFY2(QImageReader::supportedImageFormats().contains("svg"),
                  "The Qt SVG image plugin is required (Ubuntu: qt6-svg-plugins)");

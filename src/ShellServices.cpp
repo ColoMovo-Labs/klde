@@ -31,11 +31,18 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
                              new ApplicationIconProvider(services->desktopApplications()));
     if (engine->property("owodeSystemApplications").toBool()) {
         services->m_systemSettings.setEnabled(true);
+        services->m_weather.setPreviewEnabled(false);
         // Only real sessions read or write preferences; previews stay deterministic.
         services->m_settings.enablePersistence(
             QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) +
             QStringLiteral("/owode"));
         services->m_systemTime = std::make_unique<SystemTimeBackend>();
+        const auto publishTime = [services] {
+            services->m_state.publishLive(QStringLiteral("time"),
+                                          services->m_systemTime->reading().value("dateTime"));
+        };
+        connect(services->m_systemTime.get(), &TimeBackend::changed, services, publishTime);
+        publishTime();
         services->m_hostTelemetry = std::make_unique<HostTelemetrySource>(&services->m_state);
         services->m_hostTelemetry->start();
         services->m_battery = std::make_unique<UPowerBatterySource>(&services->m_state);
@@ -53,6 +60,12 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
         services->m_liveSystem =
             std::make_unique<LiveSystemBackend>(&services->m_state, &services->m_system);
         auto *live = services->m_liveSystem.get();
+        // Never seed fixture notifications or advertise unimplemented hardware
+        // policies as supported in a real desktop session.
+        services->m_notifications.clearAll();
+        for (const auto *capability : {"capabilities.cpuPolicy", "capabilities.gpuPolicy",
+                                       "capabilities.refreshRate", "capabilities.discreteGpu"})
+            services->m_state.publishLive(QString::fromLatin1(capability), false);
         connect(live, &SystemBackend::requestRejected, services, &ShellServices::showNotice);
         connect(live, &SystemBackend::osdRequested, services,
                 [services](const QString &kind, int value) { services->showOsd(kind, value); });
@@ -251,7 +264,8 @@ void ShellServices::projectState(const QString &path) {
                                 : alerts.value("temperature").toInt() == 2
                                     ? QStringLiteral("temperature")
                                     : QString();
-        m_notifications.seedDemo(m_state.value("notifications.count").toInt(), context);
+        if (!m_liveSystem)
+            m_notifications.seedDemo(m_state.value("notifications.count").toInt(), context);
     }
     if (all || path.startsWith("waydroid.")) {
         m_applications.setAndroidSource(m_state.value("waydroid.available").toBool() &&
@@ -367,6 +381,16 @@ void ShellServices::restoreSettings() {
     if (m_settingsRestored || m_settings.path().isEmpty())
         return;
     m_settingsRestored = true;
+    if (m_settings.value("weather.onlineConsent").toBool())
+        m_weather.enableOnline(m_settings.value("weather.city").toString(),
+                               m_settings.value("weather.language").toString());
+    connect(&m_weather, &WeatherService::changed, this, [this] {
+        m_settings.setValue("weather.onlineConsent", m_weather.onlineEnabled());
+        if (m_weather.onlineEnabled()) {
+            m_settings.setValue("weather.city", m_weather.city());
+            m_settings.setValue("weather.language", m_weather.language());
+        }
+    });
     m_ribbon.setEnabled(m_settings.value("ribbon.enabled").toBool());
     m_ribbon.setCompact(m_settings.value("ribbon.compact").toBool());
     m_ribbon.setMargin(m_settings.value("ribbon.margin").toInt());

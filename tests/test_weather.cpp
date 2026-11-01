@@ -38,6 +38,28 @@ class FakeWeatherProvider final : public klde::WeatherProvider {
 class WeatherTest final : public QObject {
     Q_OBJECT
   private slots:
+    void nativeWeatherNeverFallsBackToFixturesOrLosesACompletedRequest() {
+        FakeWeatherProvider provider;
+        auto now = QDateTime::fromString("2030-01-02T04:05:06Z", Qt::ISODate);
+        klde::WeatherService service(&provider, [&now] { return now; });
+        service.setPreviewEnabled(false);
+        QVERIFY(!service.reading().value("available").toBool());
+        QCOMPARE(service.status(), QStringLiteral("unavailable"));
+        QVERIFY(service.enableOnline(QStringLiteral("Fixture Harbour"), QStringLiteral("zh")));
+        provider.succeed(now);
+        QCOMPARE(service.city(), QStringLiteral("Fixture Harbour"));
+        QCOMPARE(service.language(), QStringLiteral("zh"));
+        QCOMPARE(service.reading().value("temperature").toDouble(), 7.25);
+        klde::WeatherReading fixture;
+        fixture.location = QStringLiteral("Do not replace the live result");
+        fixture.temperature = 21;
+        service.applyPreview(fixture, true);
+        QVERIFY(service.onlineEnabled());
+        QCOMPARE(service.reading().value("temperature").toDouble(), 7.25);
+        service.disableOnline();
+        QVERIFY(!service.reading().value("available").toBool());
+        QCOMPARE(service.status(), QStringLiteral("unavailable"));
+    }
     void queryRequiresExplicitLocationAndSupportedLanguage() {
         using Provider = klde::UApisCnWeatherProvider;
         QVERIFY(Provider::requestUrl({QString(), QStringLiteral("en")}).isEmpty());

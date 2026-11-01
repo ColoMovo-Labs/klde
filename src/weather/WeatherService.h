@@ -19,6 +19,8 @@ class WeatherService : public QObject {
     Q_PROPERTY(QString message READ message NOTIFY changed)
     Q_PROPERTY(QString attribution READ attribution NOTIFY changed)
     Q_PROPERTY(QDateTime nextAllowedFetch READ nextAllowedFetch NOTIFY changed)
+    Q_PROPERTY(QString city READ city NOTIFY changed)
+    Q_PROPERTY(QString language READ language NOTIFY changed)
   public:
     using Clock = std::function<QDateTime()>;
     explicit WeatherService(QObject *parent = nullptr);
@@ -27,6 +29,8 @@ class WeatherService : public QObject {
     // service.
     WeatherService(WeatherProvider *provider, Clock clock, QObject *parent = nullptr);
     void applyPreview(const WeatherReading &reading, bool available);
+    // Native sessions show unavailable weather until the owner opts in.
+    void setPreviewEnabled(bool enabled);
     QVariantMap reading() const;
     QString status() const { return m_status; }
     bool onlineEnabled() const { return m_enabled; }
@@ -35,6 +39,8 @@ class WeatherService : public QObject {
     QString message() const { return m_message; }
     QString attribution() const;
     QDateTime nextAllowedFetch() const { return m_notBefore; }
+    QString city() const { return m_query.city; }
+    QString language() const { return m_query.language; }
 
     // The caller must first disclose provider terms, location/IP disclosure and the experimental
     // status.
@@ -64,5 +70,6 @@ class WeatherService : public QObject {
     bool m_busy = false;
     bool m_stale = false;
     bool m_quotaBlocked = false;
+    bool m_previewEnabled = true;
 };
 } // namespace klde

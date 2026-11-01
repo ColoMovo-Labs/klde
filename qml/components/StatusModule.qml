@@ -10,16 +10,17 @@ StatusCapsule {
     property bool condensed: false
     readonly property var snapshot: Shell.state.snapshot
     readonly property var alerts: Shell.state.alerts
+    readonly property var weather: Shell.weather
     readonly property string moduleId: module.id
     signal invoked(string moduleId)
     label: I18n.t(module.titleId)
-    iconName: moduleId === "weather" ? "weather-" + snapshot.weather.condition : module.icon === "klde" ? Branding.iconName : module.icon
+    iconName: moduleId === "weather" ? weather.available && weather.conditionId !== "weather.condition.unknown" ? "weather-" + weather.conditionId.split(".").pop() : "weather" : module.icon === "klde" ? Branding.iconName : module.icon
     prominent: moduleId === "time"
     detailed: !condensed && !Shell.ribbon.compact && Tokens.densityMode === 0
     valueText: {
         switch (moduleId) {
         case "weather":
-            return snapshot.weather.available ? I18n.number(snapshot.weather.temperature, 0) + "°" : "—";
+            return weather.available ? I18n.number(weather.temperature, 0) + "°" : "—";
         case "context":
             if (condensed)
                 return "";
@@ -51,6 +52,8 @@ StatusCapsule {
         case "input":
             return !snapshot.input.available ? "!" : snapshot.input.currentId === "pinyin" ? snapshot.input.simplified ? "拼" : "繁" : "EN";
         case "notifications":
+            if (!Shell.applications.preview)
+                return "—";
             return snapshot.notifications.dnd ? "–" : snapshot.notifications.count.toString();
         default:
             return "";

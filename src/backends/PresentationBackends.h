@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QVariantMap>
 #include <QtQml/qqmlregistration.h>
+#include <functional>
 
 namespace klde {
 class TimeBackend : public QObject {
@@ -32,12 +33,21 @@ class MockTimeBackend final : public TimeBackend {
 class SystemTimeBackend final : public TimeBackend {
     Q_OBJECT
   public:
+    using Clock = std::function<QDateTime()>;
     explicit SystemTimeBackend(QObject *parent = nullptr);
+    SystemTimeBackend(Clock clock, QObject *parent = nullptr);
     QVariantMap reading() const override { return m_reading; }
     static QVariantMap readingAt(const QDateTime &date);
+  public slots:
     void refresh();
+    void prepareForSleep(bool sleeping);
+
+  private slots:
+    void timeSettingsChanged(const QString &interface, const QVariantMap &values,
+                             const QStringList &invalidated);
 
   private:
+    Clock m_clock;
     QVariantMap m_reading;
     QTimer m_minute;
     QFileSystemWatcher m_zone;

@@ -1,16 +1,48 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "PresentationBackends.h"
+#include <QDBusConnection>
 #include <QDateTime>
 #include <QFileInfo>
+#include <QGuiApplication>
+#include <utility>
 
 namespace klde {
-SystemTimeBackend::SystemTimeBackend(QObject *parent) : TimeBackend(parent) {
+SystemTimeBackend::SystemTimeBackend(QObject *parent)
+    : SystemTimeBackend([] { return QDateTime::currentDateTime(); }, parent) {}
+
+SystemTimeBackend::SystemTimeBackend(Clock clock, QObject *parent)
+    : TimeBackend(parent), m_clock(std::move(clock)) {
     m_minute.setSingleShot(true);
     m_minute.setTimerType(Qt::PreciseTimer);
     connect(&m_minute, &QTimer::timeout, this, &SystemTimeBackend::refresh);
     connect(&m_zone, &QFileSystemWatcher::fileChanged, this,
             [this](const QString &) { refresh(); });
+    const auto bus = QDBusConnection::systemBus();
+    bus.connect(QStringLiteral("org.freedesktop.login1"), QStringLiteral("/org/freedesktop/login1"),
+                QStringLiteral("org.freedesktop.login1.Manager"), QStringLiteral("PrepareForSleep"),
+                this, SLOT(prepareForSleep(bool)));
+    bus.connect(
+        QStringLiteral("org.freedesktop.timedate1"), QStringLiteral("/org/freedesktop/timedate1"),
+        QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("PropertiesChanged"),
+        this, SLOT(timeSettingsChanged(QString, QVariantMap, QStringList)));
+    if (auto *application = qobject_cast<QGuiApplication *>(QCoreApplication::instance()))
+        connect(application, &QGuiApplication::applicationStateChanged, this,
+                [this](Qt::ApplicationState state) {
+                    if (state == Qt::ApplicationActive)
+                        refresh();
+                });
     refresh();
+}
+
+void SystemTimeBackend::prepareForSleep(bool sleeping) {
+    if (!sleeping)
+        refresh();
+}
+
+void SystemTimeBackend::timeSettingsChanged(const QString &interface, const QVariantMap &,
+                                            const QStringList &) {
+    if (interface == QStringLiteral("org.freedesktop.timedate1"))
+        refresh();
 }
 
 QVariantMap SystemTimeBackend::readingAt(const QDateTime &date) {
@@ -48,7 +80,7 @@ QVariantMap SystemTimeBackend::readingAt(const QDateTime &date) {
 }
 
 void SystemTimeBackend::refresh() {
-    const auto current = QDateTime::currentDateTime();
+    const auto current = m_clock();
     const auto next = readingAt(current);
     if (next != m_reading) {
         m_reading = next;
@@ -56,7 +88,7 @@ void SystemTimeBackend::refresh() {
     }
     // One wake per visible minute, not a seconds-based repaint loop. Re-read
     // wall time after resume and on timezone-file replacement, then realign.
-    const auto milliseconds = QDateTime::currentMSecsSinceEpoch();
+    const auto milliseconds = current.toMSecsSinceEpoch();
     m_minute.start(static_cast<int>(60000 - milliseconds % 60000));
     for (const auto &path : {QStringLiteral("/etc/localtime"), QStringLiteral("/etc/timezone")}) {
         if (QFileInfo::exists(path) && !m_zone.files().contains(path))

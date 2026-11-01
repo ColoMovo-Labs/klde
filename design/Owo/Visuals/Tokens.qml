@@ -302,8 +302,8 @@ QtObject {
     readonly property int ribbonGroupGap: densityMode === 2 ? space12 : space16
     readonly property int ribbonInnerGap: space1
     readonly property int ribbonGroupPadding: space3
-    readonly property int telemetryCellWidth: 72
-    readonly property int telemetryCompactWidth: 60
+    readonly property int telemetryCellWidth: 84
+    readonly property int telemetryCompactWidth: 68
     readonly property int telemetryIcon: 14
     readonly property int ribbonCondenseThreshold: 1500
     readonly property int ribbonFoldThreshold: 1160

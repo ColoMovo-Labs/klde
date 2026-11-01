@@ -139,6 +139,19 @@ class BackendTest final : public QObject {
             QDateTime::fromString(clock.reading().value("dateTime").toString(), Qt::ISODate);
         QVERIFY(qAbs(observed.secsTo(QDateTime::currentDateTime())) <= 2);
     }
+    void systemClockActuallyTicksAndCatchesUpAfterResume() {
+        auto now = QDateTime::fromString("2026-11-01T10:59:59.980+08:00", Qt::ISODateWithMs);
+        klde::SystemTimeBackend clock([&now] { return now; });
+        QSignalSpy changes(&clock, &klde::TimeBackend::changed);
+        QCOMPARE(clock.reading().value("timeText").toString(), QString("10:59"));
+        now = now.addMSecs(20);
+        QTRY_COMPARE(clock.reading().value("timeText").toString(), QString("11:00"));
+        QVERIFY(changes.count() >= 1);
+        now = now.addSecs(12 * 60 * 60);
+        clock.prepareForSleep(false);
+        QCOMPARE(clock.reading().value("timeText").toString(), QString("23:00"));
+        QCOMPARE(clock.reading().value("phase").toString(), QString("starry-night"));
+    }
 };
 QTEST_GUILESS_MAIN(BackendTest)
 #include "test_backends.moc"

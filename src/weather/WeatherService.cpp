@@ -25,7 +25,7 @@ WeatherService::WeatherService(WeatherProvider *provider, Clock clock, QObject *
         refresh();
     });
     connect(&m_mock, &WeatherProvider::ready, this, [this](const WeatherReading &reading) {
-        if (!m_enabled) {
+        if (!m_enabled && m_previewEnabled) {
             m_reading = reading;
             emit changed();
         }
@@ -42,11 +42,26 @@ WeatherService::~WeatherService() {
 }
 
 void WeatherService::applyPreview(const WeatherReading &reading, bool available) {
+    if (!m_previewEnabled)
+        return;
     disableOnline();
     m_reading = available ? std::optional<WeatherReading>{reading} : std::nullopt;
     m_query.city = reading.location;
     m_status = available ? QStringLiteral("mock") : QStringLiteral("unavailable");
     emit changed();
+}
+void WeatherService::setPreviewEnabled(bool enabled) {
+    if (m_previewEnabled == enabled)
+        return;
+    m_previewEnabled = enabled;
+    if (!m_enabled) {
+        if (enabled)
+            m_mock.request({QStringLiteral("Snowline"), QStringLiteral("en")});
+        else
+            m_reading.reset();
+        m_status = enabled ? QStringLiteral("mock") : QStringLiteral("unavailable");
+        emit changed();
+    }
 }
 QVariantMap WeatherService::reading() const {
     QVariantMap result = m_reading ? m_reading->toVariantMap()
@@ -62,7 +77,7 @@ QVariantMap WeatherService::reading() const {
 
 QString WeatherService::attribution() const {
     if (!m_enabled)
-        return tr("Mock weather");
+        return m_previewEnabled ? tr("Mock weather") : tr("Online weather is off");
     const QString provider = m_provider->id();
     return m_stale ? tr("%1 · cached").arg(provider) : tr("Weather via %1").arg(provider);
 }
@@ -101,10 +116,14 @@ void WeatherService::disableOnline() {
     m_stale = false;
     m_quotaBlocked = false;
     m_failures = 0;
-    m_status = QStringLiteral("mock");
+    m_status = m_previewEnabled ? QStringLiteral("mock") : QStringLiteral("unavailable");
     m_message.clear();
     m_query = {};
-    m_mock.request({QStringLiteral("Snowline"), QStringLiteral("en")});
+    if (m_previewEnabled)
+        m_mock.request({QStringLiteral("Snowline"), QStringLiteral("en")});
+    else
+        m_reading.reset();
+    emit changed();
     // Retain the in-process cooldown so toggling consent cannot create a request burst.
 }
 

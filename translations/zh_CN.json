@@ -115,7 +115,7 @@
   "shell.weather.city.accessible": "手动输入天气城市",
   "shell.weather.language": "天气语言",
   "shell.weather.refresh": "额度允许时刷新",
-  "privacy.weather.schedule": "预览只在内存缓存天气，每次请求至少间隔 15 分钟，通常每两小时刷新。额度耗尽会停止自动重试。此预览不会持久保存城市及授权状态。",
+  "privacy.weather.schedule": "约每两小时自动刷新。城市、语言和授权保存在本机；仅在你已同意联网时，下次登录才会恢复请求。",
   "shell.weather.choose": "请选择城市和语言",
   "shell.weather.choose.supported": "请选择城市，以及中文或英文天气",
   "shell.weather.cooldown": "为遵守服务商限制，天气刷新已暂停",
@@ -654,5 +654,6 @@
   "settings.bridge.window-rules": "编辑窗口规则…",
   "settings.bridge.region": "打开区域与系统设置…",
   "settings.bridge.kscreen-missing": "尚未安装 KDE 显示配置；Fedora 可安装 kscreen 软件包后使用此按钮。",
-  "settings.bridge.start-failed": "无法启动系统设置"
+  "settings.bridge.start-failed": "无法启动系统设置",
+  "weather.off": "在线天气已关闭"
 }

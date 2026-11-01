@@ -115,7 +115,7 @@
   "shell.weather.city.accessible": "Weather city, entered manually",
   "shell.weather.language": "Weather language",
   "shell.weather.refresh": "Refresh when allowed",
-  "privacy.weather.schedule": "The preview keeps an in-memory cache, waits at least 15 minutes between requests and normally refreshes every two hours. Quota exhaustion stops automatic retries. Location and consent are not persisted in this preview.",
+  "privacy.weather.schedule": "Refreshes automatically about every two hours. City, language and your consent are saved locally; online requests resume next session only if you opted in.",
   "shell.weather.choose": "Choose a city and language",
   "shell.weather.choose.supported": "Choose a city and either English or Chinese weather",
   "shell.weather.cooldown": "Weather refresh is paused to respect the provider's limits",
@@ -654,5 +654,6 @@
   "settings.bridge.window-rules": "Edit window rules…",
   "settings.bridge.region": "Open region and system settings…",
   "settings.bridge.kscreen-missing": "KDE Display Configuration is not installed. On Fedora, install the kscreen package to enable this button.",
-  "settings.bridge.start-failed": "System settings could not be started"
+  "settings.bridge.start-failed": "System settings could not be started",
+  "weather.off": "Online weather is off"
 }
