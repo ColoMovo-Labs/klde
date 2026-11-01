@@ -17,7 +17,7 @@ SystemTimeBackend::SystemTimeBackend(Clock clock, QObject *parent)
     connect(&m_minute, &QTimer::timeout, this, &SystemTimeBackend::refresh);
     connect(&m_zone, &QFileSystemWatcher::fileChanged, this,
             [this](const QString &) { refresh(); });
-    const auto bus = QDBusConnection::systemBus();
+    auto bus = QDBusConnection::systemBus();
     bus.connect(QStringLiteral("org.freedesktop.login1"), QStringLiteral("/org/freedesktop/login1"),
                 QStringLiteral("org.freedesktop.login1.Manager"), QStringLiteral("PrepareForSleep"),
                 this, SLOT(prepareForSleep(bool)));
