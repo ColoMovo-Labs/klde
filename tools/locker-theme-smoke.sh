@@ -23,6 +23,8 @@ rpm -q kwin kscreenlocker plasma-workspace-libs > "$out_dir/versions.txt"
 xvfb-run -a -s '-screen 0 1440x900x24 -nolisten tcp' \
     env -u WAYLAND_DISPLAY XDG_RUNTIME_DIR="$runtime_dir" \
     XDG_CONFIG_HOME="$runtime_dir/config" XDG_DATA_HOME="$runtime_dir/data" \
+    XDG_DATA_DIRS="$runtime_dir/install/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}" \
+    PLASMA_DEFAULT_SHELL=org.owode.shell \
     XDG_CACHE_HOME="$runtime_dir/cache" LIBGL_ALWAYS_SOFTWARE=1 \
     dbus-run-session -- bash -s -- "$out_dir" "$greeter" <<'INNER'
 set -euo pipefail
