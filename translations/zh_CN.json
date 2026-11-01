@@ -659,5 +659,9 @@
   "notification.service.conflict": "另一个通知服务正在运行",
   "notification.unread": "有未读消息",
   "notification.service.readonly": "当前通知由另一个服务管理，这里无法读取它的历史。",
-  "notification.service.unavailable": "通知服务暂不可用"
+  "notification.service.unavailable": "通知服务暂不可用",
+  "tray.title": "托盘应用",
+  "tray.empty": "暂无托盘应用",
+  "tray.action.failed": "应用无法打开托盘操作",
+  "tray.close": "关闭托盘"
 }

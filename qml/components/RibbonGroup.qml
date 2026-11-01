@@ -20,7 +20,7 @@ Surface {
     readonly property var entries: Shell.ribbon.modules.filter(m => {
         const separate = m.id === "notifications" && root.separateNotifications;
         const group = separate ? "notifications" : m.group;
-        return m.id !== "time" && m.enabled && m.section === root.section && group === root.groupId && (!separate || Shell.notifications.unreadCount > 0) && (m.id !== "battery" || root.batteryAvailable) && !(root.degradation >= 1 && ["microphone", "scene", "weather", "overview"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && ["bluetooth", "date", "input"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && root.groupId === "telemetry");
+        return m.id !== "time" && (m.id !== "tray" || Shell.tray.items.length > 0) && m.enabled && m.section === root.section && group === root.groupId && (!separate || Shell.notifications.unreadCount > 0) && (m.id !== "battery" || root.batteryAvailable) && !(root.degradation >= 1 && ["microphone", "scene", "weather", "overview"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && ["bluetooth", "date", "input"].indexOf(m.id) >= 0) && !(root.degradation >= 2 && root.groupId === "telemetry");
     })
     width: groupId === "telemetry" ? telemetry.implicitWidth + Tokens.ribbonGroupPadding * 2 : row.implicitWidth + Tokens.ribbonGroupPadding * 2
     // All top-ribbon groups share one optical band.  The telemetry grid is

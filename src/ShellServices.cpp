@@ -31,7 +31,9 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
                              new ApplicationIconProvider(services->desktopApplications()));
     engine->addImageProvider("notifications",
                              new NotificationIconProvider(services->notifications()));
+    engine->addImageProvider("tray", new TrayIconProvider(services->tray()));
     if (engine->property("owodeSystemApplications").toBool()) {
+        services->m_tray.start();
         services->m_systemSettings.setEnabled(true);
         services->m_weather.setPreviewEnabled(false);
         // Only real sessions read or write preferences; previews stay deterministic.
@@ -152,6 +154,7 @@ ShellServices::ShellServices(QObject *parent)
     connect(&m_systemSettings, &SystemSettingsBridge::failed, this,
             [this] { showNotice(tr("System settings could not be started")); });
     connect(&m_weather, &WeatherService::changed, this, &ShellServices::weatherChanged);
+    connect(&m_tray, &StatusNotifierHost::requestRejected, this, &ShellServices::showNotice);
     connect(&m_system, &SystemBackend::osdRequested, this, &ShellServices::showOsd);
     connect(&m_state, &SystemStateModel::valueEdited, this, &ShellServices::projectState);
     connect(&m_mockScenarios, &MockScenarioManager::applied, this, [this] { projectState(); });

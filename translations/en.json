@@ -659,5 +659,9 @@
   "notification.service.conflict": "Another notification service is active",
   "notification.unread": "Unread messages",
   "notification.service.readonly": "Another notification service owns this session. Its history is not available here.",
-  "notification.service.unavailable": "Notification service is unavailable"
+  "notification.service.unavailable": "Notification service is unavailable",
+  "tray.title": "Tray applications",
+  "tray.empty": "No tray applications",
+  "tray.action.failed": "The application could not open its tray action",
+  "tray.close": "Close tray"
 }

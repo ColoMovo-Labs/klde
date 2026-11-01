@@ -153,7 +153,15 @@ class VisualLabTest final : public QObject {
         notifications.clearAll();
         QCOMPARE(notifications.count(), 0);
         klde::StatusModuleRegistry modules;
-        QCOMPARE(modules.modules().size(), 20);
+        QSet<QString> ids;
+        for (const auto &value : modules.modules()) {
+            const auto id = value.toMap().value("id").toString();
+            QVERIFY(!id.isEmpty());
+            QVERIFY(!ids.contains(id));
+            ids.insert(id);
+        }
+        QVERIFY(ids.contains(QStringLiteral("time")));
+        QVERIFY(ids.contains(QStringLiteral("tray")));
         QVERIFY(modules.setSection(QStringLiteral("cpu"), 0));
         QVERIFY(modules.setSection(QStringLiteral("memory"), 0));
         QVERIFY(modules.move(QStringLiteral("memory"), -1));

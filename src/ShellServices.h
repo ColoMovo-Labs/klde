@@ -27,6 +27,7 @@
 #include "settings/ShellSettings.h"
 #include "shortcuts/ShortcutRegistry.h"
 #include "status/StatusModuleRegistry.h"
+#include "status/StatusNotifierHost.h"
 #include "weather/WeatherService.h"
 #include <QTimer>
 
@@ -62,6 +63,7 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
     Q_PROPERTY(klde::NotificationModel *notifications READ notifications CONSTANT)
     Q_PROPERTY(klde::StatusModuleRegistry *ribbon READ ribbon CONSTANT)
+    Q_PROPERTY(klde::StatusNotifierHost *tray READ tray CONSTANT)
     Q_PROPERTY(klde::TimeBackend *time READ time CONSTANT)
     Q_PROPERTY(klde::TelemetryBackend *telemetry READ telemetry CONSTANT)
     Q_PROPERTY(klde::WallpaperEffectsBackend *wallpaperEffects READ wallpaperEffects CONSTANT)
@@ -101,6 +103,7 @@ class ShellServices final : public QObject {
     MockScenarioManager *mockScenarios() { return &m_mockScenarios; }
     NotificationModel *notifications() { return &m_notifications; }
     StatusModuleRegistry *ribbon() { return &m_ribbon; }
+    StatusNotifierHost *tray() { return &m_tray; }
     Q_INVOKABLE bool previewAction(const QString &action);
     QVariantMap weather() const;
     TimeBackend *time() {
@@ -177,6 +180,7 @@ class ShellServices final : public QObject {
     NotificationModel m_notifications;
     std::unique_ptr<NotificationServer> m_notificationServer;
     StatusModuleRegistry m_ribbon;
+    StatusNotifierHost m_tray;
     bool m_syncing = false;
     bool m_settingsRestored = false;
     bool m_metaDown = false;

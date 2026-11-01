@@ -160,6 +160,16 @@
     "group": "connectivity"
   },
   {
+    "id": "tray",
+    "titleId": "tray.title",
+    "icon": "chevron-down",
+    "section": 2,
+    "priority": 1,
+    "widthUnits": 1,
+    "enabled": true,
+    "group": "extras"
+  },
+  {
     "id": "input",
     "titleId": "lab.module.input",
     "icon": "note",

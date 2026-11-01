@@ -75,7 +75,7 @@ ApplicationWindow {
     readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: nativeSurfaceMode ? nativeRibbonHeight(nativePopupLoader.item ? nativePopupLoader.item.outputName : "") : ribbon.y + ribbon.restingHeight + Tokens.space16
-    readonly property var panels: [launcher, quickSettings, blurLab, settingsCenter, inputPopup, notificationCenter, statusDashboard, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, lockPreview, sessionMenu]
+    readonly property var panels: [launcher, quickSettings, blurLab, settingsCenter, trayPopup, inputPopup, notificationCenter, statusDashboard, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, lockPreview, sessionMenu]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function openPendingNativePanel(): void {
         if (pendingNativePanel && nativePopupLoader.item && (nativePopupLoader.item as Window).visible) {
@@ -149,6 +149,9 @@ ApplicationWindow {
         case "blur":
             target = blurLab;
             break;
+        case "tray":
+            target = trayPopup;
+            break;
         case "input":
             target = inputPopup;
             break;
@@ -204,6 +207,8 @@ ApplicationWindow {
             showView("notifications");
         else if (id === "weather")
             showView("weather");
+        else if (id === "tray")
+            showView("tray");
         else if (id === "input")
             showView("input");
         else if (id === "scene")
@@ -430,6 +435,13 @@ ApplicationWindow {
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0
         y: parent ? (parent.height - height) / 2 : 0
+    }
+    TrayPopup {
+        id: trayPopup
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
+        x: parent ? parent.width - width - Shell.ribbon.margin : 0
+        y: window.popupTop
     }
     InputPopup {
         id: inputPopup

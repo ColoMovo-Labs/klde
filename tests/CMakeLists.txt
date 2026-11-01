@@ -1,5 +1,10 @@
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 find_program(OWODE_NOTIFICATION_DBUS_RUN_SESSION dbus-run-session REQUIRED)
+qt_add_executable(owode-status-notifier-test test_status_notifier.cpp)
+target_link_libraries(owode-status-notifier-test PRIVATE klde_backends Qt6::Test)
+add_test(NAME status-notifier-host COMMAND "${OWODE_NOTIFICATION_DBUS_RUN_SESSION}" -- $<TARGET_FILE:owode-status-notifier-test>)
+set_tests_properties(status-notifier-host PROPERTIES LABELS unit TIMEOUT 30
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 qt_add_executable(owode-notifications-test test_notifications.cpp)
 target_link_libraries(owode-notifications-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME notification-service COMMAND "${OWODE_NOTIFICATION_DBUS_RUN_SESSION}" -- $<TARGET_FILE:owode-notifications-test>)

@@ -114,7 +114,7 @@ set(klde_qml_files
     qml/components/SoundSettingsContent.qml qml/components/AboutSettingsContent.qml
     qml/components/ActionButton.qml qml/components/ChoiceBox.qml
     qml/components/SystemSettingsButton.qml
-    qml/components/LanguageInputSettingsContent.qml qml/components/InputPopup.qml
+    qml/components/LanguageInputSettingsContent.qml qml/components/InputPopup.qml qml/components/TrayPopup.qml
     qml/widgets/WidgetHost.qml qml/widgets/WeatherWidget.qml
     qml/effects/OwnedBlurSample.qml qml/effects/BlurLab.qml qml/effects/OwnedBackdrop.qml
     qml/effects/MaterialBackdrop.qml
@@ -169,7 +169,7 @@ foreach(stem abstract quiet kemono depth-foreground soft-cache-study lock-cache-
 endforeach()
 list(APPEND klde_assets assets/temporal/moon.svg assets/wallpapers/first-night.svg
     "assets/fonts/rubik/Rubik[wght].ttf")
-foreach(icon grid list minus klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather cpu memory microphone battery bell overview display info previous next thermometer weather-clear weather-partly-cloudy weather-cloudy weather-rain weather-snow weather-thunderstorm weather-fog weather-extreme-heat weather-extreme-cold)
+foreach(icon chevron-down grid list minus klde folder globe terminal note music settings wifi bluetooth moon sun volume power leaf search close weather cpu memory microphone battery bell overview display info previous next thermometer weather-clear weather-partly-cloudy weather-cloudy weather-rain weather-snow weather-thunderstorm weather-fog weather-extreme-heat weather-extreme-cold)
     list(APPEND klde_assets "assets/icons/${icon}.svg")
     list(APPEND klde_assets "assets/icons/${icon}-light.svg")
 endforeach()
