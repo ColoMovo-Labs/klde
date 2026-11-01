@@ -4,11 +4,13 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QQmlComponent>
 #include <QQmlEngine>
+#include <QScopeGuard>
 #include <QSettings>
 #include <QSignalSpy>
 #include <QTemporaryDir>
@@ -68,6 +70,64 @@ class DesktopApplicationsTest final : public QObject {
         writeFile(dataRoot + "/fixture.svg",
                   "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\"><rect "
                   "width=\"32\" height=\"32\" fill=\"#368866\"/></svg>");
+    }
+    void unknownWindowsGroupByClassAndUseAnInitialInsteadOfADocument() {
+        klde::DesktopApplicationBackend backend;
+        const QVariantMap first{
+            {"id", "one"}, {"resourceClass", "OwodeMissingIconFixture"}, {"title", "One"}};
+        const QVariantMap second{{"id", "two"},
+                                 {"resourceClass", "owodemissingiconfixture"},
+                                 {"title", "Two"},
+                                 {"active", true}};
+        const auto entries = backend.runtimeApplications({first, second});
+        QCOMPARE(entries.size(), 1);
+        QCOMPARE(entries.first().id, QString("class:owodemissingiconfixture"));
+        QCOMPARE(entries.first().windowCount, 2);
+        QVERIFY(entries.first().active);
+        const auto url = entries.first().icon;
+        const auto identity = QString::fromUtf8(
+            QByteArray::fromBase64(url.mid(QString("image://applications/").size()).toLatin1(),
+                                   QByteArray::Base64UrlEncoding));
+        QCOMPARE(identity, QString("initial:OwodeMissingIconFixture"));
+        const auto icon = backend.icon(identity, QSize(48, 48));
+        QVERIFY(!icon.isNull());
+        QVERIFY(icon.pixelColor(24, 24).alpha() > 0);
+        klde::ApplicationModel model;
+        model.replaceSystemApplications({});
+        model.setRuntimeApplications(entries);
+        QCOMPARE(model.rowCount(), 1);
+        QCOMPARE(model.activeIcon(), url);
+        QCOMPARE(model.data(model.index(0), klde::ApplicationModel::WindowCountRole).toInt(), 2);
+        model.setRuntimeApplications({});
+        QCOMPARE(model.activeIcon(), QString("display"));
+    }
+    void unmatchedApplicationCanResolveAnInstalledThemeIcon() {
+        QTemporaryDir theme;
+        const auto previousName = QIcon::themeName();
+        const auto previousPaths = QIcon::themeSearchPaths();
+        const auto restore = qScopeGuard([&] {
+            QIcon::setThemeSearchPaths(previousPaths);
+            QIcon::setThemeName(previousName);
+        });
+        writeFile(theme.filePath("Fixture/index.theme"),
+                  "[Icon "
+                  "Theme]\nName=Fixture\nDirectories=48x48/apps\n[48x48/"
+                  "apps]\nSize=48\nType=Fixed\nContext=Applications\n");
+        writeFile(theme.filePath("Fixture/48x48/apps/fennec.svg"),
+                  "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\"><rect "
+                  "width=\"48\" height=\"48\" fill=\"#368866\"/></svg>");
+        QIcon::setThemeSearchPaths({theme.path()});
+        QIcon::setThemeName("Fixture");
+        klde::DesktopApplicationBackend backend;
+        const auto entries =
+            backend.runtimeApplications({QVariantMap{{"id", "one"}, {"resourceClass", "fennec"}}});
+        QCOMPARE(entries.size(), 1);
+        const auto icon = backend.icon("theme:fennec", QSize(48, 48));
+        QCOMPARE(icon.pixelColor(24, 24), QColor("#368866"));
+        const auto encoded = QString::fromUtf8(QByteArray::fromBase64(
+            entries.first().icon.mid(QString("image://applications/").size()).toLatin1(),
+            QByteArray::Base64UrlEncoding));
+        QCOMPARE(encoded, QString("theme:fennec"));
     }
     void discoversXdgPrecedenceVisibilityAndStableIds() {
         klde::DesktopApplicationBackend backend;

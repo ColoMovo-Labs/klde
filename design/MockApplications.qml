@@ -23,6 +23,7 @@ ListModel {
         description: "常用文件与位置"
         iconName: "folder"
         running: true
+        windowCount: 1
         active: false
     }
     ListElement {
@@ -31,6 +32,7 @@ ListModel {
         description: "看看更大的世界"
         iconName: "globe"
         running: true
+        windowCount: 1
         active: false
     }
     ListElement {
@@ -39,6 +41,7 @@ ListModel {
         description: "从一行命令开始"
         iconName: "terminal"
         running: true
+        windowCount: 1
         active: false
     }
     ListElement {
@@ -47,6 +50,7 @@ ListModel {
         description: "记住一闪而过的想法"
         iconName: "note"
         running: false
+        windowCount: 0
         active: false
     }
     ListElement {
@@ -55,6 +59,7 @@ ListModel {
         description: "留一点自己的节奏"
         iconName: "music"
         running: true
+        windowCount: 1
         active: true
     }
     ListElement {
@@ -63,6 +68,7 @@ ListModel {
         description: "你的桌面，你的方式"
         iconName: "settings"
         running: false
+        windowCount: 0
         active: false
     }
 }

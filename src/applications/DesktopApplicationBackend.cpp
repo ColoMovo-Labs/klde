@@ -7,6 +7,7 @@
 #include <QFileSystemWatcher>
 #include <QFutureWatcher>
 #include <QIcon>
+#include <QPainter>
 #include <QSet>
 #include <QSettings>
 #include <QStandardPaths>
@@ -284,14 +285,96 @@ bool DesktopApplicationBackend::launch(const QString &id) {
     return false;
 #endif
 }
+QString DesktopApplicationBackend::windowGroupId(const QVariantMap &window) const {
+    auto match = applicationForWindow(window.value("applicationId").toString(),
+                                      window.value("resourceClass").toString(),
+                                      window.value("resourceName").toString());
+    if (!match.isEmpty())
+        return match;
+    for (const auto *key : {"resourceClass", "resourceName", "applicationId"}) {
+        const auto identity = window.value(QLatin1StringView(key)).toString().trimmed();
+        if (!identity.isEmpty())
+            return QStringLiteral("class:") + identity.toCaseFolded();
+    }
+    return QStringLiteral("window:") + window.value("id").toString();
+}
+QList<ApplicationEntry>
+DesktopApplicationBackend::runtimeApplications(const QVariantList &windows) const {
+    QList<ApplicationEntry> result;
+    for (const auto &item : windows) {
+        const auto window = item.toMap();
+        const auto id = windowGroupId(window);
+        auto found = std::find_if(result.begin(), result.end(),
+                                  [&id](const auto &entry) { return entry.id == id; });
+        if (found != result.end()) {
+            ++found->windowCount;
+            found->active = found->active || window.value("active").toBool();
+            continue;
+        }
+        auto identity = window.value("resourceClass").toString();
+        if (identity.isEmpty())
+            identity = window.value("resourceName").toString();
+        if (identity.isEmpty())
+            identity = window.value("applicationId").toString();
+        auto name = identity.isEmpty() ? window.value("title").toString() : identity;
+        if (name.isEmpty())
+            name = tr("Application");
+        const auto catalog =
+            std::find_if(d->entries.cbegin(), d->entries.cend(),
+                         [&id](const auto &entry) { return entry.application.id == id; });
+        QString iconId = id;
+        if (catalog != d->entries.cend())
+            name = catalog->application.name;
+        else {
+            iconId = QStringLiteral("initial:") + name;
+            const QStringList candidates{identity, identity.toLower(),
+                                         window.value("resourceName").toString(),
+                                         window.value("applicationId").toString()};
+            for (const auto &candidate : candidates) {
+                if (!candidate.isEmpty() && QIcon::hasThemeIcon(candidate)) {
+                    iconId = QStringLiteral("theme:") + candidate;
+                    break;
+                }
+            }
+        }
+        const auto url = QStringLiteral("image://applications/") +
+                         QString::fromLatin1(iconId.toUtf8().toBase64(
+                             QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
+        result.append(
+            {id, name, {}, url, {}, true, window.value("active").toBool(), "window", false, 1});
+    }
+    return result;
+}
 QImage DesktopApplicationBackend::icon(const QString &id, const QSize &size) const {
+    const auto extent = size.expandedTo(QSize(1, 1)).boundedTo(QSize(256, 256));
     const auto found =
         std::find_if(d->entries.cbegin(), d->entries.cend(),
                      [&id](const auto &entry) { return entry.application.id == id; });
-    const QIcon fallback(QStringLiteral(":/assets/icons/note.svg"));
-    const auto name = found == d->entries.cend() ? QString{} : found->icon;
-    const auto image = name.startsWith('/') ? QIcon(name) : QIcon::fromTheme(name, fallback);
-    return (image.isNull() ? fallback : image).pixmap(size).toImage();
+    const auto name = id.startsWith("theme:")      ? id.mid(6)
+                      : found == d->entries.cend() ? QString{}
+                                                   : found->icon;
+    const auto image = name.startsWith('/') ? QIcon(name) : QIcon::fromTheme(name);
+    if (!image.isNull())
+        return image.pixmap(extent).toImage();
+    // An explicit initial is more useful than the same document icon for every
+    // unknown application. All drawing happens on demand, never on an idle loop.
+    const auto label = id.startsWith("initial:")    ? id.mid(8)
+                       : found == d->entries.cend() ? id
+                                                    : found->application.name;
+    QImage fallback(extent, QImage::Format_ARGB32_Premultiplied);
+    fallback.fill(Qt::transparent);
+    QPainter painter(&fallback);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(QColor::fromHsv(static_cast<int>(qHash(label) % 360), 90, 155));
+    painter.setPen(Qt::NoPen);
+    painter.drawRoundedRect(fallback.rect(), extent.width() / 4.0, extent.height() / 4.0);
+    QFont font;
+    font.setPixelSize(std::max(1, extent.height() / 2));
+    font.setBold(true);
+    painter.setFont(font);
+    painter.setPen(Qt::white);
+    painter.drawText(fallback.rect(), Qt::AlignCenter, label.left(1).toUpper());
+    return fallback;
 }
 ApplicationIconProvider::ApplicationIconProvider(DesktopApplicationBackend *backend)
     : QQuickImageProvider(QQuickImageProvider::Image), m_backend(backend) {}

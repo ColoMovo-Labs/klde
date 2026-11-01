@@ -15,15 +15,15 @@ Item {
     property bool decorationVisible: true
     signal launcherRequested
     signal applicationRequested(string appId)
-    width: dockRow.implicitWidth + Tokens.space24
+    width: dockRow.implicitWidth + Tokens.space32
     height: Tokens.dockHeight
     SurfaceForm {
         anchors.fill: parent
         visible: root.decorationVisible
     }
     Flickable {
-        x: Tokens.space12
-        width: root.width - Tokens.space24
+        x: Tokens.space16
+        width: root.width - Tokens.space32
         height: root.height
         contentWidth: dockRow.implicitWidth
         contentHeight: height
@@ -33,7 +33,7 @@ Item {
         Row {
             id: dockRow
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Tokens.space6
+            spacing: Tokens.space8
             SmallButton {
                 id: launcherButton
                 objectName: "launcherButton"
@@ -41,10 +41,11 @@ Item {
                 height: Tokens.dockItem
                 iconName: "klde"
                 text: Tokens.locale === "zh_CN" ? "应用" : "Applications"
-                selected: true
+                selected: false
+                iconSize: Tokens.dockIcon
                 // The multicolor brand mark needs a neutral base, including
                 // when the launcher action is emphasized.
-                shapeColor: down ? Tokens.primaryContainer : hovered ? Tokens.surfaceContainerHigh : Tokens.surfaceElevated
+                shapeColor: down ? Tokens.primaryContainer : hovered ? Tokens.surfaceContainerHigh : "transparent"
             }
             Rectangle {
                 width: Tokens.space1
@@ -61,6 +62,7 @@ Item {
                     required property string iconName
                     required property bool running
                     required property bool active
+                    required windowCount
                     width: Tokens.dockItem
                     height: Tokens.dockItem
                     label: root.appNames[appId] || displayName

@@ -46,14 +46,23 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const {
         return app.origin;
     case PinnedRole:
         return app.pinned;
+    case WindowCountRole:
+        return app.windowCount;
     default:
         return {};
     }
 }
 QHash<int, QByteArray> ApplicationModel::roleNames() const {
-    return {{AppIdRole, "appId"},   {NameRole, "displayName"},  {DescriptionRole, "description"},
-            {IconRole, "iconName"}, {KeywordsRole, "keywords"}, {RunningRole, "running"},
-            {ActiveRole, "active"}, {OriginRole, "origin"},     {PinnedRole, "pinned"}};
+    return {{AppIdRole, "appId"},
+            {NameRole, "displayName"},
+            {DescriptionRole, "description"},
+            {IconRole, "iconName"},
+            {KeywordsRole, "keywords"},
+            {RunningRole, "running"},
+            {ActiveRole, "active"},
+            {OriginRole, "origin"},
+            {PinnedRole, "pinned"},
+            {WindowCountRole, "windowCount"}};
 }
 QString ApplicationModel::nameFor(const QString &appId) const {
     const auto found =
@@ -67,6 +76,12 @@ QString ApplicationModel::activeId() const {
             return app.id;
     return QStringLiteral("desktop");
 }
+QString ApplicationModel::activeIcon() const {
+    for (const auto &app : m_applications)
+        if (app.active)
+            return app.icon;
+    return QStringLiteral("display");
+}
 void ApplicationModel::resetPreview(const QString &appId) {
     if (!m_preview)
         return;
@@ -74,7 +89,7 @@ void ApplicationModel::resetPreview(const QString &appId) {
         app.active = app.id == appId;
         app.running = app.active || app.id == "files" || app.id == "terminal";
     }
-    emit dataChanged(index(0), index(rowCount() - 1), {RunningRole, ActiveRole});
+    emit dataChanged(index(0), index(rowCount() - 1), {RunningRole, ActiveRole, WindowCountRole});
     emit activeChanged();
 }
 void ApplicationModel::setAndroidSource(bool enabled) {
@@ -107,7 +122,7 @@ bool ApplicationModel::activate(const QString &appId) {
         app.active = app.id == appId;
         app.running = app.running || app.active;
     }
-    emit dataChanged(index(0), index(rowCount() - 1), {RunningRole, ActiveRole});
+    emit dataChanged(index(0), index(rowCount() - 1), {RunningRole, ActiveRole, WindowCountRole});
     emit activeChanged();
     return true;
 }
@@ -132,6 +147,7 @@ void ApplicationModel::reconcileSystemApplications() {
     for (auto &entry : next) {
         entry.running = false;
         entry.active = false;
+        entry.windowCount = 0;
     }
     for (const auto &runtime : std::as_const(m_runtime)) {
         auto entry = std::find_if(next.begin(), next.end(),
@@ -141,6 +157,7 @@ void ApplicationModel::reconcileSystemApplications() {
         else {
             entry->running = runtime.running;
             entry->active = runtime.active;
+            entry->windowCount = runtime.windowCount;
         }
     }
     QHash<QString, qsizetype> positions;
@@ -154,6 +171,7 @@ void ApplicationModel::reconcileSystemApplications() {
     next.append(unmatched);
     const auto previousActive = activeId();
     const auto previousName = activeName();
+    const auto previousIcon = activeIcon();
     bool structure = next.size() != m_applications.size();
     for (qsizetype row = 0; !structure && row < next.size(); ++row) {
         const auto &before = m_applications.at(row);
@@ -170,14 +188,16 @@ void ApplicationModel::reconcileSystemApplications() {
     } else {
         for (qsizetype row = 0; row < next.size(); ++row) {
             if (m_applications.at(row).running != next.at(row).running ||
-                m_applications.at(row).active != next.at(row).active) {
+                m_applications.at(row).active != next.at(row).active ||
+                m_applications.at(row).windowCount != next.at(row).windowCount) {
                 m_applications[row] = next.at(row);
                 emit dataChanged(index(static_cast<int>(row)), index(static_cast<int>(row)),
-                                 {RunningRole, ActiveRole});
+                                 {RunningRole, ActiveRole, WindowCountRole});
             }
         }
     }
-    if (previousActive != activeId() || previousName != activeName())
+    if (previousActive != activeId() || previousName != activeName() ||
+        previousIcon != activeIcon())
         emit activeChanged();
 }
 bool ApplicationModel::isPinned(const QString &appId) const {

@@ -472,34 +472,12 @@ bool ShellServices::launch(const QString &appId) {
     return true;
 }
 QString ShellServices::windowApplication(const QVariantMap &window) const {
-    const auto application = m_desktopApplications.applicationForWindow(
-        window.value("applicationId").toString(), window.value("resourceClass").toString(),
-        window.value("resourceName").toString());
-    return application.isEmpty() ? QStringLiteral("window:") + window.value("id").toString()
-                                 : application;
+    return m_desktopApplications.windowGroupId(window);
 }
 void ShellServices::reconcileWindows() {
-    if (!m_liveWindowManager)
-        return;
-    QList<ApplicationEntry> applications;
-    const auto windows = m_liveWindowManager->windows();
-    for (const auto &item : windows) {
-        const auto window = item.toMap();
-        const auto id = windowApplication(window);
-        auto found = std::find_if(applications.begin(), applications.end(),
-                                  [&id](const auto &app) { return app.id == id; });
-        if (found == applications.end()) {
-            auto name = window.value("title").toString();
-            if (name.isEmpty())
-                name = window.value("resourceClass").toString();
-            if (name.isEmpty())
-                name = tr("Application");
-            applications.append(
-                {id, name, {}, "note", {}, true, window.value("active").toBool(), "window", false});
-        } else
-            found->active = found->active || window.value("active").toBool();
-    }
-    m_applications.setRuntimeApplications(applications);
+    if (m_liveWindowManager)
+        m_applications.setRuntimeApplications(
+            m_desktopApplications.runtimeApplications(m_liveWindowManager->windows()));
 }
 void ShellServices::showOsd(const QString &kind, int value) {
     showNotice(kind == "volume" ? tr("Volume") : tr("Brightness"));

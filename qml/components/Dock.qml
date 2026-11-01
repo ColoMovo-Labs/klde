@@ -9,7 +9,7 @@ Surface {
     readonly property bool nativeInputSurface: true
     signal launcherRequested
     signal settingsRequested
-    implicitWidth: form.row.implicitWidth + Tokens.space24
+    implicitWidth: form.row.implicitWidth + Tokens.space32
     width: Math.min(implicitWidth, parent ? parent.width - Tokens.space32 : Tokens.previewWidth)
     height: Tokens.dockHeight
     padding: 0

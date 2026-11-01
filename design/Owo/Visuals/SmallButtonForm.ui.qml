@@ -8,6 +8,7 @@ Button {
     id: root
     property string iconName: "settings"
     property bool selected: false
+    property int iconSize: root.iconName === "klde" ? Tokens.iconL : Tokens.iconM
     property bool toggle: false
     property real shapeRadius: selected ? Tokens.radiusPill : Tokens.radiusM
     property color shapeColor: selected ? Tokens.primary : down ? Tokens.primaryContainer : hovered ? Tokens.surfaceContainerHigh : Tokens.surfaceContainer
@@ -29,7 +30,7 @@ Button {
         Glyph {
             anchors.centerIn: parent
             name: root.iconName
-            width: root.iconName === "klde" ? Tokens.iconL : Tokens.iconM
+            width: root.iconSize
             height: width
             lightInk: root.selected ? !Tokens.darkMode : Tokens.darkMode
         }

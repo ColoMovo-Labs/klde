@@ -28,7 +28,7 @@ Item {
         const workspace = Shell.windowManager.activeWorkspace;
         return windows.length > 0 && workspace.length > 0 && Shell.windowManager.windowOverlaps(Qt.rect(globalOrigin.x + x + dock.x, globalOrigin.y + y, dock.width, height));
     }
-    readonly property bool hovered: dockHover.hovered || edgeHover.hovered
+    readonly property bool hovered: dockHover.hovered || edgeHover.hovered || bridgeHover.hovered
     readonly property bool wanted: mode === "reserve" || (mode === "smart" && !covered) || hovered || peeking
     property bool shown: wanted
     // 0 hidden … 1 shown. A finite spring; nothing animates once it settles.
@@ -85,19 +85,33 @@ Item {
             id: dockHover
         }
     }
-    // The edge trigger: a thin strip while hidden, and while revealed by the
-    // pointer a bridge from the screen edge up to the dock.
+    // Only the thin screen-edge strip spans the output. The pointer bridge is
+    // limited to the dock width so it cannot intercept clicks on applications
+    // across the rest of the bottom margin.
     Item {
         objectName: "dockEdgeTrigger"
         readonly property bool nativeInputSurface: true
         readonly property real cornerRadius: 0
         visible: root.mode !== "reserve" && (root.covered || root.mode === "hidden" || root.hovered)
-        width: dock.width
-        height: root.shown && root.hovered ? root.edgeGap : Tokens.space4
+        width: root.maximumWidth + Tokens.space32
+        height: Tokens.space4
         anchors.horizontalCenter: parent.horizontalCenter
         y: root.height + root.edgeGap - height
         HoverHandler {
             id: edgeHover
+        }
+    }
+    Item {
+        objectName: "dockPointerBridge"
+        readonly property bool nativeInputSurface: true
+        readonly property real cornerRadius: 0
+        visible: root.mode !== "reserve" && root.shown && root.hovered
+        width: dock.width
+        height: root.edgeGap
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: root.height
+        HoverHandler {
+            id: bridgeHover
         }
     }
 }

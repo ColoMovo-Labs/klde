@@ -32,6 +32,8 @@ class DesktopApplicationBackend : public QObject {
                                  const QString &resourceName) const;
     void setPinned(const QString &id, bool pinned);
     QImage icon(const QString &id, const QSize &size) const;
+    QString windowGroupId(const QVariantMap &window) const;
+    QList<ApplicationEntry> runtimeApplications(const QVariantList &windows) const;
   signals:
     void catalogChanged();
     void busyChanged();

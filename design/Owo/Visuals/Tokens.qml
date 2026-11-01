@@ -269,7 +269,7 @@ QtObject {
     readonly property int iconS: 18
     readonly property int iconM: 24
     readonly property int iconL: 40
-    readonly property int dockIcon: 34
+    readonly property int dockIcon: 42
     readonly property int dockItem: 56 * densityScale
     readonly property int dockHeight: design.dockHeight
     readonly property int controlHeight: 44 * densityScale

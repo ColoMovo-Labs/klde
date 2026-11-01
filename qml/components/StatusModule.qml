@@ -14,7 +14,7 @@ StatusCapsule {
     readonly property string moduleId: module.id
     signal invoked(string moduleId)
     label: I18n.t(module.titleId)
-    iconName: moduleId === "weather" ? weather.available && weather.conditionId !== "weather.condition.unknown" ? "weather-" + weather.conditionId.split(".").pop() : "weather" : module.icon === "klde" ? Branding.iconName : module.icon
+    iconName: moduleId === "context" ? Shell.applications.activeIcon : moduleId === "weather" ? weather.available && weather.conditionId !== "weather.condition.unknown" ? "weather-" + weather.conditionId.split(".").pop() : "weather" : module.icon === "klde" ? Branding.iconName : module.icon
     prominent: moduleId === "time"
     detailed: !condensed && !Shell.ribbon.compact && Tokens.densityMode === 0
     valueText: {

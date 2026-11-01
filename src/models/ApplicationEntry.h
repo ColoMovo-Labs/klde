@@ -13,5 +13,6 @@ struct ApplicationEntry {
     bool active = false;
     QString origin = QStringLiteral("linux");
     bool pinned = false;
+    int windowCount = 0;
 };
 } // namespace klde

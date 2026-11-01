@@ -67,9 +67,12 @@ Item {
             const dock = create("hidden");
             tryCompare(dock, "reveal", 0);
             mouseMove(testRoot, testRoot.width / 2, testRoot.height / 2);
-            mouseMove(testRoot, testRoot.width / 2, testRoot.height - 2);
-            mouseMove(testRoot, testRoot.width / 2 + 1, testRoot.height - 1);
+            mouseMove(testRoot, 8, testRoot.height - 2);
+            mouseMove(testRoot, 9, testRoot.height - 1);
             tryCompare(dock, "shown", true);
+            const bridge = findChild(dock, "dockPointerBridge");
+            compare(bridge.width, dock.dock.width);
+            compare(findChild(dock, "dockEdgeTrigger").height, Tokens.space4);
             mouseMove(testRoot, testRoot.width / 2, dock.y + dock.height / 2);
             wait(600);
             compare(dock.shown, true);

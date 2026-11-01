@@ -2,17 +2,14 @@
 import QtQuick
 import Owo.Visuals
 
+// One asset route for app-provider images, ordinary glyphs and the current brand.
 Item {
-    id: root
-    property string name: "klde"
-    property bool lightInk: Tokens.darkMode
+    property alias name: glyph.name
+    property alias lightInk: glyph.lightInk
     implicitWidth: Tokens.iconM
     implicitHeight: Tokens.iconM
-    Image {
+    Glyph {
+        id: glyph
         anchors.fill: parent
-        source: "qrc:/assets/icons/" + root.name + (root.lightInk ? "-light" : "") + ".svg"
-        sourceSize: Qt.size(width, height)
-        fillMode: Image.PreserveAspectFit
-        asynchronous: false
     }
 }

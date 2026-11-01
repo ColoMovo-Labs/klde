@@ -14,6 +14,7 @@ class ApplicationModel : public QAbstractListModel {
     Q_PROPERTY(bool preview READ preview NOTIFY modeChanged)
     Q_PROPERTY(QString activeApplication READ activeId NOTIFY activeChanged)
     Q_PROPERTY(QString activeName READ activeName NOTIFY activeChanged)
+    Q_PROPERTY(QString activeIcon READ activeIcon NOTIFY activeChanged)
   public:
     enum Role : quint16 {
         AppIdRole = Qt::UserRole + 1,
@@ -24,7 +25,8 @@ class ApplicationModel : public QAbstractListModel {
         RunningRole,
         ActiveRole,
         OriginRole,
-        PinnedRole
+        PinnedRole,
+        WindowCountRole
     };
     Q_ENUM(Role)
     explicit ApplicationModel(QObject *parent = nullptr);
@@ -37,6 +39,7 @@ class ApplicationModel : public QAbstractListModel {
     void setAndroidSource(bool enabled);
     QString activeId() const;
     QString activeName() const { return nameFor(activeId()); }
+    QString activeIcon() const;
     bool preview() const { return m_preview; }
     void replaceSystemApplications(const QList<ApplicationEntry> &applications);
     void setRuntimeApplications(const QList<ApplicationEntry> &applications);
