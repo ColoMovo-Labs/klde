@@ -49,6 +49,9 @@ class SettingsTest : public QObject {
             QVERIFY(settings.setValue("appearance.wallpaper", QStringLiteral("quiet")));
             QVERIFY(settings.setValue("ribbon.compact", true));
             QVERIFY(settings.setValue("scenes.balanced.motion", 0));
+            QVERIFY(settings.setValue("weather.city", QStringLiteral("Fixture Harbour")));
+            QVERIFY(settings.setValue("weather.language", QStringLiteral("zh")));
+            QVERIFY(settings.setValue("weather.onlineConsent", true));
         }
         QSettings file(directory.filePath("shell.conf"), QSettings::IniFormat);
         QCOMPARE(file.value("meta/version").toInt(), ShellSettings::CurrentVersion);
@@ -59,6 +62,13 @@ class SettingsTest : public QObject {
         QCOMPARE(reloaded.value("ribbon.compact").toBool(), true);
         QCOMPARE(reloaded.value("ribbon.compact").metaType().id(), QMetaType::Bool);
         QCOMPARE(reloaded.value("scenes.balanced.motion").toInt(), 0);
+        QCOMPARE(reloaded.value("weather.city").toString(), QStringLiteral("Fixture Harbour"));
+        QCOMPARE(reloaded.value("weather.language").toString(), QStringLiteral("zh"));
+        QVERIFY(reloaded.value("weather.onlineConsent").toBool());
+        QVERIFY(reloaded.setValue("weather.onlineConsent", false));
+        ShellSettings revoked;
+        QVERIFY(revoked.enablePersistence(directory.path()));
+        QVERIFY(!revoked.value("weather.onlineConsent").toBool());
         reloaded.reset("scenes.balanced.motion");
         QVERIFY(!reloaded.value("scenes.balanced.motion").isValid());
         QSettings after(directory.filePath("shell.conf"), QSettings::IniFormat);

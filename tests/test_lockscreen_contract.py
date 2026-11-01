@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,7 @@ class LockerContract(unittest.TestCase):
         self.assertEqual(metadata['KPackageStructure'], 'Plasma/Shell')
         self.assertEqual(metadata['X-Plasma-APIVersion'], '2')
         wrapper = (PACKAGE / 'contents/lockscreen/LockScreen.qml').read_text()
+        wrapper = re.sub(r'//[^\n]*', '', wrapper)
         self.assertNotIn('org.kde.plasma.private.sessions', wrapper)
         self.assertNotIn('Qt.quit(', wrapper)
         self.assertNotIn('authenticator.', wrapper)

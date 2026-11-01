@@ -19,8 +19,17 @@ The presentation does not construct URLs, parse provider JSON or schedule HTTP.
 `enableOnline(city, language)` is the consent boundary; its caller must disclose
 the provider, experimental status, external terms and transmission of the city
 and source IP before invoking it. An empty city is rejected. `disableOnline()`
-aborts pending work, drops the real reading and returns to explicitly labeled
-mock data. No consent or location is persisted by this implementation.
+aborts pending work and drops the real reading. Visual Lab returns to labeled
+mock data; native sessions show unavailable/off, never a synthetic fallback.
+Native sessions persist explicit consent, manually entered city and weather
+language in `~/.config/owode/shell.conf`. Future logins restore a request only
+when the stored consent is true. Revoking consent persists false. No interface
+locale supplies a city or implicitly enables the provider. Preview mode keeps
+its settings in memory.
+
+The widget, Ribbon weather module, ambient view and Notification Center all
+consume the same `Shell.weather` service result. Native scene projection cannot
+overwrite it with `SystemStateModel` fixture weather or cancel its request.
 
 The adapter is compiled in, but construction does not contact its endpoint.
 Calling the adapter directly also requires `setNetworkConsent(true)` first.
@@ -139,6 +148,6 @@ unverified; fixture success must not be reported as a live API check.
 
 Before treating online weather as supported: verify an owner-approved city on a
 real connection, review current terms and quota headers, test network changes and
-resume, implement settings/consent persistence deliberately, and check localized
+resume, verify persisted opt-in/revocation across logins, and check localized
 unavailable/stale states with assistive technology. Add another provider through
 the same interface; do not couple the widget to this endpoint's field names.

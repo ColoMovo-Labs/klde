@@ -63,7 +63,7 @@ ColumnLayout {
             wrapMode: Text.WordWrap
         }
         MockBadge {
-            mock: !Shell.weatherService.onlineEnabled
+            mock: Shell.applications.preview && !Shell.weatherService.onlineEnabled
         }
     }
     Label {
