@@ -30,7 +30,15 @@ class LockerContract(unittest.TestCase):
         self.assertNotIn('org.kde.plasma.private.sessions', wrapper)
         self.assertNotIn('Qt.quit(', wrapper)
         self.assertNotIn('authenticator.', wrapper)
-        self.assertIn('Greeter {', wrapper)
+        self.assertIn('Loader {', wrapper)
+        self.assertIn('Loader.Error', wrapper)
+        self.assertIn('source = "KdeLockScreen.qml"', wrapper)
+        for name in ('OwoLockScreen.qml', 'KdeLockScreen.qml'):
+            appearance = (PACKAGE / 'contents/lockscreen' / name).read_text()
+            appearance = re.sub(r'//[^\n]*', '', appearance)
+            self.assertIn('Greeter {', appearance)
+            self.assertNotIn('authenticator.', appearance)
+            self.assertNotIn('Qt.quit(', appearance)
         self.assertTrue((ROOT / 'LICENSES/GPL-2.0-or-later.txt').is_file())
 
     def test_theme_choice_is_scoped_to_the_session_launcher(self):

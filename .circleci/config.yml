@@ -169,9 +169,13 @@ jobs:
           command: bash tools/multi-output-smoke.sh build/fedora artifacts/native-session/multi-output
       - run:
           name: Verify the owoDE greeter package in isolated native testing mode
-          command: OWODE_CLOUD_LOCKER_TEST=1 bash tools/locker-theme-smoke.sh build/fedora artifacts/locker-theme
+          command: |
+            OWODE_CLOUD_LOCKER_TEST=1 bash tools/locker-theme-smoke.sh build/fedora artifacts/locker-theme
+            OWODE_CLOUD_LOCKER_TEST=1 OWODE_LOCKER_FORCE_FALLBACK=1 bash tools/locker-theme-smoke.sh build/fedora artifacts/locker-fallback
       - store_artifacts:
           path: artifacts/locker-theme
+      - store_artifacts:
+          path: artifacts/locker-fallback
       - store_test_results:
           path: artifacts/native-session
       - store_artifacts:

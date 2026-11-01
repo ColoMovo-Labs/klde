@@ -54,6 +54,7 @@
             dnf install -y --setopt=install_weak_deps=False --disablerepo=fedora-cisco-openh264 \
               kscreenlocker plasma-workspace-libs ImageMagick
             OWODE_CLOUD_LOCKER_TEST=1 bash tools/locker-theme-smoke.sh build/cnb artifacts/locker-theme
+            OWODE_CLOUD_LOCKER_TEST=1 OWODE_LOCKER_FORCE_FALLBACK=1 bash tools/locker-theme-smoke.sh build/cnb artifacts/locker-fallback
             find artifacts/locker-theme -maxdepth 1 -type f -empty -delete
         - name: attach isolated locker loading evidence
           image: cnbcool/attachments:latest
@@ -63,6 +64,9 @@
               - "./artifacts/locker-theme/*.png"
               - "./artifacts/locker-theme/*.txt"
               - "./artifacts/locker-theme/*.log"
+              - "./artifacts/locker-fallback/*.json"
+              - "./artifacts/locker-fallback/*.png"
+              - "./artifacts/locker-fallback/*.log"
         - name: attach two-output evidence
           image: cnbcool/attachments:latest
           settings:

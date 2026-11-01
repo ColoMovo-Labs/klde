@@ -51,6 +51,16 @@ switch-user feature requiring that import. It still uses Kirigami and Plasma
 component libraries, plus the Plasma/Shell package structure from
 plasma-workspace-libs. It does not require Plasma Shell to run.
 
+The stable `LockScreen.qml` entry point imports only QtQuick and loads the
+custom `OwoLockScreen.qml` through a Loader. An appearance load error switches
+to `KdeLockScreen.qml`: a system-palette surface containing the same unchanged
+KDE Greeter, without wallpaper, design tokens or session-switching imports.
+This fallback handles custom appearance failures without reaching the broken
+upstream fallback on minimal Fedora installations. It does not bypass PAM or
+recover missing system Qt/Plasma libraries. The cloud fallback gate deliberately
+breaks only the custom QML in a private install prefix, then requires a live
+greeter and committed Wayland buffers from the minimal KDE presentation.
+
 `start-owode` exports `PLASMA_DEFAULT_SHELL=org.owode.shell` within its child
 process tree. KScreenLocker uses that default when `plasmashellrc` has no
 explicit `Shell/ShellPackage` selection. We never rewrite another desktop's

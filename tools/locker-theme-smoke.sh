@@ -15,6 +15,12 @@ chmod 700 "$runtime_dir"
 trap 'rm -rf "$runtime_dir"' EXIT
 mkdir -p "$runtime_dir/config" "$runtime_dir/data" "$runtime_dir/cache"
 cmake --install "$build_dir" --prefix "$runtime_dir/install" > "$out_dir/install.log"
+# Deliberately break ONLY the private test prefix to exercise the Loader's
+# minimal KDE Greeter fallback. Installed files and the host are untouched.
+if [[ "${OWODE_LOCKER_FORCE_FALLBACK:-0}" == 1 ]]; then
+    printf 'import QtQuick\nItem { __owode_missing_test_property__: true }\n' \
+        > "$runtime_dir/install/share/plasma/shells/org.owode.shell/contents/lockscreen/OwoLockScreen.qml"
+fi
 cp "$(command -v kwin_wayland)" "$runtime_dir/kwin_wayland"
 chmod 700 "$runtime_dir/kwin_wayland"
 greeter=/usr/libexec/kscreenlocker_greet
@@ -67,15 +73,25 @@ kill -0 "$greeter_pid"
 magick import -window root "$out_dir/greeter.png"
 python3 - "$out_dir" <<'PY'
 import json
+import os
 from pathlib import Path
 import re
 import sys
 output = Path(sys.argv[1])
 log = (output / 'greeter.log').read_text(errors='replace')
-for error in ('is not installed', 'Failed to load', 'QML outdated', 'fallbacktheme',
+expected_fallback = os.environ.get('OWODE_LOCKER_FORCE_FALLBACK') == '1'
+fallback_used = 'custom locker appearance failed; using KDE Greeter' in log
+if fallback_used != expected_fallback:
+    raise SystemExit(f'Unexpected locker fallback: expected={expected_fallback}, used={fallback_used}')
+scan_log = log.replace('Cannot assign to non-existent property "__owode_missing_test_property__"', '') if expected_fallback else log
+for error in ('is not installed', 'QML outdated',
               'ReferenceError:', 'TypeError:', 'is not a type', 'Cannot assign to'):
-    if error in log:
+    if error in scan_log:
         raise SystemExit(f'Greeter loading failed: {error}')
+if not expected_fallback and ('Failed to load' in log or 'fallbacktheme' in log):
+    raise SystemExit('Unexpected greeter loading failure')
+if 'Failed to load the fallback' in log or 'falling back to built-in locker' in log:
+    raise SystemExit('Built-in fallback failed to load')
 attached = re.findall(r'wl_surface[@#](\d+)\.attach\(wl_buffer', log)
 committed = [surface for surface in set(attached)
              if re.search(r'wl_surface[@#]' + surface + r'\.commit\(', log)]
@@ -83,10 +99,11 @@ if not committed:
     raise SystemExit('No real greeter buffer committed to the isolated KWin')
 (output / 'summary.json').write_text(json.dumps({
     'theme': 'org.owode.shell', 'testingMode': True,
-    'nativeBufferSurfaces': committed, 'fallbackUsed': False,
+    'nativeBufferSurfaces': committed, 'fallbackUsed': fallback_used,
+    'brokenPrivateThemeTest': expected_fallback,
     'pamUnlockTested': False, 'realSessionLocked': False,
     'scope': 'QML import, package API and native rendering only',
 }, indent=2) + '\n')
-print('owoDE greeter: package loaded and native buffer committed; PAM not tested')
+print('Greeter: native buffer committed; fallback=' + str(fallback_used) + '; PAM not tested')
 PY
 INNER
