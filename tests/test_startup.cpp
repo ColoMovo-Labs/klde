@@ -8,7 +8,9 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QRawFont>
+#include <QScopeGuard>
 #include <QSignalSpy>
+#include <QTemporaryDir>
 #include <QtQml/QQmlExtensionPlugin>
 #include <QtTest>
 
@@ -18,6 +20,36 @@ Q_IMPORT_QML_PLUGIN(KldeBackendsPlugin)
 class ShellStartupTest final : public QObject {
     Q_OBJECT
   private slots:
+    void realNativeTimeAdvancesWithoutRestart() {
+        if (qEnvironmentVariableIntValue("OWODE_CLOUD_CLOCK_TEST") != 1)
+            QSKIP("The real minute-wait integration check is cloud-only and opt-in");
+        QTemporaryDir config;
+        const auto previousConfig = qgetenv("XDG_CONFIG_HOME");
+        qputenv("XDG_CONFIG_HOME", config.path().toUtf8());
+        const auto restoreConfig = qScopeGuard([previousConfig] {
+            if (previousConfig.isNull())
+                qunsetenv("XDG_CONFIG_HOME");
+            else
+                qputenv("XDG_CONFIG_HOME", previousConfig);
+        });
+        QQmlEngine engine;
+        engine.setProperty("owodeSystemApplications", true);
+        QQmlComponent component(&engine);
+        component.setData("import QtQuick\nimport KLDE.Shell\nSystemIsland {}", QUrl());
+        QScopedPointer<QObject> island(component.create());
+        QVERIFY2(island, qPrintable(component.errorString()));
+        auto *services = engine.singletonInstance<klde::ShellServices *>("KLDE.Backends", "Shell");
+        QVERIFY(qobject_cast<klde::SystemTimeBackend *>(services->time()));
+        auto *text = island->findChild<QObject *>(QStringLiteral("temporalTimeText"));
+        QVERIFY(text);
+        const auto before = text->property("text").toString();
+        QCOMPARE(before, services->time()->reading().value("timeText").toString());
+        QTRY_VERIFY_WITH_TIMEOUT(text->property("text").toString() != before, 65000);
+        QCOMPARE(text->property("text").toString(),
+                 services->time()->reading().value("timeText").toString());
+        QVERIFY(!services->time()->reading().value("mock").toBool());
+        qInfo() << "Real native clock advanced" << before << "to" << text->property("text");
+    }
     void weatherViewsFollowTheServiceInsteadOfFixtureState() {
         QQmlEngine engine;
         QQmlComponent component(&engine);

@@ -38,6 +38,9 @@
           script: |
             set -eu
             ctest --test-dir build/cnb --output-on-failure
+            timeout 80s env OWODE_CLOUD_CLOCK_TEST=1 QT_QPA_PLATFORM=offscreen \
+              QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic \
+              build/cnb/bin/klde-startup-test realNativeTimeAdvancesWithoutRestart
         - name: verify per-output surfaces in a two-output nested KWin
           script: |
             set -eu

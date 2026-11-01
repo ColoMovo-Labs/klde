@@ -359,6 +359,9 @@ jobs:
           name: Fedora unit, QML and offscreen startup tests
           command: |
             ctest --test-dir build/fedora --output-on-failure --output-junit artifacts/tests/fedora.xml
+            timeout 80s env OWODE_CLOUD_CLOCK_TEST=1 QT_QPA_PLATFORM=offscreen \
+              QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic \
+              build/fedora/bin/klde-startup-test realNativeTimeAdvancesWithoutRestart
             runtime_dir="$(mktemp -d)"
             chmod 700 "$runtime_dir"
             trap 'rm -rf "$runtime_dir"' EXIT
