@@ -74,6 +74,14 @@ import/fallback errors, and saves a screenshot and logs. It never invokes
 package/import/native-render compatibility; it does **not** prove PAM unlock,
 production session-lock security, suspend/resume or hotplug acceptance.
 
+CNB's rootless Docker may enforce `NoNewPrivs: 1`, preventing Fedora's setuid
+`unix_chkpwd` helper from reading the shadow database for an ordinary client.
+The PAM probe fails explicitly in that environment unless `--policy-only` is
+requested. That mode checks correct/incorrect synthetic passwords as a root
+client, records `unprivilegedClient: false`, and is **not** unlock acceptance.
+CircleCI retains the strict nonprivileged probe. No PAM policy or helper
+permissions are weakened to accommodate the cloud executor.
+
 ## Presentation contract
 
 The surface consumes:

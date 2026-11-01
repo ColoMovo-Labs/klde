@@ -84,6 +84,15 @@ def main():
         return
     if os.geteuid() != 0:
         raise SystemExit('The outer cloud runner must be root to create its disposable account')
+    policy_only = sys.argv[1:] == ['--policy-only']
+    if sys.argv[1:] and not policy_only:
+        raise SystemExit('Usage: cloud-locker-pam.py [--policy-only]')
+    restricted_helper = any(line.split() == ['NoNewPrivs:', '1']
+                            for line in Path('/proc/self/status').read_text().splitlines())
+    if restricted_helper and not policy_only:
+        raise SystemExit('Container forbids setuid unix_chkpwd (NoNewPrivs=1). '
+                         'Use --policy-only for a root-client policy check; '
+                         'unprivileged authentication remains unverified here.')
     for service in ('kde', 'kde-fingerprint', 'kde-smartcard'):
         if not any((Path(base) / service).is_file() for base in ('/etc/pam.d', '/usr/lib/pam.d')):
             raise SystemExit(f'Missing installed policy: {service}')
@@ -108,19 +117,25 @@ def main():
             child.chmod(0o644)
             result = subprocess.run([sys.executable, str(child), '--child', user],
                                     input=password + '\n', text=True, capture_output=True,
-                                    preexec_fn=drop_privileges, timeout=40, check=True)
+                                    preexec_fn=None if policy_only else drop_privileges,
+                                    timeout=40, check=True)
         codes = json.loads(result.stdout)
         if codes['correct'] != 0 or codes['incorrect'] == 0:
             raise SystemExit(f'PAM authentication contract failed: {codes}')
         output = Path('artifacts/locker-pam')
         output.mkdir(parents=True, exist_ok=True)
         (output / 'summary.json').write_text(json.dumps({
-            'service': 'kde', 'unprivilegedClient': True,
+            'service': 'kde', 'unprivilegedClient': not policy_only,
             'correctPasswordAccepted': True, 'incorrectPasswordRejected': True,
             'permissivePolicyInstalled': False, 'realSessionLocked': False,
-            'scope': 'Real distribution PAM password stack, independent of greeter UI',
+            'restrictedSetuidHelper': restricted_helper,
+            'scope': ('Root-client policy check only; unprivileged helper NOT verified'
+                      if policy_only else
+                      'Real distribution PAM password stack, independent of greeter UI'),
         }, indent=2) + '\n')
-        print('Real PAM: correct password accepted, incorrect password rejected (unprivileged user)')
+        print('Real PAM: correct password accepted, incorrect password rejected; client=' +
+              ('root (policy only, NOT an unlock acceptance test)' if policy_only else
+               'unprivileged user'))
     finally:
         subprocess.run(['userdel', user], check=True, stdout=subprocess.DEVNULL)
 
