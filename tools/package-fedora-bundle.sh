@@ -55,6 +55,9 @@ mkdir -p "$stage_dir/rpmbuild/SOURCES"
 cp packaging/session/start-owode packaging/session/owode-session-client \
     packaging/session/owode.desktop packaging/session/org.owode.GnomeSettings.desktop \
     LICENSE "$stage_dir/rpmbuild/SOURCES/"
+for service in kde kde-fingerprint kde-smartcard; do
+    cp "packaging/session/pam/$service" "$stage_dir/rpmbuild/SOURCES/pam-$service"
+done
 sed -e "s/@VERSION@/$version/g" -e "s/@RELEASE@/$release/g" \
     packaging/session/owode-session.spec.in > "$stage_dir/owode-session.spec"
 rpmbuild -bb --define "_topdir $stage_dir/rpmbuild" "$stage_dir/owode-session.spec"

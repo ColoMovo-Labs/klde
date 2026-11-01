@@ -1,0 +1,5 @@
+#%PAM-1.0
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Optional biometric authentication is unavailable until explicitly configured
+# by the distribution or administrator in /etc/pam.d/kde-fingerprint.
+auth       requisite    pam_deny.so

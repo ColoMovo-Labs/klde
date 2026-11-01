@@ -12,6 +12,16 @@ for command in kwin_wayland klde-shell dbus-run-session dbus-send dbus-update-ac
     command -v "$command" >/dev/null || { echo "Missing dependency: $command" >&2; exit 3; }
 done
 test -x /usr/libexec/owode-session-client || { echo 'Missing owoDE session client.' >&2; exit 3; }
+# Refuse an incomplete login session rather than letting it lock the owner out.
+# Distro/administrator /etc policies override Linux-PAM's vendor defaults.
+if [[ -f /etc/fedora-release ]]; then
+    for service in kde kde-fingerprint kde-smartcard; do
+        [[ -r "/etc/pam.d/$service" || -r "/usr/lib/pam.d/$service" ]] || {
+            echo "Missing KScreenLocker PAM policy: $service. Reinstall the matching owode-session RPM." >&2
+            exit 3
+        }
+    done
+fi
 kwin_help=$(kwin_wayland --help 2>&1)
 for option in --drm --xwayland --exit-with-session; do
     [[ "$kwin_help" == *"$option"* ]] || { echo "KWin lacks $option" >&2; exit 3; }

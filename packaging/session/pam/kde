@@ -1,0 +1,7 @@
+#%PAM-1.0
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Fedora vendor fallback for KScreenLocker, when /etc/pam.d/kde is absent.
+# Delegate password verification and account policy to authselect. Do not edit
+# authselect-generated files or add an authentication success bypass here.
+auth       substack     password-auth
+account    include      password-auth

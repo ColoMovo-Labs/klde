@@ -10,6 +10,9 @@ Source1: owode-session-client
 Source2: owode.desktop
 Source3: LICENSE
 Source4: org.owode.GnomeSettings.desktop
+Source5: pam-kde
+Source6: pam-kde-fingerprint
+Source7: pam-kde-smartcard
 Requires: klde-shell-preview = @VERSION@-@RELEASE@
 Requires: kwin >= 6.6
 Requires: layer-shell-qt >= 6.6
@@ -19,6 +22,8 @@ Requires: xorg-x11-server-Xwayland
 Requires: dbus-daemon
 Requires: dbus-tools
 Requires: bash
+Requires: pam
+Requires: /etc/pam.d/password-auth
 
 %description
 An opt-in Wayland session entry and launcher for owo Desktop Environment.
@@ -38,6 +43,11 @@ install -Dm755 start-owode %{buildroot}%{_bindir}/start-owode
 install -Dm755 owode-session-client %{buildroot}%{_libexecdir}/owode-session-client
 install -Dm644 owode.desktop %{buildroot}%{_datadir}/wayland-sessions/owode.desktop
 install -Dm644 org.owode.GnomeSettings.desktop %{buildroot}%{_datadir}/applications/org.owode.GnomeSettings.desktop
+# Linux-PAM's vendor directory is /usr/lib/pam.d even on x86_64, not lib64.
+# A distribution/administrator policy under /etc/pam.d always takes priority.
+install -Dm644 %{SOURCE5} %{buildroot}%{_prefix}/lib/pam.d/kde
+install -Dm644 %{SOURCE6} %{buildroot}%{_prefix}/lib/pam.d/kde-fingerprint
+install -Dm644 %{SOURCE7} %{buildroot}%{_prefix}/lib/pam.d/kde-smartcard
 
 %files
 %license LICENSE
@@ -45,3 +55,6 @@ install -Dm644 org.owode.GnomeSettings.desktop %{buildroot}%{_datadir}/applicati
 %{_libexecdir}/owode-session-client
 %{_datadir}/wayland-sessions/owode.desktop
 %{_datadir}/applications/org.owode.GnomeSettings.desktop
+%{_prefix}/lib/pam.d/kde
+%{_prefix}/lib/pam.d/kde-fingerprint
+%{_prefix}/lib/pam.d/kde-smartcard

@@ -143,6 +143,13 @@
               packaging/lockscreen/org.owode.shell/contents/lockscreen/LockScreen.qml
             test -s /usr/share/licenses/klde/lockscreen/GPL-2.0-or-later.txt
             rpm -q klde-shell-preview owode-session
+            dnf install -y --setopt=install_weak_deps=False shadow-utils
+            OWODE_CLOUD_PAM_TEST=1 python3 tools/cloud-locker-pam.py
+        - name: attach real PAM authentication evidence
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/locker-pam/summary.json"
         - name: attach Fedora packages
           image: cnbcool/attachments:latest
           settings:

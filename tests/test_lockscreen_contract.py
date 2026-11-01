@@ -39,6 +39,18 @@ class LockerContract(unittest.TestCase):
         self.assertNotIn('kwriteconfig', starter)
         self.assertNotIn('RequirePassword=false', starter)
 
+    def test_fedora_vendor_pam_uses_the_system_password_stack(self):
+        policy = (ROOT / 'packaging/session/pam/kde').read_text()
+        self.assertIn('auth       substack     password-auth', policy)
+        self.assertIn('account    include      password-auth', policy)
+        self.assertNotIn('pam_permit.so', policy)
+        for service in ('kde-fingerprint', 'kde-smartcard'):
+            optional = (ROOT / 'packaging/session/pam' / service).read_text()
+            self.assertIn('auth       requisite    pam_deny.so', optional)
+        spec = (ROOT / 'packaging/session/owode-session.spec.in').read_text()
+        self.assertIn('%{_prefix}/lib/pam.d/kde', spec)
+        self.assertNotIn('%{_sysconfdir}/pam.d/kde', spec)
+
 
 if __name__ == '__main__':
     unittest.main()

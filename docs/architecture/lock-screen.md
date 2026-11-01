@@ -7,6 +7,34 @@ package below; it never treats the Visual Lab window as a security boundary.
 
 ## Native KScreenLocker package
 
+### Fedora authentication policy
+
+Fedora's KScreenLocker 6.7.5 greeter uses the PAM service `kde`. The distribution
+ships `kde`, `kde-fingerprint` and `kde-smartcard` policies inside the full
+plasma-workspace package; installing kscreenlocker and plasma-workspace-libs
+alone does not install them. With none of these files on the reported host,
+Linux-PAM falls back to `other`, which explicitly uses pam_deny. Correct
+passwords are therefore rejected before a working password policy is reached.
+
+The Fedora owode-session RPM supplies small, original **vendor defaults** in
+`/usr/lib/pam.d`. The password service delegates to authselect's `password-auth`
+stack; no generated authselect file or global login/sudo policy is rewritten.
+An administrator or Plasma-supplied `/etc/pam.d/kde` policy takes precedence,
+avoiding a file ownership conflict with Plasma. Optional fingerprint/smartcard
+defaults explicitly deny until separately configured in `/etc/pam.d`; they do
+not inherit an accidental fallback or pretend biometric support is available.
+The login launcher checks for these required files before starting a session.
+
+After installing the matching Fedora RPM pair, the cloud-only command
+`OWODE_CLOUD_PAM_TEST=1 python3 tools/cloud-locker-pam.py` creates a disposable
+container user and tests the real PAM stack after dropping root privileges.
+It requires a correct synthetic password to succeed and a wrong password to
+fail, then deletes the account. It never changes PAM to permit authentication,
+uses no host password, and locks no session. This test supplements the native
+greeter loading gate; actual host greeter-to-PAM unlocking still needs owner
+acceptance. Neither screenshot success nor PAM-library success alone proves
+the complete lock/unlock lifecycle.
+
 `packaging/lockscreen/org.owode.shell` is a Plasma/Shell KPackage with lockscreen
 API version 2, installed in `share/plasma/shells/org.owode.shell`. It contains
 an original wallpaper/clock wrapper and three unchanged GPL-2.0-or-later

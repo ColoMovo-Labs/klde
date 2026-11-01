@@ -378,6 +378,8 @@ jobs:
           name: Verify Fedora RPM installation
           command: |
             dnf install -y artifacts/fedora-package/*.rpm
+            dnf install -y --setopt=install_weak_deps=False shadow-utils
+            OWODE_CLOUD_PAM_TEST=1 python3 tools/cloud-locker-pam.py
             rpm -q klde-shell-preview
             test -x /usr/bin/klde-shell
             runtime_dir="$(mktemp -d)"
