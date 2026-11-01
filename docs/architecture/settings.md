@@ -29,6 +29,11 @@ it does not establish that its UI or every service is functioning.
 
 The optional session RPM adds an owoDE-only GNOME Settings launcher with
 `TryExec`, without requiring GNOME Settings on machines where it is absent.
+`check-session-settings-entry.sh` verifies its `OnlyShowIn` matches the session's
+`DesktopNames`, as well as the exact child-only invocation. It validates the
+other fields with desktop-file-utils separately, because that tool's fixed
+environment-name table does not know owoDE. The installed file keeps the
+restriction intact.
 Cloud contracts use fake provider executables to verify argument boundaries,
 discovery, preview isolation and child-only identity. Manual acceptance still
 needs the actual installed GNOME panels and KWin KCMs on the owner's session.

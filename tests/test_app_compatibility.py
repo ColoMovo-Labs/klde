@@ -21,6 +21,10 @@ class ApplicationCompatibilityTest(unittest.TestCase):
         self.assertEqual(shlex.split(desktop['Exec']),
                          ['env', 'XDG_CURRENT_DESKTOP=GNOME', 'gnome-control-center'])
         self.assertEqual(desktop['OnlyShowIn'], 'owoDE;')
+        session = configparser.ConfigParser(interpolation=None)
+        session.read(path.with_name('owode.desktop'))
+        self.assertEqual(desktop['OnlyShowIn'], session['Desktop Entry']['DesktopNames'])
+        self.assertNotIn('NotShowIn', desktop)
         self.assertEqual(desktop['TryExec'], 'gnome-control-center')
         self.assertNotEqual(desktop.get('DBusActivatable', 'false'), 'true')
 

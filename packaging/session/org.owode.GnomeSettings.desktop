@@ -9,5 +9,5 @@ Exec=env XDG_CURRENT_DESKTOP=GNOME gnome-control-center
 TryExec=gnome-control-center
 Icon=org.gnome.Settings
 OnlyShowIn=owoDE;
-Categories=Settings;System;
+Categories=Settings;
 StartupNotify=true

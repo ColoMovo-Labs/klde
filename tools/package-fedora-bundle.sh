@@ -10,6 +10,7 @@ mkdir -p "$out_dir"
 out_dir="$(cd "$out_dir" && pwd)"
 
 test -f "$build_dir/cmake_install.cmake"
+bash tools/check-session-settings-entry.sh
 commit="${CIRCLE_SHA1:-$(git rev-parse HEAD)}"
 short_commit="${commit:0:12}"
 version="$(sed -n 's/^project(KLDE VERSION \([^ )]*\).*/\1/p' CMakeLists.txt | head -n 1)"
