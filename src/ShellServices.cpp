@@ -30,6 +30,7 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
     engine->addImageProvider("applications",
                              new ApplicationIconProvider(services->desktopApplications()));
     if (engine->property("owodeSystemApplications").toBool()) {
+        services->m_systemSettings.setEnabled(true);
         // Only real sessions read or write preferences; previews stay deterministic.
         services->m_settings.enablePersistence(
             QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) +
@@ -122,6 +123,8 @@ ShellServices::ShellServices(QObject *parent)
     connect(&m_windowManager, &WindowManagerBackend::requestRejected, this,
             &ShellServices::showNotice);
     connect(&m_scenes, &PowerSceneController::requestRejected, this, &ShellServices::showNotice);
+    connect(&m_systemSettings, &SystemSettingsBridge::failed, this,
+            [this] { showNotice(tr("System settings could not be started")); });
     connect(&m_weather, &WeatherService::changed, this, &ShellServices::weatherChanged);
     connect(&m_system, &SystemBackend::osdRequested, this, &ShellServices::showOsd);
     connect(&m_state, &SystemStateModel::valueEdited, this, &ShellServices::projectState);

@@ -162,7 +162,7 @@
   "language.cute": "可爱版 🐾",
   "language.english": "English (Global)",
   "language.chinese": "简体中文",
-  "language.session": "这些选项只影响当前预览，不会更改系统区域设置。",
+  "language.session": "界面语言与语气属于 owoDE 偏好；地区、时区和键盘／输入法是独立设置。",
   "language.close": "关闭语言与输入设置",
   "language.sample": "预览",
   "language.input-test": "在这里试试中文与 English 混合输入…",
@@ -602,7 +602,7 @@
   "settings.workspaces.help": "每个工作区可以单独选择窗口布局。",
   "settings.workspaces.unsupported": "当前窗口管理器暂不支持由 owoDE 切换工作区布局。",
   "settings.workspaces.name": "工作区 %1",
-  "settings.displays.readonly": "分辨率、缩放、排列和主屏在这里只读：owoDE 还没有接入 KWin output-management 的写入。请在 KDE 的“显示配置”（kcmshell6 kcm_kscreen）中修改。",
+  "settings.displays.readonly": "分辨率、缩放、排列和主屏目前只读。安装 KDE 显示配置后，可通过下方按钮修改。",
   "settings.displays.geometry": "%1 × %2 逻辑像素 · 位置 %3, %4",
   "settings.network.off": "Wi-Fi 已关闭",
   "settings.network.connected": "已连接到 %1",
@@ -645,5 +645,14 @@
   "settings.about.source.wallpaper": "壁纸景深效果",
   "settings.about.source.lock": "锁屏预览",
   "island.expand": "展开详情",
-  "island.collapse": "收起详情"
+  "island.collapse": "收起详情",
+  "settings.bridge.open": "在系统设置中打开",
+  "settings.bridge.missing": "尚未安装对应的系统设置组件。",
+  "settings.bridge.network": "管理网络连接…",
+  "settings.bridge.bluetooth": "配对蓝牙设备…",
+  "settings.bridge.sound": "选择声音设备…",
+  "settings.bridge.window-rules": "编辑窗口规则…",
+  "settings.bridge.region": "打开区域与系统设置…",
+  "settings.bridge.kscreen-missing": "尚未安装 KDE 显示配置；Fedora 可安装 kscreen 软件包后使用此按钮。",
+  "settings.bridge.start-failed": "无法启动系统设置"
 }

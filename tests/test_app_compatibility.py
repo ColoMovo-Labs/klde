@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Check process-local identity without altering host/session/portal state."""
+import configparser
 import json
 import os
 from pathlib import Path
 import subprocess
+import shlex
 import sys
 import unittest
 
@@ -11,6 +13,17 @@ WRAPPER = Path(__file__).resolve().parents[1] / 'packaging/owode-run'
 
 
 class ApplicationCompatibilityTest(unittest.TestCase):
+    def test_settings_entry_keeps_identity_local_to_the_child(self):
+        path = WRAPPER.parent / 'session/org.owode.GnomeSettings.desktop'
+        entry = configparser.ConfigParser(interpolation=None)
+        entry.read(path)
+        desktop = entry['Desktop Entry']
+        self.assertEqual(shlex.split(desktop['Exec']),
+                         ['env', 'XDG_CURRENT_DESKTOP=GNOME', 'gnome-control-center'])
+        self.assertEqual(desktop['OnlyShowIn'], 'owoDE;')
+        self.assertEqual(desktop['TryExec'], 'gnome-control-center')
+        self.assertNotEqual(desktop.get('DBusActivatable', 'false'), 'true')
+
     def test_profiles_preserve_session_and_argument_boundaries(self):
         probe = 'import os,sys,json;print(json.dumps({"env":dict(os.environ),"args":sys.argv[1:]}))'
         env = dict(os.environ, XDG_CURRENT_DESKTOP='owoDE', XDG_SESSION_DESKTOP='owode',

@@ -96,5 +96,17 @@ Item {
             compare(Shell.settings.values["appearance.accent"], "lilac");
             verify(!Shell.settings.persistent);
         }
+        function test_systemSettingsRemainDisabledInPreview(): void {
+            verify(!Shell.systemSettings.enabled);
+            for (const page of ["network", "sound", "displays", "workspaces", "language", "about"]) {
+                center.openPage(page);
+                const loader = findChild(center, "settingsPageLoader");
+                tryVerify(() => loader.status === Loader.Ready && loader.item !== null);
+                const panel = page === "network" ? "network" : page === "sound" ? "sound" : page === "displays" ? "kcm_kscreen" : page === "workspaces" ? "kcm_kwin_virtualdesktops" : "system";
+                const button = findChild(loader.item, "systemSettings-" + panel);
+                verify(button !== null);
+                verify(!button.enabled);
+            }
+        }
     }
 }

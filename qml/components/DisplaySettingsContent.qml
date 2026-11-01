@@ -48,6 +48,10 @@ ColumnLayout {
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
     }
+    SystemSettingsButton {
+        panel: "kcm_kscreen"
+        missingMessage: I18n.t("settings.bridge.kscreen-missing")
+    }
     Repeater {
         objectName: "settingsScreens"
         model: Shell.screens

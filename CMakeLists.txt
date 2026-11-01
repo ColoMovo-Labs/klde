@@ -113,6 +113,7 @@ set(klde_qml_files
     qml/components/DisplaySettingsContent.qml qml/components/NetworkSettingsContent.qml
     qml/components/SoundSettingsContent.qml qml/components/AboutSettingsContent.qml
     qml/components/ActionButton.qml qml/components/ChoiceBox.qml
+    qml/components/SystemSettingsButton.qml
     qml/components/LanguageInputSettingsContent.qml qml/components/InputPopup.qml
     qml/widgets/WidgetHost.qml qml/widgets/WeatherWidget.qml
     qml/effects/OwnedBlurSample.qml qml/effects/BlurLab.qml qml/effects/OwnedBackdrop.qml

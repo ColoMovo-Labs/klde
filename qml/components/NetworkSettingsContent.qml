@@ -49,4 +49,12 @@ ColumnLayout {
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
     }
+    SystemSettingsButton {
+        panel: "network"
+        label: I18n.t("settings.bridge.network")
+    }
+    SystemSettingsButton {
+        panel: "bluetooth"
+        label: I18n.t("settings.bridge.bluetooth")
+    }
 }

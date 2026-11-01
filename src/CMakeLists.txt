@@ -26,6 +26,7 @@ qt_add_qml_module(klde_backends STATIC
         platform/common/DisplayServerBackend.h platform/common/DisplayServerBackend.cpp
         platform/common/SessionRuntimeBackend.h platform/common/SessionRuntimeBackend.cpp
         platform/common/ScreenModel.h platform/common/ScreenModel.cpp
+        platform/common/SystemSettingsBridge.h platform/common/SystemSettingsBridge.cpp
         platform/wayland/NativeSurfaceController.h platform/wayland/NativeSurfaceController.cpp
         mock/SystemStateModel.h mock/SystemStateModel.cpp
         settings/ShellSettings.h settings/ShellSettings.cpp

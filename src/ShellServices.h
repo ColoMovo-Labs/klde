@@ -21,6 +21,7 @@
 #include "platform/common/DisplayServerBackend.h"
 #include "platform/common/ScreenModel.h"
 #include "platform/common/SessionRuntimeBackend.h"
+#include "platform/common/SystemSettingsBridge.h"
 #include "platform/wayland/NativeSurfaceController.h"
 #include "settings/ShellSettings.h"
 #include "shortcuts/ShortcutRegistry.h"
@@ -56,6 +57,7 @@ class ShellServices final : public QObject {
     Q_PROPERTY(klde::ScreenModel *screens READ screens CONSTANT)
     Q_PROPERTY(klde::SystemStateModel *state READ state CONSTANT)
     Q_PROPERTY(klde::ShellSettings *settings READ settings CONSTANT)
+    Q_PROPERTY(klde::SystemSettingsBridge *systemSettings READ systemSettings CONSTANT)
     Q_PROPERTY(klde::MockScenarioManager *mockScenarios READ mockScenarios CONSTANT)
     Q_PROPERTY(klde::NotificationModel *notifications READ notifications CONSTANT)
     Q_PROPERTY(klde::StatusModuleRegistry *ribbon READ ribbon CONSTANT)
@@ -94,6 +96,7 @@ class ShellServices final : public QObject {
     ScreenModel *screens() { return &m_screens; }
     SystemStateModel *state() { return &m_state; }
     ShellSettings *settings() { return &m_settings; }
+    SystemSettingsBridge *systemSettings() { return &m_systemSettings; }
     MockScenarioManager *mockScenarios() { return &m_mockScenarios; }
     NotificationModel *notifications() { return &m_notifications; }
     StatusModuleRegistry *ribbon() { return &m_ribbon; }
@@ -151,6 +154,7 @@ class ShellServices final : public QObject {
     ScreenModel m_screens;
     SystemStateModel m_state;
     ShellSettings m_settings;
+    SystemSettingsBridge m_systemSettings;
     MockScenarioManager m_mockScenarios;
     MockTimeBackend m_time;
     std::unique_ptr<SystemTimeBackend> m_systemTime;

@@ -41,4 +41,11 @@ ColumnLayout {
             }
         }
     }
+    SystemSettingsButton {
+        panel: "kcm_kwin_virtualdesktops"
+    }
+    SystemSettingsButton {
+        panel: "kcm_kwinrules"
+        label: I18n.t("settings.bridge.window-rules")
+    }
 }

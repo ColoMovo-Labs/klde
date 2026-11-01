@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+[Desktop Entry]
+Type=Application
+Name=System Settings (GNOME)
+Name[zh_CN]=系统设置（GNOME）
+Comment=Open installed GNOME Settings with a process-local desktop identity
+Comment[zh_CN]=仅为设置进程调整桌面标识，打开已安装的 GNOME 系统设置
+Exec=env XDG_CURRENT_DESKTOP=GNOME gnome-control-center
+TryExec=gnome-control-center
+Icon=org.gnome.Settings
+OnlyShowIn=owoDE;
+Categories=Settings;System;
+StartupNotify=true

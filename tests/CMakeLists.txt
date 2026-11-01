@@ -40,6 +40,11 @@ target_link_libraries(owode-settings-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME settings-store COMMAND owode-settings-test)
 set_tests_properties(settings-store PROPERTIES LABELS unit TIMEOUT 30)
 
+qt_add_executable(owode-system-settings-test test_system_settings.cpp)
+target_link_libraries(owode-system-settings-test PRIVATE klde_backends Qt6::Test)
+add_test(NAME system-settings-bridge COMMAND owode-system-settings-test)
+set_tests_properties(system-settings-bridge PROPERTIES LABELS unit TIMEOUT 30)
+
 qt_add_executable(klde-weather-test test_weather.cpp)
 target_link_libraries(klde-weather-test PRIVATE klde_backends Qt6::Test)
 add_test(NAME weather-contracts COMMAND klde-weather-test)

@@ -119,4 +119,8 @@ ColumnLayout {
         Layout.fillWidth: true
         wrapMode: Text.WordWrap
     }
+    SystemSettingsButton {
+        panel: "system"
+        label: I18n.t("settings.bridge.region")
+    }
 }

@@ -36,4 +36,8 @@ ColumnLayout {
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
     }
+    SystemSettingsButton {
+        panel: "sound"
+        label: I18n.t("settings.bridge.sound")
+    }
 }

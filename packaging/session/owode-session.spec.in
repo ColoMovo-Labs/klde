@@ -9,6 +9,7 @@ Source0: start-owode
 Source1: owode-session-client
 Source2: owode.desktop
 Source3: LICENSE
+Source4: org.owode.GnomeSettings.desktop
 Requires: klde-shell-preview = @VERSION@-@RELEASE@
 Requires: kwin >= 6.6
 Requires: layer-shell-qt >= 6.6
@@ -25,7 +26,7 @@ of production readiness. Plasma Shell is not required.
 
 %prep
 %setup -q -c -T
-cp -p %{SOURCE0} %{SOURCE1} %{SOURCE2} %{SOURCE3} .
+cp -p %{SOURCE0} %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} .
 
 %build
 # Scripts and metadata only. The matching shell is built separately in cloud CI.
@@ -34,9 +35,11 @@ cp -p %{SOURCE0} %{SOURCE1} %{SOURCE2} %{SOURCE3} .
 install -Dm755 start-owode %{buildroot}%{_bindir}/start-owode
 install -Dm755 owode-session-client %{buildroot}%{_libexecdir}/owode-session-client
 install -Dm644 owode.desktop %{buildroot}%{_datadir}/wayland-sessions/owode.desktop
+install -Dm644 org.owode.GnomeSettings.desktop %{buildroot}%{_datadir}/applications/org.owode.GnomeSettings.desktop
 
 %files
 %license LICENSE
 %{_bindir}/start-owode
 %{_libexecdir}/owode-session-client
 %{_datadir}/wayland-sessions/owode.desktop
+%{_datadir}/applications/org.owode.GnomeSettings.desktop

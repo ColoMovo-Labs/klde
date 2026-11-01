@@ -153,4 +153,7 @@ ColumnLayout {
             }
         }
     }
+    SystemSettingsButton {
+        panel: "system"
+    }
 }

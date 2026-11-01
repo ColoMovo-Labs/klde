@@ -1,5 +1,44 @@
 # Settings center and persistence
 
+## Installed system settings
+
+`Shell.systemSettings` supplies fixed entry points to installed GNOME Settings
+panels and KWin KCMs. Network, sound, displays, workspaces, language and About
+pages link to these providers instead of pretending their settings are already
+implemented by owoDE. This is an interim bridge, not a dependency on Plasma Shell.
+
+GNOME entry points: `wifi`, `network`, `bluetooth`, `sound`, `printers`,
+`online-accounts`, `applications`, `system`. Only the launched GNOME Settings
+process receives `XDG_CURRENT_DESKTOP=GNOME`. The session bus, actual session
+identity, display sockets and shell environment remain inherited. Other panels
+are not direct bridge targets. The external application can still navigate to
+its own other pages; this bridge is not a sandbox around GNOME Settings.
+
+KWin entry points: `kcm_kscreen`, `kcm_kwinoptions`,
+`kcm_kwin_virtualdesktops`, `kcm_kwinrules`, `kcm_kwintabbox`,
+`kcm_kwinscreenedges`. Discovery requires both `kcmshell6` and the corresponding
+Qt plugin, checking QML and QWidget KCM directories. Screen-locker configuration
+is deliberately excluded. No command is constructed from arbitrary shell text.
+
+Visual Lab and mock previews cannot launch these controls, even through a direct
+bridge call. System application mode enables the bridge. Missing components
+disable their buttons; missing `kcm_kscreen` explains that Fedora's optional
+`kscreen` package is needed. Availability refreshes when a settings page opens
+and before a launch. A successful launch means the provider process started;
+it does not establish that its UI or every service is functioning.
+
+The optional session RPM adds an owoDE-only GNOME Settings launcher with
+`TryExec`, without requiring GNOME Settings on machines where it is absent.
+Cloud contracts use fake provider executables to verify argument boundaries,
+discovery, preview isolation and child-only identity. Manual acceptance still
+needs the actual installed GNOME panels and KWin KCMs on the owner's session.
+
+维护者验收：打开设置中心的网络、声音、显示器、工作区、语言和关于页面。
+已安装的面板应能通过按钮打开，未安装的显示配置应提示缺少组件；普通 Mock
+预览中的按钮应禁用。打开 GNOME 设置后，原有应用应继续正常运行，owoDE 会话
+标识不应改变。语言页的系统设置入口不会替你安装或启动 Fcitx，也不代表输入法
+问题已经解决。
+
 The settings center (`qml/components/SettingsCenter.qml`) is the single place
 for owoDE preferences. A category list on the left selects a page on the right.
 Pages reuse the content that used to live in separate popups

@@ -162,7 +162,7 @@
   "language.cute": "Cute / AwA 🐾",
   "language.english": "English (Global)",
   "language.chinese": "简体中文",
-  "language.session": "These choices affect this preview session, not the system locale.",
+  "language.session": "Interface language and tone are owoDE preferences. Region, timezone and keyboard/input methods are separate settings.",
   "language.close": "Close Language & Input",
   "language.sample": "Preview",
   "language.input-test": "Try mixed Chinese and English input here…",
@@ -602,7 +602,7 @@
   "settings.workspaces.help": "Each workspace keeps its own window layout.",
   "settings.workspaces.unsupported": "The current window manager does not let owoDE change workspace layouts yet.",
   "settings.workspaces.name": "Workspace %1",
-  "settings.displays.readonly": "Resolution, scale, arrangement and the primary display are read-only here: owoDE does not write KWin output management yet. Change them in KDE Display Configuration (kcmshell6 kcm_kscreen).",
+  "settings.displays.readonly": "Resolution, scale, arrangement and the primary display are read-only here. If KDE Display Configuration is installed, open it below to change them.",
   "settings.displays.geometry": "%1 × %2 logical pixels · position %3, %4",
   "settings.network.off": "Wi-Fi is off",
   "settings.network.connected": "Connected to %1",
@@ -645,5 +645,14 @@
   "settings.about.source.wallpaper": "Wallpaper depth effects",
   "settings.about.source.lock": "Lock screen preview",
   "island.expand": "Expand details",
-  "island.collapse": "Collapse details"
+  "island.collapse": "Collapse details",
+  "settings.bridge.open": "Open in system settings",
+  "settings.bridge.missing": "The matching settings component is not installed.",
+  "settings.bridge.network": "Manage network connections…",
+  "settings.bridge.bluetooth": "Pair Bluetooth devices…",
+  "settings.bridge.sound": "Choose audio devices…",
+  "settings.bridge.window-rules": "Edit window rules…",
+  "settings.bridge.region": "Open region and system settings…",
+  "settings.bridge.kscreen-missing": "KDE Display Configuration is not installed. On Fedora, install the kscreen package to enable this button.",
+  "settings.bridge.start-failed": "System settings could not be started"
 }
