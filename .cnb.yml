@@ -135,6 +135,14 @@
             for artifact in artifacts/fedora-package/*.tar.gz artifacts/fedora-package/*.rpm; do
               test -s "$artifact"
             done
+        - name: verify Fedora RPM installation and packaged locker files
+          script: |
+            set -eu
+            dnf install -y --setopt=install_weak_deps=False artifacts/fedora-package/*.rpm
+            cmp /usr/share/plasma/shells/org.owode.shell/contents/lockscreen/LockScreen.qml \
+              packaging/lockscreen/org.owode.shell/contents/lockscreen/LockScreen.qml
+            test -s /usr/share/licenses/klde/lockscreen/GPL-2.0-or-later.txt
+            rpm -q klde-shell-preview owode-session
         - name: attach Fedora packages
           image: cnbcool/attachments:latest
           settings:

@@ -29,6 +29,12 @@ set(CPACK_RPM_PACKAGE_GROUP "User Interface/Desktops")
 set(CPACK_RPM_PACKAGE_REQUIRES
     "qt6-qtbase-gui, qt6-qtdeclarative, qt6-qtsvg, qt6-qtwayland, layer-shell-qt, dejavu-sans-fonts, google-noto-sans-cjk-vf-fonts, google-noto-color-emoji-fonts")
 set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+# These directories belong to Fedora's filesystem/icon/Plasma packages. Own
+# our files and org.owode.shell subtree, not another package's shared parents.
+set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
+    /usr/share/applications /usr/share/icons /usr/share/icons/hicolor
+    /usr/share/icons/hicolor/scalable /usr/share/icons/hicolor/scalable/apps
+    /usr/share/licenses /usr/share/pixmaps /usr/share/plasma /usr/share/plasma/shells)
 
 install(FILES "${CMAKE_SOURCE_DIR}/packaging/debian/copyright"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/klde-shell-preview")

@@ -3,6 +3,9 @@
 # Package an already cloud-built Fedora install tree. This script does not
 # compile; it is intentionally called after the Fedora CI build and tests.
 set -euo pipefail
+# CNB workers may inherit umask 0000. RPM must not assign world-writable
+# metadata to shared system directories or conflict with Fedora's filesystem.
+umask 022
 
 build_dir="$(realpath "${1:?Pass the cloud-built CMake directory}")"
 out_dir="${2:-artifacts/fedora}"
