@@ -35,21 +35,6 @@ ShellPopup {
         if (window && window.closeable)
             Shell.windowManager.closeWindow(window.id);
     }
-    Keys.onPressed: event => {
-        if (event.key === Qt.Key_Left || event.key === Qt.Key_Up) {
-            currentIndex = Math.max(0, currentIndex - 1);
-            event.accepted = true;
-        } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
-            currentIndex = Math.min(visibleWindows.length - 1, currentIndex + 1);
-            event.accepted = true;
-        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            activate(currentIndex);
-            event.accepted = true;
-        } else if (event.key === Qt.Key_Delete) {
-            closeWindow(currentIndex);
-            event.accepted = true;
-        }
-    }
     contentItem: ColumnLayout {
         spacing: Tokens.space16
         PanelHeaderForm {
@@ -80,6 +65,21 @@ ShellPopup {
             keyNavigationWraps: false
             currentIndex: root.currentIndex
             onCurrentIndexChanged: root.currentIndex = currentIndex
+            Keys.onPressed: event => {
+                if (event.key === Qt.Key_Left || event.key === Qt.Key_Up) {
+                    root.currentIndex = Math.max(0, root.currentIndex - 1);
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
+                    root.currentIndex = Math.min(root.visibleWindows.length - 1, root.currentIndex + 1);
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    root.activate(root.currentIndex);
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Delete) {
+                    root.closeWindow(root.currentIndex);
+                    event.accepted = true;
+                }
+            }
             delegate: Button {
                 id: card
                 required property var modelData
