@@ -5,9 +5,14 @@
   "license": "GPL-2.0-or-later",
   "source": "https://github.com/KDE/kscreenlocker",
   "files_sha256": {
-    "Greeter.qml": "04eba130853de8a4e3541332c27e8ed17da49ad9cb4ad7ad78c4b7685fb6800f",
+    "Greeter.qml": "639bc8434d546fe2d64f41a197f0bb43967c221a60ee3634eac54550705cca38",
     "PasswordSync.qml": "94fd1d117213e4ff0f7aad48eb12d8a6b937312ae190d5df583ed04c6e6841f5",
     "qmldir": "5659e5885fdec064fbe9e615e7484c93c427624da91331e8b30c04e181acefa0"
   },
-  "modifications": "None. Original PAM-facing Greeter, PasswordSync and qmldir retained; owoDE supplies a separate original LockScreen.qml."
+  "modifications": "2026-11-01: Greeter.qml defers secret replies with Qt.callLater and ignores cleared prompts, for KScreenLocker asynchronous PAM-worker compatibility. Authentication and successful exit remain system-owned. PasswordSync.qml and qmldir are unchanged.",
+  "upstream_files_sha256": {
+    "Greeter.qml": "04eba130853de8a4e3541332c27e8ed17da49ad9cb4ad7ad78c4b7685fb6800f",
+    "PasswordSync.qml": "94fd1d117213e4ff0f7aad48eb12d8a6b937312ae190d5df583ed04c6e6841f5",
+    "qmldir": "5659e5885fdec064fbe9e615e7484c93c427624da91331e8b30c04e181acefa0"
+  }
 }

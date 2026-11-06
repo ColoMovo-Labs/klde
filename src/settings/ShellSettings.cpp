@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QSettings>
 
 namespace klde {
@@ -199,6 +200,20 @@ void ShellSettings::store(const QString &key) const {
         file.remove(storageKey(key));
     file.setValue(QStringLiteral("meta/version"), CurrentVersion);
     file.sync();
+}
+
+bool ShellSettings::publishLockAppearance(bool transparency, bool blurEnabled, int blurQuality,
+                                          bool darkMode) {
+    if (!persistent() || blurQuality < 0 || blurQuality > 3)
+        return false;
+    QSettings file(QFileInfo(m_path).dir().filePath(QStringLiteral("lockscreen.conf")),
+                   QSettings::IniFormat);
+    file.setValue(QStringLiteral("Appearance/transparencyEnabled"), transparency);
+    file.setValue(QStringLiteral("Appearance/blurEnabled"), blurEnabled);
+    file.setValue(QStringLiteral("Appearance/blurQuality"), blurQuality);
+    file.setValue(QStringLiteral("Appearance/darkMode"), darkMode);
+    file.sync();
+    return file.status() == QSettings::NoError;
 }
 
 } // namespace klde

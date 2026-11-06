@@ -11,11 +11,15 @@ Glow Sans font evaluation is documented below.
 ## Native KScreenLocker presentation
 
 `packaging/lockscreen/org.owode.shell/contents/lockscreen/{Greeter.qml,PasswordSync.qml,qmldir}`
-are byte-identical copies from [KDE KScreenLocker 6.7.5](https://github.com/KDE/kscreenlocker/tree/057b3774d9ad322cfccc2683ea057aed87e0f878/greeter/fallbacktheme),
+originate from [KDE KScreenLocker 6.7.5](https://github.com/KDE/kscreenlocker/tree/057b3774d9ad322cfccc2683ea057aed87e0f878/greeter/fallbacktheme),
 commit `057b3774d9ad322cfccc2683ea057aed87e0f878`. Their original Martin
 Gräßlin, Nate Graham and Yifan Zhu copyright/SPDX notices are retained.
 They are GPL-2.0-or-later, compatible with the project's GPL-3.0-or-later
-combination. Exact hashes, file mapping and lack of modifications are recorded
+combination. On 2026-11-01 owoDE adapted `Greeter.qml` to defer the secret reply
+until the asynchronous system PAM worker has registered its pending prompt,
+and to ignore prompt-clear notifications. Authentication decisions and successful
+exit remain with the system authenticator. `PasswordSync.qml` and `qmldir` are
+unchanged. Original and installed hashes and modifications are recorded
 in [the manifest](../../packaging/lockscreen/upstream.json); the complete GPL
 text is in `LICENSES/GPL-2.0-or-later.txt`. Both are installed with the package.
 

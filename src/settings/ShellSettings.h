@@ -46,6 +46,9 @@ class ShellSettings : public QObject {
     // Rejects unknown keys and values outside the key's type or range.
     Q_INVOKABLE bool setValue(const QString &key, const QVariant &value);
     Q_INVOKABLE void reset(const QString &key);
+    // An appearance-only snapshot for the separate system locker process.
+    Q_INVOKABLE bool publishLockAppearance(bool transparency, bool blurEnabled, int blurQuality,
+                                           bool darkMode);
     Q_INVOKABLE bool contains(const QString &key) const { return m_schema.contains(key); }
     QStringList keys() const { return m_schema.keys(); }
     // Registers a key. An invalid default means "unset": value() returns an

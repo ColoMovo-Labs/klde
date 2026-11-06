@@ -149,12 +149,15 @@ jobs:
           command: |
             dnf install -y --setopt=install_weak_deps=False gnome-calculator kcalc adwaita-icon-theme breeze-icon-theme
             dnf install -y artifacts/fedora-package/*.rpm
+            OWODE_CLOUD_UNLOCK_TEST=1 python3 tools/cloud-locker-unlock.py /usr
             bash tools/login-session-smoke.sh build/fedora artifacts/login-session
             dnf remove -y owode-session
             test ! -e /usr/share/wayland-sessions/owode.desktop
             test ! -e /usr/bin/start-owode
       - store_artifacts:
           path: artifacts/login-session
+      - store_artifacts:
+          path: artifacts/locker-unlock
       - run:
           name: Verify native KWin roles, input, focus and maximization
           command: |

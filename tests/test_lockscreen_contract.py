@@ -11,7 +11,7 @@ PACKAGE = ROOT / 'packaging/lockscreen/org.owode.shell'
 
 
 class LockerContract(unittest.TestCase):
-    def test_upstream_authentication_presentation_is_unchanged(self):
+    def test_upstream_authentication_provenance(self):
         manifest = json.loads((PACKAGE.parent / 'upstream.json').read_text())
         self.assertEqual(manifest['license'], 'GPL-2.0-or-later')
         self.assertEqual(manifest['commit'], '057b3774d9ad322cfccc2683ea057aed87e0f878')
@@ -19,6 +19,13 @@ class LockerContract(unittest.TestCase):
             content = (PACKAGE / 'contents/lockscreen' / name).read_bytes()
             self.assertEqual(hashlib.sha256(content).hexdigest(), expected)
             self.assertIn(b'SPDX-License-Identifier: GPL-2.0-or-later', content)
+
+    def test_secret_reply_is_deferred_until_the_worker_is_ready(self):
+        greeter = (PACKAGE / 'contents/lockscreen/Greeter.qml').read_text()
+        self.assertIn('Qt.callLater(function()', greeter)
+        self.assertIn('authenticator.promptForSecret.length > 0', greeter)
+        self.assertIn('authenticator.respond(password.text)', greeter)
+        self.assertIn('Modified 2026-11-01', greeter)
 
     def test_package_uses_supported_shell_api_without_the_missing_session_plugin(self):
         metadata = json.loads((PACKAGE / 'metadata.json').read_text())

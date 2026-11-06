@@ -25,59 +25,22 @@ Item {
     Keys.onEscapePressed: if (root.authentication)
         root.stateName = "ambient"
 
-    Rectangle {
+    LockLandscape {
+        id: lockLandscape
         anchors.fill: parent
-        color: Tokens.background
-    }
-    WallpaperLayers {
-        anchors.fill: parent
-        lockPreview: true
-    }
-    Image {
-        anchors.fill: parent
-        visible: root.depthState && root.effects.foregroundAsset.length > 0
-        source: visible ? root.effects.foregroundAsset : ""
-        sourceSize: Qt.size(width * Screen.devicePixelRatio, height * Screen.devicePixelRatio)
-        fillMode: Image.PreserveAspectCrop
-        scale: 1 + [0, Tokens.depthLow, Tokens.depthMedium, Tokens.depthHigh][root.effects.depthTier]
-    }
-    Rectangle {
-        anchors.fill: parent
-        color: Tokens.darkMode ? "#3210182b" : "#22ffffff"
-    }
-
-    LockCompositionForm {
-        id: ambientComposition
-        visible: !root.authentication
-        anchors.fill: parent
-        showSampleClock: false
-        Column {
-            id: ambientStack
-            parent: ambientComposition.clockHost
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: Tokens.space12
-            DisplayClock {
-                id: lockClock
-                objectName: "lockAmbientClock"
-                anchors.horizontalCenter: parent.horizontalCenter
-                pixelSize: Math.min(204, Math.max(144, root.height * 0.18))
-            }
-            Label {
-                id: lockDate
-                objectName: "lockAmbientDate"
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: I18n.date(root.snapshot.time, false)
-                color: Tokens.textPrimary
-                font: Tokens.title
-            }
-            Label {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: root.depthState ? I18n.t("lock.depth") : root.fallbackState ? I18n.t("lock.fallback") : I18n.t("lock.mock")
-                color: Tokens.textSecondary
-                font: Tokens.caption
-            }
-        }
+        readonly property string choice: root.snapshot.appearance.wallpaper
+        readonly property string stem: choice === "snow" ? Tokens.darkMode ? "first-night" : "first-light" : choice + (Tokens.darkMode ? "-night" : "")
+        wallpaperSource: "qrc:/assets/wallpapers/" + stem + ".svg"
+        foregroundSource: "qrc:/assets/wallpapers/snow-mountains" + (Tokens.darkMode ? "-night" : "") + ".svg"
+        clockFontSource: "qrc:/assets/fonts/rubik/Rubik[wght].ttf"
+        depthEnabled: choice === "snow" && !root.fallbackState
+        timeText: Shell.time.reading.timeText
+        dateText: I18n.date(Shell.time.reading.dateTime, false)
+        clockColor: Tokens.darkMode ? Tokens.primary : "#173b61"
+        dateColor: Tokens.textPrimary
+        transparencyEnabled: Tokens.transparencyEnabled
+        blurEnabled: Shell.scenes.current.visual.blurEnabled
+        blurQuality: Shell.scenes.current.visual.blurQuality
     }
 
     Label {
@@ -212,8 +175,8 @@ Item {
     GeometryDebugOverlay {
         anchors.fill: parent
         debugEnabled: Tokens.debugGeometry
-        targetItems: root.authentication ? [authPanel, passwordField] : [ambientComposition, lockClock, lockDate]
-        contentItems: root.authentication ? [authColumn] : [ambientStack]
-        textItems: root.authentication ? [passwordField] : [lockDate]
+        targetItems: root.authentication ? [authPanel, passwordField] : [lockLandscape]
+        contentItems: root.authentication ? [authColumn] : []
+        textItems: root.authentication ? [passwordField] : []
     }
 }

@@ -22,6 +22,7 @@ qt_add_qml_module(owode_visuals STATIC
         LanguageForm.ui.qml
         LauncherForm.ui.qml
         LockCompositionForm.ui.qml
+        LockLandscape.qml
         MonetPalette.qml
         NotificationCardForm.ui.qml
         OsdForm.ui.qml

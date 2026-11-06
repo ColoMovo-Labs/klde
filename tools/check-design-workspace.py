@@ -16,6 +16,8 @@ for form in (root / "design").rglob("*.ui.qml"):
     assert not re.search(r"\bon[A-Z]\w*\s*:", text), (form, "Signal handler belongs in .qml")
     assert not re.search(r"\b(?:function|Behavior|Binding|Canvas|ShaderEffect|Timer|Transform)\b", text), (form, "Unsupported UI form construct")
     assert "KLDE.Backends" not in text, (form, "Native/mock C++ backend in designer")
-    if form.parent == module:
+    # ThemeValues is also installed alone in the minimal KScreenLocker package;
+    # it deliberately has no dependency on the complete Owo.Visuals module.
+    if form.parent == module and form.name != "ThemeValues.ui.qml":
         assert "import Owo.Visuals" in text, (form, "Standalone QDS editing needs an explicit visual-module import")
 print(f"Visual workspace: {len(files)} registered shared components, UI-form subset checked")

@@ -13,22 +13,21 @@ LabPanel {
         implicitHeight: Tokens.settingsWidth * 0.65
         radius: Tokens.radiusXL
         clip: true
-        WallpaperLayers {
+        LockLandscape {
             anchors.fill: parent
-            lockPreview: true
-        }
-        Column {
-            anchors.centerIn: parent
-            spacing: Tokens.space12
-            DisplayClock {
-                pixelSize: Tokens.workingClockSize * 1.7
-            }
-            Label {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: I18n.date(Shell.time.reading.dateTime, false)
-                color: Tokens.textPrimary
-                font: Tokens.label
-            }
+            readonly property string choice: Shell.state.snapshot.appearance.wallpaper
+            readonly property string stem: choice === "snow" ? Tokens.darkMode ? "first-night" : "first-light" : choice + (Tokens.darkMode ? "-night" : "")
+            wallpaperSource: "qrc:/assets/wallpapers/" + stem + ".svg"
+            foregroundSource: "qrc:/assets/wallpapers/snow-mountains" + (Tokens.darkMode ? "-night" : "") + ".svg"
+            clockFontSource: "qrc:/assets/fonts/rubik/Rubik[wght].ttf"
+            depthEnabled: choice === "snow"
+            timeText: Shell.time.reading.timeText
+            dateText: I18n.date(Shell.time.reading.dateTime, false)
+            clockColor: Tokens.darkMode ? Tokens.primary : "#173b61"
+            dateColor: Tokens.textPrimary
+            transparencyEnabled: Tokens.transparencyEnabled
+            blurEnabled: Shell.scenes.current.visual.blurEnabled
+            blurQuality: Shell.scenes.current.visual.blurQuality
         }
     }
     Label {

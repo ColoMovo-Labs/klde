@@ -1,9 +1,14 @@
 /*
 SPDX-FileCopyrightText: 2011 Martin Gräßlin <mgraesslin@kde.org>
 SPDX-FileCopyrightText: 2023 Nate Graham <nate@kde.org>
+SPDX-FileCopyrightText: 2026 KLDE contributors
 
 SPDX-License-Identifier: GPL-2.0-or-later
 */
+
+// Modified 2026-11-01: defer a secret response until KScreenLocker has installed
+// its pending PAM/DBus prompt; ignore prompt-clear notifications. Authentication
+// and authenticated exit remain entirely owned by the system authenticator.
 
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
@@ -148,7 +153,10 @@ Item {
             root.notification = Qt.binding(() => authenticator.errorMessage);
         }
         function onPromptForSecretChanged() {
-            authenticator.respond(password.text);
+            Qt.callLater(function() {
+                if (!root.authSucceeded && authenticator.promptForSecret.length > 0)
+                    authenticator.respond(password.text);
+            });
         }
         function onSucceeded() {
             root.authSucceeded = true

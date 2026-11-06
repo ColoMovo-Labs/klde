@@ -111,6 +111,26 @@ class SettingsTest : public QObject {
         QCOMPARE(file.value("meta/version").toInt(), ShellSettings::CurrentVersion + 1);
     }
 
+    void lockerReceivesOnlyEffectiveAppearance() {
+        ShellSettings settings;
+        QVERIFY(!settings.publishLockAppearance(true, true, 2, false));
+        QTemporaryDir directory;
+        QVERIFY(settings.enablePersistence(directory.path()));
+        QVERIFY(settings.publishLockAppearance(true, true, 3, true));
+        QSettings file(directory.filePath("lockscreen.conf"), QSettings::IniFormat);
+        QCOMPARE(file.value("Appearance/transparencyEnabled").toBool(), true);
+        QCOMPARE(file.value("Appearance/blurQuality").toInt(), 3);
+        QCOMPARE(file.value("Appearance/darkMode").toBool(), true);
+        QVERIFY(settings.publishLockAppearance(false, false, 1, false));
+        file.sync();
+        QCOMPARE(file.value("Appearance/transparencyEnabled").toBool(), false);
+        QCOMPARE(file.value("Appearance/blurEnabled").toBool(), false);
+        QCOMPARE(file.allKeys().size(), 4);
+        QVERIFY(!settings.publishLockAppearance(true, true, 99, true));
+        file.sync();
+        QCOMPARE(file.value("Appearance/blurQuality").toInt(), 1);
+    }
+
     void keysDefinedLaterAreLoaded() {
         QTemporaryDir directory;
         {

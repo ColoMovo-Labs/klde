@@ -151,6 +151,7 @@ qt_add_resources(klde_backends klde_mock_data PREFIX / FILES
     src/mock/scenarios.json src/status/modules.json)
 
 set(klde_assets assets/branding/owode-logo.png assets/wallpapers/first-light.svg
+    assets/wallpapers/snow-mountains.svg assets/wallpapers/snow-mountains-night.svg
     assets/wallpapers/depth-foreground.svg assets/wallpapers/soft-cache-study.svg
     assets/wallpapers/lock-cache-study.svg assets/fonts/comfortaa/Comfortaa-Bold.otf
     assets/welcome/klde-guide-placeholder.png assets/welcome/klde-guide-wave.png
@@ -215,6 +216,13 @@ install(FILES design/Owo/Visuals/ThemeValues.ui.qml
 install(FILES assets/wallpapers/first-light.svg
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/plasma/shells/org.owode.shell/contents/assets
     RENAME snow.svg)
+install(FILES assets/wallpapers/snow-mountains.svg assets/wallpapers/snow-mountains-night.svg
+    assets/wallpapers/first-night.svg
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/plasma/shells/org.owode.shell/contents/assets)
+install(FILES "assets/fonts/rubik/Rubik[wght].ttf"
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/plasma/shells/org.owode.shell/contents/assets)
+install(FILES design/Owo/Visuals/LockLandscape.qml
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/plasma/shells/org.owode.shell/contents/lockscreen)
 install(FILES packaging/lockscreen/upstream.json LICENSES/GPL-2.0-or-later.txt
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/klde/lockscreen)
 install(FILES LICENSE LICENSES/CC-BY-SA-4.0.txt LICENSES/OFL-1.1.txt

@@ -30,6 +30,7 @@ qt6-shadertools-dev
 qt6-svg-plugins
 qt6-wayland
 qml6-module-qtqml
+qml6-module-qtcore
 qml6-module-qtqml-models
 qml6-module-qtqml-workerscript
 qml6-module-qtquick

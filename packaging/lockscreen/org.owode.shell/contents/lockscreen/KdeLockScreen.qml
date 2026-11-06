@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 
-// Minimal system-palette presentation of the unchanged, attributed KDE Greeter.
+// Minimal system-palette presentation of the attributed KDE Greeter.
 // No optional session-switching plugin, wallpaper, tokens or custom effects.
 Rectangle {
     id: root

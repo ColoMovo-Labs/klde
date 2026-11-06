@@ -93,6 +93,7 @@ ApplicationWindow {
         Tokens.motionLevel = visual.motion;
         Tokens.reducedMotion = visual.motion === 0;
         Tokens.densityMode = visual.density;
+        Shell.settings.publishLockAppearance(visual.transparency, visual.blurEnabled, visual.blurQuality, Tokens.darkMode);
     }
     function showNotification(notificationId: string): void {
         notificationCenter.focusedNotificationId = notificationId;

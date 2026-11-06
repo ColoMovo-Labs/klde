@@ -37,7 +37,7 @@ the complete lock/unlock lifecycle.
 
 `packaging/lockscreen/org.owode.shell` is a Plasma/Shell KPackage with lockscreen
 API version 2, installed in `share/plasma/shells/org.owode.shell`. It contains
-an original wallpaper/clock wrapper and three unchanged GPL-2.0-or-later
+an original wallpaper/clock wrapper and three attributed GPL-2.0-or-later
 presentation files from KScreenLocker 6.7.5. See
 [provenance](../../packaging/lockscreen/upstream.json) and
 [license details](../legal/third-party.md). Authentication remains in the
@@ -53,7 +53,7 @@ plasma-workspace-libs. It does not require Plasma Shell to run.
 
 The stable `LockScreen.qml` entry point imports only QtQuick and loads the
 custom `OwoLockScreen.qml` through a Loader. An appearance load error switches
-to `KdeLockScreen.qml`: a system-palette surface containing the same unchanged
+to `KdeLockScreen.qml`: a system-palette surface containing the same attributed
 KDE Greeter, without wallpaper, design tokens or session-switching imports.
 This fallback handles custom appearance failures without reaching the broken
 upstream fallback on minimal Fedora installations. It does not bypass PAM or
@@ -126,3 +126,48 @@ LockScreenSurface`.
 The cache has generation and validity metadata. The surface selects a prepared
 asset or an opaque/normal fallback; it never runs segmentation or a large blur
 pipeline in response to a lock event.
+
+## Secret-prompt compatibility and unlock regression
+
+KScreenLocker 6.8's asynchronous PAM worker emits the secret-prompt notification
+before storing its pending D-Bus reply. Answering synchronously in the copied
+Greeter loses the answer (`Received prompt response, but no pending prompt was
+found!`). The attributed Greeter now defers its response with `Qt.callLater` and
+ignores prompt-clear notifications. It still passes the field only to the system
+authenticator and exits only on its success signal. Original and adapted hashes
+are recorded in the provenance manifest.
+
+After installing the matching shell/session packages in an isolated Fedora
+container with setuid-helper support, run:
+
+```sh
+OWODE_CLOUD_UNLOCK_TEST=1 python3 tools/cloud-locker-unlock.py /usr
+```
+
+This creates a disposable ordinary account and a private Xvfb/D-Bus session,
+requires an explicit system-authenticator rejection of a wrong password, then
+requires successful authenticated greeter exit with the correct password. The
+secret is passed through stdin, never command arguments or logs. The account is
+removed afterward. This tests the installed theme through real PAM, without
+locking a host session; Wayland lock ownership and physical suspend/hotplug still
+require target-host acceptance. `bash tools/diagnose-lockscreen.sh` separately
+reports installed versions, effective PAM policy paths and helper permissions
+without testing a user's password.
+
+## Shared depth landscape and effect preferences
+
+`LockLandscape.qml` is installed beside the native greeter and also used by the
+Visual Lab and wallpaper preview. The large Rubik clock is painted between the
+original snow wallpaper and a transparent mountain SVG with exactly the same
+viewBox, paths and crop. The date is painted above that foreground. Missing
+foreground assets fall back to a complete wallpaper and unobscured clock.
+
+The live shell publishes only effective appearance values to
+`~/.config/owode/lockscreen.conf`; ordinary previews write nothing. The next
+system greeter reads this snapshot for theme, transparency, blur enablement and
+quality. Clock opacity is bounded to 0.86–1.0: higher effect tiers allow a little
+more translucency; disabling transparency or blur restores solid text. Digits
+remain sharp, and no continuous blur/render loop is added. The clock updates on
+minute boundaries. Qt render tests check actual mountain/clock overlap while
+requiring at least 75% of the clock ink to remain visible at common laptop and
+desktop sizes.
