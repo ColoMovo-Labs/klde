@@ -58,6 +58,13 @@ policy API; the shell requests a policy. Classic Tiling can map to a KWin tile t
 Scrolling Tiling first uses a KLDE-owned planner and only then maps to supported
 KWin operations. There is no compositor implementation or fork in this phase.
 
+The compact `WindowOverview` surface follows the interaction shape of Cutefish's
+launcher/task overview as a visual reference. Its QML, animation and window
+activation paths are authored in owoDE and use the existing `WindowManagerBackend`;
+no Cutefish source, assets or runtime dependency is copied. The audited reference
+is [cutefishos/launcher](https://github.com/cutefishos/launcher) alongside the
+[Cutefish KWin plugin audit](https://github.com/cutefishos/kwin-plugins).
+
 ## Rules and failure behavior
 
 Define rule matching on desktop-file/application IDs; titles are optional conditions
