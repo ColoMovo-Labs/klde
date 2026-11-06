@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# KWin's privileged input-method child; never an XDG autostart daemon replacement.
+set -euo pipefail
+case "${1:-}" in
+    --check) check_only=1 ;;
+    '') check_only=0 ;;
+    *) echo 'Usage: owode-input-method [--check]' >&2; exit 2 ;;
+esac
+[[ $# -le 1 ]] || exit 2
+desktop=/usr/share/applications/fcitx5-wayland-launcher.desktop
+[[ -r "$desktop" ]] || { echo 'Missing Fcitx Wayland launcher desktop entry; install fcitx5.' >&2; exit 3; }
+launcher_command=$(sed -n 's/^Exec=//p' "$desktop")
+launcher=${launcher_command% --reopen}
+# Accept the upstream executable with its optional single --reopen argument.
+# Do not eval desktop entries, field codes or arbitrary shell syntax.
+[[ "$launcher" == /*/fcitx5-wayland-launcher && -x "$launcher" ]] || {
+    echo 'Unsupported Fcitx Wayland launcher entry; check the distribution package.' >&2; exit 3;
+}
+help=$("$launcher" --help 2>&1)
+[[ "$help" == *--reopen* ]] || { echo 'Fcitx Wayland launcher lacks --reopen; update fcitx5.' >&2; exit 3; }
+if [[ "$check_only" == 1 ]]; then
+    echo "KWin input-method launcher: $launcher --reopen"
+    exit 0
+fi
+[[ "${OWODE_MANAGED_SESSION:-}" == 1 && "${WAYLAND_SOCKET:-}" =~ ^[0-9]+$ ]] || {
+    echo 'This helper requires the private input-method socket supplied by KWin.' >&2; exit 2;
+}
+# The upstream launcher reuses an existing service or D-Bus-activates it, then
+# transfers KWin's socket. It does not kill/restart the owner's input daemon.
+exec "$launcher" --reopen

@@ -227,10 +227,12 @@ void StatusNotifierHost::removeItem(const QString &id) {
 void StatusNotifierHost::itemSignal(const QDBusMessage &message) {
     for (const auto &id : m_order) {
         const auto &item = m_items[id];
-        if (item.owner == message.service() && item.path == message.path())
+        if (item.owner == message.service() && item.path == message.path()) {
+            const auto applicationId = item.applicationId;
             refreshItem(id);
+            emit itemStatusChanged(applicationId);
+        }
     }
-    emit itemStatusChanged();
 }
 void StatusNotifierHost::refreshItem(const QString &id) {
     auto found = m_items.find(id);
@@ -260,6 +262,7 @@ void StatusNotifierHost::refreshItem(const QString &id) {
                 if (reply.isError())
                     return;
                 const auto fields = reply.value();
+                found->applicationId = fields.value("Id").toString().left(128);
                 found->title = fields.value("Title").toString().left(128);
                 if (found->title.isEmpty())
                     found->title = fields.value("Id").toString().left(128);

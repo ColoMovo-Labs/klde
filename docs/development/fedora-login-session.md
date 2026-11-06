@@ -28,6 +28,9 @@ KWin 通过 `--exit-with-session` 在自己的 Wayland/X11 环境中启动
 `/usr/libexec/owode-session-client`。客户端使用 LayerShellQt 背景、Ribbon、Dock
 与真实 XDG 应用目录，不需要 Plasma Shell。没有修改、复制或派生 KWin 代码。
 
+KWin 同时通过会话私有的输入法子进程入口启动/连接 Fcitx 5，不替换已有守护进程，
+不改共享 kwinrc。详见[输入法架构与中文验收步骤](../architecture/input-methods.md)。
+
 客户端会在启动 shell 前向当前会话的 D-Bus/已有 systemd 用户管理器导入本次 KWin
 的显示与桌面标识，使服务激活应用使用本会话。只导入明确的字段；不会把 GNOME/KDE
 兼容配置或全部进程环境写进去。详见[激活环境边界](../architecture/session-activation.md)。

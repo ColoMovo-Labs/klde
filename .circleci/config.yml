@@ -94,7 +94,7 @@ jobs:
           name: Build native integration tools against Ubuntu LayerShellQt
           command: |
             cmake -S . -B build/ci -DOWODE_BUILD_NATIVE_TESTS=ON
-            cmake --build build/ci --target klde-native-session-test owode-native-test-client owode-native-capture --parallel 2
+            cmake --build build/ci --target klde-native-session-test owode-native-test-client owode-native-capture owode-fcitx-native-test --parallel 2
             mkdir -p artifacts/native-session
             tar -C build/ci/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
             git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
@@ -129,7 +129,7 @@ jobs:
           name: Install Fedora Qt and isolated KWin tools
           command: |
             xargs -a .circleci/fedora-packages.txt dnf install -y --setopt=install_weak_deps=False
-            dnf install -y --setopt=install_weak_deps=False kwin kscreenlocker plasma-workspace-libs xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick xdotool mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config dbus-daemon dbus-tools kf6-kservice
+            dnf install -y --setopt=install_weak_deps=False kwin kscreenlocker plasma-workspace-libs fcitx5 fcitx5-chinese-addons xorg-x11-server-Xvfb xorg-x11-xauth ImageMagick xdotool mesa-dri-drivers mesa-libEGL mesa-libGL pkgconf-pkg-config dbus-daemon dbus-tools kf6-kservice
       - attach_workspace:
           at: /root/project
       - restore_cache:
@@ -140,7 +140,7 @@ jobs:
           name: Build native integration tools against Fedora LayerShellQt
           command: |
             cmake -S . -B build/fedora -DOWODE_BUILD_NATIVE_TESTS=ON
-            cmake --build build/fedora --target klde-native-session-test owode-native-test-client owode-native-capture --parallel 2
+            cmake --build build/fedora --target klde-native-session-test owode-native-test-client owode-native-capture owode-fcitx-native-test --parallel 2
             mkdir -p artifacts/native-session
             tar -C build/fedora/bin -czf artifacts/native-session/native-audit-tools.tar.gz klde-native-session-test owode-native-test-client owode-native-capture
             git archive --format=tar.gz --prefix=owode-native-source/ HEAD > artifacts/native-session/native-audit-source.tar.gz
@@ -154,6 +154,7 @@ jobs:
             dnf remove -y owode-session
             test ! -e /usr/share/wayland-sessions/owode.desktop
             test ! -e /usr/bin/start-owode
+            test ! -e /usr/libexec/owode-input-method
       - store_artifacts:
           path: artifacts/login-session
       - store_artifacts:
@@ -184,6 +185,13 @@ jobs:
           command: OWODE_CLOUD_NOTIFICATION_TEST=1 bash tools/notification-smoke.sh build/fedora artifacts/notifications-native
       - store_artifacts:
           path: artifacts/notifications-native
+      - run:
+          name: Verify KWin-launched Fcitx, native Pinyin and tray status events
+          command: OWODE_CLOUD_FCITX_TEST=1 bash tools/fcitx-native-smoke.sh build/fedora artifacts/fcitx-native
+      - store_artifacts:
+          path: artifacts/fcitx-native
+      - store_test_results:
+          path: artifacts/fcitx-native
       - store_test_results:
           path: artifacts/native-session
       - store_artifacts:

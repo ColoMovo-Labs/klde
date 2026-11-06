@@ -665,5 +665,10 @@
   "tray.title": "Tray applications",
   "tray.empty": "No tray applications",
   "tray.action.failed": "The application could not open its tray action",
-  "tray.close": "Close tray"
+  "tray.close": "Close tray",
+  "input.native.disclosure": "Fcitx 5 controls the actual input method. Only configured methods are listed. Use Fcitx configuration to add Pinyin or another engine.",
+  "input.native.ready": "Fcitx 5 is connected; input support also depends on the application.",
+  "input.native.failed": "Input method could not be changed",
+  "input.native.configure": "Configure Fcitx 5",
+  "input.native.config-unavailable": "Fcitx configuration tool is unavailable"
 }

@@ -205,7 +205,11 @@ void SystemStateModel::setLiveWriter(const QString &path, const LiveWriter &writ
     m_writers.insert(path, writer);
 }
 bool SystemStateModel::publishLive(const QString &path, const QVariant &value) {
-    if (!valid(path, value))
+    // Native engine identifiers are not limited to the two Visual Lab fixtures.
+    // User/mock edits still go through the stricter catalog validation above.
+    const bool inputId = path == "input.currentId" && value.metaType().id() == QMetaType::QString &&
+                         value.toString().size() <= 256 && !value.toString().contains(QChar::Null);
+    if (!inputId && !valid(path, value))
         return false;
     const bool pinned = m_live.contains(path);
     if (pinned && m_live.value(path) == value)

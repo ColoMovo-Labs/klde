@@ -44,9 +44,10 @@ class LocaleInputTest final : public QObject {
         QCOMPARE(second.locale(), QStringLiteral("en"));
         QCOMPARE(second.voice(), QStringLiteral("standard"));
     }
-    void detectionNeverClaimsActualInputSwitching() {
+    void previewNeverConnectsToOrControlsTheRealEngine() {
         klde::Fcitx5Backend input;
         QVERIFY(input.simulated());
+        QVERIFY(!input.engineAvailable());
         QVERIFY(!input.switchingSupported());
         QVERIFY(!input.requestSwitch(QStringLiteral("pinyin")));
         QVERIFY(input.selectPreview(QStringLiteral("pinyin")));

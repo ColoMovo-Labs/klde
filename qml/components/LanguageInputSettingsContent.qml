@@ -64,18 +64,19 @@ ColumnLayout {
         color: Tokens.textPrimary
     }
     Label {
-        text: I18n.t(Shell.input.engineAvailable ? "input.detected" : "input.unavailable")
+        text: I18n.t(Shell.input.engineAvailable ? Shell.input.simulated ? "input.detected" : "input.native.ready" : "input.unavailable")
         font: Tokens.label
         color: Tokens.textPrimary
     }
     Label {
-        text: I18n.t("input.disclosure")
+        text: I18n.t(Shell.input.simulated ? "input.disclosure" : "input.native.disclosure")
         font: Tokens.caption
         color: Tokens.textSecondary
         Layout.fillWidth: true
         wrapMode: Text.WordWrap
     }
-    RowLayout {
+    GridLayout {
+        columns: 2
         Layout.fillWidth: true
         Repeater {
             model: Shell.input.methods
@@ -83,19 +84,28 @@ ColumnLayout {
                 id: methodButton
                 required property var modelData
                 Layout.fillWidth: true
-                text: I18n.t(modelData.labelId)
+                text: (modelData.name || I18n.t(modelData.labelId))
                 emphasized: modelData.id === Shell.input.currentId
-                Accessible.name: text + ", " + I18n.t("input.preview")
-                onClicked: Shell.input.selectPreview(modelData.id)
+                Accessible.name: text
+                enabled: Shell.input.simulated || Shell.input.switchingSupported
+                onClicked: Shell.input.simulated ? Shell.input.selectPreview(modelData.id) : Shell.input.requestSwitch(modelData.id)
             }
         }
     }
+    ActionButton {
+        visible: !Shell.input.simulated
+        enabled: Shell.input.engineAvailable
+        text: I18n.t("input.native.configure")
+        onClicked: Shell.input.configure()
+    }
     Switch {
+        visible: Shell.input.simulated
         text: I18n.t("lab.input.simplified")
         checked: Shell.state.snapshot.input.simplified
         onToggled: Shell.state.requestValue("input.simplified", checked)
     }
     ActionButton {
+        visible: Shell.input.simulated
         text: I18n.t("lab.candidate.title")
         onClicked: root.candidateRequested()
     }

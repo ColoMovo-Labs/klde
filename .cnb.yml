@@ -61,6 +61,23 @@
             set -eu
             OWODE_CLOUD_NOTIFICATION_TEST=1 bash tools/notification-smoke.sh build/cnb artifacts/notifications-native
             find artifacts/notifications-native -maxdepth 1 -type f -empty -delete
+        - name: type Pinyin through real KWin and Fcitx
+          script: |
+            set -eu
+            dnf install -y --setopt=install_weak_deps=False --disablerepo=fedora-cisco-openh264 \
+              fcitx5 fcitx5-chinese-addons xdotool
+            cmake -S . -B build/cnb -DOWODE_BUILD_NATIVE_TESTS=ON
+            cmake --build build/cnb --target owode-fcitx-native-test --parallel "$(nproc)"
+            OWODE_CLOUD_FCITX_TEST=1 bash tools/fcitx-native-smoke.sh build/cnb artifacts/fcitx-native
+            find artifacts/fcitx-native -maxdepth 1 -type f -empty -delete
+        - name: attach native input evidence
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/fcitx-native/*.png"
+              - "./artifacts/fcitx-native/*.json"
+              - "./artifacts/fcitx-native/*.log"
+              - "./artifacts/fcitx-native/*.xml"
         - name: attach native notification evidence
           image: cnbcool/attachments:latest
           settings:

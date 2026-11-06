@@ -30,7 +30,7 @@ class StatusNotifierHost : public QObject {
     QStringList registeredItems() const;
   signals:
     void changed();
-    void itemStatusChanged();
+    void itemStatusChanged(const QString &applicationId);
     void requestRejected(const QString &message);
   private slots:
     void itemSignal(const QDBusMessage &message);
@@ -39,7 +39,7 @@ class StatusNotifierHost : public QObject {
 
   private:
     struct Item {
-        QString id, service, path, owner, title, status;
+        QString id, service, path, owner, applicationId, title, status;
         QImage icon;
         bool menu = false, pending = false, dirty = false;
         quint64 key = 0;

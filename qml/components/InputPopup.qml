@@ -9,6 +9,7 @@ import KLDE.Backends
 ShellPopup {
     id: root
     objectName: "inputPopup"
+    onOpened: Shell.input.refresh()
     signal settingsRequested
     width: Math.min(Tokens.panelWidth, parent ? parent.width - Tokens.space32 : Tokens.panelWidth)
     height: column.implicitHeight + padding * 2
@@ -18,7 +19,7 @@ ShellPopup {
         RowLayout {
             Layout.fillWidth: true
             Label {
-                text: I18n.t("input.preview")
+                text: I18n.t(Shell.input.simulated ? "input.preview" : "input.engine")
                 font: Tokens.title
                 color: Tokens.textPrimary
                 Layout.fillWidth: true
@@ -30,7 +31,7 @@ ShellPopup {
             }
         }
         Label {
-            text: I18n.t("input.disclosure")
+            text: I18n.t(Shell.input.simulated ? "input.disclosure" : "input.native.disclosure")
             font: Tokens.caption
             color: Tokens.textSecondary
             Layout.fillWidth: true
@@ -41,13 +42,14 @@ ShellPopup {
             delegate: ActionButton {
                 required property var modelData
                 Layout.fillWidth: true
-                text: (modelData.id === Shell.input.currentId ? "✓ " : "") + I18n.t(modelData.labelId)
+                text: (modelData.id === Shell.input.currentId ? "✓ " : "") + (modelData.name || I18n.t(modelData.labelId))
                 emphasized: modelData.id === Shell.input.currentId
-                onClicked: Shell.input.selectPreview(modelData.id)
+                enabled: Shell.input.simulated || Shell.input.switchingSupported
+                onClicked: Shell.input.simulated ? Shell.input.selectPreview(modelData.id) : Shell.input.requestSwitch(modelData.id)
             }
         }
         Label {
-            text: I18n.t(Shell.input.engineAvailable ? "input.detected" : "input.unavailable")
+            text: I18n.t(Shell.input.engineAvailable ? Shell.input.simulated ? "input.detected" : "input.native.ready" : "input.unavailable")
             font: Tokens.caption
             color: Tokens.textSecondary
         }

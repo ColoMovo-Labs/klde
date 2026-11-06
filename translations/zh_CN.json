@@ -665,5 +665,10 @@
   "tray.title": "托盘应用",
   "tray.empty": "暂无托盘应用",
   "tray.action.failed": "应用无法打开托盘操作",
-  "tray.close": "关闭托盘"
+  "tray.close": "关闭托盘",
+  "input.native.disclosure": "由 Fcitx 5 控制真实输入法。这里只列出已配置的输入法；请在 Fcitx 配置中添加拼音或其他引擎。",
+  "input.native.ready": "已连接 Fcitx 5；具体应用还需要支持相应输入协议。",
+  "input.native.failed": "无法切换输入法",
+  "input.native.configure": "配置 Fcitx 5",
+  "input.native.config-unavailable": "Fcitx 配置工具不可用"
 }

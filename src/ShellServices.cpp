@@ -33,6 +33,12 @@ ShellServices *ShellServices::create(QQmlEngine *engine, QJSEngine *) {
                              new NotificationIconProvider(services->notifications()));
     engine->addImageProvider("tray", new TrayIconProvider(services->tray()));
     if (engine->property("owodeSystemApplications").toBool()) {
+        services->m_input.start();
+        connect(&services->m_tray, &StatusNotifierHost::itemStatusChanged, &services->m_input,
+                [services](const QString &applicationId) {
+                    if (applicationId == "Fcitx")
+                        services->m_input.refresh();
+                });
         services->m_tray.start();
         services->m_systemSettings.setEnabled(true);
         services->m_weather.setPreviewEnabled(false);
@@ -155,6 +161,7 @@ ShellServices::ShellServices(QObject *parent)
             [this] { showNotice(tr("System settings could not be started")); });
     connect(&m_weather, &WeatherService::changed, this, &ShellServices::weatherChanged);
     connect(&m_tray, &StatusNotifierHost::requestRejected, this, &ShellServices::showNotice);
+    connect(&m_input, &InputMethodBackend::requestRejected, this, &ShellServices::showNotice);
     connect(&m_system, &SystemBackend::osdRequested, this, &ShellServices::showOsd);
     connect(&m_state, &SystemStateModel::valueEdited, this, &ShellServices::projectState);
     connect(&m_mockScenarios, &MockScenarioManager::applied, this, [this] { projectState(); });
@@ -168,8 +175,15 @@ ShellServices::ShellServices(QObject *parent)
         m_state.requestValue("voice", m_language.voice());
     });
     connect(&m_input, &InputMethodBackend::changed, this, [this] {
-        if (!m_syncing)
+        if (m_syncing)
+            return;
+        QScopedValueRollback guard(m_syncing, true);
+        if (m_input.simulated())
             m_state.requestValue("input.currentId", m_input.currentId());
+        else {
+            m_state.publishLive("input.available", m_input.engineAvailable());
+            m_state.publishLive("input.currentId", m_input.currentId());
+        }
     });
     connect(&m_notifications, &NotificationModel::countChanged, this, [this] {
         if (m_syncing)

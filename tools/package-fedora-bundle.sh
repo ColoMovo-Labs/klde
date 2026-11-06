@@ -52,7 +52,7 @@ test "${#rpms[@]}" -eq 1
 # The session package ships plain sources. No tarball is unpacked in
 # %prep: tar extraction fails with ENOSYS in some container sandboxes (CNB).
 mkdir -p "$stage_dir/rpmbuild/SOURCES"
-cp packaging/session/start-owode packaging/session/owode-session-client \
+cp packaging/session/start-owode packaging/session/owode-session-client packaging/session/owode-input-method \
     packaging/session/owode.desktop packaging/session/org.owode.GnomeSettings.desktop \
     LICENSE "$stage_dir/rpmbuild/SOURCES/"
 for service in kde kde-fingerprint kde-smartcard; do

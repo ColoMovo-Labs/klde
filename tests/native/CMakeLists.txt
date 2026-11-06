@@ -17,3 +17,7 @@ target_link_libraries(owode-native-test-client PRIVATE Qt6::Widgets Qt6::DBus)
 
 qt_add_executable(owode-native-capture capture.cpp)
 target_link_libraries(owode-native-capture PRIVATE Qt6::Gui Qt6::DBus)
+
+qt_add_executable(owode-fcitx-native-test test_fcitx_native.cpp)
+target_link_libraries(owode-fcitx-native-test PRIVATE klde_ui klde_uiplugin Qt6::Widgets Qt6::Test)
+# Only tools/fcitx-native-smoke.sh may run this against its private compositor.

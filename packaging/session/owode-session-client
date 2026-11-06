@@ -24,6 +24,8 @@ if [[ -n "${GSETTINGS_SCHEMA_DIR:-}" ]]; then session_schemas+=("GSETTINGS_SCHEM
 dbus-update-activation-environment "${activation_options[@]}" "${session_schemas[@]}" \
     "DISPLAY=${DISPLAY:-}" "WAYLAND_DISPLAY=$WAYLAND_DISPLAY" "XAUTHORITY=${XAUTHORITY:-}" \
     "XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-owoDE}" \
-    "XDG_SESSION_DESKTOP=${XDG_SESSION_DESKTOP:-owode}" "XDG_SESSION_TYPE=wayland"
+    "XDG_SESSION_DESKTOP=${XDG_SESSION_DESKTOP:-owode}" "XDG_SESSION_TYPE=wayland" \
+    "XMODIFIERS=${XMODIFIERS:-@im=fcitx}" "GTK_IM_MODULE=" "QT_IM_MODULE=" \
+    "QT_IM_MODULES=" "SDL_IM_MODULE="
 export QT_QPA_PLATFORM=wayland
 exec /usr/bin/klde-shell --native-shell-surfaces --applications system --managed-session

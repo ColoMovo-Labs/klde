@@ -50,7 +50,7 @@ StatusCapsule {
         case "microphone":
             return snapshot.capabilities.microphone ? snapshot.audio.microphoneMuted ? "×" : "" : "—";
         case "input":
-            return !snapshot.input.available ? "!" : snapshot.input.currentId === "pinyin" ? snapshot.input.simplified ? "拼" : "繁" : "EN";
+            return !Shell.input.simulated ? Shell.input.indicator : !snapshot.input.available ? "!" : snapshot.input.currentId === "pinyin" ? snapshot.input.simplified ? "拼" : "繁" : "EN";
         case "notifications":
             if (Shell.notifications.native && !Shell.notifications.available)
                 return "—";
@@ -60,8 +60,8 @@ StatusCapsule {
         }
     }
     severity: alerts[moduleId] || 0
-    active: moduleId === "input" && snapshot.input.currentId === "pinyin" || moduleId === "network" && snapshot.network.connected || moduleId === "scene"
-    unavailable: moduleId === "bluetooth" && !snapshot.capabilities.bluetooth || moduleId === "temperature" && !snapshot.capabilities.sensors || moduleId === "input" && !snapshot.input.available
+    active: moduleId === "input" && (!Shell.input.simulated ? Shell.input.currentId.length > 0 && !Shell.input.currentId.startsWith("keyboard-") : snapshot.input.currentId === "pinyin") || moduleId === "network" && snapshot.network.connected || moduleId === "scene"
+    unavailable: moduleId === "bluetooth" && !snapshot.capabilities.bluetooth || moduleId === "temperature" && !snapshot.capabilities.sensors || moduleId === "input" && (!Shell.input.simulated ? !Shell.input.engineAvailable : !snapshot.input.available)
     meter: moduleId === "cpu" ? snapshot.cpu.usage : moduleId === "memory" ? snapshot.memory.usedPercent : -1
     onClicked: invoked(moduleId)
 }
