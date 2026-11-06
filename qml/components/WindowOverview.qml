@@ -27,7 +27,11 @@ ShellPopup {
     }
     function activate(index: int): void {
         const window = visibleWindows[index];
-        if (window && Shell.windowManager.activateWindow(window.id))
+        const accepted = window && Shell.windowManager.activateWindow(window.id);
+        // The mock backend deliberately has no compositor to activate. Close
+        // the preview after a valid mock selection while keeping live KWin
+        // requests gated by the backend's acceptance result.
+        if (accepted || (window && Shell.windowManager.capabilities.mock))
             root.close();
     }
     function closeWindow(index: int): void {
