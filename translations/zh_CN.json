@@ -29,6 +29,8 @@
   "shell.launcher.close": "关闭启动器",
   "shell.launcher.open": "打开启动器",
   "shell.launcher.empty": "没有找到应用",
+  "shell.overview.empty": "这个工作区没有窗口",
+  "shell.overview.close-hint": "长按关闭",
   "shell.launcher.help": "↑ ↓ 选择　Enter 打开　Esc 关闭 · 预览应用目录",
   "shell.launcher.name": "启动器",
   "shell.quick.name": "快捷控制",

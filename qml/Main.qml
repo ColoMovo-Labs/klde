@@ -75,7 +75,7 @@ ApplicationWindow {
     readonly property bool welcomeMode: initialView === "welcome"
     readonly property var snapshot: Shell.state.snapshot
     readonly property real popupTop: nativeSurfaceMode ? nativeRibbonHeight(nativePopupLoader.item ? nativePopupLoader.item.outputName : "") : ribbon.y + ribbon.restingHeight + Tokens.space16
-    readonly property var panels: [launcher, quickSettings, blurLab, settingsCenter, trayPopup, inputPopup, notificationCenter, statusDashboard, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, lockPreview, sessionMenu]
+    readonly property var panels: [launcher, quickSettings, blurLab, settingsCenter, trayPopup, inputPopup, notificationCenter, statusDashboard, candidate, mockLab, appSuite, systemUiGallery, temporalSettings, lockPreview, sessionMenu, windowOverview]
     onRenderingAllowedChanged: Shell.blur.renderingAllowed = renderingAllowed
     function openPendingNativePanel(): void {
         if (pendingNativePanel && nativePopupLoader.item && (nativePopupLoader.item as Window).visible) {
@@ -164,6 +164,9 @@ ApplicationWindow {
             notificationCenter.tab = 1;
             target = notificationCenter;
             break;
+        case "overview":
+            target = windowOverview;
+            break;
         case "ribbon":
             target = statusDashboard;
             break;
@@ -204,7 +207,9 @@ ApplicationWindow {
     function moduleAction(id: string): void {
         if (id === "launcher")
             showView("launcher");
-        else if (id === "overview" || id === "context" || id === "notifications" || id === "date")
+        else if (id === "overview")
+            showView("overview");
+        else if (id === "context" || id === "notifications" || id === "date")
             showView("notifications");
         else if (id === "weather")
             showView("weather");
@@ -231,6 +236,13 @@ ApplicationWindow {
     }
     SessionMenu {
         id: sessionMenu
+        parent: window.panelParent
+        backdropSource: window.nativeSurfaceMode ? null : wallpaper
+        x: parent ? (parent.width - width) / 2 : 0
+        y: parent ? (parent.height - height) / 2 : 0
+    }
+    WindowOverview {
+        id: windowOverview
         parent: window.panelParent
         backdropSource: window.nativeSurfaceMode ? null : wallpaper
         x: parent ? (parent.width - width) / 2 : 0

@@ -29,6 +29,8 @@
   "shell.launcher.close": "Close launcher",
   "shell.launcher.open": "Open launcher",
   "shell.launcher.empty": "No applications found",
+  "shell.overview.empty": "No windows in this workspace",
+  "shell.overview.close-hint": "Hold to close",
   "shell.launcher.help": "↑ ↓ select     Enter open     Esc close · Preview catalogue",
   "shell.launcher.name": "Launcher",
   "shell.quick.name": "Quick Settings",

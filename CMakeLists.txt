@@ -98,6 +98,7 @@ set(klde_qml_files
     qml/components/LabPanel.qml
     qml/components/CandidatePreview.qml
     qml/components/StatusDashboard.qml
+    qml/components/WindowOverview.qml
     qml/components/AmbientDesktop.qml
     qml/components/ApplicationShortcuts.qml
     qml/components/Icon.qml qml/components/Surface.qml qml/components/IconButton.qml
