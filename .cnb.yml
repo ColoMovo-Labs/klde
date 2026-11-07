@@ -76,6 +76,7 @@
             printf '{"themeStatus":%s,"fallbackStatus":%s,"strictAcceptance":"CircleCI"}\n' \
               "$theme_status" "$fallback_status" > artifacts/locker-theme/verification-status.json
             find artifacts/locker-theme -maxdepth 1 -type f -empty -delete
+            find artifacts/locker-fallback -maxdepth 1 -type f -empty -delete
         - name: deliver real notifications through the native Temporal Capsule
           script: |
             set -eu
