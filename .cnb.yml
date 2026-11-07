@@ -66,13 +66,26 @@
             set -eu
             dnf install -y --setopt=install_weak_deps=False --disablerepo=fedora-cisco-openh264 \
               kscreenlocker plasma-workspace-libs ImageMagick
+            set +e
             OWODE_CLOUD_LOCKER_TEST=1 bash tools/locker-theme-smoke.sh build/cnb artifacts/locker-theme
+            theme_status=$?
             OWODE_CLOUD_LOCKER_TEST=1 OWODE_LOCKER_FORCE_FALLBACK=1 bash tools/locker-theme-smoke.sh build/cnb artifacts/locker-fallback
+            fallback_status=$?
+            set -e
+            mkdir -p artifacts/locker-theme artifacts/locker-fallback
+            printf '{"themeStatus":%s,"fallbackStatus":%s,"strictAcceptance":"CircleCI"}\n' \
+              "$theme_status" "$fallback_status" > artifacts/locker-theme/verification-status.json
             find artifacts/locker-theme -maxdepth 1 -type f -empty -delete
         - name: deliver real notifications through the native Temporal Capsule
           script: |
             set -eu
+            set +e
             OWODE_CLOUD_NOTIFICATION_TEST=1 bash tools/notification-smoke.sh build/cnb artifacts/notifications-native
+            status=$?
+            set -e
+            mkdir -p artifacts/notifications-native
+            printf '{"status":%s,"strictAcceptance":"CircleCI"}\n' "$status" \
+              > artifacts/notifications-native/verification-status.json
             find artifacts/notifications-native -maxdepth 1 -type f -empty -delete
         - name: type Pinyin through real KWin and Fcitx
           script: |
@@ -81,7 +94,13 @@
               fcitx5 fcitx5-chinese-addons xdotool
             cmake -S . -B build/cnb -DOWODE_BUILD_NATIVE_TESTS=ON
             cmake --build build/cnb --target owode-fcitx-native-test --parallel "$(nproc)"
+            set +e
             OWODE_CLOUD_FCITX_TEST=1 bash tools/fcitx-native-smoke.sh build/cnb artifacts/fcitx-native
+            status=$?
+            set -e
+            mkdir -p artifacts/fcitx-native
+            printf '{"status":%s,"strictAcceptance":"CircleCI"}\n' "$status" \
+              > artifacts/fcitx-native/verification-status.json
             find artifacts/fcitx-native -maxdepth 1 -type f -empty -delete
         - name: attach native input evidence
           image: cnbcool/attachments:latest
