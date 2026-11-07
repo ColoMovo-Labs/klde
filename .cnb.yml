@@ -243,8 +243,12 @@
             export DEBIAN_FRONTEND=noninteractive
             rm -f /etc/apt/apt.conf.d/docker-clean
             apt-get update
-            apt-get install -y --no-install-recommends ca-certificates git openssh-client
-            xargs -a .circleci/packages.txt apt-get install -y --no-install-recommends
+            export TZ=Etc/UTC
+            # CNB mounts /etc/localtime in the Ubuntu task container. Keeping
+            # the image's already-installed tzdata avoids its postinst trying
+            # to replace that mount with /etc/localtime.dpkg-new.
+            apt-get install -y --no-install-recommends --no-upgrade ca-certificates git openssh-client
+            xargs -a .circleci/packages.txt apt-get install -y --no-install-recommends --no-upgrade
             cmake -S . -B build/cnb-deb -G Ninja -DBUILD_TESTING=ON -DOWODE_REQUIRE_SYSTEM_APPLICATIONS=ON
             cmake --build build/cnb-deb --parallel "$(nproc)"
             CIRCLECI=true bash tools/package-deb.sh build/cnb-deb
