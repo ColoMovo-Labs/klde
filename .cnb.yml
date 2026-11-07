@@ -236,6 +236,29 @@
               - "./artifacts/fedora-package/*.tar.gz"
               - "./artifacts/fedora-package/SHA256SUMS"
               - "./artifacts/fedora-package/*.txt"
+        - name: build Debian package in Ubuntu 26.04
+          image: ubuntu:26.04
+          script: |
+            set -eu
+            export DEBIAN_FRONTEND=noninteractive
+            rm -f /etc/apt/apt.conf.d/docker-clean
+            apt-get update
+            apt-get install -y --no-install-recommends ca-certificates git openssh-client
+            xargs -a .circleci/packages.txt apt-get install -y --no-install-recommends
+            cmake -S . -B build/cnb-deb -G Ninja -DBUILD_TESTING=ON -DOWODE_REQUIRE_SYSTEM_APPLICATIONS=ON
+            cmake --build build/cnb-deb --parallel "$(nproc)"
+            CIRCLECI=true bash tools/package-deb.sh build/cnb-deb
+            for artifact in artifacts/packages/*.deb artifacts/packages/*.tar.gz; do
+              test -s "$artifact"
+            done
+        - name: attach Debian packages
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./artifacts/packages/*.deb"
+              - "./artifacts/packages/*.tar.gz"
+              - "./artifacts/packages/SHA256SUMS"
+              - "./artifacts/packages/*.txt"
         - name: build and verify the independent Lingmo calculator port
           script: |
             set -eu
