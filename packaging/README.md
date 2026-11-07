@@ -1,9 +1,14 @@
 # Experimental packaging
 
 CircleCI builds a real `klde-shell-preview` Debian binary package for Ubuntu 26.04
-with CPack. It contains the standalone preview executable, desktop entry, original
-icon and license/copyright documents. It does not install a login session,
-privileged helper, service or replacement for the host desktop.
+with CPack. CNB additionally builds the same package in Debian 13 (trixie), the
+current Cutefish development base. Both packages contain the standalone preview
+executable, desktop entry, original icon and license/copyright documents. They do
+not install a login session, privileged helper, service or replacement for the
+host desktop.
+
+The Cutefish package path is documented in
+[`docs/development/cutefish-debian.md`](../docs/development/cutefish-debian.md).
 
 The `packaging-check` job generates ELF library dependencies with
 `dpkg-shlibdeps` and adds the QML modules, platform plugins and SVG decoder loaded

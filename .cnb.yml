@@ -236,15 +236,15 @@
               - "./artifacts/fedora-package/*.tar.gz"
               - "./artifacts/fedora-package/SHA256SUMS"
               - "./artifacts/fedora-package/*.txt"
-        - name: build Debian package in Ubuntu 26.04
-          image: ubuntu:26.04
+        - name: build Debian package for Cutefish on Debian 13
+          image: debian:trixie-slim
           script: |
             set -eu
             export DEBIAN_FRONTEND=noninteractive
             rm -f /etc/apt/apt.conf.d/docker-clean
             apt-get update
             export TZ=Etc/UTC
-            # CNB mounts /etc/localtime in the Ubuntu task container. Keeping
+            # CNB mounts /etc/localtime in the Debian task container. Keeping
             # the image's already-installed tzdata avoids its postinst trying
             # to replace that mount with /etc/localtime.dpkg-new.
             apt-get install -y --no-install-recommends --no-upgrade ca-certificates git openssh-client
