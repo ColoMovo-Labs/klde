@@ -11,6 +11,16 @@ import QtQml
 // backend can replace these seeds with cached pixel extraction without changing
 // the role names consumed by Tokens.qml.
 QtObject {
+    // A stable source seed is the only value a future wallpaper backend needs
+    // to provide. The role map below intentionally stays owned by owoDE; it is
+    // not a copy of Matugen, Quickshell or another shell's generated files.
+    readonly property var wallpaperSeeds: ({
+            "snow": "#1769a8",
+            "abstract": "#5147c9",
+            "quiet": "#2b6e63",
+            "kemono": "#704ea3"
+        })
+
     readonly property var lightPalettes: ({
             "snow": ({
                     primary: "#1769a8",
@@ -176,6 +186,76 @@ QtObject {
                     success: "#9dd6ae"
                 })
         })
+
+    function seedFor(wallpaper: string): color {
+        return wallpaperSeeds[wallpaper] || wallpaperSeeds.snow;
+    }
+
+    function _hue(seed: color): real {
+        const hue = seed.hslHue;
+        return hue >= 0 ? hue : 0;
+    }
+
+    function _sat(seed: color): real {
+        return Math.max(0.18, Math.min(0.82, seed.hslSaturation));
+    }
+
+    function _tone(hue: real, saturation: real, lightness: real): color {
+        return Qt.hsla((hue + 1) % 1, Math.max(0, Math.min(1, saturation)), Math.max(0, Math.min(1, lightness)), 1);
+    }
+
+    function _onTone(hue: real, saturation: real, lightness: real): color {
+        return lightness > 0.58 ? _tone(hue, Math.min(saturation, 0.42), 0.12) : "#ffffff";
+    }
+
+    // A small, deterministic tonal generator for external wallpaper seeds.
+    // The shell consumes semantic roles, so a new extractor can be introduced
+    // without making every QML component understand raw RGB values.
+    function paletteForSeed(seedHex: string, dark: bool): var {
+        const seed = Qt.color(seedHex || "#1769a8");
+        const hue = _hue(seed);
+        const chroma = _sat(seed);
+        const secondaryHue = (hue + 0.08) % 1;
+        const tertiaryHue = (hue + 0.17) % 1;
+        const primaryLightness = dark ? 0.74 : 0.42;
+        const primary = _tone(hue, Math.min(0.88, chroma * 1.12), primaryLightness);
+        const primaryContainer = _tone(hue, Math.min(0.44, chroma * 0.62), dark ? 0.31 : 0.90);
+        const secondary = _tone(secondaryHue, chroma * 0.58, dark ? 0.76 : 0.40);
+        const secondaryContainer = _tone(secondaryHue, chroma * 0.30, dark ? 0.30 : 0.91);
+        const tertiary = _tone(tertiaryHue, Math.min(0.70, chroma * 0.92), dark ? 0.78 : 0.40);
+        const tertiaryContainer = _tone(tertiaryHue, chroma * 0.38, dark ? 0.32 : 0.91);
+        const neutral = chroma * 0.10;
+        const neutralVariant = chroma * 0.20;
+        const surface = _tone(hue, neutral, dark ? 0.105 : 0.985);
+        const surfaceContainer = _tone(hue, neutral, dark ? 0.16 : 0.94);
+        const surfaceElevated = _tone(hue, neutral, dark ? 0.20 : 0.995);
+        return {
+            primary: primary,
+            onPrimary: _onTone(hue, chroma, primaryLightness),
+            primaryContainer: primaryContainer,
+            onPrimaryContainer: _onTone(hue, chroma * 0.62, dark ? 0.88 : 0.90),
+            secondary: secondary,
+            onSecondary: _onTone(secondaryHue, chroma * 0.58, dark ? 0.76 : 0.40),
+            secondaryContainer: secondaryContainer,
+            onSecondaryContainer: _onTone(secondaryHue, chroma * 0.30, dark ? 0.82 : 0.91),
+            tertiary: tertiary,
+            onTertiary: _onTone(tertiaryHue, chroma * 0.92, dark ? 0.78 : 0.40),
+            tertiaryContainer: tertiaryContainer,
+            onTertiaryContainer: _onTone(tertiaryHue, chroma * 0.38, dark ? 0.84 : 0.91),
+            background: _tone(hue, neutral, dark ? 0.075 : 0.965),
+            surface: surface,
+            surfaceContainer: surfaceContainer,
+            surfaceElevated: surfaceElevated,
+            surfaceVariant: _tone(hue, neutralVariant, dark ? 0.28 : 0.90),
+            outline: _tone(hue, neutralVariant, dark ? 0.65 : 0.50),
+            textPrimary: _tone(hue, neutralVariant, dark ? 0.93 : 0.12),
+            textSecondary: _tone(hue, neutralVariant, dark ? 0.77 : 0.34),
+            textDisabled: _tone(hue, neutralVariant, dark ? 0.58 : 0.52),
+            shadow: _tone(hue, neutral, dark ? 0.015 : 0.24),
+            warning: dark ? "#f4c76f" : "#805400",
+            success: dark ? "#9dd6ae" : "#2e6d4a"
+        };
+    }
 
     function paletteFor(wallpaper: string, dark: bool): var {
         const key = ["snow", "abstract", "quiet", "kemono"].indexOf(wallpaper) >= 0 ? wallpaper : "snow";

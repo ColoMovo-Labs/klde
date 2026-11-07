@@ -75,6 +75,17 @@ TestCase {
         verify(Tokens.surfaceContainerHigh.toString() !== Tokens.surfaceContainer.toString());
     }
 
+    function test_dynamicSeedPaletteHasSemanticRoles() {
+        const light = MonetPalette.paletteForSeed("#e85888", false);
+        const dark = MonetPalette.paletteForSeed("#e85888", true);
+        verify(light.primary.toString() !== "");
+        verify(light.primaryContainer.toString() !== light.surface.toString());
+        verify(light.onPrimaryContainer.toString() !== "");
+        verify(dark.surface.toString() !== light.surface.toString());
+        verify(dark.onPrimary.toString() !== "");
+        verify(dark.tertiaryContainer.toString() !== dark.primaryContainer.toString());
+    }
+
     function test_textScalePropagates() {
         const initialSize = Tokens.body.pixelSize;
         Tokens.textScale = 2.0;
