@@ -131,10 +131,67 @@ jobs:
       - store_artifacts:
           path: artifacts/klde-install-tree.tar.gz
 
+  fedora-build:
+    docker:
+      - image: fedora:44
+    resource_class: medium
+    working_directory: /root/project
+    environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+    steps:
+      - run:
+          name: Install Fedora checkout and Qt tools
+          command: dnf install -y --setopt=install_weak_deps=False ca-certificates git openssh-clients cmake ninja-build gcc-c++ qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtbase-gui qt6-qtdeclarative qt6-qtwayland dejavu-sans-fonts mesa-dri-drivers mesa-libEGL mesa-libGL
+      - checkout
+      - run:
+          name: Build and test the current GitHub baseline on Fedora
+          command: |
+            cmake -S . -B build/fedora -G Ninja -DBUILD_TESTING=ON
+            cmake --build build/fedora --parallel 2
+            mkdir -p artifacts/fedora
+            ctest --test-dir build/fedora --output-on-failure --output-junit artifacts/fedora/tests.xml
+      - store_test_results:
+          path: artifacts/fedora
+
+  deb-runtime:
+    executor: ubuntu-qt
+    steps:
+      - built-tree
+      - run:
+          name: Install Debian package validation tools
+          command: apt-get install -y --no-install-recommends dpkg-dev
+      - run:
+          name: Build, install, run and purge the baseline DEB
+          command: |
+            set -eu
+            stage="$PWD/artifacts/runtime-deb/stage"
+            mkdir -p "$stage/DEBIAN" artifacts/runtime-deb debian
+            DESTDIR="$stage" cmake --install build/ci --prefix /usr
+            printf 'Source: klde-ci-runtime-check\nSection: x11\nPriority: optional\nMaintainer: owoDE contributors\n\nPackage: klde-ci-runtime-check\nArchitecture: any\nDescription: Isolated baseline runtime validation\n' > debian/control
+            dependencies=$(dpkg-shlibdeps -O -e"$stage/usr/bin/klde-shell" | sed -n 's/^shlibs:Depends=//p')
+            test -n "$dependencies"
+            printf 'Package: klde-ci-runtime-check\nVersion: 0.1.0-0.git%s\nArchitecture: %s\nMaintainer: owoDE contributors\nDepends: %s\nDescription: Isolated baseline runtime validation\n' "$(git rev-parse --short HEAD)" "$(dpkg --print-architecture)" "$dependencies" > "$stage/DEBIAN/control"
+            dpkg-deb --build "$stage" artifacts/runtime-deb/klde-ci-runtime-check.deb
+            apt-get install -y "$PWD/artifacts/runtime-deb/klde-ci-runtime-check.deb"
+            mkdir -p artifacts/runtime-deb/runtime
+            chmod 700 artifacts/runtime-deb/runtime
+            XDG_RUNTIME_DIR="$PWD/artifacts/runtime-deb/runtime" QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software timeout 20s /usr/bin/klde-shell --smoke-test --capture "$PWD/artifacts/runtime-deb/installed.png"
+            test -s artifacts/runtime-deb/installed.png
+            dpkg --purge klde-ci-runtime-check
+            test ! -e /usr/bin/klde-shell
+      - store_artifacts:
+          path: artifacts/runtime-deb/installed.png
+
 workflows:
   core:
     jobs:
       - configure-build
+      - fedora-build
+      - deb-runtime:
+          requires: [packaging-check]
       - static-analysis:
           requires: [configure-build]
       - unit-tests:
